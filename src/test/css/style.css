@@ -1,0 +1,201 @@
+html {
+	background-color: #0a0820;
+	font-size: 62.5%;
+	height: 100%;
+	width: 100%;
+}
+
+@font-face {
+	font-family: "Signika";
+	src: url(Signika-Regular.otf);
+}
+@font-face {
+	font-family: "League Gothic";
+	src: url(LeagueGothic-Regular.otf);
+}
+body {
+	width: 100%;
+	height: 100%;
+}
+
+.subheading {
+	text-align: center;
+}
+
+.text, .secondheading, .subheading, #education {
+	color: white;
+}
+
+.text {
+	font-size: 8rem;
+	font-family: "League Gothic";
+}
+
+.secondheading {
+	font-family: "Signika";
+	font-size: 2rem;
+	opacity: .3;
+}
+
+.subheading, #education {
+	font-family: "Signika";
+	font-size: 3rem;
+	letter-spacing: 0.1rem;
+}
+
+.body {
+	/*position: relative;*/
+}
+
+#education {
+	font-size: 2rem;
+	background-image: url(LowDefTelevision.jpg);
+}
+
+.down-button {
+	margin: 0 39%;
+}
+
+.work-container {
+	color: white;
+	display: inline-block;
+}
+
+.work {
+	box-shadow: 10px 10px 5px black;
+	border-radius: 1rem;
+	background-color: #333;
+	display: inline-block;
+	padding: 1rem;
+	margin: 1rem;
+}
+
+.work-title {
+	display: inline-block;
+	vertical-align: top;
+	padding-left: 5rem;
+	padding-top: 1.5rem;
+	margin-bottom: 0;
+}
+
+.line-break {
+	margin: 1rem;
+	border-color: #d3d3d3;
+}
+
+.legal {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	display: none;
+}
+
+.work-header {
+	width: 100%;
+	text-align: center;
+}
+
+.legal, .legal a {
+	color: #d3d3d3;
+}
+
+video#bgvid {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	z-index: -100;
+	-webkit-transform: translateX(-50%) translateY(-50%);
+	transform: translateX(-50%) translateY(-50%);
+	background: url(LowDefTelevision.jpg) no-repeat;
+	background-size: cover;
+}
+
+@media (max-width: 321px) {
+	.right-align {
+		padding-right: 2.5rem;
+		text-align: right;
+	}
+
+	.work-header {
+		margin: 12.5%;
+		display: block;
+	}
+
+	.work-header-title {
+		text-align: center;
+	}
+
+	.work {
+		margin: 0.5rem;
+	}
+
+	.left-align {
+		padding-left: 2.5rem;
+	}
+	.secondheading {
+		letter-spacing: .6rem;
+	}
+
+	.down-button {
+		margin-bottom: 2.5rem;
+	}
+
+	.work {
+		width: 90%;
+	}
+}
+
+@media (min-width: 321px) and (max-width: 420px) {
+	.right-align {
+		padding-left: 15rem;
+	}
+	.left-align {
+		padding-left: 5rem;
+	}
+	.secondheading {
+		letter-spacing: .85rem;
+	}
+
+	.down-button {
+		margin: 0 45%;
+	}
+
+}
+
+@media (max-width: 420px) {
+	.container {
+		padding: 0;
+		width: 75%;
+		margin: 20% 12%;
+	}
+
+	.desktopTitle {
+		display: none;
+	}
+}
+
+@media (min-width:421px) {
+	.mobile_title {
+		display: none;
+	}
+
+	.desktopTitle {
+		font-size: 25rem;
+		text-align: center;
+	}
+
+	.secondheading {
+		padding-left: 2rem;
+		font-size: 6rem;
+		letter-spacing: 3rem;
+		text-align: center;
+	}
+
+	.down-button {
+		display: none;
+	}
+}

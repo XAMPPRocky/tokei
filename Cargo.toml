@@ -1,0 +1,15 @@
+[package]
+name = "rusty-cloc"
+version = "0.1.0"
+authors = ["Aaronepower <theaaronepower@gmail.com>"]
+
+[dependencies]
+getopts = "0.2"
+glob = "*"
+
+[profile.dev]
+debug = true
+
+
+[profile.release]
+opt-level = 3
