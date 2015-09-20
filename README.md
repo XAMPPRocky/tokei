@@ -15,7 +15,7 @@ To use tokei, use must add it to your path.
 - search for `env` 
 - open "edit your enviroment variables"
 - edit PATH
-- paste folder path to the end of the string ie: `<path_stuf_here>;C:/tokei;`
+- paste folder path to the end of the string ie: `<path_stuff_here>;C:/tokei;`
 
 # Options
 ``` 
