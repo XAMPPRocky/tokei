@@ -8,7 +8,7 @@ To use tokei, use must add it to your path. Then you can call tokei like so
 `$ tokei ./path/to/code`
 
 ## OSX
-`sudo mv <your_download_location> /usr/local/bin/tokei`
+`# sudo mv <your_download_location> /usr/local/bin/tokei`
 
 ## Windows
 
