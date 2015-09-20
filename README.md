@@ -41,6 +41,13 @@ ARGS:
 ```
 
 # Supported Languages
+
+If there is a language that you want added submit a pull request with the following information
+
+- Name of language
+- Most common file extension
+- The comment syntax (Does it have block comments? is it the same as C?)
+
 ```
 ActionScript              (as)
 C                         (c)
@@ -80,4 +87,15 @@ Swift                     (swift)
 TypeScript                (ts)
 XML                       (xml)
 YAML                      (yml)
+```
+
+# Common issues
+
+If you get errors like the following, it is mostly like due to having folders with paths that too long. For example NPM<3.0.0 `node_modules` generates long path files, either use the `exclude` argument, or in the case of NPM, update to >3.0.0
+```
+"The system cannot find the path specified.\r\n"
+```
+```
+thread <main> has overflowed its stack
+Illegal instruction: 4
 ```
