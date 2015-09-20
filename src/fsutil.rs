@@ -41,7 +41,7 @@ pub fn contains_comments(file: &str, comment: &str) -> bool {
 
 		return true
 	}
-	false        
+	false
 }
 
 pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<String> {
@@ -49,13 +49,16 @@ pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<Str
 
 	if let Ok(result) = metadata(&path) {
 		if result.is_dir() {
-			let dir = fs::read_dir(&path).unwrap();
+			let dir = match fs::read_dir(&path) {
+                Ok(value) => value,
+                Err(err) => panic!("ERROR: {:?}", err),
+            };
 			'file: for entry in dir {
-				let entry = entry.unwrap();
+				let entry = unwrap_rs_cont!(entry);
 				let file_path = entry.path();
-				let file_str = file_path.to_str().unwrap();
+				let file_str = unwrap_opt_cont!(file_path.to_str()); 
 				let file_string = file_str.to_owned();
-				let path_metadata = metadata(&file_string).unwrap();
+				let path_metadata = unwrap_rs_cont!(metadata(file_str));
 
 				if path_metadata.is_dir() {
 					for ignored_directory in ignored_directories {
@@ -74,8 +77,12 @@ pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<Str
 			files.push(path);
 		}
 	} else {
-		for path_buf in glob(&path).unwrap() {
-			let file_path = path_buf.unwrap().as_path().to_str().unwrap().to_owned();
+        let iter = match glob(&path) {
+            Ok(value) => value,
+            Err(err) => panic!("{:?}", err)
+        }; 
+		for path_buf in iter {
+			let file_path = unwrap_opt_cont!(unwrap_rs_cont!(path_buf).as_path().to_str()).to_owned();
 			files.push(file_path);
 		}
 	}

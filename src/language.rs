@@ -6,11 +6,12 @@ pub struct Language<'a> {
 	pub multi_line: &'a str,
 	pub multi_line_end: &'a str,
 	pub files: Vec<String>,
-	pub code: u32,
-	pub comments: u32,
-	pub blanks: u32,
-	pub lines: u32,
+	pub code: usize,
+	pub comments: usize,
+	pub blanks: usize,
+	pub lines: usize,
 	pub total: usize,
+	pub size: usize,
 }
 
 impl<'a> Language<'a> {
@@ -30,6 +31,71 @@ impl<'a> Language<'a> {
 			blanks: 0,
 			lines: 0,
 			total: 0,
+            size: 0,
+		}
+	}
+
+	pub fn new_c(name: &'a str) -> Language<'a> {
+		Language {
+			name: name,
+			line_comment: "//",
+			multi_line: "/*",
+			multi_line_end: "*/",
+			files: Vec::new(),
+			code: 0,
+			comments: 0,
+			blanks: 0,
+			lines: 0,
+			total: 0,
+            size: 0,
+		}
+	}
+
+	pub fn new_html(name: &'a str) -> Language<'a> {
+		Language {
+			name: name,
+			line_comment: "<!--",
+			multi_line: "<!--",
+			multi_line_end: "-->",
+			files: Vec::new(),
+			code: 0,
+			comments: 0,
+			blanks: 0,
+			lines: 0,
+			total: 0,
+            size: 0,
+		}
+	}
+
+	pub fn new_blank(name: &'a str) -> Language<'a> {
+		Language {
+			name: name,
+			line_comment: "",
+			multi_line: "",
+			multi_line_end: "",
+			files: Vec::new(),
+			code: 0,
+			comments: 0,
+			blanks: 0,
+			lines: 0,
+			total: 0,
+            size: 0,
+		}
+	}
+
+	pub fn new_single(name: &'a str, line_comment: &'a str) -> Language<'a> {
+		Language {
+			name: name,
+			line_comment: line_comment,
+			multi_line: "",
+			multi_line_end: "",
+			files: Vec::new(),
+			code: 0,
+			comments: 0,
+			blanks: 0,
+			lines: 0,
+			total: 0,
+            size: 0,
 		}
 	}
 
@@ -40,13 +106,11 @@ impl<'a> Language<'a> {
 
 impl<'a> fmt::Display for Language<'a> {
 	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		let mut total;
-
-		if self.total == 0 {
-			total = self.files.len()
+		let total = if self.total == 0 {
+			self.files.len()
 		} else {
-			total = self.total;
-		}
-		write!(f," {: <15} {: >15}  {:>15}  {:>15}  {:>15}  {:>15} ", self.name, total, self.lines, self.blanks, self.comments, self.code)
+		    self.total
+		};
+		write!(f," {: <15} {: >15} {:>15} {:>15} {:>15} {:>15}", self.name, total, self.lines, self.blanks, self.comments, self.code)
 	}
 }

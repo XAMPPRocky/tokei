@@ -1,0 +1,25 @@
+name: Tokei
+version: 1.1
+author: Aaron P. <theaaronepower@gmail.com>
+about: A quick CLOC (Count Lines Of Code) tool
+args:
+  - exclude:
+      short: e
+      long: exclude
+      multiple: true
+      help: Will ignore all files and directories containing the word ie --exclude node_modules
+      takes_value: true
+  - sort:
+      short: s
+      long: sort
+      takes_value: true
+      help: Will sort based on a certain column ie --sort=files will sort by file count.
+  - input:
+      index: 1
+      multiple: true
+      required: true
+      help: The input file(s)/directory(ies)
+  - languages:
+      short: l
+      long: languages
+      help: prints out supported languages and their extensions
