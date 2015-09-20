@@ -2,6 +2,21 @@
 A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 
 
+# Usage
+
+To use tokei, use must add it to your path.
+
+## OSX
+`sudo mv <your_download_location> /usr/local/bin/tokei`
+
+## Windows
+
+- Create a folder for tokei
+- search for `env` 
+- open "edit your enviroment variables"
+- edit PATH
+- paste folder path to the end of the string ie: `<path_stuf_here>;C:/tokei;`
+
 # Options
 ``` 
 Aaron P. <theaaronepower@gmail.com>
