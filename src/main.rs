@@ -16,6 +16,8 @@ use clap::App;
 use language::Language;
 use fsutil::{get_all_files, contains_comments};
 
+static ROW: &'static str = "--------------------------------------------------------------------------------------------------";
+
 fn main() {
     let yaml = load_yaml!("../cli.yml");
 	let matches = App::from_yaml(yaml).get_matches();
@@ -90,12 +92,10 @@ fn main() {
     }
     let sort_empty = sort.is_empty();
 
-	const row: &str = "--------------------------------------------------------------------------------------------------";
-
-	println!("{}", row);
+	println!("{}", ROW);
 	println!(" {:<15} {:>15} {:>15} {:>15} {:>15} {:>15}",
 		"Language", "Files", "Total", "Blanks", "Comments", "Code");
-	println!("{}", row);
+	println!("{}", ROW);
 		for path in paths {
 		let files = get_all_files(path.to_owned(), &ignored_directories);
 
@@ -198,7 +198,7 @@ fn main() {
         }
     }
 
-	println!("{}", row);
+	println!("{}", ROW);
 	println!("{}", total);
-	println!("{}", row);
+	println!("{}", ROW);
 }
