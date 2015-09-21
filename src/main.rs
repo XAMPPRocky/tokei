@@ -39,6 +39,7 @@ fn main() {
 	languages.insert("html"   , Language::new_html("HTML"));
 	languages.insert("java"   , Language::new_c("Java"));
 	languages.insert("js"     , Language::new_c("JavaScript"));
+    languages.insert("jl"     , Language::new("Julia", "#", "#=", "=#"));
 	languages.insert("json"   , Language::new_blank("JSON"));
 	languages.insert("jsx"    , Language::new_c("JSX"));
 	languages.insert("el"     , Language::new("LISP", ";", "#|", "|#"));
@@ -69,7 +70,7 @@ fn main() {
 
 
     let paths = matches.values_of("input").unwrap();
-    
+
     let mut ignored_directories: Vec<String> = Vec::new();
 
 	if let Some(user_ignored) = matches.values_of("exclude") {
@@ -112,11 +113,11 @@ fn main() {
 
 		for file in language.files.iter() {
 
-			let mut file_ref = unwrap_rs_cont!(File::open(&file)); 
+			let mut file_ref = unwrap_rs_cont!(File::open(&file));
 			let mut contents = String::new();
 
-			let _ = unwrap_rs_cont!(file_ref.read_to_string(&mut contents)); 
-            
+			let _ = unwrap_rs_cont!(file_ref.read_to_string(&mut contents));
+
 			let mut is_in_comments = false;
 
 			'line: for line in contents.lines() {
@@ -148,7 +149,7 @@ fn main() {
 					if line.starts_with(single) {
 						language.comments += 1;
                         continue 'line;
-					} 
+					}
                 }
                 language.code += 1;
 			}
