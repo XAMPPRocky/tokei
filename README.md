@@ -1,25 +1,49 @@
 # Tokei
 A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 
+[![GitHub License](https://img.shields.io/github/license/Aaronepower/tokei.svg)](http://github.com/Aaronepower/tokei/blob/master/LICENSE)
 
-# Usage
+[![Master Build Status](https://travis-ci.org/Aaronepower/tokei.svg?branch=master)](https://travis-ci.org/Aaronepower/tokei)
 
-To use tokei, use must add it to your path. Then you can call tokei like so
-`$ tokei ./path/to/code`
+[![](https://img.shields.io/github/issues-raw/Aaronepower/tokei.svg)](http://github.com/Aaronepower/tokei/issues)
 
-## OSX
+## Installation
+
+### Fedora 22 +
+Install rust and cargo from either the [official page](https://www.rust-lang.org) or use a copr repo such as [Rust](https://copr.fedoraproject.org/coprs/ebassi/Rust/)
+
+`dnf copr enable phnxrbrn/tokei`
+
+`dnf install tokei`
+
+
+### Other
+`git clone https://github.com/Aaronepower/tokei.git`
+
+`cd tokei`
+
+`cargo build --release`
+
+#### Linux
+`sudo mv target/release/tokei /usr/local/bin`
+
+#### OSX
 `# sudo mv <your_download_location>/tokei /usr/local/bin/tokei`
 
-## Windows
-
+#### Windows
 - Create a folder for tokei
-- search for `env` 
+- search for `env`
 - open "edit your enviroment variables"
 - edit `PATH`
 - paste folder path to the end of the string ie: `<path_stuff_here>;C:/tokei;`
 
-# Options
-``` 
+## Usage
+
+To use tokei, use must add it to your path. Then you can call tokei like so
+`$ tokei ./path/to/code`
+
+## Options
+```
 Aaron P. <theaaronepower@gmail.com>
 A quick CLOC (Count Lines Of Code) tool
 
@@ -40,7 +64,7 @@ ARGS:
 
 ```
 
-# Supported Languages
+## Supported Languages
 
 If there is a language that you want added submit a pull request with the following information
 
@@ -89,7 +113,7 @@ XML                       (xml)
 YAML                      (yml)
 ```
 
-# Common issues
+## Common issues
 
 If you get errors like the following, it is mostly like due to having folders with paths that too long. For example NPM<3.0.0 `node_modules` generates long path files, either use the `exclude` argument, or in the case of NPM, update to >3.0.0
 ```
@@ -99,3 +123,13 @@ If you get errors like the following, it is mostly like due to having folders wi
 thread <main> has overflowed its stack
 Illegal instruction: 4
 ```
+
+## Copyright and License
+(C) Copyright 2015 by Aaron Power and contributors
+
+See CONTRIBUTORS.md for a full list of contributors.
+
+This application is free software: you can redistribute it and/or modify
+it under the terms of the MIT License.
+
+See LICENSE for more information.
