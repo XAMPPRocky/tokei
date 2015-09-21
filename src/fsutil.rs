@@ -1,3 +1,7 @@
+// Copyright (c) 2015 Aaron Power
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
 extern crate glob;
 
 use std::fs;
@@ -11,7 +15,7 @@ pub fn contains_comments(file: &str, comment: &str) -> bool {
         } else {
             None
         }
-        
+
     }).collect::<Vec<&str>>();
 
     let length = vector.len();
@@ -56,7 +60,7 @@ pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<Str
             'file: for entry in dir {
                 let entry = unwrap_rs_cont!(entry);
                 let file_path = entry.path();
-                let file_str = unwrap_opt_cont!(file_path.to_str()); 
+                let file_str = unwrap_opt_cont!(file_path.to_str());
                 let file_string = file_str.to_owned();
                 let path_metadata = unwrap_rs_cont!(metadata(file_str));
 
@@ -80,7 +84,7 @@ pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<Str
         let iter = match glob(&path) {
             Ok(value) => value,
             Err(err) => panic!("{:?}", err)
-        }; 
+        };
         for path_buf in iter {
             let file_path = unwrap_opt_cont!(unwrap_rs_cont!(path_buf).as_path().to_str()).to_owned();
             files.push(file_path);
