@@ -32,6 +32,8 @@ fn main() {
 	languages.insert("css"    , Language::new_c("CSS"));
 	languages.insert("d"      , Language::new_c("D"));
 	languages.insert("dart"   , Language::new_c("Dart"));
+	languages.insert("f90"    , Language::new_single("FORTRAN Modern", "c,C,!,*"));
+	languages.insert("f"    , Language::new_single("FORTRAN Legacy", "c,C,!,*"));
 	languages.insert("go"     , Language::new_c("Go"));
 	languages.insert("h"      , Language::new_c("C Header"));
 	languages.insert("hs"     , Language::new_single("Haskell", "--"));
@@ -88,7 +90,7 @@ fn main() {
     }
     let sort_empty = sort.is_empty();
 
-	let row = "--------------------------------------------------------------------------------------------------";
+	const row: &str = "--------------------------------------------------------------------------------------------------";
 
 	println!("{}", row);
 	println!(" {:<15} {:>15} {:>15} {:>15} {:>15} {:>15}",
@@ -115,13 +117,14 @@ fn main() {
 
 			let mut file_ref = unwrap_rs_cont!(File::open(&file));
 			let mut contents = String::new();
+            let is_fortran = language.name.contains("FORTRAN");
 
 			let _ = unwrap_rs_cont!(file_ref.read_to_string(&mut contents));
 
 			let mut is_in_comments = false;
 
 			'line: for line in contents.lines() {
-				let line = line.trim();
+				let line = if is_fortran {line} else {line.trim()};
 				language.lines += 1;
 
                 if line.trim().is_empty() {

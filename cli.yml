@@ -13,6 +13,7 @@ args:
       short: s
       long: sort
       takes_value: true
+      possible_values: [files, total, blanks, code, commments]
       help: Will sort based on a certain column ie --sort=files will sort by file count.
   - input:
       index: 1
