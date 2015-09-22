@@ -3,14 +3,12 @@ A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 
 [![GitHub License](https://img.shields.io/github/license/Aaronepower/tokei.svg)](http://github.com/Aaronepower/tokei/blob/master/LICENSE)
 
-[![Master Build Status](https://travis-ci.org/Aaronepower/tokei.svg?branch=master)](https://travis-ci.org/Aaronepower/tokei)
-
 [![](https://img.shields.io/github/issues-raw/Aaronepower/tokei.svg)](http://github.com/Aaronepower/tokei/issues)
 
 ## Installation
 
-### Fedora 22 +
-Install rust and cargo from either the [official page](https://www.rust-lang.org) or use a copr repo such as [Rust](https://copr.fedoraproject.org/coprs/ebassi/Rust/)
+### Fedora 64 bit
+Install rust and cargo from either the [official page](https://www.rust-lang.org) or use a copr repo such as [Rust](https://copr.fedoraproject.org/coprs/phnxrbrn/rust/)
 
 `dnf copr enable phnxrbrn/tokei`
 
