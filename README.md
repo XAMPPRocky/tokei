@@ -5,7 +5,7 @@ A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 
 [![](https://img.shields.io/travis/Aaronepower/tokei.svg)](https://travis-ci.org/Aaronepower/tokei)
 
-[![](https://img.shields.io/github/downloads/atom/atom/latest/total.svg)](https://github.com/Aaronepower/tokei/releases/)
+[![](https://img.shields.io/github/downloads/Aaronepower/tokei/latest/total.svg)](https://github.com/Aaronepower/tokei/releases/)
 
 [![](https://img.shields.io/github/issues-raw/Aaronepower/tokei.svg)](http://github.com/Aaronepower/tokei/issues)
 
