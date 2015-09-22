@@ -52,6 +52,7 @@ fn main() {
     languages.insert("jsx"    , Language::new_c("JSX"));
     languages.insert("el"     , Language::new("LISP", ";", "#|", "|#"));
     languages.insert("m"      , Language::new_c("Objective-C"));
+    languages.insert("md"     , Language::new_blank("Markdown"));
     languages.insert("mm"     , Language::new_c("Objective-C++"));
     languages.insert("php"    , Language::new("PHP", "#,//","/*","*/"));
     languages.insert("pas"    , Language::new("Pascal", "//,(*","{","}"));
@@ -65,6 +66,7 @@ fn main() {
     languages.insert("sh"     , Language::new_single("BASH", "#"));
     languages.insert("sql"    , Language::new("SQL", "--", "/*", "*/"));
     languages.insert("swift"  , Language::new_c("Swift"));
+    languages.insert("toml"   , Language::new_single("TOML", "#"));
     languages.insert("ts"     , Language::new_c("TypeScript"));
     languages.insert("xml"    , Language::new_html("XML"));
     languages.insert("yml"    , Language::new_single("YAML", "#"));
