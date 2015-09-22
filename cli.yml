@@ -26,4 +26,3 @@ args:
       short: l
       long: languages
       help: prints out supported languages and their extensions
-      subcommands_negate_reqs: true
