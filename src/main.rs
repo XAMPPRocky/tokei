@@ -83,8 +83,8 @@ fn main() {
 
     let mut ignored_directories: Vec<String> = Vec::new();
 
-    if let Some(user_ignored) = matches.values_of("exclude") {
-        for ignored in user_ignored {
+    if let Some(user_ignored) = matches.value_of("exclude") {
+        for ignored in user_ignored.split(",") {
             ignored_directories.push(ignored.to_owned());
         }
     }
