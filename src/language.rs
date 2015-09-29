@@ -18,6 +18,7 @@ pub struct Language<'a> {
     pub size: usize,
 }
 
+
 impl<'a> Language<'a> {
     pub fn new<'b>(name: &'a str,
         line_comment: &'a str,
