@@ -9,14 +9,14 @@ use std::fs::metadata;
 use self::glob::glob;
 
 pub fn contains_comments(file: &str, comment: &str) -> bool {
-    let vector = file.splitn(3, "\"").filter_map( |element| {
+    let vector:Vec<&str> = file.splitn(3, "\"").filter_map( |element| {
         if !(element == "") {
             Some(element)
         } else {
             None
         }
 
-    }).collect::<Vec<&str>>();
+    }).collect();
 
     let length = vector.len();
 
@@ -50,6 +50,7 @@ pub fn contains_comments(file: &str, comment: &str) -> bool {
 
 pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<String> {
     let mut files: Vec<String> = Vec::new();
+    let mut dirs: Vec<String> = Vec::new();
 
     if let Ok(result) = metadata(&path) {
         if result.is_dir() {
@@ -70,9 +71,7 @@ pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<Str
                             continue 'file;
                         }
                     }
-                    for file in get_all_files(file_string, &ignored_directories) {
-                        files.push(file);
-                    }
+                    dirs.push(file_string);
                 } else if path_metadata.is_file() {
                     files.push(file_string);
                 }
@@ -88,6 +87,11 @@ pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<Str
         for path_buf in iter {
             let file_path = unwrap_opt_cont!(unwrap_rs_cont!(path_buf).as_path().to_str()).to_owned();
             files.push(file_path);
+        }
+    }
+    for dir in dirs {
+        for file in get_all_files(dir, ignored_directories) {
+            files.push(file);
         }
     }
 

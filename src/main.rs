@@ -38,8 +38,9 @@ fn main() {
     languages.insert("css"    , Language::new_c("CSS"));
     languages.insert("d"      , Language::new_c("D"));
     languages.insert("dart"   , Language::new_c("Dart"));
-    languages.insert("f90"    , Language::new_single("FORTRAN Modern", "!"));
+    languages.insert("el"     , Language::new("LISP", ";", "#|", "|#"));
     languages.insert("f"      , Language::new_single("FORTRAN Legacy", "c,C,!,*"));
+    languages.insert("f90"    , Language::new_single("FORTRAN Modern", "!"));
     languages.insert("go"     , Language::new_c("Go"));
     languages.insert("h"      , Language::new_c("C Header"));
     languages.insert("hs"     , Language::new_single("Haskell", "--"));
@@ -50,7 +51,7 @@ fn main() {
     languages.insert("jl"     , Language::new("Julia", "#", "#=", "=#"));
     languages.insert("json"   , Language::new_blank("JSON"));
     languages.insert("jsx"    , Language::new_c("JSX"));
-    languages.insert("el"     , Language::new("LISP", ";", "#|", "|#"));
+    languages.insert("less"   , Language::new_c("LESS"));
     languages.insert("m"      , Language::new_c("Objective-C"));
     languages.insert("md"     , Language::new_blank("Markdown"));
     languages.insert("mm"     , Language::new_c("Objective-C++"));
