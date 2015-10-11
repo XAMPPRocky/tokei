@@ -25,7 +25,7 @@ use fsutil::{get_all_files, contains_comments};
 static ROW: &'static str = "--------------------------------------------------------------------------------------------------";
 
 fn main() {
-    let yaml = load_yaml!("../cli.yml");
+	let yaml = load_yaml!("../cli.yml");
 	let matches = App::from_yaml(yaml).get_matches();
 
 	let action_script  = Rc::new(RefCell::new(Language::new_c("ActionScript")));
@@ -142,40 +142,40 @@ fn main() {
 	languages.insert("yaml"   , &yaml);
 	languages.insert("yml"    , &yaml);
 
-    if matches.is_present("languages") {
-        for (_, language) in languages.iter() {
-        	let ref language = language.borrow();
-	        println!("{:<25}", language.name);
-	    }
+	if matches.is_present("languages") {
+		for (_, language) in languages.iter() {
+			let ref language = language.borrow();
+			println!("{:<25}", language.name);
+		}
 	}
 
-    let paths = matches.values_of("input").unwrap();
+	let paths = matches.values_of("input").unwrap();
 
-    let mut ignored_directories: Vec<String> = Vec::new();
+	let mut ignored_directories: Vec<String> = Vec::new();
 
-    if let Some(user_ignored) = matches.value_of("exclude") {
-        for ignored in user_ignored.split(",") {
-            ignored_directories.push(ignored.to_owned());
-        }
-    }
+	if let Some(user_ignored) = matches.value_of("exclude") {
+		for ignored in user_ignored.split(",") {
+			ignored_directories.push(ignored.to_owned());
+		}
+	}
 
-    let mut sort = String::new();
-    if let Some(sort_by) = matches.value_of("sort") {
-        match &*sort_by.to_lowercase() {
-            "files" | "total" | "blanks" | "comments" | "code" => sort.push_str(&*sort_by.to_lowercase()),
-            _ => println!("--sort must be any of the following files, total, blanks, comments, code"),
-        }
-    }
-    let sort_empty = sort.is_empty();
+	let mut sort = String::new();
+	if let Some(sort_by) = matches.value_of("sort") {
+		match &*sort_by.to_lowercase() {
+			"files" | "total" | "blanks" | "comments" | "code" => sort.push_str(&*sort_by.to_lowercase()),
+			_ => println!("--sort must be any of the following files, total, blanks, comments, code"),
+		}
+	}
+	let sort_empty = sort.is_empty();
 
-    println!("{}", ROW);
-    println!(" {:<15} {:>15} {:>15} {:>15} {:>15} {:>15}",
-             "Language", "Files", "Total", "Blanks", "Comments", "Code");
-    println!("{}", ROW);
-    for path in paths {
-        let files = get_all_files(path.to_owned(), &ignored_directories);
-        for file in files {
-            let extension = unwrap_opt_cont!(unwrap_opt_cont!(Path::new(&file).extension()).to_str());
+	println!("{}", ROW);
+	println!(" {:<15} {:>15} {:>15} {:>15} {:>15} {:>15}",
+		"Language", "Files", "Total", "Blanks", "Comments", "Code");
+	println!("{}", ROW);
+	for path in paths {
+		let files = get_all_files(path.to_owned(), &ignored_directories);
+		for file in files {
+			let extension = unwrap_opt_cont!(unwrap_opt_cont!(Path::new(&file).extension()).to_str());
 			let lowercase: &str = &extension.to_lowercase();
 			let language = unwrap_opt_cont!(languages.get_mut(lowercase));
 			language.borrow_mut().files.push(file.to_owned());
@@ -188,33 +188,33 @@ fn main() {
 			continue;
 		}
 		let files = language.borrow_mut().files.clone();
-        for file in files {
+		for file in files {
 
-            let mut contents = String::new();
-            let is_fortran = language.borrow().name.contains("FORTRAN");
-            let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(&file)).read_to_string(&mut contents));
+			let mut contents = String::new();
+			let is_fortran = language.borrow().name.contains("FORTRAN");
+			let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(&file)).read_to_string(&mut contents));
 
-            let mut is_in_comments = false;
-            let lines = contents.lines(); 
+			let mut is_in_comments = false;
+			let lines = contents.lines(); 
 
-            'line: for line in lines {
-                let line = if is_fortran {line} else {line.trim()};
+			'line: for line in lines {
+				let line = if is_fortran {line} else {line.trim()};
 				language.borrow_mut().lines += 1;
 
-                if line.trim().is_empty() {
-                    language.borrow_mut().blanks += 1;
-                    continue;
-                }
+				if line.trim().is_empty() {
+					language.borrow_mut().blanks += 1;
+					continue;
+				}
 
-                if !language.borrow().multi_line.is_empty() {
-                	let multi_line = language.borrow().multi_line;
-                    if line.starts_with(multi_line) {
-                        is_in_comments = true;
-                    } else if contains_comments(line, multi_line) {
-                        language.borrow_mut().code += 1;
-                        is_in_comments = true;
-                    }
-                }
+				if !language.borrow().multi_line.is_empty() {
+					let multi_line = language.borrow().multi_line;
+					if line.starts_with(multi_line) {
+						is_in_comments = true;
+					} else if contains_comments(line, multi_line) {
+						language.borrow_mut().code += 1;
+						is_in_comments = true;
+					}
+				}
 
 
 				if is_in_comments {
@@ -229,10 +229,10 @@ fn main() {
 				for single in single_comments {
 					if line.starts_with(single) {
 						language.borrow_mut().comments += 1;
-                        continue 'line;
+						continue 'line;
 					} 
-                }
-                language.borrow_mut().code += 1;
+				}
+				language.borrow_mut().code += 1;
 			}
 		}
 		if !language.borrow().is_empty() {
@@ -250,57 +250,57 @@ fn main() {
 		total.code += language.code;
 	}
 
-    if !sort_empty {
-        let mut unsorted_vec:Vec<(&&str, &&Rc<RefCell<Language>>)> = languages.iter().collect();
-        match &*sort {
-            "files" => {
-                unsorted_vec.sort_by(|a, b| { 
-                	let ref a = *a.1.borrow();
-                	let ref b = *b.1.borrow();
-                	b.files.len().cmp(&a.files.len())
-                })
-            },
-            "total" => {
-                unsorted_vec.sort_by(|a, b| { 
-                	let ref a = *a.1.borrow();
-                	let ref b = *b.1.borrow();
-                	b.lines.cmp(&a.lines)
-                })
-            },
-            "blanks" => {
-                unsorted_vec.sort_by(|a, b| { 
-                	let ref a = *a.1.borrow();
-                	let ref b = *b.1.borrow();
-                	b.blanks.cmp(&a.blanks)
-                })
-            },
-            "comments" => {
-                unsorted_vec.sort_by(|a, b| { 
-                	let ref a = *a.1.borrow();
-                	let ref b = *b.1.borrow();
-                	b.comments.cmp(&a.comments)
-                })
-            },
-            "code" => {
-                unsorted_vec.sort_by(|a, b| { 
-                	let ref a = *a.1.borrow();
-                	let ref b = *b.1.borrow();
-                	b.code.cmp(&a.code)
-                })
-            },
-            _ => unreachable!(),
-        };
+	if !sort_empty {
+		let mut unsorted_vec:Vec<(&&str, &&Rc<RefCell<Language>>)> = languages.iter().collect();
+		match &*sort {
+			"files" => {
+				unsorted_vec.sort_by(|a, b| { 
+					let ref a = *a.1.borrow();
+					let ref b = *b.1.borrow();
+					b.files.len().cmp(&a.files.len())
+				})
+			},
+			"total" => {
+				unsorted_vec.sort_by(|a, b| { 
+					let ref a = *a.1.borrow();
+					let ref b = *b.1.borrow();
+					b.lines.cmp(&a.lines)
+				})
+			},
+			"blanks" => {
+				unsorted_vec.sort_by(|a, b| { 
+					let ref a = *a.1.borrow();
+					let ref b = *b.1.borrow();
+					b.blanks.cmp(&a.blanks)
+				})
+			},
+			"comments" => {
+				unsorted_vec.sort_by(|a, b| { 
+					let ref a = *a.1.borrow();
+					let ref b = *b.1.borrow();
+					b.comments.cmp(&a.comments)
+				})
+			},
+			"code" => {
+				unsorted_vec.sort_by(|a, b| { 
+					let ref a = *a.1.borrow();
+					let ref b = *b.1.borrow();
+					b.code.cmp(&a.code)
+				})
+			},
+			_ => unreachable!(),
+		};
 
-        for (_, language) in unsorted_vec {
+		for (_, language) in unsorted_vec {
 
-            if !language.borrow().is_empty() && language.borrow().printed {
-            	language.borrow_mut().printed = false;
-                println!("{}", *language.borrow());
-            }
-        }
-    }
+			if !language.borrow().is_empty() && language.borrow().printed {
+				language.borrow_mut().printed = false;
+				println!("{}", *language.borrow());
+			}
+		}
+	}
 
-    println!("{}", ROW);
-    println!("{}", total);
-    println!("{}", ROW);
+	println!("{}", ROW);
+	println!("{}", total);
+	println!("{}", ROW);
 }
