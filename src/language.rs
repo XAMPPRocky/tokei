@@ -1,5 +1,6 @@
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Language<'a> {
 	pub name: &'a str,
 	pub line_comment: &'a str,
@@ -11,7 +12,7 @@ pub struct Language<'a> {
 	pub blanks: usize,
 	pub lines: usize,
 	pub total: usize,
-	pub size: usize,
+	pub printed: bool,
 }
 
 impl<'a> Language<'a> {
@@ -31,7 +32,7 @@ impl<'a> Language<'a> {
 			blanks: 0,
 			lines: 0,
 			total: 0,
-            size: 0,
+			printed: false,
 		}
 	}
 
@@ -47,7 +48,7 @@ impl<'a> Language<'a> {
 			blanks: 0,
 			lines: 0,
 			total: 0,
-            size: 0,
+			printed: false,
 		}
 	}
 
@@ -63,7 +64,7 @@ impl<'a> Language<'a> {
 			blanks: 0,
 			lines: 0,
 			total: 0,
-            size: 0,
+			printed: false,
 		}
 	}
 
@@ -79,7 +80,7 @@ impl<'a> Language<'a> {
 			blanks: 0,
 			lines: 0,
 			total: 0,
-            size: 0,
+			printed: false,
 		}
 	}
 
@@ -95,12 +96,36 @@ impl<'a> Language<'a> {
 			blanks: 0,
 			lines: 0,
 			total: 0,
-            size: 0,
+			printed: false,
 		}
 	}
 
 	pub fn is_empty(&self) -> bool {
 		self.code == 0 && self.comments == 0 && self.blanks == 0 && self.lines == 0
+	}
+
+	pub fn add_code(&mut self, num: usize) {
+	    self.code += num;
+	}
+
+	pub fn add_comments(&mut self, num: usize) {
+	    self.comments += num;
+	}
+
+	pub fn add_blanks(&mut self, num: usize) {
+	    self.blanks += num;
+	}
+
+	pub fn add_lines(&mut self, num: usize) {
+	    self.lines += num;
+	}
+
+	pub fn add_total(&mut self, num: usize) {
+	    self.total += num;
+	}
+
+	pub fn printed(&mut self, printed: bool) {
+	    self.printed = printed;
 	}
 }
 
