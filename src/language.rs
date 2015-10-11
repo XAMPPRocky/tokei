@@ -108,30 +108,6 @@ impl<'a> Language<'a> {
 	pub fn is_empty(&self) -> bool {
 		self.code == 0 && self.comments == 0 && self.blanks == 0 && self.lines == 0
 	}
-
-	pub fn add_code(&mut self, num: usize) {
-	    self.code += num;
-	}
-
-	pub fn add_comments(&mut self, num: usize) {
-	    self.comments += num;
-	}
-
-	pub fn add_blanks(&mut self, num: usize) {
-	    self.blanks += num;
-	}
-
-	pub fn add_lines(&mut self, num: usize) {
-	    self.lines += num;
-	}
-
-	pub fn add_total(&mut self, num: usize) {
-	    self.total += num;
-	}
-
-	pub fn printed(&mut self, printed: bool) {
-	    self.printed = printed;
-	}
 }
 
 impl<'a> fmt::Display for Language<'a> {

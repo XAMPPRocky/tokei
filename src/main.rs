@@ -177,16 +177,13 @@ fn main() {
         for file in files {
             let extension = unwrap_opt_cont!(unwrap_opt_cont!(Path::new(&file).extension()).to_str());
 			let lowercase: &str = &extension.to_lowercase();
-
 			let language = unwrap_opt_cont!(languages.get_mut(lowercase));
 			language.borrow_mut().files.push(file.to_owned());
 		}
 	}
 
 	let mut total = Language::new_blank("Total");
-
 	for (_, language) in &mut languages {
-		println!("panic! @ {}", language.borrow().name);
 		if language.borrow().printed {
 			continue;
 		}
@@ -198,54 +195,59 @@ fn main() {
             let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(&file)).read_to_string(&mut contents));
 
             let mut is_in_comments = false;
-            'line: for line in contents.lines() {
+            let lines = contents.lines(); 
+
+            'line: for line in lines {
                 let line = if is_fortran {line} else {line.trim()};
-				language.borrow_mut().add_lines(1);
+				language.borrow_mut().lines += 1;
 
                 if line.trim().is_empty() {
-                    language.borrow_mut().add_blanks(1);
+                    language.borrow_mut().blanks += 1;
                     continue;
                 }
 
                 if !language.borrow().multi_line.is_empty() {
-                    if line.starts_with(language.borrow().multi_line) {
+                	let multi_line = language.borrow().multi_line;
+                    if line.starts_with(multi_line) {
                         is_in_comments = true;
-                    } else if contains_comments(line, language.borrow().multi_line) {
-                        language.borrow_mut().add_code(1);
+                    } else if contains_comments(line, multi_line) {
+                        language.borrow_mut().code += 1;
                         is_in_comments = true;
                     }
                 }
+
 
 				if is_in_comments {
 					if line.contains(language.borrow().multi_line_end) {
 						is_in_comments = false;
 					}
-					language.borrow_mut().add_comments(1);
+
+					language.borrow_mut().comments += 1;
 					continue;
 				}
 				let single_comments = language.borrow().line_comment.split(",");
 				for single in single_comments {
 					if line.starts_with(single) {
-						language.borrow_mut().add_comments(1);
+						language.borrow_mut().comments += 1;
                         continue 'line;
 					} 
                 }
-                language.borrow_mut().add_code(1);
+                language.borrow_mut().code += 1;
 			}
 		}
 		if !language.borrow().is_empty() {
-			language.borrow_mut().printed(true);
+			language.borrow_mut().printed = true;
 			if sort_empty {
 				println!("{}", *language.borrow());
 			}
 		}
 		let language = language.borrow();
 
-		total.add_total(language.files.len());
-		total.add_lines(language.lines);
-		total.add_comments(language.comments);
-		total.add_blanks(language.blanks);
-		total.add_code(language.code);
+		total.total    += language.files.len();
+		total.lines    += language.lines;
+		total.comments += language.comments;
+		total.blanks   += language.blanks;
+		total.code += language.code;
 	}
 
     if !sort_empty {
