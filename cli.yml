@@ -1,18 +1,22 @@
+# Copyright (c) 2015 Aaron Power
+# Use of this source code is governed by the MIT license that can be
+# found in the LICENSE file.
+bin_name: Tokei
 name: Tokei
-version: 1.1
+version: 1.1.1
 author: Aaron P. <theaaronepower@gmail.com>
 about: A quick CLOC (Count Lines Of Code) tool
 args:
   - exclude:
       short: e
       long: exclude
-      multiple: true
       help: Will ignore all files and directories containing the word ie --exclude node_modules
       takes_value: true
   - sort:
       short: s
       long: sort
       takes_value: true
+      possible_values: [files, total, blanks, code, commments]
       help: Will sort based on a certain column ie --sort=files will sort by file count.
   - input:
       index: 1
@@ -22,4 +26,6 @@ args:
   - languages:
       short: l
       long: languages
+      conflicts_with:
+          - input
       help: prints out supported languages and their extensions

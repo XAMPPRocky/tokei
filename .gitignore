@@ -1,4 +1,5 @@
 target
 src/test
 .settings
+.commit_message
 *.lock

@@ -1,3 +1,7 @@
+// Copyright (c) 2015 Aaron Power
+// Use of this source code is governed by the MIT license that can be
+// found in the LICENSE file.
+
 use std::fmt;
 
 #[derive(Debug)]
@@ -15,11 +19,12 @@ pub struct Language<'a> {
 	pub printed: bool,
 }
 
+
 impl<'a> Language<'a> {
-	pub fn new<'b>(name: &'a str,
-		line_comment: &'a str,
-		multi_line: &'a str,
-		multi_line_end: &'a str) -> Language<'a> {
+    pub fn new<'b>(name: &'a str,
+        line_comment: &'a str,
+        multi_line: &'a str,
+        multi_line_end: &'a str) -> Language<'a> {
 
 		Language {
 			name: name,
@@ -130,12 +135,12 @@ impl<'a> Language<'a> {
 }
 
 impl<'a> fmt::Display for Language<'a> {
-	fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-		let total = if self.total == 0 {
-			self.files.len()
-		} else {
-		    self.total
-		};
-		write!(f," {: <15} {: >15} {:>15} {:>15} {:>15} {:>15}", self.name, total, self.lines, self.blanks, self.comments, self.code)
-	}
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let total = if self.total == 0 {
+            self.files.len()
+        } else {
+            self.total
+        };
+        write!(f," {: <15} {: >15} {:>15} {:>15} {:>15} {:>15}", self.name, total, self.lines, self.blanks, self.comments, self.code)
+    }
 }
