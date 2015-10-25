@@ -3,3 +3,4 @@ src/test
 .settings
 .commit_message
 *.lock
+*.bk
