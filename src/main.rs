@@ -69,7 +69,7 @@ fn main() {
     let sass           = RefCell::new(Language::new_c("Sass"));
     let sql            = RefCell::new(Language::new("SQL", "--", "/*", "*/"));
     let swift          = RefCell::new(Language::new_c("Swift"));
-    let tex           = RefCell::new(Language::new_single("TeX", "%"));
+    let tex            = RefCell::new(Language::new_single("TeX", "%"));
     let toml           = RefCell::new(Language::new_single("TOML", "#"));
     let type_script    = RefCell::new(Language::new_c("TypeScript"));
     let xml            = RefCell::new(Language::new_html("XML"));
@@ -138,7 +138,6 @@ fn main() {
     languages.insert("scss", &sass);
     languages.insert("sql", &sql);
     languages.insert("swift", &swift);
-    languages.insert("bib", &tex);
     languages.insert("tex", &tex);
     languages.insert("sty", &tex);
     languages.insert("toml", &toml);
@@ -149,9 +148,13 @@ fn main() {
 
     if matches.is_present("languages") {
         for (_, language) in &languages {
-            let language = &language.borrow();
-            println!("{:<25}", language.name);
+            let mut language = language.borrow_mut();
+            if !language.printed {
+                println!("{:<25}", language.name);
+                language.printed = true;
+            }
         }
+        return;
     }
 
     let paths = matches.values_of("input").unwrap();

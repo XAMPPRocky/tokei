@@ -23,6 +23,8 @@ args:
       multiple: true
       required: true
       help: The input file(s)/directory(ies)
+      conflicts_with:
+          - languages
   - languages:
       short: l
       long: languages

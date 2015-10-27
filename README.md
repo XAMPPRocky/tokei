@@ -45,11 +45,12 @@ To use tokei, use must add it to your path. Then you can call tokei like so
 
 ## Options
 ```
+Tokei 1.2.0
 Aaron P. <theaaronepower@gmail.com>
 A quick CLOC (Count Lines Of Code) tool
 
 USAGE:
-  tokei [FLAGS] [OPTIONS] [--] <input>...
+        Tokei [FLAGS] [OPTIONS] <input>...
 
 FLAGS:
     -h, --help         Prints help information
@@ -57,8 +58,8 @@ FLAGS:
     -V, --version      Prints version information
 
 OPTIONS:
-    -e, --exclude <exclude>...    Will ignore all files and directories containing the word ie --exclude node_modules
-    -s, --sort <sort>             Will sort based on a certain column ie --sort=files will sort by file count.
+    -e, --exclude <exclude>    Will ignore all files and directories containing the word ie --exclude node_modules
+    -s, --sort <sort>          Will sort based on a certain column ie --sort=files will sort by file count. [values: files total blanks code commments]
 
 ARGS:
     input...    The input file(s)/directory(ies)
@@ -74,47 +75,53 @@ If there is a language that you want added submit a pull request with the follow
 - The comment syntax (Does it have block comments? is it the same as C?)
 
 ```
-ActionScript              (as)
-C                         (c)
-ColdFusion CFScript       (cfc)
-ColdFusion                (cfm)
-Clojure                   (clj)
-CoffeeScript              (coffee)
-C++                       (cpp)
-C#                        (cs)
-CSS                       (css)
-D                         (d)
-Dart                      (dart)
-LISP                      (el)
-FORTRAN Legacy            (f)
-FORTRAN Modern            (f90)
-Go                        (go)
-C Header                  (h)
-C++ Header                (hpp)
-Haskell                   (hs)
-HTML                      (html)
-Java                      (java)
-Julia                     (jl)
-JavaScript                (js)
-JSON                      (json)
-JSX                       (jsx)
-Objective-C               (m)
-Objective-C++             (mm)
-Pascal                    (pas)
-PHP                       (php)
-Perl                      (pl)
-Python                    (py)
-R                         (r)
-Ruby                      (rb)
-Ruby HTML                 (rhtml)
-Rust                      (rs)
-Sass                      (sass)
-BASH                      (sh)
-SQL                       (sql)
-Swift                     (swift)
-TypeScript                (ts)
-XML                       (xml)
-YAML                      (yml)
+ActionScript
+BASH
+Batch
+C
+C++
+ColdFusion CFScript
+ColdFusion
+Clojure
+CoffeeScript
+C#
+CSS
+D
+Dart
+LISP
+FORTRAN Legacy
+FORTRAN Modern
+Go
+C Header
+C++ Header
+Haskell
+HTML
+JAI
+Java
+Julia
+JavaScript
+JSON
+JSX
+LESS
+Objective-C
+Markdown  
+Objective-C++
+Pascal
+PHP
+Perl
+Python
+R
+Ruby
+Ruby HTML
+Rust
+Sass
+SQL
+TeX
+Swift
+TOML
+TypeScript
+XML
+YAML
 ```
 
 ## Common issues
