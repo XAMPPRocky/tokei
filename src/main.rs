@@ -48,6 +48,7 @@ fn main() {
     let go             = RefCell::new(Language::new_c("Go"));
     let haskell        = RefCell::new(Language::new_single("Haskell", "--"));
     let html           = RefCell::new(Language::new_html("HTML"));
+    let jai           = RefCell::new(Language::new_c("JAI"));
     let java           = RefCell::new(Language::new_c("Java"));
     let java_script    = RefCell::new(Language::new_c("JavaScript"));
     let julia          = RefCell::new(Language::new("Julia", "#", "#=", "=#"));
@@ -68,6 +69,7 @@ fn main() {
     let sass           = RefCell::new(Language::new_c("Sass"));
     let sql            = RefCell::new(Language::new("SQL", "--", "/*", "*/"));
     let swift          = RefCell::new(Language::new_c("Swift"));
+    let tex           = RefCell::new(Language::new_single("TeX", "%"));
     let toml           = RefCell::new(Language::new_single("TOML", "#"));
     let type_script    = RefCell::new(Language::new_c("TypeScript"));
     let xml            = RefCell::new(Language::new_html("XML"));
@@ -113,6 +115,7 @@ fn main() {
     languages.insert("hpp", &cpp_header);
     languages.insert("hh", &cpp_header);
     languages.insert("html", &html);
+    languages.insert("jai", &jai);
     languages.insert("java", &java);
     languages.insert("js", &java_script);
     languages.insert("jl", &julia);
@@ -135,6 +138,9 @@ fn main() {
     languages.insert("scss", &sass);
     languages.insert("sql", &sql);
     languages.insert("swift", &swift);
+    languages.insert("bib", &tex);
+    languages.insert("tex", &tex);
+    languages.insert("sty", &tex);
     languages.insert("toml", &toml);
     languages.insert("ts", &type_script);
     languages.insert("xml", &xml);
@@ -142,8 +148,8 @@ fn main() {
     languages.insert("yml", &yaml);
 
     if matches.is_present("languages") {
-        for (_, language) in languages.iter() {
-            let ref language = language.borrow();
+        for (_, language) in &languages {
+            let language = &language.borrow();
             println!("{:<25}", language.name);
         }
     }
@@ -269,36 +275,36 @@ fn main() {
         match &*sort {
             "files" => {
                 unsorted_vec.sort_by(|a, b| {
-                    let ref a = *a.1.borrow();
-                    let ref b = *b.1.borrow();
+                    let a = a.1.borrow();
+                    let b = b.1.borrow();
                     b.files.len().cmp(&a.files.len())
                 })
             }
             "total" => {
                 unsorted_vec.sort_by(|a, b| {
-                    let ref a = *a.1.borrow();
-                    let ref b = *b.1.borrow();
+                    let a = a.1.borrow();
+                    let b = b.1.borrow();
                     b.lines.cmp(&a.lines)
                 })
             }
             "blanks" => {
                 unsorted_vec.sort_by(|a, b| {
-                    let ref a = *a.1.borrow();
-                    let ref b = *b.1.borrow();
+                    let a = a.1.borrow();
+                    let b = b.1.borrow();
                     b.blanks.cmp(&a.blanks)
                 })
             }
             "comments" => {
                 unsorted_vec.sort_by(|a, b| {
-                    let ref a = *a.1.borrow();
-                    let ref b = *b.1.borrow();
+                    let a = a.1.borrow();
+                    let b = b.1.borrow();
                     b.comments.cmp(&a.comments)
                 })
             }
             "code" => {
                 unsorted_vec.sort_by(|a, b| {
-                    let ref a = *a.1.borrow();
-                    let ref b = *b.1.borrow();
+                    let a = a.1.borrow();
+                    let b = b.1.borrow();
                     b.code.cmp(&a.code)
                 })
             }

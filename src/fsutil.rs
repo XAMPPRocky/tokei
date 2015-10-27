@@ -50,7 +50,7 @@ pub fn contains_comments(file: &str, comment: &str) -> bool {
     false
 }
 
-pub fn get_all_files(path: String, ignored_directories: &Vec<String>) -> Vec<String> {
+pub fn get_all_files(path: String, ignored_directories: &[String]) -> Vec<String> {
     let mut files: Vec<String> = Vec::new();
     let mut dirs: Vec<String> = Vec::new();
 
