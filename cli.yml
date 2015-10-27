@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 bin_name: Tokei
 name: Tokei
-version: 1.2.0
+version: 1.2.1
 author: Aaron P. <theaaronepower@gmail.com>
 about: A quick CLOC (Count Lines Of Code) tool
 args:
