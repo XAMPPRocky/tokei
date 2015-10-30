@@ -109,6 +109,8 @@ fn main() {
     languages.insert("pfo", &fortran_legacy);
     languages.insert("f90", &fortran_modern);
     languages.insert("f95", &fortran_modern);
+    languages.insert("f03", &fortran_modern);
+    languages.insert("f08", &fortran_modern);
     languages.insert("go", &go);
     languages.insert("h", &c_header);
     languages.insert("hs", &haskell);
