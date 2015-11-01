@@ -1,9 +1,19 @@
+os:
+  - linux
+  - osx
 language: rust
 rust:
-  - stable
-  - beta
-  - nightly
+- stable
+- beta
+- nightly
 matrix:
   allow_failure:
-    - rust: nightly
+  - rust: nightly
 sudo: false
+deploy:
+  provider: releases
+  api_key:
+    secure: ifJz3iZaFhy0zaCNyTZ93nc48BiCunC/O8MTre+rZXIPjfyNUJVhBL8l+T76jd6GYMrEdDCl0dJawhLt8ARoTuRJ9aIzncc6NVztRzZhzfPxF0GkhsoosOnNrsIwMAi6Js+oYsT2ziQixjG3J6IvS1dcajEPIEaEbRaD582h4UUdkuNQZGQDo/BmmidyU2Dhi7wSeL0CFAWu/0hGuWZ7ycZlJme1JU9N+sRFlyVVHfP4BloNDDNdKDJkMgIJZI3wRCV4E9nMVQm8B8pkSIh7Sm42HfPTBjqhzujzRrN90+m86Leql8mNBlZBOQ98/rqe4w2G9lpP/YV6bvexUNM52IDpXlpvQt0S6g5nLNAPmZZ0VzQIGI5PVt0cDi9ryRfGwTgC0xiwlx3W0k7+I7bwxugQKz1fdMz4mqdruqazYo2Ry3tJizqZr4i4EK/ky/bCxNAQD4u9EPWU2VZcOK39FGKtVugkoSrW+b8sLjg64WK+Jx8awoJ4nVuIkCn3WSSpE6RuD0bFEG+BzRNvzaWwX0R9Zfr/XpG3CKJhnzATAJaTX/4xCJpIPppb2QrmcCSCGk34K7q1U+aevz1iVyiEteBkMHlZX7V78jhzRfq0/2yiijBA1f2rBYpGN/pcfSIVSxyco+smEKesq93SA62JrVOZqG/hgMHr5VafQL83pxo=
+  file: target/release/tokei
+  on:
+    repo: Aaronepower/tokei
