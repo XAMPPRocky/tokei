@@ -27,6 +27,7 @@ fn main() {
     let yaml = load_yaml!("../cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
 
+    // Big list of languages
     let action_script  = RefCell::new(Language::new_c("ActionScript"));
     let bash           = RefCell::new(Language::new_single("BASH", "#"));
     let batch          = RefCell::new(Language::new_single("Batch", "REM"));
@@ -48,7 +49,7 @@ fn main() {
     let go             = RefCell::new(Language::new_c("Go"));
     let haskell        = RefCell::new(Language::new_single("Haskell", "--"));
     let html           = RefCell::new(Language::new_html("HTML"));
-    let jai           = RefCell::new(Language::new_c("JAI"));
+    let jai            = RefCell::new(Language::new_c("JAI"));
     let java           = RefCell::new(Language::new_c("Java"));
     let java_script    = RefCell::new(Language::new_c("JavaScript"));
     let julia          = RefCell::new(Language::new("Julia", "#", "#=", "=#"));
@@ -75,6 +76,8 @@ fn main() {
     let xml            = RefCell::new(Language::new_html("XML"));
     let yaml           = RefCell::new(Language::new_single("YAML", "#"));
 
+    // Languages are placed inside a BTreeMap, in order to print alphabetically
+    // by default
     let mut languages: BTreeMap<&str, &RefCell<Language>> = BTreeMap::new();
     languages.insert("as", &action_script);
     languages.insert("bat", &batch);
@@ -148,6 +151,7 @@ fn main() {
     languages.insert("yaml", &yaml);
     languages.insert("yml", &yaml);
 
+    // Print every supported language.
     if matches.is_present("languages") {
         for (_, language) in &languages {
             let mut language = language.borrow_mut();
@@ -162,7 +166,6 @@ fn main() {
     let paths = matches.values_of("input").unwrap();
 
     let mut ignored_directories: Vec<String> = Vec::new();
-
     if let Some(user_ignored) = matches.value_of("exclude") {
         for ignored in user_ignored.split(",") {
             ignored_directories.push(ignored.to_owned());
@@ -188,7 +191,7 @@ fn main() {
              "Comments",
              "Code");
     println!("{}", ROW);
-
+    // Get every path from the paths provided.
     for path in paths {
         let files = get_all_files(path.to_owned(), &ignored_directories);
         for file in files {
@@ -202,6 +205,7 @@ fn main() {
 
     let mut total = Language::new_blank("Total");
     for (_, language) in &mut languages {
+
         if language.borrow().printed {
             continue;
         }
@@ -263,6 +267,13 @@ fn main() {
             language.borrow_mut().printed = true;
             if sort_empty {
                 println!("{}", *language.borrow());
+                if matches.is_present("files") {
+                    println!("{}", ROW);
+                    for file in &language.borrow().files {
+                        println!("{}", file);
+                    }
+                    println!("{}", ROW);
+                }
             }
         }
 

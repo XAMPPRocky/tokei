@@ -52,7 +52,6 @@ pub fn contains_comments(file: &str, comment: &str) -> bool {
 
 pub fn get_all_files(path: String, ignored_directories: &[String]) -> Vec<String> {
     let mut files: Vec<String> = Vec::new();
-    let mut dirs: Vec<String> = Vec::new();
 
     if let Ok(result) = metadata(&path) {
         if result.is_dir() {
@@ -67,13 +66,16 @@ pub fn get_all_files(path: String, ignored_directories: &[String]) -> Vec<String
                 let file_string = file_str.to_owned();
                 let path_metadata = unwrap_rs_cont!(metadata(file_str));
 
-                if path_metadata.is_dir() {
-                    for ignored_directory in ignored_directories {
-                        if file_str.contains(ignored_directory) {
-                            continue 'file;
-                        }
+                for ignored_directory in ignored_directories {
+                    if file_str.contains(ignored_directory) {
+                        continue 'file;
                     }
-                    dirs.push(file_string);
+                }
+                
+                if path_metadata.is_dir() {
+                    for file in get_all_files(file_string, ignored_directories) {
+                        files.push(file);
+                    }
                 } else if path_metadata.is_file() {
                     files.push(file_string);
                 }
@@ -87,11 +89,6 @@ pub fn get_all_files(path: String, ignored_directories: &[String]) -> Vec<String
             let file_path = unwrap_opt_cont!(unwrap_rs_cont!(path_buf).as_path().to_str())
                                 .to_owned();
             files.push(file_path);
-        }
-    }
-    for dir in dirs {
-        for file in get_all_files(dir, ignored_directories) {
-            files.push(file);
         }
     }
 

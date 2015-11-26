@@ -25,6 +25,11 @@ args:
       help: The input file(s)/directory(ies)
       conflicts_with:
           - languages
+  - files:
+      short: f
+      long: files
+      takes_value: false
+      help: Will print out the files found only recommended for debugging purposes
   - languages:
       short: l
       long: languages
