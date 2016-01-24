@@ -54,14 +54,15 @@ To use tokei, use must add it to your path. Then you can call tokei like so
 
 ## Options
 ```
-Tokei 1.2.0
+Tokei 1.3.0
 Aaron P. <theaaronepower@gmail.com>
 A quick CLOC (Count Lines Of Code) tool
 
 USAGE:
-        Tokei [FLAGS] [OPTIONS] <input>...
+        Tokei [FLAGS] [OPTIONS] <input>... [--]
 
 FLAGS:
+    -f, --files        Will print out the files found only recommended for debugging purposes
     -h, --help         Prints help information
     -l, --languages    prints out supported languages and their extensions
     -V, --version      Prints version information
