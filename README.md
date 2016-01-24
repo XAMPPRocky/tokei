@@ -11,7 +11,7 @@ A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 ## Installation
 
 ### Automatic
-If you have `[cargo 0.6.0>=](https://www.rust-lang.org/downloads.html)` installed just run the `cargo install` command.
+If you have [`cargo 0.6.0>=`](https://www.rust-lang.org/downloads.html) installed just run the `cargo install` command.
 
 ```
 $ cargo install tokei
