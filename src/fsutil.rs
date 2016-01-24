@@ -8,46 +8,45 @@ use std::fs;
 use std::fs::metadata;
 use self::glob::glob;
 
-pub fn contains_comments(file: &str, comment: &str) -> bool {
-    let vector: Vec<&str> = file.splitn(3, "\"")
-                                .filter_map(|element| {
-                                    if !(element == "") {
-                                        Some(element)
-                                    } else {
-                                        None
-                                    }
+pub fn contains_comments(file: &str, comment: &str, comment_end: &str) -> bool {
+    let mut in_quotes = false;
+    let mut in_comments: usize = 0;
+    'window: for chars in file.chars().collect::<Vec<char>>().windows(comment.len()) {
 
-                                })
-                                .collect();
+        let section = {
+            let mut section = String::new();
+            for ch in chars {
+                section.push(*ch);
+            }
+            section
+        };
+        let mut chars = chars.iter();
+        while let Some(ch) = chars.next() {
+            let ch = *ch;
+            if ch == '"' {
+                in_quotes = !in_quotes;
+                // This is to solve the problem of having "".
+                if let Some(ch) = chars.next() {
+                    if *ch == '"' {
+                        in_quotes = !in_quotes;
+                    }
+                }
 
-    let length = vector.len();
-
-    if length == 0 || length == 1 {
-        return false;
-    }
-
-    if length == 2 {
-        for element in &vector {
-            if element.contains(comment) {
-                return true;
+                continue 'window;
+            }
+            if in_quotes {
+                continue;
+            }
+            if section == comment {
+                in_comments += 1;
+                continue 'window;
+            } else if section == comment_end {
+                in_comments -= 1;
+                continue 'window;
             }
         }
-        return false;
     }
-
-    if vector[0].contains(comment) {
-
-        return true;
-    }
-
-    if vector[2].contains("\"") {
-
-        return contains_comments(vector[2], comment);
-    } else if vector[2].contains(comment) {
-
-        return true;
-    }
-    false
+    in_comments != 0
 }
 
 pub fn get_all_files(path: String, ignored_directories: &[String]) -> Vec<String> {
@@ -71,7 +70,7 @@ pub fn get_all_files(path: String, ignored_directories: &[String]) -> Vec<String
                         continue 'file;
                     }
                 }
-                
+
                 if path_metadata.is_dir() {
                     for file in get_all_files(file_string, ignored_directories) {
                         files.push(file);
@@ -84,13 +83,47 @@ pub fn get_all_files(path: String, ignored_directories: &[String]) -> Vec<String
             files.push(path);
         }
     } else {
-        let iter = glob(&path).unwrap();
-        for path_buf in iter {
-            let file_path = unwrap_opt_cont!(unwrap_rs_cont!(path_buf).as_path().to_str())
-                                .to_owned();
-            files.push(file_path);
+        let glob = glob(&path);
+        match glob {
+            Ok(iter) => {
+                for path_buf in iter {
+                    let file_path = unwrap_opt_cont!(unwrap_rs_cont!(path_buf).as_path().to_str())
+                                        .to_owned();
+                    files.push(file_path);
+                }
+            }
+            Err(error) => {
+                panic!("The path provided wasn't valid. PATH:{:?}, error:{:?}",
+                       path,
+                       error);
+            }
         }
     }
 
     files
+}
+
+#[allow(dead_code, unused_imports)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn comment_start_in_quotes() {
+        assert!(!contains_comments("Hello \"/*\" World", "/*", "*/"));
+    }
+
+    #[test]
+    fn both_comments_in_quotes() {
+        assert!(!contains_comments("Hello \"/**/\" World", "/*", "*/"));
+    }
+
+    #[test]
+    fn both_comments_in_line() {
+        assert!(!contains_comments("Hello /**/ World", "/*", "*/"));
+    }
+
+    #[test]
+    fn comment_start_in_line() {
+        assert!(contains_comments("Hello /* World", "/*", "*/"));
+    }
 }

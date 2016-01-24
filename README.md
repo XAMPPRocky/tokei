@@ -10,28 +10,37 @@ A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 
 ## Installation
 
-### Fedora 64 bit
+### Automatic
+If you have `[cargo 0.6.0>=](https://www.rust-lang.org/downloads.html)` installed just run the `cargo install` command.
+
+```
+$ cargo install tokei
+```
+
+### Manual
+
+#### Fedora 64 bit
 Install rust and cargo from either the [official page](https://www.rust-lang.org) or use a copr repo such as [Rust](https://copr.fedoraproject.org/coprs/phnxrbrn/rust/)
 
-`dnf copr enable phnxrbrn/tokei`
+`$ dnf copr enable phnxrbrn/tokei`
 
-`dnf install tokei`
+`$ dnf install tokei`
 
 
-### Other
-`git clone https://github.com/Aaronepower/tokei.git`
+#### Other
+`$ git clone https://github.com/Aaronepower/tokei.git`
 
-`cd tokei`
+`$ cd tokei`
 
-`cargo build --release`
+`$ cargo build --release`
 
-#### Linux
-`sudo mv target/release/tokei /usr/local/bin`
+##### Linux
+`# sudo mv target/release/tokei /usr/local/bin`
 
-#### OSX
+##### OSX
 `# sudo mv <your_download_location>/tokei /usr/local/bin/tokei`
 
-#### Windows
+##### Windows
 - Create a folder for tokei
 - search for `env`
 - open "edit your enviroment variables"

@@ -19,65 +19,64 @@ use std::collections::BTreeMap;
 use clap::App;
 
 use language::Language;
-use fsutil::{get_all_files, contains_comments};
 
+use fsutil::{get_all_files, contains_comments};
 const ROW: &'static str = "-----------------------------------------------------------------------\
-                           ---------------------------";
+                           ---------";
 fn main() {
     let yaml = load_yaml!("../cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
 
-    // Big list of languages
-    let action_script  = RefCell::new(Language::new_c("ActionScript"));
-    let bash           = RefCell::new(Language::new_single("BASH", "#"));
-    let batch          = RefCell::new(Language::new_single("Batch", "REM"));
-    let c              = RefCell::new(Language::new_c("C"));
-    let c_header       = RefCell::new(Language::new_c("C Header"));
-    let c_sharp        = RefCell::new(Language::new_c("C#"));
-    let clojure        = RefCell::new(Language::new_single("Clojure", ";,#,#_"));
-    let coffee_script  = RefCell::new(Language::new("CoffeeScript", "#", "###", "###"));
-    let cold_fusion    = RefCell::new(Language::new("ColdFusion", "<!---", "<!---", "--->"));
-    let cf_script      = RefCell::new(Language::new_c("ColdFusion CFScript"));
-    let cpp            = RefCell::new(Language::new_c("C++"));
-    let cpp_header     = RefCell::new(Language::new_c("C++ Header"));
-    let css            = RefCell::new(Language::new_c("CSS"));
-    let d              = RefCell::new(Language::new_c("D"));
-    let dart           = RefCell::new(Language::new_c("Dart"));
-    let lisp           = RefCell::new(Language::new("LISP", ";", "#|", "|#"));
+    // Big list of languages, this should changed if there is ever a map! macro.
+    let action_script = RefCell::new(Language::new_c("ActionScript"));
+    let bash = RefCell::new(Language::new_single("BASH", "#"));
+    let batch = RefCell::new(Language::new_single("Batch", "REM"));
+    let c = RefCell::new(Language::new_c("C"));
+    let c_header = RefCell::new(Language::new_c("C Header"));
+    let c_sharp = RefCell::new(Language::new_c("C#"));
+    let clojure = RefCell::new(Language::new_single("Clojure", ";,#,#_"));
+    let coffee_script = RefCell::new(Language::new("CoffeeScript", "#", "###", "###"));
+    let cold_fusion = RefCell::new(Language::new("ColdFusion", "<!---", "<!---", "--->"));
+    let cf_script = RefCell::new(Language::new_c("ColdFusion CFScript"));
+    let cpp = RefCell::new(Language::new_c("C++"));
+    let cpp_header = RefCell::new(Language::new_c("C++ Header"));
+    let css = RefCell::new(Language::new_c("CSS"));
+    let d = RefCell::new(Language::new_c("D"));
+    let dart = RefCell::new(Language::new_c("Dart"));
+    let lisp = RefCell::new(Language::new("LISP", ";", "#|", "|#"));
     let fortran_legacy = RefCell::new(Language::new_single("FORTRAN Legacy", "c,C,!,*"));
     let fortran_modern = RefCell::new(Language::new_single("FORTRAN Modern", "!"));
-    let go             = RefCell::new(Language::new_c("Go"));
-    let haskell        = RefCell::new(Language::new_single("Haskell", "--"));
-    let html           = RefCell::new(Language::new_html("HTML"));
-    let jai            = RefCell::new(Language::new_c("JAI"));
-    let java           = RefCell::new(Language::new_c("Java"));
-    let java_script    = RefCell::new(Language::new_c("JavaScript"));
-    let julia          = RefCell::new(Language::new("Julia", "#", "#=", "=#"));
-    let json           = RefCell::new(Language::new_blank("JSON"));
-    let jsx            = RefCell::new(Language::new_c("JSX"));
-    let less           = RefCell::new(Language::new_c("LESS"));
-    let markdown       = RefCell::new(Language::new_blank("Markdown"));
-    let objective_c    = RefCell::new(Language::new_c("Objective-C"));
-    let objective_cpp  = RefCell::new(Language::new_c("Objective-C++"));
-    let php            = RefCell::new(Language::new("PHP", "#,//", "/*", "*/"));
-    let pascal         = RefCell::new(Language::new("Pascal", "//,(*", "{", "}"));
-    let perl           = RefCell::new(Language::new("Perl", "#", "=", "=cut"));
-    let python         = RefCell::new(Language::new("Python", "#", "'''", "'''"));
-    let r              = RefCell::new(Language::new("R", "#", "", ""));
-    let ruby           = RefCell::new(Language::new("Ruby", "#", "=begin", "=end"));
-    let ruby_html      = RefCell::new(Language::new_html("Ruby HTML"));
-    let rust           = RefCell::new(Language::new("Rust", "//,///,//!", "/*", "*/"));
-    let sass           = RefCell::new(Language::new_c("Sass"));
-    let sql            = RefCell::new(Language::new("SQL", "--", "/*", "*/"));
-    let swift          = RefCell::new(Language::new_c("Swift"));
-    let tex            = RefCell::new(Language::new_single("TeX", "%"));
-    let toml           = RefCell::new(Language::new_single("TOML", "#"));
-    let type_script    = RefCell::new(Language::new_c("TypeScript"));
-    let xml            = RefCell::new(Language::new_html("XML"));
-    let yaml           = RefCell::new(Language::new_single("YAML", "#"));
+    let go = RefCell::new(Language::new_c("Go"));
+    let haskell = RefCell::new(Language::new_single("Haskell", "--"));
+    let html = RefCell::new(Language::new_html("HTML"));
+    let jai = RefCell::new(Language::new_c("JAI"));
+    let java = RefCell::new(Language::new_c("Java"));
+    let java_script = RefCell::new(Language::new_c("JavaScript"));
+    let julia = RefCell::new(Language::new("Julia", "#", "#=", "=#"));
+    let json = RefCell::new(Language::new_blank("JSON"));
+    let jsx = RefCell::new(Language::new_c("JSX"));
+    let less = RefCell::new(Language::new_c("LESS"));
+    let markdown = RefCell::new(Language::new_blank("Markdown"));
+    let objective_c = RefCell::new(Language::new_c("Objective-C"));
+    let objective_cpp = RefCell::new(Language::new_c("Objective-C++"));
+    let php = RefCell::new(Language::new("PHP", "#,//", "/*", "*/"));
+    let pascal = RefCell::new(Language::new("Pascal", "//,(*", "{", "}"));
+    let perl = RefCell::new(Language::new("Perl", "#", "=", "=cut"));
+    let python = RefCell::new(Language::new("Python", "#", "'''", "'''"));
+    let r = RefCell::new(Language::new("R", "#", "", ""));
+    let ruby = RefCell::new(Language::new("Ruby", "#", "=begin", "=end"));
+    let ruby_html = RefCell::new(Language::new_html("Ruby HTML"));
+    let rust = RefCell::new(Language::new("Rust", "//,///,//!", "/*", "*/"));
+    let sass = RefCell::new(Language::new_c("Sass"));
+    let sql = RefCell::new(Language::new("SQL", "--", "/*", "*/"));
+    let swift = RefCell::new(Language::new_c("Swift"));
+    let tex = RefCell::new(Language::new_single("TeX", "%"));
+    let toml = RefCell::new(Language::new_single("TOML", "#"));
+    let type_script = RefCell::new(Language::new_c("TypeScript"));
+    let xml = RefCell::new(Language::new_html("XML"));
+    let yaml = RefCell::new(Language::new_single("YAML", "#"));
 
-    // Languages are placed inside a BTreeMap, in order to print alphabetically
-    // by default
+    // Languages are placed inside a BTreeMap, in order to print alphabetically by default
     let mut languages: BTreeMap<&str, &RefCell<Language>> = BTreeMap::new();
     languages.insert("as", &action_script);
     languages.insert("bat", &batch);
@@ -175,15 +174,16 @@ fn main() {
     let mut sort = String::new();
     if let Some(sort_by) = matches.value_of("sort") {
         match &*sort_by.to_lowercase() {
-            "files" | "total" | "blanks" | "comments" | "code" =>
-                sort.push_str(&*sort_by.to_lowercase()),
+            "files" | "total" | "blanks" | "comments" | "code" => {
+                sort.push_str(&*sort_by.to_lowercase())
+            }
             _ => unreachable!(),
         }
     }
     let sort_empty = sort.is_empty();
 
     println!("{}", ROW);
-    println!(" {:<15} {:>15} {:>15} {:>15} {:>15} {:>15}",
+    println!(" {:<10} {:>10} {:>10} {:>10} {:>10} {:>10}",
              "Language",
              "Files",
              "Total",
@@ -234,9 +234,10 @@ fn main() {
 
                 if !language.borrow().multi_line.is_empty() {
                     let multi_line = language.borrow().multi_line;
+                    let multi_line_end = language.borrow().multi_line_end;
                     if line.starts_with(multi_line) {
                         is_in_comments = true;
-                    } else if contains_comments(line, multi_line) {
+                    } else if contains_comments(line, multi_line, multi_line_end) {
                         language.borrow_mut().code += 1;
                         is_in_comments = true;
                     }
