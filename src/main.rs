@@ -59,15 +59,17 @@ fn main() {
     let markdown = RefCell::new(Language::new_blank("Markdown"));
     let objective_c = RefCell::new(Language::new_c("Objective-C"));
     let objective_cpp = RefCell::new(Language::new_c("Objective-C++"));
+    let ocaml = RefCell::new(Language::new_multi("OCaml", "(*", "*)"));
     let php = RefCell::new(Language::new("PHP", "#,//", "/*", "*/"));
     let pascal = RefCell::new(Language::new("Pascal", "//,(*", "{", "}"));
     let perl = RefCell::new(Language::new("Perl", "#", "=", "=cut"));
     let python = RefCell::new(Language::new("Python", "#", "'''", "'''"));
-    let r = RefCell::new(Language::new("R", "#", "", ""));
+    let r = RefCell::new(Language::new_single("R", "#"));
     let ruby = RefCell::new(Language::new("Ruby", "#", "=begin", "=end"));
     let ruby_html = RefCell::new(Language::new_html("Ruby HTML"));
     let rust = RefCell::new(Language::new("Rust", "//,///,//!", "/*", "*/"));
     let sass = RefCell::new(Language::new_c("Sass"));
+    let sml = RefCell::new(Language::new_multi("Standard ML", "(*", "*)"));
     let sql = RefCell::new(Language::new("SQL", "--", "/*", "*/"));
     let swift = RefCell::new(Language::new_c("Swift"));
     let tex = RefCell::new(Language::new_single("TeX", "%"));
@@ -128,6 +130,8 @@ fn main() {
     languages.insert("less", &less);
     languages.insert("m", &objective_c);
     languages.insert("md", &markdown);
+    languages.insert("ml", &ocaml);
+    languages.insert("mli", &ocaml);
     languages.insert("mm", &objective_cpp);
     languages.insert("php", &php);
     languages.insert("pas", &pascal);
@@ -140,6 +144,7 @@ fn main() {
     languages.insert("rs", &rust);
     languages.insert("sass", &sass);
     languages.insert("scss", &sass);
+    languages.insert("sml", &sml);
     languages.insert("sql", &sql);
     languages.insert("swift", &swift);
     languages.insert("tex", &tex);

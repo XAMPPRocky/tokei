@@ -135,7 +135,7 @@ YAML
 
 ## Common issues
 
-If you get errors like the following, it is mostly like due to having folders with paths that too long. For example NPM<3.0.0 `node_modules` generates long path files, either use the `exclude` argument, or in the case of NPM, update to >3.0.0
+If you get errors like the following, it is mostly like due to having folders with paths that too long. For example NPM<3.0.0 `node_modules` generates long path files, which causes problems on windows. You can exclude these paths with the`exclude` argument, or in the case of NPM, update to >3.0.0, and update your codebase dependencies.
 ```
 "The system cannot find the path specified.\r\n"
 ```
@@ -149,7 +149,6 @@ Illegal instruction: 4
 
 See CONTRIBUTORS.md for a full list of contributors.
 
-This application is free software: you can redistribute it and/or modify
-it under the terms of the MIT License.
+Tokei is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
-See LICENSE for more information.
+See [LICENCE-APACHE](./LICENCE-APACHE), [LICENCE-MIT](./LICENCE-MIT) for more information.

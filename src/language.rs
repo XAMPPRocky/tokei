@@ -4,7 +4,7 @@
 
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Language<'a> {
     pub name: &'a str,
     pub line_comment: &'a str,
@@ -21,88 +21,61 @@ pub struct Language<'a> {
 
 
 impl<'a> Language<'a> {
-    pub fn new<'b>(name: &'a str,
-                   line_comment: &'a str,
-                   multi_line: &'a str,
-                   multi_line_end: &'a str)
-                   -> Language<'a> {
+    pub fn new(name: &'a str,
+               line_comment: &'a str,
+               multi_line: &'a str,
+               multi_line_end: &'a str)
+               -> Self {
 
         Language {
             name: name,
             line_comment: line_comment,
             multi_line: multi_line,
             multi_line_end: multi_line_end,
-            files: Vec::new(),
-            code: 0,
-            comments: 0,
-            blanks: 0,
-            lines: 0,
-            total: 0,
-            printed: false,
+            ..Self::default()
         }
     }
 
-    pub fn new_c(name: &'a str) -> Language<'a> {
+    pub fn new_c(name: &'a str) -> Self {
         Language {
             name: name,
             line_comment: "//",
             multi_line: "/*",
             multi_line_end: "*/",
-            files: Vec::new(),
-            code: 0,
-            comments: 0,
-            blanks: 0,
-            lines: 0,
-            total: 0,
-            printed: false,
+            ..Self::default()
         }
     }
 
-    pub fn new_html(name: &'a str) -> Language<'a> {
+    pub fn new_html(name: &'a str) -> Self {
         Language {
             name: name,
             line_comment: "<!--",
             multi_line: "<!--",
             multi_line_end: "-->",
-            files: Vec::new(),
-            code: 0,
-            comments: 0,
-            blanks: 0,
-            lines: 0,
-            total: 0,
-            printed: false,
+            ..Self::default()
         }
     }
 
-    pub fn new_blank(name: &'a str) -> Language<'a> {
-        Language {
-            name: name,
-            line_comment: "",
-            multi_line: "",
-            multi_line_end: "",
-            files: Vec::new(),
-            code: 0,
-            comments: 0,
-            blanks: 0,
-            lines: 0,
-            total: 0,
-            printed: false,
-        }
+    pub fn new_blank(name: &'a str) -> Self {
+        Language { name: name, ..Self::default() }
     }
 
-    pub fn new_single(name: &'a str, line_comment: &'a str) -> Language<'a> {
+    pub fn new_single(name: &'a str, line_comment: &'a str) -> Self {
         Language {
             name: name,
             line_comment: line_comment,
             multi_line: "",
             multi_line_end: "",
-            files: Vec::new(),
-            code: 0,
-            comments: 0,
-            blanks: 0,
-            lines: 0,
-            total: 0,
-            printed: false,
+            ..Self::default()
+        }
+    }
+
+    pub fn new_multi(name: &'a str, multi_line: &'a str, multi_line_end: &'a str) -> Self {
+        Language {
+            name: name,
+            multi_line: multi_line,
+            multi_line_end: multi_line_end,
+            ..Self::default()
         }
     }
 
