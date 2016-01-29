@@ -120,6 +120,7 @@ fn main() {
     languages.insert("h", &c_header);
     languages.insert("hs", &haskell);
     languages.insert("hpp", &cpp_header);
+    languages.insert("hxx", &cpp_header);
     languages.insert("hh", &cpp_header);
     languages.insert("html", &html);
     languages.insert("jai", &jai);
