@@ -56,6 +56,7 @@ fn main() {
     let json = RefCell::new(Language::new_blank("JSON"));
     let jsx = RefCell::new(Language::new_c("JSX"));
     let less = RefCell::new(Language::new_c("LESS"));
+    let lua = RefCell::new(Language::new("Lua", "--", "--[[", "]]"));
     let markdown = RefCell::new(Language::new_blank("Markdown"));
     let objective_c = RefCell::new(Language::new_c("Objective-C"));
     let objective_cpp = RefCell::new(Language::new_c("Objective-C++"));
@@ -119,6 +120,7 @@ fn main() {
     languages.insert("h", &c_header);
     languages.insert("hs", &haskell);
     languages.insert("hpp", &cpp_header);
+    languages.insert("hxx", &cpp_header);
     languages.insert("hh", &cpp_header);
     languages.insert("html", &html);
     languages.insert("jai", &jai);
@@ -128,6 +130,7 @@ fn main() {
     languages.insert("json", &json);
     languages.insert("jsx", &jsx);
     languages.insert("less", &less);
+    languages.insert("lua", &lua);
     languages.insert("m", &objective_c);
     languages.insert("md", &markdown);
     languages.insert("ml", &ocaml);
