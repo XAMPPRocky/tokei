@@ -4,7 +4,8 @@
 
 #[macro_use]
 extern crate clap;
-
+#[macro_use]
+extern crate maplit;
 #[macro_use]
 pub mod macros;
 pub mod language;
@@ -14,7 +15,6 @@ use std::cell::RefCell;
 use std::io::Read;
 use std::path::Path;
 use std::fs::File;
-use std::collections::BTreeMap;
 
 use clap::App;
 
@@ -23,137 +23,143 @@ use language::Language;
 use fsutil::{get_all_files, contains_comments};
 const ROW: &'static str = "-----------------------------------------------------------------------\
                            ---------";
+const BLANKS: &'static str = "blanks";
+const COMMENTS: &'static str = "comments";
+const CODE: &'static str = "code";
+const FILES: &'static str = "files";
+const TOTAL: &'static str = "total";
+
 fn main() {
     let yaml = load_yaml!("../cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
 
-    // Big list of languages, this should changed if there is ever a map! macro.
-    let action_script = RefCell::new(Language::new_c("ActionScript"));
-    let bash = RefCell::new(Language::new_single("BASH", "#"));
-    let batch = RefCell::new(Language::new_single("Batch", "REM"));
-    let c = RefCell::new(Language::new_c("C"));
-    let c_header = RefCell::new(Language::new_c("C Header"));
-    let c_sharp = RefCell::new(Language::new_c("C#"));
-    let clojure = RefCell::new(Language::new_single("Clojure", ";,#,#_"));
-    let coffee_script = RefCell::new(Language::new("CoffeeScript", "#", "###", "###"));
-    let cold_fusion = RefCell::new(Language::new("ColdFusion", "<!---", "<!---", "--->"));
-    let cf_script = RefCell::new(Language::new_c("ColdFusion CFScript"));
-    let cpp = RefCell::new(Language::new_c("C++"));
-    let cpp_header = RefCell::new(Language::new_c("C++ Header"));
-    let css = RefCell::new(Language::new_c("CSS"));
-    let d = RefCell::new(Language::new_c("D"));
-    let dart = RefCell::new(Language::new_c("Dart"));
-    let lisp = RefCell::new(Language::new("LISP", ";", "#|", "|#"));
-    let fortran_legacy = RefCell::new(Language::new_single("FORTRAN Legacy", "c,C,!,*"));
-    let fortran_modern = RefCell::new(Language::new_single("FORTRAN Modern", "!"));
-    let go = RefCell::new(Language::new_c("Go"));
-    let haskell = RefCell::new(Language::new_single("Haskell", "--"));
-    let html = RefCell::new(Language::new_html("HTML"));
-    let jai = RefCell::new(Language::new_c("JAI"));
-    let java = RefCell::new(Language::new_c("Java"));
-    let java_script = RefCell::new(Language::new_c("JavaScript"));
-    let julia = RefCell::new(Language::new("Julia", "#", "#=", "=#"));
-    let json = RefCell::new(Language::new_blank("JSON"));
-    let jsx = RefCell::new(Language::new_c("JSX"));
-    let less = RefCell::new(Language::new_c("LESS"));
-    let markdown = RefCell::new(Language::new_blank("Markdown"));
-    let objective_c = RefCell::new(Language::new_c("Objective-C"));
-    let objective_cpp = RefCell::new(Language::new_c("Objective-C++"));
-    let ocaml = RefCell::new(Language::new_multi("OCaml", "(*", "*)"));
-    let php = RefCell::new(Language::new("PHP", "#,//", "/*", "*/"));
-    let pascal = RefCell::new(Language::new("Pascal", "//,(*", "{", "}"));
-    let perl = RefCell::new(Language::new("Perl", "#", "=", "=cut"));
-    let python = RefCell::new(Language::new("Python", "#", "'''", "'''"));
-    let r = RefCell::new(Language::new_single("R", "#"));
-    let ruby = RefCell::new(Language::new("Ruby", "#", "=begin", "=end"));
-    let ruby_html = RefCell::new(Language::new_html("Ruby HTML"));
-    let rust = RefCell::new(Language::new("Rust", "//,///,//!", "/*", "*/"));
-    let sass = RefCell::new(Language::new_c("Sass"));
-    let sml = RefCell::new(Language::new_multi("Standard ML", "(*", "*)"));
-    let sql = RefCell::new(Language::new("SQL", "--", "/*", "*/"));
-    let swift = RefCell::new(Language::new_c("Swift"));
-    let tex = RefCell::new(Language::new_single("TeX", "%"));
-    let toml = RefCell::new(Language::new_single("TOML", "#"));
-    let type_script = RefCell::new(Language::new_c("TypeScript"));
-    let xml = RefCell::new(Language::new_html("XML"));
-    let yaml = RefCell::new(Language::new_single("YAML", "#"));
+    let action_script = Language::new_c("ActionScript");
+    let bash = Language::new_single("BASH", "#");
+    let batch = Language::new_single("Batch", "REM");
+    let c = Language::new_c("C");
+    let c_header = Language::new_c("C Header");
+    let c_sharp = Language::new_c("C#");
+    let clojure = Language::new_single("Clojure", ";,#,#_");
+    let coffee_script = Language::new("CoffeeScript", "#", "###", "###");
+    let cold_fusion = Language::new("ColdFusion", "<!---", "<!---", "--->");
+    let cf_script = Language::new_c("ColdFusion CFScript");
+    let cpp = Language::new_c("C++");
+    let cpp_header = Language::new_c("C++ Header");
+    let css = Language::new_c("CSS");
+    let d = Language::new_c("D");
+    let dart = Language::new_c("Dart");
+    let lisp = Language::new("LISP", ";", "#|", "|#");
+    let fortran_legacy = Language::new_single("FORTRAN Legacy", "c,C,!,*");
+    let fortran_modern = Language::new_single("FORTRAN Modern", "!");
+    let go = Language::new_c("Go");
+    let haskell = Language::new_single("Haskell", "--");
+    let html = Language::new_html("HTML");
+    let jai = Language::new_c("JAI");
+    let java = Language::new_c("Java");
+    let java_script = Language::new_c("JavaScript");
+    let julia = Language::new("Julia", "#", "#=", "=#");
+    let json = Language::new_blank("JSON");
+    let jsx = Language::new_c("JSX");
+    let less = Language::new_c("LESS");
+    let markdown = Language::new_blank("Markdown");
+    let objective_c = Language::new_c("Objective-C");
+    let objective_cpp = Language::new_c("Objective-C++");
+    let ocaml = Language::new_multi("OCaml", "(*", "*)");
+    let php = Language::new("PHP", "#,//", "/*", "*/");
+    let pascal = Language::new("Pascal", "//,(*", "{", "}");
+    let perl = Language::new("Perl", "#", "=", "=cut");
+    let python = Language::new("Python", "#", "'''", "'''");
+    let r = Language::new_single("R", "#");
+    let ruby = Language::new("Ruby", "#", "=begin", "=end");
+    let ruby_html = Language::new_html("Ruby HTML");
+    let rust = Language::new("Rust", "//,///,//!", "/*", "*/");
+    let sass = Language::new_c("Sass");
+    let sml = Language::new_multi("Standard ML", "(*", "*)");
+    let sql = Language::new("SQL", "--", "/*", "*/");
+    let swift = Language::new_c("Swift");
+    let tex = Language::new_single("TeX", "%");
+    let toml = Language::new_single("TOML", "#");
+    let type_script = Language::new_c("TypeScript");
+    let xml = Language::new_html("XML");
+    let yaml = Language::new_single("YAML", "#");
 
     // Languages are placed inside a BTreeMap, in order to print alphabetically by default
-    let mut languages: BTreeMap<&str, &RefCell<Language>> = BTreeMap::new();
-    languages.insert("as", &action_script);
-    languages.insert("bat", &batch);
-    languages.insert("btm", &batch);
-    languages.insert("cmd", &batch);
-    languages.insert("bash", &bash);
-    languages.insert("sh", &bash);
-    languages.insert("c", &c);
-    languages.insert("ec", &c);
-    languages.insert("pgc", &c);
-    languages.insert("cs", &c_sharp);
-    languages.insert("clj", &clojure);
-    languages.insert("coffee", &coffee_script);
-    languages.insert("cfm", &cold_fusion);
-    languages.insert("cfc", &cf_script);
-    languages.insert("cc", &cpp);
-    languages.insert("cpp", &cpp);
-    languages.insert("cxx", &cpp);
-    languages.insert("pcc", &cpp);
-    languages.insert("c++", &cpp);
-    languages.insert("css", &css);
-    languages.insert("d", &d);
-    languages.insert("dart", &dart);
-    languages.insert("el", &lisp);
-    languages.insert("lisp", &lisp);
-    languages.insert("lsp", &lisp);
-    languages.insert("sc", &lisp);
-    languages.insert("f", &fortran_legacy);
-    languages.insert("f77", &fortran_legacy);
-    languages.insert("for", &fortran_legacy);
-    languages.insert("ftn", &fortran_legacy);
-    languages.insert("pfo", &fortran_legacy);
-    languages.insert("f90", &fortran_modern);
-    languages.insert("f95", &fortran_modern);
-    languages.insert("f03", &fortran_modern);
-    languages.insert("f08", &fortran_modern);
-    languages.insert("go", &go);
-    languages.insert("h", &c_header);
-    languages.insert("hs", &haskell);
-    languages.insert("hpp", &cpp_header);
-    languages.insert("hh", &cpp_header);
-    languages.insert("html", &html);
-    languages.insert("jai", &jai);
-    languages.insert("java", &java);
-    languages.insert("js", &java_script);
-    languages.insert("jl", &julia);
-    languages.insert("json", &json);
-    languages.insert("jsx", &jsx);
-    languages.insert("less", &less);
-    languages.insert("m", &objective_c);
-    languages.insert("md", &markdown);
-    languages.insert("ml", &ocaml);
-    languages.insert("mli", &ocaml);
-    languages.insert("mm", &objective_cpp);
-    languages.insert("php", &php);
-    languages.insert("pas", &pascal);
-    languages.insert("pl", &perl);
-    languages.insert("py", &python);
-    languages.insert("r", &r);
-    languages.insert("rake", &ruby);
-    languages.insert("rb", &ruby);
-    languages.insert("rhtml", &ruby_html);
-    languages.insert("rs", &rust);
-    languages.insert("sass", &sass);
-    languages.insert("scss", &sass);
-    languages.insert("sml", &sml);
-    languages.insert("sql", &sql);
-    languages.insert("swift", &swift);
-    languages.insert("tex", &tex);
-    languages.insert("sty", &tex);
-    languages.insert("toml", &toml);
-    languages.insert("ts", &type_script);
-    languages.insert("xml", &xml);
-    languages.insert("yaml", &yaml);
-    languages.insert("yml", &yaml);
+    let mut languages = btreemap! {
+        "as" => &action_script,
+        "bat" => &batch,
+        "btm" => &batch,
+        "cmd" => &batch,
+        "bash" => &bash,
+        "sh" => &bash,
+        "c" => &c,
+        "ec" => &c,
+        "pgc" => &c,
+        "cs" => &c_sharp,
+        "clj" => &clojure,
+        "coffee" => &coffee_script,
+        "cfm" => &cold_fusion,
+        "cfc" => &cf_script,
+        "cc" => &cpp,
+        "cpp" => &cpp,
+        "cxx" => &cpp,
+        "pcc" => &cpp,
+        "c++" => &cpp,
+        "css" => &css,
+        "d" => &d,
+        "dart" => &dart,
+        "el" => &lisp,
+        "lisp" => &lisp,
+        "lsp" => &lisp,
+        "sc" => &lisp,
+        "f" => &fortran_legacy,
+        "f77" => &fortran_legacy,
+        "for" => &fortran_legacy,
+        "ftn" => &fortran_legacy,
+        "pfo" => &fortran_legacy,
+        "f90" => &fortran_modern,
+        "f95" => &fortran_modern,
+        "f03" => &fortran_modern,
+        "f08" => &fortran_modern,
+        "go" => &go,
+        "h" => &c_header,
+        "hs" => &haskell,
+        "hpp" => &cpp_header,
+        "hh" => &cpp_header,
+        "html" => &html,
+        "jai" => &jai,
+        "java" => &java,
+        "js" => &java_script,
+        "jl" => &julia,
+        "json" => &json,
+        "jsx" => &jsx,
+        "less" => &less,
+        "m" => &objective_c,
+        "md" => &markdown,
+        "ml" => &ocaml,
+        "mli" => &ocaml,
+        "mm" => &objective_cpp,
+        "php" => &php,
+        "pas" => &pascal,
+        "pl" => &perl,
+        "py" => &python,
+        "r" => &r,
+        "rake" => &ruby,
+        "rb" => &ruby,
+        "rhtml" => &ruby_html,
+        "rs" => &rust,
+        "sass" => &sass,
+        "scss" => &sass,
+        "sml" => &sml,
+        "sql" => &sql,
+        "swift" => &swift,
+        "tex" => &tex,
+        "sty" => &tex,
+        "toml" => &toml,
+        "ts" => &type_script,
+        "xml" => &xml,
+        "yaml" => &yaml,
+        "yml" => &yaml,
+    };
 
     // Print every supported language.
     if matches.is_present("languages") {
@@ -170,8 +176,8 @@ fn main() {
     let paths = matches.values_of("input").unwrap();
 
     let mut ignored_directories: Vec<String> = Vec::new();
-    if let Some(user_ignored) = matches.value_of("exclude") {
-        for ignored in user_ignored.split(",") {
+    if let Some(user_ignored) = matches.values_of("exclude") {
+        for ignored in user_ignored {
             ignored_directories.push(ignored.to_owned());
         }
     }
@@ -179,9 +185,7 @@ fn main() {
     let mut sort = String::new();
     if let Some(sort_by) = matches.value_of("sort") {
         match &*sort_by.to_lowercase() {
-            "files" | "total" | "blanks" | "comments" | "code" => {
-                sort.push_str(&*sort_by.to_lowercase())
-            }
+            BLANKS | CODE | COMMENTS | FILES | TOTAL => sort.push_str(&*sort_by.to_lowercase()),
             _ => unreachable!(),
         }
     }
@@ -208,7 +212,7 @@ fn main() {
         }
     }
 
-    let mut total = Language::new_blank("Total");
+    let mut total = Language::new_raw("Total");
     for (_, language) in &mut languages {
 
         if language.borrow().printed {
@@ -273,7 +277,7 @@ fn main() {
             language.borrow_mut().printed = true;
             if sort_empty {
                 println!("{}", *language.borrow());
-                if matches.is_present("files") {
+                if matches.is_present(FILES) {
                     println!("{}", ROW);
                     for file in &language.borrow().files {
                         println!("{}", file);
@@ -295,39 +299,39 @@ fn main() {
     if !sort_empty {
         let mut unsorted_vec: Vec<(&&str, &&RefCell<Language>)> = languages.iter().collect();
         match &*sort {
-            "files" => {
-                unsorted_vec.sort_by(|a, b| {
-                    let a = a.1.borrow();
-                    let b = b.1.borrow();
-                    b.files.len().cmp(&a.files.len())
-                })
-            }
-            "total" => {
-                unsorted_vec.sort_by(|a, b| {
-                    let a = a.1.borrow();
-                    let b = b.1.borrow();
-                    b.lines.cmp(&a.lines)
-                })
-            }
-            "blanks" => {
+            BLANKS => {
                 unsorted_vec.sort_by(|a, b| {
                     let a = a.1.borrow();
                     let b = b.1.borrow();
                     b.blanks.cmp(&a.blanks)
                 })
             }
-            "comments" => {
+            COMMENTS => {
                 unsorted_vec.sort_by(|a, b| {
                     let a = a.1.borrow();
                     let b = b.1.borrow();
                     b.comments.cmp(&a.comments)
                 })
             }
-            "code" => {
+            CODE => {
                 unsorted_vec.sort_by(|a, b| {
                     let a = a.1.borrow();
                     let b = b.1.borrow();
                     b.code.cmp(&a.code)
+                })
+            }
+            FILES => {
+                unsorted_vec.sort_by(|a, b| {
+                    let a = a.1.borrow();
+                    let b = b.1.borrow();
+                    b.files.len().cmp(&a.files.len())
+                })
+            }
+            TOTAL => {
+                unsorted_vec.sort_by(|a, b| {
+                    let a = a.1.borrow();
+                    let b = b.1.borrow();
+                    b.lines.cmp(&a.lines)
                 })
             }
             _ => unreachable!(),

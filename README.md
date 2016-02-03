@@ -1,4 +1,4 @@
-# Tokei
+# Tokei [時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88)
 
 [![GitHub License](https://img.shields.io/github/license/Aaronepower/tokei.svg)](http://github.com/Aaronepower/tokei/blob/master/LICENSE)
 [![](https://img.shields.io/github/release/Aaronepower/tokei.svg)](https://github.com/Aaronepower/tokei/releases/tag/1.1.1/)

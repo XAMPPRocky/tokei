@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 use std::fmt;
+use std::cell::RefCell;
 
 #[derive(Debug, Default)]
 pub struct Language<'a> {
@@ -25,58 +26,60 @@ impl<'a> Language<'a> {
                line_comment: &'a str,
                multi_line: &'a str,
                multi_line_end: &'a str)
-               -> Self {
+               -> RefCell<Self> {
 
-        Language {
+        RefCell::new(Language {
             name: name,
             line_comment: line_comment,
             multi_line: multi_line,
             multi_line_end: multi_line_end,
             ..Self::default()
-        }
+        })
     }
 
-    pub fn new_c(name: &'a str) -> Self {
-        Language {
+    pub fn new_raw(name: &'a str) -> Self {
+        Language { name: name, ..Self::default() }
+    }
+
+    pub fn new_c(name: &'a str) -> RefCell<Self> {
+        RefCell::new(Language {
             name: name,
             line_comment: "//",
             multi_line: "/*",
             multi_line_end: "*/",
             ..Self::default()
-        }
+        })
     }
 
-    pub fn new_html(name: &'a str) -> Self {
-        Language {
+    pub fn new_html(name: &'a str) -> RefCell<Self> {
+        RefCell::new(Language {
             name: name,
             line_comment: "<!--",
             multi_line: "<!--",
             multi_line_end: "-->",
             ..Self::default()
-        }
+        })
     }
 
-    pub fn new_blank(name: &'a str) -> Self {
-        Language { name: name, ..Self::default() }
+    pub fn new_blank(name: &'a str) -> RefCell<Self> {
+        RefCell::new(Language { name: name, ..Self::default() })
     }
 
-    pub fn new_single(name: &'a str, line_comment: &'a str) -> Self {
-        Language {
+    pub fn new_single(name: &'a str, line_comment: &'a str) -> RefCell<Self> {
+        RefCell::new(Language {
             name: name,
             line_comment: line_comment,
-            multi_line: "",
-            multi_line_end: "",
             ..Self::default()
-        }
+        })
     }
 
-    pub fn new_multi(name: &'a str, multi_line: &'a str, multi_line_end: &'a str) -> Self {
-        Language {
+    pub fn new_multi(name: &'a str, multi_line: &'a str, multi_line_end: &'a str) -> RefCell<Self> {
+        RefCell::new(Language {
             name: name,
             multi_line: multi_line,
             multi_line_end: multi_line_end,
             ..Self::default()
-        }
+        })
     }
 
     pub fn is_empty(&self) -> bool {

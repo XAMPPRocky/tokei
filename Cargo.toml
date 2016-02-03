@@ -18,5 +18,6 @@ debug = true
 opt-level = 3
 
 [dependencies]
-clap = {version = "1.5.5", features = ["yaml"]}
+clap = {version = "2.0.1", features = ["yaml"]}
+maplit = "*"
 glob = "0.2.10"
