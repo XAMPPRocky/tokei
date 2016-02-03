@@ -113,8 +113,10 @@ JavaScript
 JSON
 JSX
 LESS
+Lua
 Objective-C
-Markdown  
+Markdown
+OCaml
 Objective-C++
 Pascal
 PHP
@@ -125,6 +127,7 @@ Ruby
 Ruby HTML
 Rust
 Sass
+Standard ML
 SQL
 TeX
 Swift
