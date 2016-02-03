@@ -61,6 +61,7 @@ fn main() {
     let json = Language::new_blank("JSON");
     let jsx = Language::new_c("JSX");
     let less = Language::new_c("LESS");
+    let lua = Language::new("Lua", "--", "--[[", "]]");
     let markdown = Language::new_blank("Markdown");
     let objective_c = Language::new_c("Objective-C");
     let objective_cpp = Language::new_c("Objective-C++");
@@ -110,6 +111,7 @@ fn main() {
         "el" => &lisp,
         "lisp" => &lisp,
         "lsp" => &lisp,
+        "lua" => &lua,
         "sc" => &lisp,
         "f" => &fortran_legacy,
         "f77" => &fortran_legacy,
@@ -126,6 +128,7 @@ fn main() {
         "hpp" => &cpp_header,
         "hh" => &cpp_header,
         "html" => &html,
+        "hxx" => &cpp_header,
         "jai" => &jai,
         "java" => &java,
         "js" => &java_script,
