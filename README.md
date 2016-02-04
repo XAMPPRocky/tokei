@@ -13,7 +13,7 @@ A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 ### Automatic
 If you have [`cargo 0.6.0>=`](https://www.rust-lang.org/downloads.html) installed just run the `cargo install` command.
 
-```
+```bash
 $ cargo install tokei
 ```
 
@@ -21,36 +21,39 @@ $ cargo install tokei
 
 #### Fedora 64 bit
 Install rust and cargo from either the [official page](https://www.rust-lang.org) or use a copr repo such as [Rust](https://copr.fedoraproject.org/coprs/phnxrbrn/rust/)
-
-`$ dnf copr enable phnxrbrn/tokei`
-
-`$ dnf install tokei`
-
+```bash
+$ dnf copr enable phnxrbrn/tokei
+$ dnf install tokei
+```
 
 #### Other
-`$ git clone https://github.com/Aaronepower/tokei.git`
-
-`$ cd tokei`
-
-`$ cargo build --release`
-
+```bash
+$ git clone https://github.com/Aaronepower/tokei.git
+$ cd tokei
+$ cargo build --release
+```
 ##### Linux
-`# sudo mv target/release/tokei /usr/local/bin`
-
+```
+# sudo mv target/release/tokei /usr/local/bin
+```
 ##### OSX
-`# sudo mv <your_download_location>/tokei /usr/local/bin/tokei`
-
+```
+# sudo mv target/release/tokei /usr/local/bin/tokei
+```
 ##### Windows
 - Create a folder for tokei
 - search for `env`
 - open "edit your enviroment variables"
 - edit `PATH`
-- paste folder path to the end of the string ie: `<path_stuff_here>;C:/tokei;`
+- append folder path to the end of the string ie: `<path_stuff_here>;C:/tokei/;`
 
 ## Usage
 
 To use tokei, use must add it to your path. Then you can call tokei like so
-`$ tokei ./path/to/code`
+
+```bash
+$ tokei ./path/to/code
+```
 
 ## Options
 ```
