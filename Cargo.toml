@@ -19,6 +19,6 @@ opt-level = 3
 
 [dependencies]
 clap = {version = "2.1.1", features = ["yaml"]}
-glob = "*"
+glob = "0.2.10"
 maplit = "0.1.3"
 walkdir = "0.1.5"
