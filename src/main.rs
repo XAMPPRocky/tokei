@@ -6,6 +6,8 @@
 extern crate clap;
 #[macro_use]
 extern crate maplit;
+extern crate glob;
+extern crate walkdir;
 #[macro_use]
 pub mod macros;
 pub mod language;
@@ -13,14 +15,16 @@ pub mod fsutil;
 
 use std::cell::RefCell;
 use std::io::Read;
-use std::path::Path;
 use std::fs::File;
+use std::path::Path;
 
 use clap::App;
+use glob::glob;
+use walkdir::{WalkDir, WalkDirIterator};
 
 use language::Language;
 
-use fsutil::{get_all_files, contains_comments};
+use fsutil::contains_comments;
 const ROW: &'static str = "-----------------------------------------------------------------------\
                            ---------";
 const BLANKS: &'static str = "blanks";
@@ -41,7 +45,7 @@ fn main() {
     let c_sharp = Language::new_c("C#");
     let clojure = Language::new_single("Clojure", ";,#,#_");
     let coffee_script = Language::new("CoffeeScript", "#", "###", "###");
-    let cold_fusion = Language::new("ColdFusion", "<!---", "<!---", "--->");
+    let cold_fusion = Language::new_multi("ColdFusion", "<!---", "--->");
     let cf_script = Language::new_c("ColdFusion CFScript");
     let cpp = Language::new_c("C++");
     let cpp_header = Language::new_c("C++ Header");
@@ -68,6 +72,7 @@ fn main() {
     let ocaml = Language::new_multi("OCaml", "(*", "*)");
     let php = Language::new("PHP", "#,//", "/*", "*/");
     let pascal = Language::new("Pascal", "//,(*", "{", "}");
+    let polly = Language::new_html("Polly");
     let perl = Language::new("Perl", "#", "=", "=cut");
     let python = Language::new("Python", "#", "'''", "'''");
     let r = Language::new_single("R", "#");
@@ -144,6 +149,7 @@ fn main() {
         "php" => &php,
         "pas" => &pascal,
         "pl" => &perl,
+        "polly" => &polly,
         "py" => &python,
         "r" => &r,
         "rake" => &ruby,
@@ -178,7 +184,7 @@ fn main() {
 
     let paths = matches.values_of("input").unwrap();
 
-    let mut ignored_directories: Vec<String> = Vec::new();
+    let mut ignored_directories: Vec<String> = vec![String::from(".git")];
     if let Some(user_ignored) = matches.values_of("exclude") {
         for ignored in user_ignored {
             ignored_directories.push(ignored.to_owned());
@@ -205,13 +211,44 @@ fn main() {
     println!("{}", ROW);
     // Get every path from the paths provided.
     for path in paths {
-        let files = get_all_files(path.to_owned(), &ignored_directories);
-        for file in files {
-            let extension = unwrap_opt_cont!(unwrap_opt_cont!(Path::new(&file).extension())
-                                                 .to_str());
-            let lowercase: &str = &extension.to_lowercase();
-            let language = unwrap_opt_cont!(languages.get_mut(lowercase));
-            language.borrow_mut().files.push(file.to_owned());
+        if let Err(_) = Path::new(path).metadata() {
+            if let Ok(paths) = glob(path) {
+                for path in paths {
+                    let path = unwrap_rs_cont!(path);
+                    let language = {
+                        let extension = unwrap_opt_cont!(unwrap_opt_cont!(path.extension())
+                                                             .to_str());
+                        let lowercase = extension.to_lowercase();
+                        unwrap_opt_cont!(languages.get_mut(&*lowercase))
+                    };
+
+                    language.borrow_mut().files.push(path);
+                }
+            } else {
+
+            }
+        } else {
+            let walker = WalkDir::new(path).into_iter().filter_entry(|entry| {
+                for ig in ignored_directories.to_owned() {
+                    if entry.path().to_str().unwrap().contains(&*ig) {
+                        return false;
+                    }
+                }
+                true
+            });
+
+            for entry in walker {
+                let entry = unwrap_rs_cont!(entry);
+
+                let language = {
+                    let extension = unwrap_opt_cont!(unwrap_opt_cont!(entry.path().extension())
+                                                         .to_str());
+                    let lowercase = extension.to_lowercase();
+                    unwrap_opt_cont!(languages.get_mut(&*lowercase))
+                };
+
+                language.borrow_mut().files.push(entry.path().to_owned());
+            }
         }
     }
 
@@ -225,7 +262,7 @@ fn main() {
         for file in files {
             let mut contents = String::new();
             let is_fortran = language.borrow().name.contains("FORTRAN");
-            let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(&file))
+            let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(file))
                                         .read_to_string(&mut contents));
 
             let mut is_in_comments = false;
@@ -283,7 +320,7 @@ fn main() {
                 if matches.is_present(FILES) {
                     println!("{}", ROW);
                     for file in &language.borrow().files {
-                        println!("{}", file);
+                        println!("{}", unwrap_opt_cont!(file.to_str()));
                     }
                     println!("{}", ROW);
                 }

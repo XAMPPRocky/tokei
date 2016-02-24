@@ -2,8 +2,9 @@
 // Use of this source code is governed by the MIT license that can be
 // found in the LICENSE file.
 
-use std::fmt;
 use std::cell::RefCell;
+use std::fmt;
+use std::path::PathBuf;
 
 #[derive(Debug, Default)]
 pub struct Language<'a> {
@@ -11,7 +12,7 @@ pub struct Language<'a> {
     pub line_comment: &'a str,
     pub multi_line: &'a str,
     pub multi_line_end: &'a str,
-    pub files: Vec<String>,
+    pub files: Vec<PathBuf>,
     pub code: usize,
     pub comments: usize,
     pub blanks: usize,
