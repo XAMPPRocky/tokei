@@ -26,7 +26,7 @@ use language::Language;
 
 use fsutil::contains_comments;
 const ROW: &'static str = "-----------------------------------------------------------------------\
-                           ---------";
+                           --------";
 const BLANKS: &'static str = "blanks";
 const COMMENTS: &'static str = "comments";
 const CODE: &'static str = "code";
@@ -90,7 +90,7 @@ fn main() {
     let yaml = Language::new_single("YAML", "#");
 
     // Languages are placed inside a BTreeMap, in order to print alphabetically by default
-    let mut languages = btreemap! {
+    let languages = btreemap! {
         "as" => &action_script,
         "bat" => &batch,
         "btm" => &batch,
@@ -201,7 +201,7 @@ fn main() {
     let sort_empty = sort.is_empty();
 
     println!("{}", ROW);
-    println!(" {:<10} {:>10} {:>10} {:>10} {:>10} {:>10}",
+    println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
              "Language",
              "Files",
              "Total",
@@ -219,7 +219,7 @@ fn main() {
                         let extension = unwrap_opt_cont!(unwrap_opt_cont!(path.extension())
                                                              .to_str());
                         let lowercase = extension.to_lowercase();
-                        unwrap_opt_cont!(languages.get_mut(&*lowercase))
+                        unwrap_opt_cont!(languages.get(&*lowercase))
                     };
 
                     language.borrow_mut().files.push(path);
@@ -244,7 +244,7 @@ fn main() {
                     let extension = unwrap_opt_cont!(unwrap_opt_cont!(entry.path().extension())
                                                          .to_str());
                     let lowercase = extension.to_lowercase();
-                    unwrap_opt_cont!(languages.get_mut(&*lowercase))
+                    unwrap_opt_cont!(languages.get(&*lowercase))
                 };
 
                 language.borrow_mut().files.push(entry.path().to_owned());
@@ -253,7 +253,7 @@ fn main() {
     }
 
     let mut total = Language::new_raw("Total");
-    for (_, language) in &mut languages {
+    for (_, language) in &languages {
 
         if language.borrow().printed {
             continue;
