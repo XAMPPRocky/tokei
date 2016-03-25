@@ -14,7 +14,8 @@ pub mod language;
 pub mod fsutil;
 
 use std::cell::RefCell;
-use std::io::Read;
+use std::collections::BTreeMap;
+use std::io::{BufRead, BufReader, Read};
 use std::fs::File;
 use std::path::Path;
 
@@ -38,11 +39,13 @@ fn main() {
     let matches = App::from_yaml(yaml).get_matches();
 
     let action_script = Language::new_c("ActionScript");
+    let asm = Language::new_single("Assembly", ";");
     let bash = Language::new_single("BASH", "#");
     let batch = Language::new_single("Batch", "REM");
     let c = Language::new_c("C");
     let c_header = Language::new_c("C Header");
     let c_sharp = Language::new_c("C#");
+    let c_shell = Language::new_single("C Shell", "#");
     let clojure = Language::new_single("Clojure", ";,#,#_");
     let coffee_script = Language::new("CoffeeScript", "#", "###", "###");
     let cold_fusion = Language::new_multi("ColdFusion", "<!---", "--->");
@@ -52,6 +55,7 @@ fn main() {
     let css = Language::new_c("CSS");
     let d = Language::new_c("D");
     let dart = Language::new_c("Dart");
+    let device_tree = Language::new_c("Device Tree");
     let lisp = Language::new("LISP", ";", "#|", "|#");
     let fortran_legacy = Language::new_single("FORTRAN Legacy", "c,C,!,*");
     let fortran_modern = Language::new_single("FORTRAN Modern", "!");
@@ -65,10 +69,12 @@ fn main() {
     let json = Language::new_blank("JSON");
     let jsx = Language::new_c("JSX");
     let less = Language::new_c("LESS");
+    let linker_script = Language::new_c("LD Script");
     let lua = Language::new("Lua", "--", "--[[", "]]");
+    let makefile = Language::new_single("Makefile", "#");
     let markdown = Language::new_blank("Markdown");
-    let objective_c = Language::new_c("Objective-C");
-    let objective_cpp = Language::new_c("Objective-C++");
+    let objective_c = Language::new_c("Objective C");
+    let objective_cpp = Language::new_c("Objective C++");
     let ocaml = Language::new_multi("OCaml", "(*", "*)");
     let php = Language::new("PHP", "#,//", "/*", "*/");
     let pascal = Language::new("Pascal", "//,(*", "{", "}");
@@ -84,6 +90,7 @@ fn main() {
     let sql = Language::new("SQL", "--", "/*", "*/");
     let swift = Language::new_c("Swift");
     let tex = Language::new_single("TeX", "%");
+    let text = Language::new_blank("Plain Text");
     let toml = Language::new_single("TOML", "#");
     let type_script = Language::new_c("TypeScript");
     let xml = Language::new_html("XML");
@@ -92,12 +99,14 @@ fn main() {
     // Languages are placed inside a BTreeMap, in order to print alphabetically by default
     let languages = btreemap! {
         "as" => &action_script,
+        "s" => &asm,
         "bat" => &batch,
         "btm" => &batch,
         "cmd" => &batch,
         "bash" => &bash,
         "sh" => &bash,
         "c" => &c,
+        "csh" => &c_shell,
         "ec" => &c,
         "pgc" => &c,
         "cs" => &c_sharp,
@@ -113,6 +122,8 @@ fn main() {
         "css" => &css,
         "d" => &d,
         "dart" => &dart,
+        "dts" => &device_tree,
+        "dtsi" => &device_tree,
         "el" => &lisp,
         "lisp" => &lisp,
         "lsp" => &lisp,
@@ -140,15 +151,19 @@ fn main() {
         "jl" => &julia,
         "json" => &json,
         "jsx" => &jsx,
+        "lds" => &linker_script,
         "less" => &less,
         "m" => &objective_c,
         "md" => &markdown,
         "ml" => &ocaml,
         "mli" => &ocaml,
         "mm" => &objective_cpp,
+        "makefile" => &makefile,
         "php" => &php,
         "pas" => &pascal,
         "pl" => &perl,
+        "text" => &text,
+        "txt" => &text,
         "polly" => &polly,
         "py" => &python,
         "r" => &r,
@@ -184,21 +199,24 @@ fn main() {
 
     let paths = matches.values_of("input").unwrap();
 
-    let mut ignored_directories: Vec<String> = vec![String::from(".git")];
-    if let Some(user_ignored) = matches.values_of("exclude") {
-        for ignored in user_ignored {
-            ignored_directories.push(ignored.to_owned());
+    let ignored_directories = {
+        let mut ignored_directories = vec![String::from(".git")];
+        if let Some(user_ignored) = matches.values_of("exclude") {
+            for ignored in user_ignored {
+                ignored_directories.push(ignored.to_owned());
+            }
         }
-    }
+        ignored_directories
+    };
 
-    let mut sort = String::new();
-    if let Some(sort_by) = matches.value_of("sort") {
+    let sort = if let Some(sort_by) = matches.value_of("sort") {
         match &*sort_by.to_lowercase() {
-            BLANKS | CODE | COMMENTS | FILES | TOTAL => sort.push_str(&*sort_by.to_lowercase()),
+            BLANKS | CODE | COMMENTS | FILES | TOTAL => Some(sort_by.to_lowercase()),
             _ => unreachable!(),
         }
-    }
-    let sort_empty = sort.is_empty();
+    } else {
+        None
+    };
 
     println!("{}", ROW);
     println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
@@ -209,48 +227,8 @@ fn main() {
              "Comments",
              "Code");
     println!("{}", ROW);
-    // Get every path from the paths provided.
-    for path in paths {
-        if let Err(_) = Path::new(path).metadata() {
-            if let Ok(paths) = glob(path) {
-                for path in paths {
-                    let path = unwrap_rs_cont!(path);
-                    let language = {
-                        let extension = unwrap_opt_cont!(unwrap_opt_cont!(path.extension())
-                                                             .to_str());
-                        let lowercase = extension.to_lowercase();
-                        unwrap_opt_cont!(languages.get(&*lowercase))
-                    };
 
-                    language.borrow_mut().files.push(path);
-                }
-            } else {
-
-            }
-        } else {
-            let walker = WalkDir::new(path).into_iter().filter_entry(|entry| {
-                for ig in ignored_directories.to_owned() {
-                    if entry.path().to_str().unwrap().contains(&*ig) {
-                        return false;
-                    }
-                }
-                true
-            });
-
-            for entry in walker {
-                let entry = unwrap_rs_cont!(entry);
-
-                let language = {
-                    let extension = unwrap_opt_cont!(unwrap_opt_cont!(entry.path().extension())
-                                                         .to_str());
-                    let lowercase = extension.to_lowercase();
-                    unwrap_opt_cont!(languages.get(&*lowercase))
-                };
-
-                language.borrow_mut().files.push(entry.path().to_owned());
-            }
-        }
-    }
+    get_all_files(paths, &languages, ignored_directories);
 
     let mut total = Language::new_raw("Total");
     for (_, language) in &languages {
@@ -315,7 +293,7 @@ fn main() {
 
         if !language.borrow().is_empty() {
             language.borrow_mut().printed = true;
-            if sort_empty {
+            if let None = sort {
                 println!("{}", *language.borrow());
                 if matches.is_present(FILES) {
                     println!("{}", ROW);
@@ -336,44 +314,18 @@ fn main() {
         total.code += language.code;
     }
 
-    if !sort_empty {
+    if let Some(sort_category) = sort {
         let mut unsorted_vec: Vec<(&&str, &&RefCell<Language>)> = languages.iter().collect();
-        match &*sort {
-            BLANKS => {
-                unsorted_vec.sort_by(|a, b| {
-                    let a = a.1.borrow();
-                    let b = b.1.borrow();
-                    b.blanks.cmp(&a.blanks)
-                })
-            }
+        match &*sort_category {
+            BLANKS => unsorted_vec.sort_by(|a, b| b.1.borrow().blanks.cmp(&a.1.borrow().blanks)),
             COMMENTS => {
-                unsorted_vec.sort_by(|a, b| {
-                    let a = a.1.borrow();
-                    let b = b.1.borrow();
-                    b.comments.cmp(&a.comments)
-                })
+                unsorted_vec.sort_by(|a, b| b.1.borrow().comments.cmp(&a.1.borrow().comments))
             }
-            CODE => {
-                unsorted_vec.sort_by(|a, b| {
-                    let a = a.1.borrow();
-                    let b = b.1.borrow();
-                    b.code.cmp(&a.code)
-                })
-            }
+            CODE => unsorted_vec.sort_by(|a, b| b.1.borrow().code.cmp(&a.1.borrow().code)),
             FILES => {
-                unsorted_vec.sort_by(|a, b| {
-                    let a = a.1.borrow();
-                    let b = b.1.borrow();
-                    b.files.len().cmp(&a.files.len())
-                })
+                unsorted_vec.sort_by(|a, b| b.1.borrow().files.len().cmp(&a.1.borrow().files.len()))
             }
-            TOTAL => {
-                unsorted_vec.sort_by(|a, b| {
-                    let a = a.1.borrow();
-                    let b = b.1.borrow();
-                    b.lines.cmp(&a.lines)
-                })
-            }
+            TOTAL => unsorted_vec.sort_by(|a, b| b.1.borrow().lines.cmp(&a.1.borrow().lines)),
             _ => unreachable!(),
         }
 
@@ -389,4 +341,97 @@ fn main() {
     println!("{}", ROW);
     println!("{}", total);
     println!("{}", ROW);
+}
+
+
+fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
+                                                  languages: &BTreeMap<&str, &RefCell<Language>>,
+                                                  ignored_directories: Vec<String>) {
+    for path in paths {
+        if let Err(_) = Path::new(path).metadata() {
+            if let Ok(paths) = glob(path) {
+                for path in paths {
+                    let path = unwrap_rs_cont!(path);
+                    let extension = unwrap_opt_cont!(get_extension(&path));
+                    let language = if unwrap_opt_cont!(path.to_str()).contains("Makefile") {
+                        languages.get("makefile").unwrap()
+                    } else {
+                        unwrap_opt_cont!(languages.get(&*extension))
+                    };
+
+                    language.borrow_mut().files.push(path.to_owned());
+                }
+            } else {
+
+            }
+        } else {
+            let walker = WalkDir::new(path).into_iter().filter_entry(|entry| {
+                for ig in ignored_directories.to_owned() {
+                    if entry.path().to_str().unwrap().contains(&*ig) {
+                        return false;
+                    }
+                }
+                true
+            });
+
+            for entry in walker {
+                let entry = unwrap_rs_cont!(entry);
+
+                let extension = unwrap_opt_cont!(get_extension(entry.path()));
+                let language = if unwrap_opt_cont!(entry.path().to_str()).contains("Makefile") {
+                    languages.get("makefile").unwrap()
+                } else {
+                    unwrap_opt_cont!(languages.get(&*extension))
+                };
+
+                language.borrow_mut().files.push(entry.path().to_owned());
+            }
+        }
+    }
+}
+
+
+fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str> {
+    let file = match File::open(file) {
+        Ok(file) => file,
+        _ => return None,
+    };
+    let mut buf = BufReader::new(file);
+    let mut line = String::new();
+    let _ = buf.read_line(&mut line);
+
+    let mut words = line.split_whitespace();
+    match words.next() {
+        Some("#!/bin/sh") => Some("sh"),
+        Some("#!/bin/csh") => Some("csh"),
+        Some("#!/usr/bin/perl") => Some("pl"),
+        Some("#!/usr/bin/env") => {
+            match words.next() {
+                Some("python") | Some("python2") | Some("python3") => Some("py"),
+                Some("sh") => Some("sh"),
+                _ => None,
+            }
+        }
+        _ => None,
+    }
+}
+
+fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
+    let path = path.as_ref();
+    let extension = match path.extension() {
+        Some(extension_os) => {
+            let extension = match extension_os.to_str() {
+                Some(ext) => ext,
+                None => return None,
+            };
+            extension.to_lowercase()
+        }
+        None => {
+            match get_filetype_from_shebang(path) {
+                Some(ext) => String::from(ext).to_lowercase(),
+                None => return None,
+            }
+        }
+    };
+    Some(extension)
 }
