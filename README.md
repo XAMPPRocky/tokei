@@ -92,52 +92,59 @@ If there is a language that you want added submit a pull request with the follow
 
 ```
 ActionScript
+Assembly
 BASH
 Batch
 C
+C Header
+C Shell
+C#
 C++
-ColdFusion CFScript
-ColdFusion
+C++ Header
+CSS
 Clojure
 CoffeeScript
-C#
-CSS
+ColdFusion
+ColdFusion CFScript
 D
 Dart
-LISP
+Device Tree
 FORTRAN Legacy
 FORTRAN Modern
 Go
-C Header
-C++ Header
-Haskell
 HTML
+Haskell
 JAI
-Java
-Julia
-JavaScript
 JSON
 JSX
+Java
+JavaScript
+Julia
+LD Script
 LESS
+LISP
 Lua
-Objective-C
+Makefile
 Markdown
 OCaml
-Objective-C++
-Pascal
+Objective C
+Objective C++
 PHP
+Pascal
 Perl
+Plain Text
+Polly
 Python
 R
 Ruby
 Ruby HTML
 Rust
+SQL
 Sass
 Standard ML
-SQL
-TeX
 Swift
 TOML
+TeX
 TypeScript
 XML
 YAML
