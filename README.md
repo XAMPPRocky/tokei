@@ -152,13 +152,11 @@ YAML
 
 ## Common issues
 
-If you get errors like the following, it is mostly like due to having folders with paths that too long. For example NPM<3.0.0 `node_modules` generates long path files, which causes problems on windows. You can exclude these paths with the`exclude` argument, or in the case of NPM, update to >3.0.0, and update your codebase dependencies.
+## Tokei says I have a lot of D code, but I know there is no D code!
+This is likely due to `gcc` generating `.d` files. Until the D people decide on a different file extension, you can always exclude `.d` files using the `-e --exclude` flag like so
+
 ```
-"The system cannot find the path specified.\r\n"
-```
-```
-thread <main> has overflowed its stack
-Illegal instruction: 4
+$ tokei . -e .d
 ```
 
 ## Copyright and License
