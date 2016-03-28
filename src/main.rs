@@ -352,10 +352,10 @@ fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
             if let Ok(paths) = glob(path) {
                 for path in paths {
                     let path = unwrap_rs_cont!(path);
-                    let extension = unwrap_opt_cont!(get_extension(&path));
                     let language = if unwrap_opt_cont!(path.to_str()).contains("Makefile") {
                         languages.get("makefile").unwrap()
                     } else {
+                        let extension = unwrap_opt_cont!(get_extension(&path));
                         unwrap_opt_cont!(languages.get(&*extension))
                     };
 
@@ -377,10 +377,10 @@ fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
             for entry in walker {
                 let entry = unwrap_rs_cont!(entry);
 
-                let extension = unwrap_opt_cont!(get_extension(entry.path()));
                 let language = if unwrap_opt_cont!(entry.path().to_str()).contains("Makefile") {
                     languages.get("makefile").unwrap()
                 } else {
+                    let extension = unwrap_opt_cont!(get_extension(entry.path()));
                     unwrap_opt_cont!(languages.get(&*extension))
                 };
 
