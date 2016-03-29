@@ -96,7 +96,7 @@ impl<'a> fmt::Display for Language<'a> {
             self.total
         };
         write!(f,
-               " {: <12} {: >12} {:>12} {:>12} {:>12} {:>12}",
+               " {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
                self.name,
                total,
                self.lines,
