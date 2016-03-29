@@ -80,6 +80,7 @@ fn main() {
     let pascal = Language::new("Pascal", "//,(*", "{", "}");
     let polly = Language::new_html("Polly");
     let perl = Language::new("Perl", "#", "=", "=cut");
+    let protobuf = Language::new_single("Protocol Buffers", "//");
     let python = Language::new("Python", "#", "'''", "'''");
     let r = Language::new_single("R", "#");
     let ruby = Language::new("Ruby", "#", "=begin", "=end");
@@ -165,6 +166,7 @@ fn main() {
         "text" => &text,
         "txt" => &text,
         "polly" => &polly,
+        "proto" => &protobuf,
         "py" => &python,
         "r" => &r,
         "rake" => &ruby,
