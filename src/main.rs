@@ -81,6 +81,7 @@ fn main() {
     let pascal = Language::new("Pascal", "//,(*", "{", "}");
     let polly = Language::new_html("Polly");
     let perl = Language::new("Perl", "#", "=", "=cut");
+    let protobuf = Language::new_single("Protocol Buffers", "//");
     let python = Language::new("Python", "#", "'''", "'''");
     let r = Language::new_single("R", "#");
     let ruby = Language::new("Ruby", "#", "=begin", "=end");
@@ -94,8 +95,10 @@ fn main() {
     let text = Language::new_blank("Plain Text");
     let toml = Language::new_single("TOML", "#");
     let type_script = Language::new_c("TypeScript");
+    let vim_script = Language::new_single("Vim script", "\"");
     let xml = Language::new_html("XML");
     let yaml = Language::new_single("YAML", "#");
+    let zsh = Language::new_single("Zsh", "#");
 
     // Languages are placed inside a BTreeMap, in order to print alphabetically by default
     let languages = btreemap! {
@@ -167,6 +170,7 @@ fn main() {
         "text" => &text,
         "txt" => &text,
         "polly" => &polly,
+        "proto" => &protobuf,
         "py" => &python,
         "r" => &r,
         "rake" => &ruby,
@@ -182,9 +186,11 @@ fn main() {
         "sty" => &tex,
         "toml" => &toml,
         "ts" => &type_script,
+        "vim" => &vim_script,
         "xml" => &xml,
         "yaml" => &yaml,
         "yml" => &yaml,
+        "zsh" => &zsh,
     };
 
     // Print every supported language.
