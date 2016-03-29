@@ -95,8 +95,10 @@ fn main() {
     let text = Language::new_blank("Plain Text");
     let toml = Language::new_single("TOML", "#");
     let type_script = Language::new_c("TypeScript");
+    let vim_script = Language::new_single("Vim script", "\"");
     let xml = Language::new_html("XML");
     let yaml = Language::new_single("YAML", "#");
+    let zsh = Language::new_single("Zsh", "#");
 
     // Languages are placed inside a BTreeMap, in order to print alphabetically by default
     let languages = btreemap! {
@@ -184,9 +186,11 @@ fn main() {
         "sty" => &tex,
         "toml" => &toml,
         "ts" => &type_script,
+        "vim" => &vim_script,
         "xml" => &xml,
         "yaml" => &yaml,
         "yml" => &yaml,
+        "zsh" => &zsh,
     };
 
     // Print every supported language.
