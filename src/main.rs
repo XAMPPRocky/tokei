@@ -155,6 +155,7 @@ fn main() {
         "less" => &less,
         "m" => &objective_c,
         "md" => &markdown,
+        "markdown" => &markdown,
         "ml" => &ocaml,
         "mli" => &ocaml,
         "mm" => &objective_cpp,
@@ -232,19 +233,31 @@ fn main() {
 
     let mut total = Language::new_raw("Total");
     for language in languages.values() {
+        let mut language = language.borrow_mut();
 
-        if language.borrow().printed {
+        if language.printed {
             continue;
         }
-        let files = language.borrow().files.clone();
+        let is_blank_lang = if language.line_comment == "" && language.multi_line == "" {
+            true
+        } else {
+            false
+        };
+
+        let files = language.files.clone();
         for file in files {
             let mut contents = String::new();
-            let is_fortran = language.borrow().name.contains("FORTRAN");
+            let is_fortran = language.name.contains("FORTRAN");
             let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(file))
                                         .read_to_string(&mut contents));
 
             let mut is_in_comments = false;
             let lines = contents.lines();
+
+            if is_blank_lang {
+                language.code += lines.count();
+                continue;
+            }
 
             'line: for line in lines {
                 let line = if is_fortran {
@@ -252,60 +265,58 @@ fn main() {
                 } else {
                     line.trim()
                 };
-                language.borrow_mut().lines += 1;
+                language.lines += 1;
 
                 if line.trim().is_empty() {
-                    language.borrow_mut().blanks += 1;
+                    language.blanks += 1;
                     continue;
                 }
 
-                if !language.borrow().multi_line.is_empty() {
-                    let multi_line = language.borrow().multi_line;
-                    let multi_line_end = language.borrow().multi_line_end;
+                if !language.multi_line.is_empty() {
+                    let multi_line = language.multi_line;
+                    let multi_line_end = language.multi_line_end;
                     if line.starts_with(multi_line) {
                         is_in_comments = true;
                     } else if contains_comments(line, multi_line, multi_line_end) {
-                        language.borrow_mut().code += 1;
+                        language.code += 1;
                         is_in_comments = true;
                     }
                 }
 
 
                 if is_in_comments {
-                    if line.contains(language.borrow().multi_line_end) {
+                    if line.contains(language.multi_line_end) {
                         is_in_comments = false;
                     }
-                    language.borrow_mut().comments += 1;
+                    language.comments += 1;
                     continue;
                 }
 
-                let single_comments = language.borrow().line_comment.split(',');
+                let single_comments = language.line_comment.split(',');
 
                 for single in single_comments {
                     if line.starts_with(single) {
-                        language.borrow_mut().comments += 1;
+                        language.comments += 1;
                         continue 'line;
                     }
                 }
-                language.borrow_mut().code += 1;
+                language.code += 1;
             }
         }
 
-        if !language.borrow().is_empty() {
-            language.borrow_mut().printed = true;
+        if !language.is_empty() {
+            language.printed = true;
             if let None = sort {
-                println!("{}", *language.borrow());
+                println!("{}", *language);
                 if matches.is_present(FILES) {
                     println!("{}", ROW);
-                    for file in &language.borrow().files {
+                    for file in &language.files {
                         println!("{}", unwrap_opt_cont!(file.to_str()));
                     }
                     println!("{}", ROW);
                 }
             }
         }
-
-        let language = language.borrow();
 
         total.total += language.files.len();
         total.lines += language.lines;

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 [package]
 name = "tokei"
-version = "1.5.0"
+version = "1.5.1"
 authors = ["Aaronepower <theaaronepower@gmail.com>"]
 repository = "https://github.com/Aaronepower/tokei.git"
 homepage = "https://aaronepower.github.io/tokei/"

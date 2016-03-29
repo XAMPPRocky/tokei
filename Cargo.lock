@@ -1,6 +1,6 @@
 [root]
 name = "tokei"
-version = "1.4.1"
+version = "1.5.1"
 dependencies = [
  "clap 2.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "glob 0.2.10 (registry+https://github.com/rust-lang/crates.io-index)",
