@@ -36,3 +36,7 @@ args:
       conflicts_with:
           - input
       help: prints out supported languages and their extensions
+  - byfile:
+      long: by-file
+      takes_value: false
+      help: Report results for every source file encountered.

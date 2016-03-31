@@ -13,8 +13,9 @@ pub mod macros;
 pub mod language;
 pub mod fsutil;
 
+use std::fmt;
 use std::cell::RefCell;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use std::io::{BufRead, BufReader, Read};
 use std::fs::File;
 use std::path::Path;
@@ -33,6 +34,33 @@ const COMMENTS: &'static str = "comments";
 const CODE: &'static str = "code";
 const FILES: &'static str = "files";
 const TOTAL: &'static str = "total";
+
+struct FileResult {
+    name: String,
+    code: usize,
+    comments: usize,
+    blanks: usize,
+    lines: usize,
+    total: usize,
+}
+
+impl fmt::Display for FileResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let total = if self.total == 0 {
+            1
+        } else {
+            self.total
+        };
+        write!(f,
+               " {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
+               self.name,
+               total,
+               self.lines,
+               self.blanks,
+               self.comments,
+               self.code)
+    }
+}
 
 fn main() {
     let yaml = load_yaml!("../cli.yml");
@@ -193,6 +221,7 @@ fn main() {
         "yml" => &yaml,
         "zsh" => &zsh,
     };
+    let mut printed_by_file = HashSet::new();
 
     // Print every supported language.
     if matches.is_present("languages") {
@@ -254,6 +283,17 @@ fn main() {
 
         let files = language.files.clone();
         for file in files {
+            let f = file.clone().to_str().unwrap().to_string();
+            let file_result = RefCell::new(FileResult {
+                name: f,
+                lines: 0,
+                comments: 0,
+                total: 0,
+                code: 0,
+                blanks: 0,
+            });
+            let mut file_result = file_result.borrow_mut();
+
             let mut contents = String::new();
             let is_fortran = language.name.contains("FORTRAN");
             let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(file))
@@ -263,7 +303,12 @@ fn main() {
             let lines = contents.lines();
 
             if is_blank_lang {
-                language.code += lines.count();
+                let l = lines.count();
+                language.code += l;
+                file_result.code += l;
+                if matches.is_present("byfile") && !printed_by_file.contains(language.name) {
+                    println!("{}", *file_result);
+                }
                 continue;
             }
 
@@ -274,9 +319,11 @@ fn main() {
                     line.trim()
                 };
                 language.lines += 1;
+                file_result.lines += 1;
 
                 if line.trim().is_empty() {
                     language.blanks += 1;
+                    file_result.blanks += 1;
                     continue;
                 }
 
@@ -287,6 +334,7 @@ fn main() {
                         is_in_comments = true;
                     } else if contains_comments(line, multi_line, multi_line_end) {
                         language.code += 1;
+                        file_result.code += 1;
                         is_in_comments = true;
                     }
                 }
@@ -297,6 +345,7 @@ fn main() {
                         is_in_comments = false;
                     }
                     language.comments += 1;
+                    file_result.comments += 1;
                     continue;
                 }
 
@@ -305,23 +354,35 @@ fn main() {
                 for single in single_comments {
                     if line.starts_with(single) {
                         language.comments += 1;
+                        file_result.comments += 1;
                         continue 'line;
                     }
                 }
                 language.code += 1;
+                file_result.code += 1;
             }
+
+            if matches.is_present("byfile") && !printed_by_file.contains(language.name) {
+                println!("{}", *file_result);
+            }
+        }
+
+        if matches.is_present("byfile") {
+            printed_by_file.insert(language.name);
         }
 
         if !language.is_empty() {
             language.printed = true;
-            if let None = sort {
-                println!("{}", *language);
-                if matches.is_present(FILES) {
-                    println!("{}", ROW);
-                    for file in &language.files {
-                        println!("{}", unwrap_opt_cont!(file.to_str()));
+            if !printed_by_file.contains(language.name) {
+                if let None = sort {
+                    println!("{}", *language);
+                    if matches.is_present(FILES) {
+                        println!("{}", ROW);
+                        for file in &language.files {
+                            println!("{}", unwrap_opt_cont!(file.to_str()));
+                        }
+                        println!("{}", ROW);
                     }
-                    println!("{}", ROW);
                 }
             }
         }
