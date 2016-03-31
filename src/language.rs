@@ -19,6 +19,7 @@ pub struct Language<'a> {
     pub lines: usize,
     pub total: usize,
     pub printed: bool,
+    pub format_offset: usize,
 }
 
 
@@ -95,9 +96,15 @@ impl<'a> fmt::Display for Language<'a> {
         } else {
             self.total
         };
+        let offset = if self.format_offset == 0 {
+            18
+        } else {
+            self.format_offset
+        };
         write!(f,
-               " {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
+               " {: <1$} {2: >6} {3:>12} {4:>12} {5:>12} {6:>12}",
                self.name,
+               offset,
                total,
                self.lines,
                self.blanks,
