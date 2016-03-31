@@ -13,8 +13,9 @@ pub mod macros;
 pub mod language;
 pub mod fsutil;
 
+use std::fmt;
 use std::cell::RefCell;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashSet};
 use std::io::{BufRead, BufReader, Read};
 use std::fs::File;
 use std::path::Path;
@@ -27,12 +28,38 @@ use language::Language;
 
 use fsutil::contains_comments;
 const ROW: &'static str = "-----------------------------------------------------------------------\
-                           --------";
+                           -----------------------------------------------------------------------\
+                           -------------------------------------------------";
 const BLANKS: &'static str = "blanks";
 const COMMENTS: &'static str = "comments";
 const CODE: &'static str = "code";
 const FILES: &'static str = "files";
 const TOTAL: &'static str = "total";
+
+const OPTION_BY_FILE: &'static str = "byfile";
+
+#[derive(Default)]
+struct FileResult {
+    name: String,
+    code: usize,
+    comments: usize,
+    blanks: usize,
+    lines: usize,
+    format_offset: usize,
+}
+
+impl fmt::Display for FileResult {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,
+               " {:<1$} {2:>20} {3:>12} {4:>12} {5:>12}",
+               self.name,
+               self.format_offset,
+               self.lines,
+               self.blanks,
+               self.comments,
+               self.code)
+    }
+}
 
 fn main() {
     let yaml = load_yaml!("../cli.yml");
@@ -193,6 +220,7 @@ fn main() {
         "yml" => &yaml,
         "zsh" => &zsh,
     };
+    let mut printed_by_file = HashSet::new();
 
     // Print every supported language.
     if matches.is_present("languages") {
@@ -227,19 +255,36 @@ fn main() {
         None
     };
 
-    println!("{}", ROW);
-    println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
-             "Language",
-             "Files",
-             "Total",
-             "Blanks",
-             "Comments",
-             "Code");
-    println!("{}", ROW);
-
-    get_all_files(paths, &languages, ignored_directories);
-
+    let path_len_max = get_all_files(paths, &languages, ignored_directories);
+    let row_len_max = if matches.is_present(OPTION_BY_FILE) {
+        path_len_max + 61
+    } else {
+        78
+    };
     let mut total = Language::new_raw("Total");
+
+    println!("{:.1$}", ROW, row_len_max);
+    if matches.is_present(OPTION_BY_FILE) {
+        total.format_offset = path_len_max + 1;
+        println!(" {:<1$} {2:>10} {3:>9} {4:>12} {5:>12} {6:>12}",
+                 "File",
+                 path_len_max,
+                 "Files",
+                 "Total",
+                 "Blanks",
+                 "Comments",
+                 "Code");
+    } else {
+        println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
+                 "Language",
+                 "Files",
+                 "Total",
+                 "Blanks",
+                 "Comments",
+                 "Code");
+    }
+    println!("{:.1$}", ROW, row_len_max);
+
     for language in languages.values() {
         let mut language = language.borrow_mut();
 
@@ -254,6 +299,14 @@ fn main() {
 
         let files = language.files.clone();
         for file in files {
+            let f = file.clone().to_str().unwrap().to_string();
+            let file_result = RefCell::new(FileResult {
+                name: f,
+                format_offset: path_len_max,
+                ..FileResult::default()
+            });
+            let mut file_result = file_result.borrow_mut();
+
             let mut contents = String::new();
             let is_fortran = language.name.contains("FORTRAN");
             let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(file))
@@ -263,7 +316,12 @@ fn main() {
             let lines = contents.lines();
 
             if is_blank_lang {
-                language.code += lines.count();
+                let l = lines.count();
+                language.code += l;
+                file_result.code += l;
+                if matches.is_present(OPTION_BY_FILE) && !printed_by_file.contains(language.name) {
+                    println!("{}", *file_result);
+                }
                 continue;
             }
 
@@ -274,9 +332,11 @@ fn main() {
                     line.trim()
                 };
                 language.lines += 1;
+                file_result.lines += 1;
 
                 if line.trim().is_empty() {
                     language.blanks += 1;
+                    file_result.blanks += 1;
                     continue;
                 }
 
@@ -287,6 +347,7 @@ fn main() {
                         is_in_comments = true;
                     } else if contains_comments(line, multi_line, multi_line_end) {
                         language.code += 1;
+                        file_result.code += 1;
                         is_in_comments = true;
                     }
                 }
@@ -297,6 +358,7 @@ fn main() {
                         is_in_comments = false;
                     }
                     language.comments += 1;
+                    file_result.comments += 1;
                     continue;
                 }
 
@@ -305,23 +367,35 @@ fn main() {
                 for single in single_comments {
                     if line.starts_with(single) {
                         language.comments += 1;
+                        file_result.comments += 1;
                         continue 'line;
                     }
                 }
                 language.code += 1;
+                file_result.code += 1;
             }
+
+            if matches.is_present(OPTION_BY_FILE) && !printed_by_file.contains(language.name) {
+                println!("{}", *file_result);
+            }
+        }
+
+        if matches.is_present(OPTION_BY_FILE) {
+            printed_by_file.insert(language.name);
         }
 
         if !language.is_empty() {
             language.printed = true;
-            if let None = sort {
-                println!("{}", *language);
-                if matches.is_present(FILES) {
-                    println!("{}", ROW);
-                    for file in &language.files {
-                        println!("{}", unwrap_opt_cont!(file.to_str()));
+            if !printed_by_file.contains(language.name) {
+                if let None = sort {
+                    println!("{}", *language);
+                    if matches.is_present(FILES) {
+                        println!("{:.1$}", ROW, row_len_max);
+                        for file in &language.files {
+                            println!("{}", unwrap_opt_cont!(file.to_str()));
+                        }
+                        println!("{:.1$}", ROW, row_len_max);
                     }
-                    println!("{}", ROW);
                 }
             }
         }
@@ -357,15 +431,18 @@ fn main() {
         }
     }
 
-    println!("{}", ROW);
+    println!("{:.1$}", ROW, row_len_max);
     println!("{}", total);
-    println!("{}", ROW);
+    println!("{:.1$}", ROW, row_len_max);
 }
 
 
 fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
                                                   languages: &BTreeMap<&str, &RefCell<Language>>,
-                                                  ignored_directories: Vec<String>) {
+                                                  ignored_directories: Vec<String>)
+                                                  -> usize {
+    let mut path_len_max = 0;
+
     for path in paths {
         if let Err(_) = Path::new(path).metadata() {
             if let Ok(paths) = glob(path) {
@@ -403,10 +480,15 @@ fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
                     unwrap_opt_cont!(languages.get(&*extension))
                 };
 
+                let f = entry.path().clone().to_str().unwrap().to_string();
+                if path_len_max < f.len() {
+                    path_len_max = f.len();
+                }
                 language.borrow_mut().files.push(entry.path().to_owned());
             }
         }
     }
+    path_len_max
 }
 
 
