@@ -1,6 +1,6 @@
 // Copyright (c) 2015 Aaron Power
-// Use of this source code is governed by the MIT license that can be
-// found in the LICENSE file.
+// Use of this source code is governed by the MIT/APACHE2.0 license that can be
+// found in the LICENCE-{APACHE, MIT} file.
 
 #[macro_use]
 extern crate clap;
@@ -12,6 +12,7 @@ extern crate walkdir;
 pub mod macros;
 pub mod language;
 pub mod fsutil;
+pub mod stats;
 
 use std::cell::RefCell;
 use std::collections::BTreeMap;
@@ -240,8 +241,8 @@ fn main() {
     get_all_files(paths, &languages, ignored_directories);
 
     let mut total = Language::new_raw("Total");
-    for language in languages.values() {
-        let mut language = language.borrow_mut();
+    for language_ref in languages.values() {
+        let mut language = language_ref.borrow_mut();
 
         if language.printed {
             continue;
@@ -256,14 +257,16 @@ fn main() {
         for file in files {
             let mut contents = String::new();
             let is_fortran = language.name.contains("FORTRAN");
+            let mut stats = stats::Stats::new(unwrap_opt_cont!(file.to_str()));
             let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(file))
                                         .read_to_string(&mut contents));
 
             let mut is_in_comments = false;
             let lines = contents.lines();
 
+
             if is_blank_lang {
-                language.code += lines.count();
+                stats.code += lines.count();
                 continue;
             }
 
@@ -273,10 +276,10 @@ fn main() {
                 } else {
                     line.trim()
                 };
-                language.lines += 1;
+                stats.lines += 1;
 
                 if line.trim().is_empty() {
-                    language.blanks += 1;
+                    stats.blanks += 1;
                     continue;
                 }
 
@@ -286,7 +289,7 @@ fn main() {
                     if line.starts_with(multi_line) {
                         is_in_comments = true;
                     } else if contains_comments(line, multi_line, multi_line_end) {
-                        language.code += 1;
+                        stats.code += 1;
                         is_in_comments = true;
                     }
                 }
@@ -296,7 +299,7 @@ fn main() {
                     if line.contains(language.multi_line_end) {
                         is_in_comments = false;
                     }
-                    language.comments += 1;
+                    stats.comments += 1;
                     continue;
                 }
 
@@ -304,33 +307,34 @@ fn main() {
 
                 for single in single_comments {
                     if line.starts_with(single) {
-                        language.comments += 1;
+                        stats.comments += 1;
                         continue 'line;
                     }
                 }
-                language.code += 1;
+                stats.code += 1;
             }
+
+            if matches.is_present(FILES) {
+                println!("{}", stats);
+            }
+
+            *language += stats;
         }
 
         if !language.is_empty() {
             language.printed = true;
             if let None = sort {
-                println!("{}", *language);
                 if matches.is_present(FILES) {
                     println!("{}", ROW);
-                    for file in &language.files {
-                        println!("{}", unwrap_opt_cont!(file.to_str()));
-                    }
+                    println!("{}", *language);
                     println!("{}", ROW);
+                } else {
+                    println!("{}", *language);
                 }
             }
         }
 
-        total.total += language.files.len();
-        total.lines += language.lines;
-        total.comments += language.comments;
-        total.blanks += language.blanks;
-        total.code += language.code;
+        total += &*language;
     }
 
     if let Some(sort_category) = sort {
@@ -357,7 +361,9 @@ fn main() {
         }
     }
 
-    println!("{}", ROW);
+    if !matches.is_present(FILES) {
+        println!("{}", ROW);
+    }
     println!("{}", total);
     println!("{}", ROW);
 }

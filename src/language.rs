@@ -2,9 +2,11 @@
 // Use of this source code is governed by the MIT license that can be
 // found in the LICENSE file.
 
-use std::cell::RefCell;
+use std::cell::{RefCell, RefMut};
 use std::fmt;
 use std::path::PathBuf;
+use std::ops::AddAssign;
+use stats::Stats;
 
 #[derive(Debug, Default)]
 pub struct Language<'a> {
@@ -103,5 +105,25 @@ impl<'a> fmt::Display for Language<'a> {
                self.blanks,
                self.comments,
                self.code)
+    }
+}
+// Adding languages to the raw total.
+impl<'a, 'b> AddAssign<&'b Language<'a>> for Language<'a> {
+    fn add_assign(&mut self, rhs: &Self) {
+        self.total += rhs.files.len();
+        self.lines += rhs.lines;
+        self.comments += rhs.comments;
+        self.blanks += rhs.blanks;
+        self.code += rhs.code;
+    }
+}
+
+// Adding a file to the language.
+impl<'a> AddAssign<Stats> for Language<'a> {
+    fn add_assign(&mut self, rhs: Stats) {
+        self.lines += rhs.lines;
+        self.code += rhs.code;
+        self.comments += rhs.comments;
+        self.blanks += rhs.blanks;
     }
 }
