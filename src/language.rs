@@ -1,8 +1,8 @@
 // Copyright (c) 2015 Aaron Power
-// Use of this source code is governed by the MIT license that can be
-// found in the LICENSE file.
+// Use of this source code is governed by the MIT/APACHE2.0 license that can be
+// found in the LICENCE-{APACHE - MIT} file.
 
-use std::cell::{RefCell, RefMut};
+use std::cell::RefCell;
 use std::fmt;
 use std::path::PathBuf;
 use std::ops::AddAssign;
