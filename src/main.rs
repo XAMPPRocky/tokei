@@ -89,6 +89,7 @@ fn main() {
     let ruby_html = Language::new_html("Ruby HTML");
     let rust = Language::new("Rust", "//,///,//!", "/*", "*/");
     let sass = Language::new_c("Sass");
+    let scala = Language::new_c("Scala");
     let sml = Language::new_multi("Standard ML", "(*", "*)");
     let sql = Language::new("SQL", "--", "/*", "*/");
     let swift = Language::new_c("Swift");
@@ -180,6 +181,7 @@ fn main() {
         "rhtml" => &ruby_html,
         "rs" => &rust,
         "sass" => &sass,
+        "scala" => &scala,
         "scss" => &sass,
         "sml" => &sml,
         "sql" => &sql,
