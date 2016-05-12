@@ -16,17 +16,21 @@ pub mod stats;
 
 use std::cell::RefCell;
 use std::collections::BTreeMap;
-use std::io::{BufRead, BufReader, Read};
+use std::io::{self, BufRead, BufReader, Read, Write};
 use std::fs::File;
 use std::path::Path;
+use std::thread;
+use std::time::Duration;
+use std::sync::mpsc::channel;
 
 use clap::App;
 use glob::glob;
 use walkdir::{WalkDir, WalkDirIterator};
 
-use language::Language;
+use fsutil::*;
+use language::{Language, LanguageName};
+use language::LanguageName::*;
 
-use fsutil::contains_comments;
 const ROW: &'static str = "-----------------------------------------------------------------------\
                            --------";
 const BLANKS: &'static str = "blanks";
@@ -39,170 +43,78 @@ fn main() {
     let yaml = load_yaml!("../cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
 
-    let action_script = Language::new_c("ActionScript");
-    let asm = Language::new_single("Assembly", ";");
-    let bash = Language::new_single("BASH", "#");
-    let batch = Language::new_single("Batch", "REM");
-    let c = Language::new_c("C");
-    let c_header = Language::new_c("C Header");
-    let c_sharp = Language::new_c("C#");
-    let c_shell = Language::new_single("C Shell", "#");
-    let clojure = Language::new_single("Clojure", ";,#,#_");
-    let coffee_script = Language::new("CoffeeScript", "#", "###", "###");
-    let cold_fusion = Language::new_multi("ColdFusion", "<!---", "--->");
-    let cf_script = Language::new_c("ColdFusion CFScript");
-    let cpp = Language::new_c("C++");
-    let cpp_header = Language::new_c("C++ Header");
-    let css = Language::new_c("CSS");
-    let d = Language::new_c("D");
-    let dart = Language::new_c("Dart");
-    let device_tree = Language::new_c("Device Tree");
-    let lisp = Language::new("LISP", ";", "#|", "|#");
-    let fortran_legacy = Language::new_single("FORTRAN Legacy", "c,C,!,*");
-    let fortran_modern = Language::new_single("FORTRAN Modern", "!");
-    let go = Language::new_c("Go");
-    let haskell = Language::new_single("Haskell", "--");
-    let html = Language::new_html("HTML");
-    let jai = Language::new_c("JAI");
-    let java = Language::new_c("Java");
-    let java_script = Language::new_c("JavaScript");
-    let julia = Language::new("Julia", "#", "#=", "=#");
-    let json = Language::new_blank("JSON");
-    let jsx = Language::new_c("JSX");
-    let less = Language::new_c("LESS");
-    let linker_script = Language::new_c("LD Script");
-    let lua = Language::new("Lua", "--", "--[[", "]]");
-    let makefile = Language::new_single("Makefile", "#");
-    let markdown = Language::new_blank("Markdown");
-    let mustache = Language::new_multi("Mustache", "{{!", "}}");
-    let objective_c = Language::new_c("Objective C");
-    let objective_cpp = Language::new_c("Objective C++");
-    let ocaml = Language::new_multi("OCaml", "(*", "*)");
-    let php = Language::new("PHP", "#,//", "/*", "*/");
-    let pascal = Language::new("Pascal", "//,(*", "{", "}");
-    let polly = Language::new_html("Polly");
-    let perl = Language::new("Perl", "#", "=", "=cut");
-    let protobuf = Language::new_single("Protocol Buffers", "//");
-    let python = Language::new("Python", "#", "'''", "'''");
-    let r = Language::new_single("R", "#");
-    let ruby = Language::new("Ruby", "#", "=begin", "=end");
-    let ruby_html = Language::new_html("Ruby HTML");
-    let rust = Language::new("Rust", "//,///,//!", "/*", "*/");
-    let sass = Language::new_c("Sass");
-    let sml = Language::new_multi("Standard ML", "(*", "*)");
-    let sql = Language::new("SQL", "--", "/*", "*/");
-    let swift = Language::new_c("Swift");
-    let tex = Language::new_single("TeX", "%");
-    let text = Language::new_blank("Plain Text");
-    let toml = Language::new_single("TOML", "#");
-    let type_script = Language::new_c("TypeScript");
-    let vim_script = Language::new_single("Vim script", "\"");
-    let xml = Language::new_html("XML");
-    let yaml = Language::new_single("YAML", "#");
-    let zsh = Language::new_single("Zsh", "#");
+    let files_option = matches.is_present(FILES);
+    let language_option = matches.is_present("languages");
 
     // Languages are placed inside a BTreeMap, in order to print alphabetically by default
-    let languages = btreemap! {
-        "as" => &action_script,
-        "s" => &asm,
-        "bat" => &batch,
-        "btm" => &batch,
-        "cmd" => &batch,
-        "bash" => &bash,
-        "sh" => &bash,
-        "c" => &c,
-        "csh" => &c_shell,
-        "ec" => &c,
-        "pgc" => &c,
-        "cs" => &c_sharp,
-        "clj" => &clojure,
-        "coffee" => &coffee_script,
-        "cfm" => &cold_fusion,
-        "cfc" => &cf_script,
-        "cc" => &cpp,
-        "cpp" => &cpp,
-        "cxx" => &cpp,
-        "pcc" => &cpp,
-        "c++" => &cpp,
-        "css" => &css,
-        "d" => &d,
-        "dart" => &dart,
-        "dts" => &device_tree,
-        "dtsi" => &device_tree,
-        "el" => &lisp,
-        "lisp" => &lisp,
-        "lsp" => &lisp,
-        "lua" => &lua,
-        "sc" => &lisp,
-        "f" => &fortran_legacy,
-        "f77" => &fortran_legacy,
-        "for" => &fortran_legacy,
-        "ftn" => &fortran_legacy,
-        "pfo" => &fortran_legacy,
-        "f90" => &fortran_modern,
-        "f95" => &fortran_modern,
-        "f03" => &fortran_modern,
-        "f08" => &fortran_modern,
-        "go" => &go,
-        "h" => &c_header,
-        "hs" => &haskell,
-        "hpp" => &cpp_header,
-        "hh" => &cpp_header,
-        "html" => &html,
-        "hxx" => &cpp_header,
-        "jai" => &jai,
-        "java" => &java,
-        "js" => &java_script,
-        "jl" => &julia,
-        "json" => &json,
-        "jsx" => &jsx,
-        "lds" => &linker_script,
-        "less" => &less,
-        "m" => &objective_c,
-        "md" => &markdown,
-        "markdown" => &markdown,
-        "ml" => &ocaml,
-        "mli" => &ocaml,
-        "mm" => &objective_cpp,
-        "makefile" => &makefile,
-        "mustache" => &mustache,
-        "php" => &php,
-        "pas" => &pascal,
-        "pl" => &perl,
-        "text" => &text,
-        "txt" => &text,
-        "polly" => &polly,
-        "proto" => &protobuf,
-        "py" => &python,
-        "r" => &r,
-        "rake" => &ruby,
-        "rb" => &ruby,
-        "rhtml" => &ruby_html,
-        "rs" => &rust,
-        "sass" => &sass,
-        "scss" => &sass,
-        "sml" => &sml,
-        "sql" => &sql,
-        "swift" => &swift,
-        "tex" => &tex,
-        "sty" => &tex,
-        "toml" => &toml,
-        "ts" => &type_script,
-        "vim" => &vim_script,
-        "xml" => &xml,
-        "yaml" => &yaml,
-        "yml" => &yaml,
-        "zsh" => &zsh,
+    let mut languages = btreemap! {
+        ActionScript => Language::new_c(),
+        Assembly => Language::new_single(";"),
+        Bash => Language::new_single("#"),
+        Batch => Language::new_single("REM"),
+        C => Language::new_c(),
+        CHeader => Language::new_c(),
+        CSharp => Language::new_c(),
+        CShell => Language::new_single("#"),
+        Clojure => Language::new_single(";,#,#_"),
+        CoffeeScript => Language::new("#", "###", "###"),
+        ColdFusion => Language::new_multi("<!---", "--->"),
+        ColdFusionScript => Language::new_c(),
+        Cpp => Language::new_c(),
+        CppHeader => Language::new_c(),
+        Css => Language::new_c(),
+        D => Language::new_c(),
+        Dart => Language::new_c(),
+        DeviceTree => Language::new_c(),
+        Lisp => Language::new(";", "#|", "|#"),
+        FortranLegacy => Language::new_single("c,C,!,*"),
+        FortranModern => Language::new_single("!"),
+        Go => Language::new_c(),
+        Haskell => Language::new_single("--"),
+        Html => Language::new_html(),
+        Jai => Language::new_c(),
+        Java => Language::new_c(),
+        JavaScript => Language::new_c(),
+        Julia => Language::new("#", "#=", "=#"),
+        Json => Language::new_blank(),
+        Jsx => Language::new_c(),
+        Less => Language::new_c(),
+        LinkerScript => Language::new_c(),
+        Lua => Language::new("--", "--[[", "]]"),
+        Makefile => Language::new_single("#"),
+        Markdown => Language::new_blank(),
+        Mustache => Language::new_multi("{{!", "}}"),
+        ObjectiveC => Language::new_c(),
+        ObjectiveCpp => Language::new_c(),
+        OCaml => Language::new_multi("(*", "*)"),
+        Php => Language::new("#,//", "/*", "*/"),
+        Pascal => Language::new("//,(*", "{", "}"),
+        Polly => Language::new_html(),
+        Perl => Language::new("#", "=", "=cut"),
+        Protobuf => Language::new_single("//"),
+        Python => Language::new("#", "'''", "'''"),
+        R => Language::new_single("#"),
+        Ruby => Language::new("#", "=begin", "=end"),
+        RubyHtml => Language::new_html(),
+        Rust => Language::new("//,///,//!", "/*", "*/"),
+        Sass => Language::new_c(),
+        Sml => Language::new_multi("(*", "*)"),
+        Sql => Language::new("--", "/*", "*/"),
+        Swift => Language::new_c(),
+        Tex => Language::new_single("%"),
+        Text => Language::new_blank(),
+        Toml => Language::new_single("#"),
+        TypeScript => Language::new_c(),
+        VimScript => Language::new_single("\""),
+        Xml => Language::new_html(),
+        Yaml => Language::new_single("#"),
+        Zsh => Language::new_single("#"),
     };
 
     // Print every supported language.
-    if matches.is_present("languages") {
-        for language in languages.values() {
-            let mut language = language.borrow_mut();
-            if !language.printed {
-                println!("{:<25}", language.name);
-                language.printed = true;
-            }
+    if language_option {
+        for key in languages.keys() {
+            println!("{:<25}", key);
         }
         return;
     }
@@ -210,10 +122,10 @@ fn main() {
     let paths = matches.values_of("input").unwrap();
 
     let ignored_directories = {
-        let mut ignored_directories = vec![String::from(".git")];
+        let mut ignored_directories = vec![".git"];
         if let Some(user_ignored) = matches.values_of("exclude") {
             for ignored in user_ignored {
-                ignored_directories.push(ignored.to_owned());
+                ignored_directories.push(ignored);
             }
         }
         ignored_directories
@@ -238,25 +150,35 @@ fn main() {
              "Code");
     println!("{}", ROW);
 
-    get_all_files(paths, &languages, ignored_directories);
+    get_all_files(paths, &mut languages, ignored_directories);
 
-    let mut total = Language::new_raw("Total");
-    for language_ref in languages.values() {
-        let mut language = language_ref.borrow_mut();
+    let mut total = Language::new_blank();
+    for (name, language) in &mut languages {
 
-        if language.printed {
+        if language.files.len() == 0 {
             continue;
         }
-        let is_blank_lang = if language.line_comment == "" && language.multi_line == "" {
-            true
-        } else {
-            false
-        };
+
+        let (tx, rx) = channel();
+        let child = thread::spawn(move || {
+            loop {
+                if let Ok(_) = rx.try_recv() {
+                    break;
+                }
+                // print!("\x1B[?25l;");
+                print!(" Counting {} files.  \r", name);
+                thread::sleep(Duration::from_millis(4));
+                print!(" Counting {} files..\r", name);
+                thread::sleep(Duration::from_millis(4));
+                print!(" Counting {} files...\r", name);
+                thread::sleep(Duration::from_millis(4));
+            }
+        });
 
         let files = language.files.clone();
         for file in files {
             let mut contents = String::new();
-            let is_fortran = language.name.contains("FORTRAN");
+            let is_fortran = *name == FortranModern || *name == FortranLegacy;
             let mut stats = stats::Stats::new(unwrap_opt_cont!(file.to_str()));
             let _ = unwrap_rs_cont!(unwrap_rs_cont!(File::open(file))
                                         .read_to_string(&mut contents));
@@ -265,7 +187,7 @@ fn main() {
             let lines = contents.lines();
 
 
-            if is_blank_lang {
+            if language.is_blank() {
                 stats.code += lines.count();
                 continue;
             }
@@ -314,149 +236,54 @@ fn main() {
                 stats.code += 1;
             }
 
-            if matches.is_present(FILES) {
+            if files_option {
                 println!("{}", stats);
             }
 
             *language += stats;
         }
 
+        let _ = tx.send(());
+        let _ = child.join();
+        print!("                                                       \r");
         if !language.is_empty() {
-            language.printed = true;
             if let None = sort {
-                if matches.is_present(FILES) {
+                if files_option {
                     println!("{}", ROW);
-                    println!("{}", *language);
+                    println!("{}", language);
                     println!("{}", ROW);
                 } else {
-                    println!("{}", *language);
+                    println!("{}", language);
                 }
             }
         }
 
-        total += &*language;
+
+        total += language;
     }
 
     if let Some(sort_category) = sort {
-        let mut unsorted_vec: Vec<(&&str, &&RefCell<Language>)> = languages.iter().collect();
+        let mut sorted: Vec<&Language> = languages.values().collect();
         match &*sort_category {
-            BLANKS => unsorted_vec.sort_by(|a, b| b.1.borrow().blanks.cmp(&a.1.borrow().blanks)),
-            COMMENTS => {
-                unsorted_vec.sort_by(|a, b| b.1.borrow().comments.cmp(&a.1.borrow().comments))
-            }
-            CODE => unsorted_vec.sort_by(|a, b| b.1.borrow().code.cmp(&a.1.borrow().code)),
-            FILES => {
-                unsorted_vec.sort_by(|a, b| b.1.borrow().files.len().cmp(&a.1.borrow().files.len()))
-            }
-            TOTAL => unsorted_vec.sort_by(|a, b| b.1.borrow().lines.cmp(&a.1.borrow().lines)),
+            BLANKS => sorted.sort_by(|a, b| b.blanks.cmp(&a.blanks)),
+            COMMENTS => sorted.sort_by(|a, b| b.comments.cmp(&a.comments)),
+            CODE => sorted.sort_by(|a, b| b.code.cmp(&a.code)),
+            FILES => sorted.sort_by(|a, b| b.files.len().cmp(&a.files.len())),
+            TOTAL => sorted.sort_by(|a, b| b.lines.cmp(&a.lines)),
             _ => unreachable!(),
         }
 
-        for (_, language) in unsorted_vec {
-
-            if !language.borrow().is_empty() && language.borrow().printed {
-                language.borrow_mut().printed = false;
-                println!("{}", *language.borrow());
+        for language in sorted {
+            if !language.is_empty() {
+                println!("{}", *language);
             }
         }
     }
 
-    if !matches.is_present(FILES) {
+    if !files_option {
         println!("{}", ROW);
     }
     println!("{}", total);
     println!("{}", ROW);
-}
-
-
-fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
-                                                  languages: &BTreeMap<&str, &RefCell<Language>>,
-                                                  ignored_directories: Vec<String>) {
-    for path in paths {
-        if let Err(_) = Path::new(path).metadata() {
-            if let Ok(paths) = glob(path) {
-                for path in paths {
-                    let path = unwrap_rs_cont!(path);
-                    let language = if unwrap_opt_cont!(path.to_str()).contains("Makefile") {
-                        languages.get("makefile").unwrap()
-                    } else {
-                        let extension = unwrap_opt_cont!(get_extension(&path));
-                        unwrap_opt_cont!(languages.get(&*extension))
-                    };
-
-                    language.borrow_mut().files.push(path.to_owned());
-                }
-            } else {
-
-            }
-        } else {
-            let walker = WalkDir::new(path).into_iter().filter_entry(|entry| {
-                for ig in ignored_directories.to_owned() {
-                    if entry.path().to_str().unwrap().contains(&*ig) {
-                        return false;
-                    }
-                }
-                true
-            });
-
-            for entry in walker {
-                let entry = unwrap_rs_cont!(entry);
-
-                let language = if unwrap_opt_cont!(entry.path().to_str()).contains("Makefile") {
-                    languages.get("makefile").unwrap()
-                } else {
-                    let extension = unwrap_opt_cont!(get_extension(entry.path()));
-                    unwrap_opt_cont!(languages.get(&*extension))
-                };
-
-                language.borrow_mut().files.push(entry.path().to_owned());
-            }
-        }
-    }
-}
-
-
-fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str> {
-    let file = match File::open(file) {
-        Ok(file) => file,
-        _ => return None,
-    };
-    let mut buf = BufReader::new(file);
-    let mut line = String::new();
-    let _ = buf.read_line(&mut line);
-
-    let mut words = line.split_whitespace();
-    match words.next() {
-        Some("#!/bin/sh") => Some("sh"),
-        Some("#!/bin/csh") => Some("csh"),
-        Some("#!/usr/bin/perl") => Some("pl"),
-        Some("#!/usr/bin/env") => {
-            match words.next() {
-                Some("python") | Some("python2") | Some("python3") => Some("py"),
-                Some("sh") => Some("sh"),
-                _ => None,
-            }
-        }
-        _ => None,
-    }
-}
-
-fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
-    let path = path.as_ref();
-    let extension = match path.extension() {
-        Some(extension_os) => {
-            let extension = match extension_os.to_str() {
-                Some(ext) => ext,
-                None => return None,
-            };
-            extension.to_lowercase()
-        }
-        None => {
-            match get_filetype_from_shebang(path) {
-                Some(ext) => String::from(ext).to_lowercase(),
-                None => return None,
-            }
-        }
-    };
-    Some(extension)
+    println!("\x1B[?25h");
 }
