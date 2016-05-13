@@ -2,7 +2,7 @@
 // Use of this source code is governed by the MIT license that can be
 // found in the LICENSE file.
 
-macro_rules! unwrap_opt_cont {
+macro_rules! opt_or_cont {
     ($option:expr) => {
         match $option {
             Some(result) => result,
@@ -11,11 +11,17 @@ macro_rules! unwrap_opt_cont {
     }
 }
 
-macro_rules! unwrap_rs_cont {
+macro_rules! rs_or_cont {
     ($result:expr) => {
         match $result {
             Ok(result) => result,
             Err(_) => continue,
         }
     }
+}
+
+
+macro_rules! debug {
+    ($fmt:expr) => (if cfg!(debug_assertions) {println!($fmt)});
+    ($fmt:expr, $($arg:tt)*) => (if cfg!(debug_assertions) {println!($fmt, $($arg)*)});
 }

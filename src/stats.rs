@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Default, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Stats {
     pub name: String,
     pub code: usize,
@@ -12,13 +12,7 @@ pub struct Stats {
 
 impl Stats {
     pub fn new<S: Into<String>>(name: S) -> Self {
-        Stats {
-            name: name.into(),
-            code: 0,
-            blanks: 0,
-            lines: 0,
-            comments: 0,
-        }
+        Stats { name: name.into(), ..Self::default() }
     }
 }
 

@@ -2,24 +2,24 @@
 // Use of this source code is governed by the MIT/APACHE2.0 license that can be
 // found in the LICENCE-{APACHE - MIT} file.
 
-use std::cell::RefCell;
 use std::fmt;
 use std::path::PathBuf;
 use std::ops::AddAssign;
-use stats::Stats;
-use std::fs::File;
-use std::path::Path;
 
-#[derive(Debug, Default, Clone, Eq, Ord, PartialEq, PartialOrd)]
+use consts::*;
+use stats::Stats;
+
+#[derive(Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Language {
+    pub blanks: usize,
+    pub code: usize,
+    pub comments: usize,
+    pub files: Vec<PathBuf>,
+    pub stats: Vec<Stats>,
+    pub lines: usize,
     pub line_comment: &'static str,
     pub multi_line: &'static str,
     pub multi_line_end: &'static str,
-    pub files: Vec<PathBuf>,
-    pub code: usize,
-    pub comments: usize,
-    pub blanks: usize,
-    pub lines: usize,
     pub total: usize,
 }
 
@@ -59,8 +59,12 @@ impl Language {
         Language { ..Self::default() }
     }
 
-    pub fn new_single(line_comment: &'static str) -> Self {
-        Language { line_comment: line_comment, ..Self::default() }
+    pub fn new_func() -> Self {
+        Language {
+            multi_line: "(*",
+            multi_line_end: "*)",
+            ..Self::default()
+        }
     }
 
     pub fn new_multi(multi_line: &'static str, multi_line_end: &'static str) -> Self {
@@ -71,6 +75,18 @@ impl Language {
         }
     }
 
+    pub fn new_pro() -> Self {
+        Language {
+            line_comment: "%",
+            multi_line: "/*",
+            multi_line_end: "*/",
+            ..Self::default()
+        }
+    }
+
+    pub fn new_single(line_comment: &'static str) -> Self {
+        Language { line_comment: line_comment, ..Self::default() }
+    }
     pub fn is_empty(&self) -> bool {
         self.code == 0 && self.comments == 0 && self.blanks == 0 && self.lines == 0
     }
@@ -78,30 +94,33 @@ impl Language {
     pub fn is_blank(&self) -> bool {
         self.line_comment == "" && self.multi_line == ""
     }
-}
 
-impl fmt::Display for Language {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let total = if self.total == 0 {
-            self.files.len()
-        } else {
-            self.total
-        };
-        write!(f,
-               " {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
-               "CHANGE",
-               total,
-               self.lines,
-               self.blanks,
-               self.comments,
-               self.code)
+    pub fn sort_by(&mut self, category: &str) {
+        match category {
+            BLANKS => self.stats.sort_by(|a, b| b.blanks.cmp(&a.blanks)),
+            COMMENTS => self.stats.sort_by(|a, b| b.comments.cmp(&a.comments)),
+            CODE => self.stats.sort_by(|a, b| b.code.cmp(&a.code)),
+            TOTAL => self.stats.sort_by(|a, b| b.lines.cmp(&a.lines)),
+            _ => unreachable!(),
+        }
+    }
+
+    pub fn print(&self, name: LanguageName) {
+        println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
+                 name.name(),
+                 self.total,
+                 self.lines,
+                 self.blanks,
+                 self.comments,
+                 self.code)
     }
 }
+
 
 // Adding languages to the raw total.
 impl<'a> AddAssign<&'a Language> for Language {
     fn add_assign(&mut self, rhs: &Self) {
-        self.total += rhs.files.len();
+        self.total += rhs.total;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
@@ -112,7 +131,7 @@ impl<'a> AddAssign<&'a Language> for Language {
 // Adding languages to the raw total.
 impl<'a> AddAssign<&'a mut Language> for Language {
     fn add_assign(&mut self, rhs: &mut Self) {
-        self.total += rhs.files.len();
+        self.total += rhs.total;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
@@ -127,6 +146,7 @@ impl AddAssign<Stats> for Language {
         self.code += rhs.code;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
+        self.stats.push(rhs);
     }
 }
 
@@ -139,45 +159,53 @@ pub enum LanguageName {
     Batch,
     C,
     CHeader,
-    CSharp,
-    CShell,
     Clojure,
     CoffeeScript,
     ColdFusion,
     ColdFusionScript,
+    Coq,
     Cpp,
     CppHeader,
+    CSharp,
+    CShell,
     Css,
     D,
     Dart,
     DeviceTree,
-    Lisp,
+    Erlang,
     FortranLegacy,
     FortranModern,
     Go,
     Haskell,
     Html,
+    Idris,
     Jai,
     Java,
     JavaScript,
     Julia,
     Json,
     Jsx,
+    Kotlin,
     Less,
     LinkerScript,
+    Lisp,
     Lua,
     Makefile,
     Markdown,
     Mustache,
+    Nim,
     ObjectiveC,
     ObjectiveCpp,
     OCaml,
-    Php,
+    Oz,
     Pascal,
-    Polly,
     Perl,
+    Polly,
+    Php,
     Protobuf,
+    Prolog,
     Python,
+    Qcl,
     R,
     Ruby,
     RubyHtml,
@@ -192,9 +220,12 @@ pub enum LanguageName {
     Toml,
     TypeScript,
     VimScript,
+    UnrealScript,
+    Wolfram,
     Xml,
     Yaml,
     Zsh,
+    __Total,
 }
 
 impl LanguageName {
@@ -208,45 +239,53 @@ impl LanguageName {
             Batch => "Batch",
             C => "C",
             CHeader => "C Header",
-            CSharp => "C#",
-            CShell => "C Shell",
             Clojure => "Clojure",
             CoffeeScript => "CoffeeScript",
             ColdFusion => "ColdFusion",
             ColdFusionScript => "ColdFusion CFScript",
+            Coq => "Coq",
             Cpp => "C++",
             CppHeader => "C++ Header",
+            CSharp => "C#",
+            CShell => "C Shell",
             Css => "CSS",
             D => "D",
             Dart => "Dart",
             DeviceTree => "Device Tree",
-            Lisp => "LISP",
+            Erlang => "Erlang",
             FortranLegacy => "FORTRAN Legacy",
             FortranModern => "FORTRAN Modern",
             Go => "Go",
             Haskell => "Haskell",
             Html => "HTML",
+            Idris => "Idris",
             Jai => "JAI",
             Java => "Java",
             JavaScript => "JavaScript",
-            Julia => "Julia",
             Json => "JSON",
             Jsx => "JSX",
+            Julia => "Julia",
+            Kotlin => "Kotlin",
             Less => "LESS",
             LinkerScript => "LD Script",
+            Lisp => "LISP",
             Lua => "Lua",
             Makefile => "Makefile",
             Markdown => "Markdown",
             Mustache => "Mustache",
+            Nim => "Nim",
             ObjectiveC => "Objective C",
             ObjectiveCpp => "Objective C++",
             OCaml => "OCaml",
-            Php => "PHP",
+            Oz => "Oz",
             Pascal => "Pascal",
-            Polly => "Polly",
             Perl => "Perl",
+            Polly => "Polly",
+            Php => "PHP",
             Protobuf => "Protocol Buffers",
+            Prolog => "Prolog",
             Python => "Python",
+            Qcl => "QCL",
             R => "R",
             Ruby => "Ruby",
             RubyHtml => "Ruby HTML",
@@ -260,10 +299,13 @@ impl LanguageName {
             Text => "Plain Text",
             Toml => "TOML",
             TypeScript => "TypeScript",
+            UnrealScript => "Unreal Script",
             VimScript => "Vim Script",
+            Wolfram => "Wolfram",
             Xml => "XML",
             Yaml => "YAML",
             Zsh => "Zsh",
+            __Total => "Total",
         }
     }
 }

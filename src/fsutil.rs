@@ -2,15 +2,10 @@
 // Use of this source code is governed by the MIT license that can be
 // found in the LICENSE file.
 
-use std::cell::RefCell;
 use std::collections::BTreeMap;
-use std::io::{self, BufRead, BufReader, Read, Write};
+use std::io::{BufRead, BufReader, Read};
 use std::fs::File;
 use std::path::Path;
-use std::thread;
-use std::time::Duration;
-use std::sync::mpsc::channel;
-use clap::App;
 use glob::glob;
 use walkdir::{WalkDir, WalkDirIterator};
 
@@ -19,23 +14,23 @@ use language::LanguageName::*;
 
 pub fn contains_comments(file: &str, comment: &str, comment_end: &str) -> bool {
     let mut in_comments: usize = 0;
-    'window: for chars in file.chars().collect::<Vec<char>>().windows(comment.len()) {
-        let section = {
-            let mut section = String::new();
+    for chars in file.chars().collect::<Vec<char>>().windows(comment.len()) {
+        let window = {
+            let mut window = String::new();
             for ch in chars {
-                section.push(*ch);
+                window.push(*ch);
             }
-            section
+            window
         };
 
-        if section == comment {
+        if window == comment {
             in_comments += 1;
-            continue 'window;
-        } else if section == comment_end {
+            continue;
+        } else if window == comment_end {
             if in_comments != 0 {
                 in_comments -= 1;
             }
-            continue 'window;
+            continue;
         }
     }
     in_comments != 0
@@ -49,11 +44,11 @@ pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
         if let Err(_) = Path::new(path).metadata() {
             if let Ok(paths) = glob(path) {
                 for path in paths {
-                    let path = unwrap_rs_cont!(path);
-                    let mut language = if unwrap_opt_cont!(path.to_str()).contains("Makefile") {
+                    let path = rs_or_cont!(path);
+                    let mut language = if opt_or_cont!(path.to_str()).contains("Makefile") {
                         languages.get_mut(&Makefile).unwrap()
                     } else {
-                        unwrap_opt_cont!(languages.get_mut(&unwrap_opt_cont!(get_language(&path))))
+                        opt_or_cont!(languages.get_mut(&opt_or_cont!(get_language(&path))))
                     };
 
                     language.files.push(path.to_owned());
@@ -72,13 +67,12 @@ pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
             });
 
             for entry in walker {
-                let entry = unwrap_rs_cont!(entry);
+                let entry = rs_or_cont!(entry);
 
-                let mut language = if unwrap_opt_cont!(entry.path().to_str())
-                                          .contains("Makefile") {
+                let mut language = if opt_or_cont!(entry.path().to_str()).contains("Makefile") {
                     languages.get_mut(&Makefile).unwrap()
                 } else {
-                    unwrap_opt_cont!(languages.get_mut(&unwrap_opt_cont!(get_language(entry.path()))))
+                    opt_or_cont!(languages.get_mut(&opt_or_cont!(get_language(entry.path()))))
                 };
 
                 language.files.push(entry.path().to_owned());
@@ -135,73 +129,82 @@ pub fn get_language<P: AsRef<Path>>(entry: P) -> Option<LanguageName> {
     if let Some(extension) = get_extension(entry) {
         match &*extension {
             "as" => Some(ActionScript),
-            "s" => Some(Assembly),
+            "bash" => Some(Bash),
             "bat" => Some(Batch),
             "btm" => Some(Batch),
-            "cmd" => Some(Batch),
-            "bash" => Some(Bash),
-            "sh" => Some(Bash),
             "c" => Some(C),
-            "csh" => Some(CShell),
-            "ec" => Some(C),
-            "pgc" => Some(C),
-            "cs" => Some(CSharp),
-            "clj" => Some(Clojure),
-            "coffee" => Some(CoffeeScript),
-            "cfm" => Some(ColdFusion),
-            "cfc" => Some(ColdFusionScript),
             "cc" => Some(Cpp),
+            "cfc" => Some(ColdFusionScript),
+            "cfm" => Some(ColdFusion),
+            "clj" => Some(Clojure),
+            "cmd" => Some(Batch),
+            "coffee" => Some(CoffeeScript),
+            "cs" => Some(CSharp),
+            "csh" => Some(CShell),
+            "css" => Some(Css),
             "cpp" => Some(Cpp),
             "cxx" => Some(Cpp),
-            "pcc" => Some(Cpp),
             "c++" => Some(Cpp),
-            "css" => Some(Css),
             "d" => Some(D),
             "dart" => Some(Dart),
             "dts" => Some(DeviceTree),
             "dtsi" => Some(DeviceTree),
+            "ec" => Some(C),
             "el" => Some(Lisp),
+            "erl" => Some(Erlang),
+            "f" => Some(FortranLegacy),
+            "for" => Some(FortranLegacy),
+            "ftn" => Some(FortranLegacy),
+            "f03" => Some(FortranModern),
+            "f08" => Some(FortranModern),
+            "f77" => Some(FortranLegacy),
+            "f90" => Some(FortranModern),
+            "f95" => Some(FortranModern),
+            "go" => Some(Go),
+            "h" => Some(CHeader),
+            "hh" => Some(CppHeader),
+            "hpp" => Some(CppHeader),
+            "hrl" => Some(Erlang),
+            "hs" => Some(Haskell),
+            "html" => Some(Html),
+            "hxx" => Some(CppHeader),
+            "idr" => Some(Idris),
+            "jai" => Some(Jai),
+            "java" => Some(Java),
+            "jl" => Some(Julia),
+            "js" => Some(JavaScript),
+            "json" => Some(Json),
+            "jsx" => Some(Jsx),
+            "kt" => Some(Kotlin),
+            "kts" => Some(Kotlin),
+            "lds" => Some(LinkerScript),
+            "less" => Some(Less),
+            "lidr" => Some(Idris),
             "lisp" => Some(Lisp),
             "lsp" => Some(Lisp),
             "lua" => Some(Lua),
-            "sc" => Some(Lisp),
-            "f" => Some(FortranLegacy),
-            "f77" => Some(FortranLegacy),
-            "for" => Some(FortranLegacy),
-            "ftn" => Some(FortranLegacy),
-            "pfo" => Some(FortranLegacy),
-            "f90" => Some(FortranModern),
-            "f95" => Some(FortranModern),
-            "f03" => Some(FortranModern),
-            "f08" => Some(FortranModern),
-            "go" => Some(Go),
-            "h" => Some(CHeader),
-            "hs" => Some(Haskell),
-            "hpp" => Some(CppHeader),
-            "hh" => Some(CppHeader),
-            "html" => Some(Html),
-            "hxx" => Some(CppHeader),
-            "jai" => Some(Jai),
-            "java" => Some(Java),
-            "js" => Some(JavaScript),
-            "jl" => Some(Julia),
-            "json" => Some(Json),
-            "jsx" => Some(Jsx),
-            "lds" => Some(LinkerScript),
-            "less" => Some(Less),
             "m" => Some(ObjectiveC),
-            "md" => Some(Markdown),
             "markdown" => Some(Markdown),
+            "md" => Some(Markdown),
             "ml" => Some(OCaml),
             "mli" => Some(OCaml),
             "mm" => Some(ObjectiveCpp),
             "makefile" => Some(Makefile),
             "mustache" => Some(Mustache),
-            "php" => Some(Php),
+            "nim" => Some(Nim),
+            "nb" => Some(Wolfram),
+            "oz" => Some(Oz),
+            "p" => Some(Prolog),
             "pas" => Some(Pascal),
+            "pfo" => Some(FortranLegacy),
+            "pcc" => Some(Cpp),
+            "php" => Some(Php),
             "pl" => Some(Perl),
+            "pro" => Some(Prolog),
+            "qcl" => Some(Qcl),
             "text" => Some(Text),
             "txt" => Some(Text),
+            "pgc" => Some(C),
             "polly" => Some(Polly),
             "proto" => Some(Protobuf),
             "py" => Some(Python),
@@ -210,9 +213,12 @@ pub fn get_language<P: AsRef<Path>>(entry: P) -> Option<LanguageName> {
             "rb" => Some(Ruby),
             "rhtml" => Some(RubyHtml),
             "rs" => Some(Rust),
+            "s" => Some(Assembly),
             "sass" => Some(Sass),
+            "sc" => Some(Lisp),
             "scss" => Some(Sass),
             "scala" => Some(Scala),
+            "sh" => Some(Bash),
             "sml" => Some(Sml),
             "sql" => Some(Sql),
             "swift" => Some(Swift),
@@ -220,7 +226,12 @@ pub fn get_language<P: AsRef<Path>>(entry: P) -> Option<LanguageName> {
             "sty" => Some(Tex),
             "toml" => Some(Toml),
             "ts" => Some(TypeScript),
+            "uc" => Some(UnrealScript),
+            "uci" => Some(UnrealScript),
+            "upkg" => Some(UnrealScript),
+            "v" => Some(Coq),
             "vim" => Some(VimScript),
+            "wl" => Some(Wolfram),
             "xml" => Some(Xml),
             "yaml" => Some(Yaml),
             "yml" => Some(Yaml),

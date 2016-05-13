@@ -1,3 +1,27 @@
+# 2.0.0
+
+Major rewrite, now parallelized.
+Can now support sorting files.
+Added a progress message for when it is counting files.
+Fixed #29
+
+Added languages:
+- Coq
+- Erlang
+- Kotlin
+- Idris
+- Nim
+- Oz
+- Prolog
+- Qcl
+- Scala
+- Unreal Script
+- Wolfram
+
+# 1.6.0
+
+Added file counting.
+
 # 1.5.0
 
 Added Shebang support.
