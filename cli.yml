@@ -5,7 +5,7 @@ bin_name: Tokei
 name: Tokei
 version: 2.0.0
 author: Aaron P. <theaaronepower@gmail.com>
-about: A quick CLOC (Count Lines Of Code) tool
+about: Count code, quickly.
 args:
   - exclude:
       short: e

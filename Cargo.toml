@@ -3,7 +3,7 @@
 # found in the LICENCE-{APACHE, MIT} file.
 [package]
 name = "tokei"
-version = "1.6.0"
+version = "2.0.0"
 authors = ["Aaronepower <theaaronepower@gmail.com>"]
 repository = "https://github.com/Aaronepower/tokei.git"
 homepage = "https://aaronepower.github.io/tokei/"
@@ -19,7 +19,7 @@ opt-level = 3
 
 [dependencies]
 clap = {version = "2.5.1", features = ["yaml"]}
-glob = "0.2.10"
+glob = "0.2.11"
 maplit = "0.1.3"
 walkdir = "0.1.5"
 rayon = "0.3.1"
