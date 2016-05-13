@@ -9,7 +9,7 @@
 A blazingly fast CLOC(Count Lines Of Code) program, written in Rust.
 
 ## Canonical Source
-The canonical source of this repo is hosted on [GitLab](https://gitlab.com/Aaronepower/tokei). If you have a GitLab account, please make your issues, and pull requests there. However if you don't have one, please feel free to make the issue on [GitHub](https://github.com/Aaronepower/tokei).
+The canonical source of this repo is hosted on [GitHub](https://github.com/Aaronepower/tokei). If you have a GitHub account, please make your issues, and pull requests there.
 
 ## Installation
 
