@@ -187,7 +187,7 @@ fn main() {
 
     // Print every supported language.
     if matches.is_present("languages") {
-        for (_, language) in &languages {
+        for language in languages.values() {
             let mut language = language.borrow_mut();
             if !language.printed {
                 println!("{:<25}", language.name);
@@ -231,7 +231,7 @@ fn main() {
     get_all_files(paths, &languages, ignored_directories);
 
     let mut total = Language::new_raw("Total");
-    for (_, language) in &languages {
+    for language in languages.values() {
 
         if language.borrow().printed {
             continue;
@@ -279,7 +279,7 @@ fn main() {
                     continue;
                 }
 
-                let single_comments = language.borrow().line_comment.split(",");
+                let single_comments = language.borrow().line_comment.split(',');
 
                 for single in single_comments {
                     if line.starts_with(single) {
