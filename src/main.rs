@@ -16,7 +16,7 @@ mod fsutil;
 mod language;
 mod stats;
 
-use std::io::{BufRead, Read};
+use std::io::Read;
 use std::fs::File;
 use std::thread;
 use std::time::Duration;
@@ -176,7 +176,7 @@ fn main() {
 
     languages.par_iter_mut()
              .for_each(|&mut (name, ref mut language)| {
-                 if language.files.len() == 0 {
+                 if language.files.is_empty() {
                      return;
                  }
 
@@ -215,9 +215,8 @@ fn main() {
                          if !language.multi_line.is_empty() {
                              let multi_line = language.multi_line;
                              let multi_line_end = language.multi_line_end;
-                             if line.starts_with(multi_line) {
-                                 is_in_comments = true;
-                             } else if contains_comments(line, multi_line, multi_line_end) {
+                             if line.starts_with(multi_line) ||
+                                contains_comments(line, multi_line, multi_line_end) {
                                  is_in_comments = true;
                              }
                          }

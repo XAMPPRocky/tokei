@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 use std::collections::BTreeMap;
-use std::io::{BufRead, BufReader, Read};
+use std::io::{BufRead, BufReader};
 use std::fs::File;
 use std::path::Path;
 use glob::glob;
