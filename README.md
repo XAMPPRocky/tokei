@@ -16,7 +16,7 @@ The canonical source of this repo is hosted on [GitHub](https://github.com/Aaron
 ### Automatic
 If you have [`cargo 0.6.0>=`](https://www.rust-lang.org/downloads.html) installed just run the `cargo install` command.
 
-```bash
+```shell
 $ cargo install tokei
 ```
 
@@ -24,13 +24,13 @@ $ cargo install tokei
 
 #### Fedora 64 bit
 Install rust and cargo from either the [official page](https://www.rust-lang.org) or use a copr repo such as [Rust](https://copr.fedoraproject.org/coprs/phnxrbrn/rust/)
-```bash
+```shell
 $ dnf copr enable phnxrbrn/tokei
 $ dnf install tokei
 ```
 
 #### Other
-```bash
+```shell
 $ git clone https://github.com/Aaronepower/tokei.git
 $ cd tokei
 $ cargo build --release
@@ -54,18 +54,18 @@ $ cargo build --release
 
 To use tokei, use must add it to your path. Then you can call tokei like so
 
-```bash
+```shell
 $ tokei ./path/to/code
 ```
 
 ## Options
 ```
-Tokei 1.3.0
+Tokei 2.0.0
 Aaron P. <theaaronepower@gmail.com>
-A quick CLOC (Count Lines Of Code) tool
+Count code, quickly.
 
 USAGE:
-        Tokei [FLAGS] [OPTIONS] <input>... [--]
+    Tokei [FLAGS] [OPTIONS] <input>...
 
 FLAGS:
     -f, --files        Will print out the files found only recommended for debugging purposes
@@ -75,11 +75,10 @@ FLAGS:
 
 OPTIONS:
     -e, --exclude <exclude>    Will ignore all files and directories containing the word ie --exclude node_modules
-    -s, --sort <sort>          Will sort based on a certain column ie --sort=files will sort by file count. [values: files total blanks code commments]
+    -s, --sort <sort>          Will sort based on a certain column ie --sort=files will sort by file count. [values: files, total, blanks, code, commments]
 
 ARGS:
-    input...    The input file(s)/directory(ies)
-
+    <input>...    The input file(s)/directory(ies)
 ```
 
 ## Supported Languages
@@ -87,8 +86,8 @@ ARGS:
 If there is a language that you want added submit a pull request with the following information
 
 - Name of language
-- Most common file extension
-- The comment syntax (Does it have block comments? is it the same as C?)
+- File Extension
+- The comment syntax (_Does it have block comments? is it the same as C?_)
 
 ```
 ActionScript
@@ -97,57 +96,71 @@ BASH
 Batch
 C
 C Header
-C Shell
-C#
-C++
-C++ Header
-CSS
 Clojure
 CoffeeScript
 ColdFusion
 ColdFusion CFScript
+Coq
+C++
+C++ Header
+C#
+C Shell
+CSS
 D
 Dart
 Device Tree
+Erlang
 FORTRAN Legacy
 FORTRAN Modern
 Go
-HTML
 Haskell
+HTML
+Idris
 JAI
-JSON
-JSX
 Java
 JavaScript
 Julia
-LD Script
+JSON
+JSX
+Kotlin
 LESS
+LD Script
 LISP
 Lua
 Makefile
 Markdown
-OCaml
+Mustache
+Nim
 Objective C
 Objective C++
-PHP
+OCaml
+Oz
 Pascal
 Perl
-Plain Text
 Polly
+PHP
+Protocol Buffers
+Prolog
 Python
+QCL
 R
 Ruby
 Ruby HTML
 Rust
-SQL
 Sass
 Standard ML
+SQL
 Swift
-TOML
 TeX
+Plain Text
+TOML
 TypeScript
+Vim Script
+Unreal Script
+Wolfram
 XML
 YAML
+Zsh
 ```
 
 ## Common issues
