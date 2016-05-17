@@ -20,7 +20,7 @@ pub struct Language {
     pub line_comment: &'static str,
     pub multi_line: &'static str,
     pub multi_line_end: &'static str,
-    pub total: usize,
+    pub total_files: usize,
 }
 
 impl Language {
@@ -112,19 +112,19 @@ impl Language {
     pub fn print(&self, name: LanguageName) {
         println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
                  name.name(),
-                 self.total,
+                 self.total_files,
                  self.lines,
-                 self.blanks,
+                 self.code,
                  self.comments,
-                 self.code)
+                 self.blanks)
     }
 }
 
 
-// Adding languages to the raw total.
+// Adding languages to the raw total_files.
 impl<'a> AddAssign<&'a Language> for Language {
     fn add_assign(&mut self, rhs: &Self) {
-        self.total += rhs.total;
+        self.total_files += rhs.total_files;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
@@ -132,10 +132,10 @@ impl<'a> AddAssign<&'a Language> for Language {
     }
 }
 
-// Adding languages to the raw total.
+// Adding languages to the raw total_files.
 impl<'a> AddAssign<&'a mut Language> for Language {
     fn add_assign(&mut self, rhs: &mut Self) {
-        self.total += rhs.total;
+        self.total_files += rhs.total_files;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;

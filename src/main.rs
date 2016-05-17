@@ -146,10 +146,10 @@ fn main() {
     println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
              "Language",
              "Files",
-             "Total",
-             "Blanks",
+             "Lines",
+             "Code",
              "Comments",
-             "Code");
+             "Blanks");
     println!("{}", ROW);
 
     get_all_files(paths, &mut languages, ignored_directories);
@@ -264,7 +264,9 @@ fn main() {
     let _ = child.join();
 
     for &(_, ref language) in &languages {
-        total += language;
+        if !language.is_empty() {
+            total += language;
+        }
     }
 
     if let Some(sort_category) = sort {
