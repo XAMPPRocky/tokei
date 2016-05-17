@@ -265,7 +265,9 @@ fn main() {
     let _ = child.join();
 
     for &(_, ref language) in &languages {
-        total += language;
+        if !language.is_empty() {
+            total += language;
+        }
     }
 
     if let Some(sort_category) = sort {
