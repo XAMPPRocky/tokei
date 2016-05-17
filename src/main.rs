@@ -180,7 +180,7 @@ fn main() {
                      return;
                  }
 
-                 language.total = language.files.len();
+                 language.total_files = language.files.len();
                  let files: Vec<_> = language.files.drain(..).collect();
                  for file in files {
                      let mut contents = String::new();
