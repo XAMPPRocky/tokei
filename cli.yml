@@ -1,38 +1,49 @@
 # Copyright (c) 2015 Aaron Power
-# Use of this source code is governed by the MIT license that can be
-# found in the LICENSE file.
+# Use of this source code is governed by the APACHE2.0/MIT license that can be
+# found in the LICENCE-{APACHE/MIT} file.
 bin_name: Tokei
 name: Tokei
 version: 2.0.0
 author: Aaron P. <theaaronepower@gmail.com>
-about: Count code, quickly.
+about: Count Code, Quickly.
 args:
-  - exclude:
-      short: e
-      long: exclude
-      help: Will ignore all files and directories containing the word ie --exclude node_modules
-      takes_value: true
-  - sort:
-      short: s
-      long: sort
-      takes_value: true
-      possible_values: [files, total, blanks, code, commments]
-      help: Will sort based on a certain column ie --sort=files will sort by file count.
-  - input:
-      index: 1
-      multiple: true
-      required: true
-      help: The input file(s)/directory(ies)
-      conflicts_with:
-          - languages
-  - files:
-      short: f
-      long: files
-      takes_value: false
-      help: Will print out the files found only recommended for debugging purposes
-  - languages:
-      short: l
-      long: languages
-      conflicts_with:
-          - input
-      help: prints out supported languages and their extensions
+    - exclude:
+        short: e
+        long: exclude
+        help: Ignore all files & directories containing the word
+        takes_value: true
+    - sort:
+        short: s
+        long: sort
+        takes_value: true
+        possible_values: [files, total, blanks, code, commments]
+        help: Will sort based on column
+    - input:
+        index: 1
+        multiple: true
+        required: true
+        help: The input file(s)/directory(ies)
+        conflicts_with:
+            - languages
+    - files:
+        short: f
+        long: files
+        takes_value: false
+        help: Will print out statistics on individual files.
+    - languages:
+        short: l
+        long: languages
+        conflicts_with:
+            - input
+        help: Prints out supported languages and their extensions
+    - file_input:
+        short: i
+        long: input
+        takes_value: true
+        help: "Gives statistics for Tokei to start with Accepted formats: JSON"
+    - output:
+        short: o
+        long: output
+        takes_value: true
+        help: Outputs Tokei in a specific format.
+        possible_values: [csv, json, xml, yml]

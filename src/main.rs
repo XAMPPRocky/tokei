@@ -42,7 +42,7 @@ fn main() {
     let mut languages = btreemap! {
         ActionScript => Language::new_c(),
         Assembly => Language::new_single(";"),
-        Bash => Language::new_single("#"),
+        Bash => Language::new_hash(),
         Batch => Language::new_single("REM"),
         C => Language::new_c(),
         CHeader => Language::new_c(),
@@ -54,7 +54,7 @@ fn main() {
         Cpp => Language::new_c(),
         CppHeader => Language::new_c(),
         CSharp => Language::new_c(),
-        CShell => Language::new_single("#"),
+        CShell => Language::new_hash(),
         Css => Language::new_c(),
         D => Language::new_c(),
         Dart => Language::new_c(),
@@ -77,10 +77,10 @@ fn main() {
         LinkerScript => Language::new_c(),
         Lisp => Language::new(";", "#|", "|#"),
         Lua => Language::new("--", "--[[", "]]"),
-        Makefile => Language::new_single("#"),
+        Makefile => Language::new_hash(),
         Markdown => Language::new_blank(),
         Mustache => Language::new_multi("{{!", "}}"),
-        Nim => Language::new_single("#"),
+        Nim => Language::new_hash(),
         ObjectiveC => Language::new_c(),
         ObjectiveCpp => Language::new_c(),
         OCaml => Language::new_func(),
@@ -93,7 +93,7 @@ fn main() {
         Protobuf => Language::new_single("//"),
         Python => Language::new("#", "'''", "'''"),
         Qcl => Language::new_c(),
-        R => Language::new_single("#"),
+        R => Language::new_hash(),
         Ruby => Language::new("#", "=begin", "=end"),
         RubyHtml => Language::new_html(),
         Rust => Language::new("//,///,//!", "/*", "*/"),
@@ -103,14 +103,14 @@ fn main() {
         Swift => Language::new_c(),
         Tex => Language::new_single("%"),
         Text => Language::new_blank(),
-        Toml => Language::new_single("#"),
+        Toml => Language::new_hash(),
         TypeScript => Language::new_c(),
         UnrealScript => Language::new_c(),
         VimScript => Language::new_single("\""),
         Wolfram => Language::new_func(),
         Xml => Language::new_html(),
-        Yaml => Language::new_single("#"),
-        Zsh => Language::new_single("#"),
+        Yaml => Language::new_hash(),
+        Zsh => Language::new_hash(),
     };
 
     // Print every supported language.
@@ -179,7 +179,6 @@ fn main() {
                  if language.files.is_empty() {
                      return;
                  }
-
 
                  language.total = language.files.len();
                  let files: Vec<_> = language.files.drain(..).collect();

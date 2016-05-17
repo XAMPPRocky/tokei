@@ -67,6 +67,10 @@ impl Language {
         }
     }
 
+    pub fn new_hash() -> Self {
+        Self::new_single("#")
+    }
+
     pub fn new_multi(multi_line: &'static str, multi_line_end: &'static str) -> Self {
         Language {
             multi_line: multi_line,
