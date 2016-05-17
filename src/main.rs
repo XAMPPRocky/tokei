@@ -146,10 +146,10 @@ fn main() {
     println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
              "Language",
              "Files",
-             "Total",
-             "Blanks",
+             "Lines",
+             "Code",
              "Comments",
-             "Code");
+             "Blanks");
     println!("{}", ROW);
 
     get_all_files(paths, &mut languages, ignored_directories);

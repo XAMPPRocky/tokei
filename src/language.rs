@@ -108,11 +108,11 @@ impl Language {
     pub fn print(&self, name: LanguageName) {
         println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
                  name.name(),
-                 self.total,
+                 self.total, // files count
                  self.lines,
-                 self.blanks,
+                 self.code,
                  self.comments,
-                 self.code)
+                 self.blanks)
     }
 }
 

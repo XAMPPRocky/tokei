@@ -30,8 +30,8 @@ impl fmt::Display for Stats {
                " {: <25} {:>12} {:>12} {:>12} {:>12}",
                name,
                self.lines,
-               self.blanks,
+               self.code,
                self.comments,
-               self.code)
+               self.blanks)
     }
 }
