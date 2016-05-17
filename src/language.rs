@@ -110,9 +110,9 @@ impl Language {
                  name.name(),
                  self.total_files,
                  self.lines,
-                 self.blanks,
+                 self.code,
                  self.comments,
-                 self.code)
+                 self.blanks)
     }
 }
 
