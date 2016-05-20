@@ -1,6 +1,6 @@
 use std::fmt;
 
-#[derive(Default, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Default, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct Stats {
     pub name: String,
     pub code: usize,

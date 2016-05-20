@@ -2,23 +2,27 @@
 // Use of this source code is governed by the MIT/APACHE2.0 license that can be
 // found in the LICENCE-{APACHE - MIT} file.
 
-use std::fmt;
 use std::path::PathBuf;
 use std::ops::AddAssign;
 
 use consts::*;
+use language_name::LanguageName;
 use stats::Stats;
 
-#[derive(Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Debug, Default, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct Language {
     pub blanks: usize,
     pub code: usize,
     pub comments: usize,
+    #[serde(skip_serializing, skip_deserializing)]
     pub files: Vec<PathBuf>,
     pub stats: Vec<Stats>,
     pub lines: usize,
+    #[serde(skip_deserializing,skip_serializing, rename(serialize="lineComment"))]
     pub line_comment: &'static str,
+    #[serde(skip_deserializing,skip_serializing, rename(serialize="multiLine"))]
     pub multi_line: &'static str,
+    #[serde(skip_deserializing,skip_serializing, rename(serialize="multiLineEnd"))]
     pub multi_line_end: &'static str,
     pub total_files: usize,
 }
@@ -56,7 +60,7 @@ impl Language {
     }
 
     pub fn new_blank() -> Self {
-        Language { ..Self::default() }
+        Self::default()
     }
 
     pub fn new_func() -> Self {
@@ -120,10 +124,8 @@ impl Language {
     }
 }
 
-
-// Adding languages to the raw total_files.
-impl<'a> AddAssign<&'a Language> for Language {
-    fn add_assign(&mut self, rhs: &Self) {
+impl AddAssign for Language {
+    fn add_assign(&mut self, rhs: Self) {
         self.total_files += rhs.total_files;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
@@ -132,7 +134,16 @@ impl<'a> AddAssign<&'a Language> for Language {
     }
 }
 
-// Adding languages to the raw total_files.
+impl<'a> AddAssign<&'a Language> for Language {
+    fn add_assign(&mut self, rhs: &'a Self) {
+        self.total_files += rhs.total_files;
+        self.lines += rhs.lines;
+        self.comments += rhs.comments;
+        self.blanks += rhs.blanks;
+        self.code += rhs.code;
+    }
+}
+
 impl<'a> AddAssign<&'a mut Language> for Language {
     fn add_assign(&mut self, rhs: &mut Self) {
         self.total_files += rhs.total_files;
@@ -154,168 +165,12 @@ impl AddAssign<Stats> for Language {
     }
 }
 
-
-#[derive(Debug, Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
-pub enum LanguageName {
-    ActionScript,
-    Assembly,
-    Bash,
-    Batch,
-    C,
-    CHeader,
-    Clojure,
-    CoffeeScript,
-    ColdFusion,
-    ColdFusionScript,
-    Coq,
-    Cpp,
-    CppHeader,
-    CSharp,
-    CShell,
-    Css,
-    D,
-    Dart,
-    DeviceTree,
-    Erlang,
-    FortranLegacy,
-    FortranModern,
-    Go,
-    Haskell,
-    Html,
-    Idris,
-    Jai,
-    Java,
-    JavaScript,
-    Julia,
-    Json,
-    Jsx,
-    Kotlin,
-    Less,
-    LinkerScript,
-    Lisp,
-    Lua,
-    Makefile,
-    Markdown,
-    Mustache,
-    Nim,
-    ObjectiveC,
-    ObjectiveCpp,
-    OCaml,
-    Oz,
-    Pascal,
-    Perl,
-    Polly,
-    Php,
-    Protobuf,
-    Prolog,
-    Python,
-    Qcl,
-    R,
-    Ruby,
-    RubyHtml,
-    Rust,
-    Sass,
-    Scala,
-    Sml,
-    Sql,
-    Swift,
-    Tex,
-    Text,
-    Toml,
-    TypeScript,
-    VimScript,
-    UnrealScript,
-    Wolfram,
-    Xml,
-    Yaml,
-    Zsh,
-    __Total,
-}
-
-impl LanguageName {
-    fn name(&self) -> &'static str {
-        use self::LanguageName::*;
-
-        match *self {
-            ActionScript => "ActionScript",
-            Assembly => "Assembly",
-            Bash => "BASH",
-            Batch => "Batch",
-            C => "C",
-            CHeader => "C Header",
-            Clojure => "Clojure",
-            CoffeeScript => "CoffeeScript",
-            ColdFusion => "ColdFusion",
-            ColdFusionScript => "ColdFusion CFScript",
-            Coq => "Coq",
-            Cpp => "C++",
-            CppHeader => "C++ Header",
-            CSharp => "C#",
-            CShell => "C Shell",
-            Css => "CSS",
-            D => "D",
-            Dart => "Dart",
-            DeviceTree => "Device Tree",
-            Erlang => "Erlang",
-            FortranLegacy => "FORTRAN Legacy",
-            FortranModern => "FORTRAN Modern",
-            Go => "Go",
-            Haskell => "Haskell",
-            Html => "HTML",
-            Idris => "Idris",
-            Jai => "JAI",
-            Java => "Java",
-            JavaScript => "JavaScript",
-            Json => "JSON",
-            Jsx => "JSX",
-            Julia => "Julia",
-            Kotlin => "Kotlin",
-            Less => "LESS",
-            LinkerScript => "LD Script",
-            Lisp => "LISP",
-            Lua => "Lua",
-            Makefile => "Makefile",
-            Markdown => "Markdown",
-            Mustache => "Mustache",
-            Nim => "Nim",
-            ObjectiveC => "Objective C",
-            ObjectiveCpp => "Objective C++",
-            OCaml => "OCaml",
-            Oz => "Oz",
-            Pascal => "Pascal",
-            Perl => "Perl",
-            Polly => "Polly",
-            Php => "PHP",
-            Protobuf => "Protocol Buffers",
-            Prolog => "Prolog",
-            Python => "Python",
-            Qcl => "QCL",
-            R => "R",
-            Ruby => "Ruby",
-            RubyHtml => "Ruby HTML",
-            Rust => "Rust",
-            Sass => "Sass",
-            Scala => "Scala",
-            Sml => "Standard ML",
-            Sql => "SQL",
-            Swift => "Swift",
-            Tex => "TeX",
-            Text => "Plain Text",
-            Toml => "TOML",
-            TypeScript => "TypeScript",
-            UnrealScript => "Unreal Script",
-            VimScript => "Vim Script",
-            Wolfram => "Wolfram",
-            Xml => "XML",
-            Yaml => "YAML",
-            Zsh => "Zsh",
-            __Total => "Total",
-        }
-    }
-}
-
-impl fmt::Display for LanguageName {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}", self.name())
-    }
-}
+// impl AddAssign<BTreeMap<LanguageName, Language>> for BTreeMap<LanguageName, Language> {
+//     fn add_assign(&mut self, rhs: BTreeMap<LanguageName, Language>) {
+//         for (name, rhs_language) in rhs {
+//             if let Some(language) = self.get_mut(name) {
+//                 language += rhs_language;
+//             }
+//         }
+//     }
+// }

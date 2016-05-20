@@ -1,0 +1,364 @@
+// Copyright (c) 2015 Aaron Power
+// Use of this source code is governed by the MIT/APACHE2.0 license that can be
+// found in the LICENCE-{APACHE, MIT} file.
+
+#[macro_use]
+mod macros;
+mod consts;
+mod fsutil;
+mod language;
+mod language_name;
+mod stats;
+
+use std::fs::File;
+use std::io::Read;
+use std::thread;
+use std::time::Duration;
+use std::sync::mpsc::channel;
+
+use clap::App;
+use rayon::prelude::*;
+
+use consts::*;
+use fsutil::*;
+use language::Language;
+use language_name::LanguageName::*;
+use stats::Stats;
+
+fn main() {
+    let yaml = load_yaml!("../cli.yml");
+    let matches = App::from_yaml(yaml).get_matches();
+
+    let files_option = matches.is_present(FILES);
+    let input_option = matches.value_of("file_input");
+    let output_option = matches.value_of("output");
+    let language_option = matches.is_present("languages");
+    let sort_option = matches.value_of("sort");
+    let paths = matches.values_of("input").unwrap();
+    let ignored_directories = {
+        let mut ignored_directories = vec![".git"];
+        if let Some(user_ignored) = matches.values_of("exclude") {
+            for ignored in user_ignored {
+                ignored_directories.push(ignored);
+            }
+        }
+        ignored_directories
+    };
+
+    // Languages are placed inside a BTreeMap over a HashMap, in order to be printed alphabetically
+    // by default.
+    let mut languages = btreemap! {
+        ActionScript => Language::new_c(),
+        Assembly => Language::new_single(";"),
+        Bash => Language::new_hash(),
+        Batch => Language::new_single("REM"),
+        C => Language::new_c(),
+        CHeader => Language::new_c(),
+        Clojure => Language::new_single(";,#,#_"),
+        CoffeeScript => Language::new("#", "###", "###"),
+        ColdFusion => Language::new_multi("<!---", "--->"),
+        ColdFusionScript => Language::new_c(),
+        Coq => Language::new_func(),
+        Cpp => Language::new_c(),
+        CppHeader => Language::new_c(),
+        CSharp => Language::new_c(),
+        CShell => Language::new_hash(),
+        Css => Language::new_c(),
+        D => Language::new_c(),
+        Dart => Language::new_c(),
+        DeviceTree => Language::new_c(),
+        Erlang => Language::new_single("%"),
+        FortranLegacy => Language::new_single("c,C,!,*"),
+        FortranModern => Language::new_single("!"),
+        Go => Language::new_c(),
+        Haskell => Language::new_single("--"),
+        Html => Language::new_html(),
+        Idris => Language::new("--", "{-", "-}"),
+        Jai => Language::new_c(),
+        Java => Language::new_c(),
+        JavaScript => Language::new_c(),
+        Json => Language::new_blank(),
+        Jsx => Language::new_c(),
+        Julia => Language::new("#", "#=", "=#"),
+        Kotlin => Language::new_c(),
+        Less => Language::new_c(),
+        LinkerScript => Language::new_c(),
+        Lisp => Language::new(";", "#|", "|#"),
+        Lua => Language::new("--", "--[[", "]]"),
+        Makefile => Language::new_hash(),
+        Markdown => Language::new_blank(),
+        Mustache => Language::new_multi("{{!", "}}"),
+        Nim => Language::new_hash(),
+        ObjectiveC => Language::new_c(),
+        ObjectiveCpp => Language::new_c(),
+        OCaml => Language::new_func(),
+        Oz => Language::new_pro(),
+        Pascal => Language::new("//,(*", "{", "}"),
+        Perl => Language::new("#", "=", "=cut"),
+        Php => Language::new("#,//", "/*", "*/"),
+        Polly => Language::new_html(),
+        Prolog => Language::new_pro(),
+        Protobuf => Language::new_single("//"),
+        Python => Language::new("#", "'''", "'''"),
+        Qcl => Language::new_c(),
+        R => Language::new_hash(),
+        Ruby => Language::new("#", "=begin", "=end"),
+        RubyHtml => Language::new_html(),
+        Rust => Language::new("//,///,//!", "/*", "*/"),
+        Sass => Language::new_c(),
+        Sml => Language::new_func(),
+        Sql => Language::new("--", "/*", "*/"),
+        Swift => Language::new_c(),
+        Tex => Language::new_single("%"),
+        Text => Language::new_blank(),
+        Toml => Language::new_hash(),
+        TypeScript => Language::new_c(),
+        UnrealScript => Language::new_c(),
+        VimScript => Language::new_single("\""),
+        Wolfram => Language::new_func(),
+        Xml => Language::new_html(),
+        Yaml => Language::new_hash(),
+        Zsh => Language::new_hash(),
+    };
+
+    // Print every supported language.
+    if language_option {
+        for key in languages.keys() {
+            println!("{:<25}", key);
+        }
+        return;
+    }
+
+    if let Some(input) = input_option {
+        let res = match File::open(input) {
+            Ok(mut file) => {
+                let contents = {
+                    let mut contents = Vec::new();
+                    file.read_to_end(&mut contents).unwrap();
+                    contents
+                };
+
+                convert_input(&contents)
+            }
+            Err(_) => {
+
+                if input == "stdin" {
+                    let mut stdin = std::io::stdin();
+                    let mut buffer = Vec::new();
+
+                    let _ = stdin.read_to_string(&mut buffer);
+                    convert_input(&buffer)
+                } else {
+                    convert_input(&input.to_bytes())
+                }
+            }
+        };
+
+        if let Some(res) = res {
+            for (name, res_language) in res {
+                if let Some(language) = languages.get_mut(&name) {
+                    *language += res_language;
+                }
+            }
+        } else {
+            panic!("Input provided wasn't a path, or valid CBOR, JSON, or YAML.");
+        }
+    }
+
+    if output_option == None {
+        println!("{}", ROW);
+        println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
+                 "Language",
+                 "Files",
+                 "Lines",
+                 "Code",
+                 "Comments",
+                 "Blanks");
+        println!("{}", ROW);
+    }
+
+    get_all_files(paths, &mut languages, ignored_directories);
+
+    let mut total = Language::new_blank();
+
+    let mut languages: Vec<_> = languages.into_iter().collect();
+
+    let print_animation = output_option == None;
+    let (tx, rx) = channel();
+    let child = thread::spawn(move || {
+        loop {
+            if let Ok(_) = rx.try_recv() {
+                break;
+            }
+
+            if print_animation {
+                print!("\x1B[?25l");
+                print!(" Counting files.  \r");
+                thread::sleep(Duration::from_millis(4));
+                print!(" Counting files..\r");
+                thread::sleep(Duration::from_millis(4));
+                print!(" Counting files...\r");
+                thread::sleep(Duration::from_millis(4));
+            }
+        }
+    });
+
+    languages.par_iter_mut().for_each(|&mut (name, ref mut language)| {
+        if language.files.is_empty() {
+            return;
+        }
+
+        language.total_files = language.files.len();
+        let is_fortran = name == FortranModern || name == FortranLegacy;
+
+        let files: Vec<_> = language.files.drain(..).collect();
+        for file in files {
+            let mut contents = String::new();
+            let mut is_in_comments = false;
+            let mut stats = Stats::new(opt_or_cont!(file.to_str()));
+
+            let _ = rs_or_cont!(rs_or_cont!(File::open(file)).read_to_string(&mut contents));
+            let lines = contents.lines();
+
+            if language.is_blank() {
+                stats.code += lines.count();
+                continue;
+            }
+
+            'line: for line in lines {
+                // FORTRAN has a rule where it only counts as a comment if it's the first character
+                // in the column, so removing starting whitespace could cause a miscount.
+                let line = if is_fortran {
+                    line
+                } else {
+                    line.trim()
+                };
+                stats.lines += 1;
+
+                if line.trim().is_empty() {
+                    stats.blanks += 1;
+                    continue;
+                }
+
+                if !language.multi_line.is_empty() {
+                    let multi_line = language.multi_line;
+                    let multi_line_end = language.multi_line_end;
+                    if line.starts_with(multi_line) ||
+                       contains_comments(line, multi_line, multi_line_end) {
+                        is_in_comments = true;
+                    }
+                }
+
+
+                if is_in_comments {
+                    if line.contains(language.multi_line_end) {
+                        is_in_comments = false;
+                    }
+                    stats.comments += 1;
+                    continue;
+                }
+
+                if !language.line_comment.is_empty() {
+                    for single in language.line_comment.split(',') {
+                        if line.starts_with(single) {
+                            stats.comments += 1;
+                            continue 'line;
+                        }
+                    }
+                }
+                stats.code += 1;
+            }
+
+            *language += stats;
+        }
+
+        print!("{}", CLEAR);
+        if !language.is_empty() {
+            if sort_option == None && output_option == None {
+                if files_option {
+                    language.print(name);
+                    println!("{}", ROW);
+
+                    for stat in &language.stats {
+                        println!("{}", stat);
+                    }
+                    println!("{}", ROW);
+                } else if output_option == None {
+                    language.print(name);
+                }
+            }
+        }
+    });
+
+
+    let _ = tx.send(());
+    let _ = child.join();
+
+    for &(_, ref language) in &languages {
+        if !language.is_empty() {
+            total += language;
+        }
+    }
+
+    if let Some(format) = output_option {
+
+        match &*format {
+            "cbor" => {
+                let cbor: Vec<_> = serde_cbor::to_vec(&languages).unwrap();
+
+                for byte in cbor {
+                    print!("{:02x}", byte);
+                }
+                println!("");
+            }
+            "json" => println!("{}", serde_json::to_string(&languages).unwrap()),
+            "yaml" => println!("{}", serde_yaml::to_string(&languages).unwrap()),
+            _ => unreachable!(),
+        }
+    } else if let Some(sort_category) = sort_option {
+
+        for &mut (_, ref mut language) in &mut languages {
+            match &*sort_category {
+                BLANKS => language.sort_by(BLANKS),
+                COMMENTS => language.sort_by(COMMENTS),
+                CODE => language.sort_by(CODE),
+                FILES => {}
+                TOTAL => language.sort_by(TOTAL),
+                _ => unreachable!(),
+            }
+        }
+
+        match &*sort_category {
+            BLANKS => languages.sort_by(|a, b| b.1.blanks.cmp(&a.1.blanks)),
+            COMMENTS => languages.sort_by(|a, b| b.1.comments.cmp(&a.1.comments)),
+            CODE => languages.sort_by(|a, b| b.1.code.cmp(&a.1.code)),
+            FILES => languages.sort_by(|a, b| b.1.files.len().cmp(&a.1.files.len())),
+            TOTAL => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
+            _ => unreachable!(),
+        }
+
+        for (name, language) in languages {
+            if !language.is_empty() {
+                if !files_option {
+                    language.print(name);
+                } else {
+                    language.print(name);
+                    println!("{}", ROW);
+                    for file in &language.stats {
+                        println!("{}", file);
+                    }
+                    println!("{}", ROW);
+                }
+            }
+        }
+    }
+
+    if output_option == None {
+        if !files_option {
+            println!("{}", ROW);
+        }
+        total.print(__Total);
+        println!("{}", ROW);
+    }
+    print!("\x1B[?25h\r");
+}

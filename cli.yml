@@ -40,10 +40,10 @@ args:
         short: i
         long: input
         takes_value: true
-        help: "Gives statistics for Tokei to start with Accepted formats: JSON"
+        help: "Gives statistics from a previous tokei run."
     - output:
         short: o
         long: output
         takes_value: true
         help: Outputs Tokei in a specific format.
-        possible_values: [csv, json, xml, yml]
+        possible_values: [cbor, json, yaml]

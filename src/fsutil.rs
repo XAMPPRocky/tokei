@@ -6,11 +6,16 @@ use std::collections::BTreeMap;
 use std::io::{BufRead, BufReader};
 use std::fs::File;
 use std::path::Path;
+
 use glob::glob;
+use serde_cbor;
+use serde_json;
+use serde_yaml;
 use walkdir::{WalkDir, WalkDirIterator};
 
-use language::{Language, LanguageName};
-use language::LanguageName::*;
+use language::Language;
+use language_name::LanguageName;
+use language_name::LanguageName::*;
 
 pub fn contains_comments(file: &str, comment: &str, comment_end: &str) -> bool {
     let mut in_comments: usize = 0;
@@ -129,115 +134,93 @@ pub fn get_language<P: AsRef<Path>>(entry: P) -> Option<LanguageName> {
     if let Some(extension) = get_extension(entry) {
         match &*extension {
             "as" => Some(ActionScript),
-            "bash" => Some(Bash),
-            "bat" => Some(Batch),
-            "btm" => Some(Batch),
-            "c" => Some(C),
-            "cc" => Some(Cpp),
+            "bash" | "sh" => Some(Bash),
+            "bat" | "btm" | "cmd" => Some(Batch),
+            "c" | "ec" | "pgc" => Some(C),
+            "cc" | "cpp" | "cxx" | "c++" | "pcc" => Some(Cpp),
             "cfc" => Some(ColdFusionScript),
             "cfm" => Some(ColdFusion),
             "clj" => Some(Clojure),
-            "cmd" => Some(Batch),
             "coffee" => Some(CoffeeScript),
             "cs" => Some(CSharp),
             "csh" => Some(CShell),
             "css" => Some(Css),
-            "cpp" => Some(Cpp),
-            "cxx" => Some(Cpp),
-            "c++" => Some(Cpp),
             "d" => Some(D),
             "dart" => Some(Dart),
-            "dts" => Some(DeviceTree),
-            "dtsi" => Some(DeviceTree),
-            "ec" => Some(C),
-            "el" => Some(Lisp),
-            "erl" => Some(Erlang),
-            "f" => Some(FortranLegacy),
-            "for" => Some(FortranLegacy),
-            "ftn" => Some(FortranLegacy),
-            "f03" => Some(FortranModern),
-            "f08" => Some(FortranModern),
-            "f77" => Some(FortranLegacy),
-            "f90" => Some(FortranModern),
-            "f95" => Some(FortranModern),
+            "dts" | "dtsi" => Some(DeviceTree),
+            "el" | "lisp" | "lsp" | "sc" => Some(Lisp),
+            "erl" | "hrl" => Some(Erlang),
+            "f" | "for" | "ftn" | "f77" | "pfo" => Some(FortranLegacy),
+            "f03" | "f08" | "f90" | "f95" => Some(FortranModern),
             "go" => Some(Go),
             "h" => Some(CHeader),
-            "hh" => Some(CppHeader),
-            "hpp" => Some(CppHeader),
-            "hrl" => Some(Erlang),
+            "hh" | "hpp" | "hxx" => Some(CppHeader),
             "hs" => Some(Haskell),
             "html" => Some(Html),
-            "hxx" => Some(CppHeader),
-            "idr" => Some(Idris),
+            "idr" | "lidr" => Some(Idris),
             "jai" => Some(Jai),
             "java" => Some(Java),
             "jl" => Some(Julia),
             "js" => Some(JavaScript),
             "json" => Some(Json),
             "jsx" => Some(Jsx),
-            "kt" => Some(Kotlin),
-            "kts" => Some(Kotlin),
+            "kt" | "kts" => Some(Kotlin),
             "lds" => Some(LinkerScript),
             "less" => Some(Less),
-            "lidr" => Some(Idris),
-            "lisp" => Some(Lisp),
-            "lsp" => Some(Lisp),
             "lua" => Some(Lua),
             "m" => Some(ObjectiveC),
-            "markdown" => Some(Markdown),
-            "md" => Some(Markdown),
-            "ml" => Some(OCaml),
-            "mli" => Some(OCaml),
+            "markdown" | "md" => Some(Markdown),
+            "ml" | "mli" => Some(OCaml),
             "mm" => Some(ObjectiveCpp),
             "makefile" => Some(Makefile),
             "mustache" => Some(Mustache),
             "nim" => Some(Nim),
-            "nb" => Some(Wolfram),
+            "nb" | "wl" => Some(Wolfram),
             "oz" => Some(Oz),
-            "p" => Some(Prolog),
+            "p" | "pro" => Some(Prolog),
             "pas" => Some(Pascal),
-            "pfo" => Some(FortranLegacy),
-            "pcc" => Some(Cpp),
             "php" => Some(Php),
             "pl" => Some(Perl),
-            "pro" => Some(Prolog),
             "qcl" => Some(Qcl),
-            "text" => Some(Text),
-            "txt" => Some(Text),
-            "pgc" => Some(C),
+            "text" | "txt" => Some(Text),
             "polly" => Some(Polly),
             "proto" => Some(Protobuf),
             "py" => Some(Python),
             "r" => Some(R),
-            "rake" => Some(Ruby),
-            "rb" => Some(Ruby),
+            "rake" | "rb" => Some(Ruby),
             "rhtml" => Some(RubyHtml),
             "rs" => Some(Rust),
             "s" => Some(Assembly),
-            "sass" => Some(Sass),
-            "sc" => Some(Lisp),
-            "scss" => Some(Sass),
+            "sass" | "scss" => Some(Sass),
             "scala" => Some(Scala),
-            "sh" => Some(Bash),
             "sml" => Some(Sml),
             "sql" => Some(Sql),
             "swift" => Some(Swift),
-            "tex" => Some(Tex),
-            "sty" => Some(Tex),
+            "tex" | "sty" => Some(Tex),
             "toml" => Some(Toml),
             "ts" => Some(TypeScript),
-            "uc" => Some(UnrealScript),
-            "uci" => Some(UnrealScript),
-            "upkg" => Some(UnrealScript),
+            "uc" | "uci" | "upkg" => Some(UnrealScript),
             "v" => Some(Coq),
             "vim" => Some(VimScript),
-            "wl" => Some(Wolfram),
             "xml" => Some(Xml),
-            "yaml" => Some(Yaml),
-            "yml" => Some(Yaml),
+            "yaml" | "yml" => Some(Yaml),
             "zsh" => Some(Zsh),
             _ => None,
         }
+    } else {
+        None
+    }
+}
+
+pub fn convert_input(contents: &[u8]) -> Option<BTreeMap<LanguageName, Language>> {
+    if contents.is_empty() {
+        None
+    } else if let Ok(result) = serde_json::from_slice(contents) {
+        Some(result)
+    } else if let Ok(result) = serde_yaml::from_slice(contents) {
+        Some(result)
+    } else if let Ok(result) = serde_cbor::from_slice(contents) {
+        Some(result)
     } else {
         None
     }
