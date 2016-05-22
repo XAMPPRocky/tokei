@@ -5,7 +5,7 @@ about: Count Code, Quickly.
 author: Aaron P. <theaaronepower@gmail.com>
 bin_name: Tokei
 name: Tokei
-version: 2.0.0
+version: 2.1.0
 args:
     - exclude:
         help: Ignore all files & directories containing the word
@@ -18,7 +18,7 @@ args:
         short: f
         takes_value: false
     - file_input:
-        help: "Gives statistics from a previous tokei run."
+        help: "Gives statistics from a previous tokei run. Can be given a file path, or \"stdin\" to read from stdin" 
         long: input
         short: i
         takes_value: true
