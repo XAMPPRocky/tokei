@@ -1,5 +1,5 @@
 # 2.1.0
-Tokei, can now output results in vsrious formats(_cbor, json, yaml_)
+Tokei, can now output results in various formats(_cbor, json, yaml_)
 
 Conversely tokei can now take in results in those formats, and add them to the current run.
 
