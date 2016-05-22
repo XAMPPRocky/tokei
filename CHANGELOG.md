@@ -3,7 +3,7 @@ Tokei, can now output results in various formats(_cbor, json, yaml_)
 
 Conversely tokei can now take in results in those formats, and add them to the current run.
 
-Premilarily support for nested comments(_currently only rust supports it_)
+Premilarily support for nested comments(_currently only supported for rust_)
 
 Change in the output format [PR #35](https://github.com/Aaronepower/tokei/pull/35)
 
