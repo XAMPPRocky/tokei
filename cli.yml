@@ -44,6 +44,6 @@ args:
     - sort:
         help: Will sort based on column
         long: sort
-        possible_values: [files, total, blanks, code, commments]
+        possible_values: [files, total, blanks, code, comments]
         short: s
         takes_value: true
