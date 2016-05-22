@@ -14,8 +14,8 @@ build = "build.rs"
 
 # For building serde in stable.
 [build-dependencies]
-serde_codegen = "*"
-syntex = "*"
+serde_codegen = "0.10.0"
+syntex = "0.7.5"
 
 # Dependencies, and why they are used.
 # - Clap: For CLI argument parsing.
