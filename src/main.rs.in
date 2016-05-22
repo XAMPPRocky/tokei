@@ -10,6 +10,7 @@ mod language;
 mod language_name;
 mod stats;
 
+use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::Read;
 use std::thread;
@@ -22,13 +23,15 @@ use rayon::prelude::*;
 use consts::*;
 use fsutil::*;
 use language::Language;
+use language_name::LanguageName;
 use language_name::LanguageName::*;
 use stats::Stats;
 
 fn main() {
+    // Get options at the beginning, so the program doesn't have to make any extra calls to get the 
+    // information, and there isn't any magic strings.
     let yaml = load_yaml!("../cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
-
     let files_option = matches.is_present(FILES);
     let input_option = matches.value_of("file_input");
     let output_option = matches.value_of("output");
@@ -49,14 +52,14 @@ fn main() {
     // by default.
     let mut languages = btreemap! {
         ActionScript => Language::new_c(),
-        Assembly => Language::new_single(";"),
+        Assembly => Language::new_single(vec![";"]),
         Bash => Language::new_hash(),
-        Batch => Language::new_single("REM"),
+        Batch => Language::new_single(vec!["REM"]),
         C => Language::new_c(),
         CHeader => Language::new_c(),
-        Clojure => Language::new_single(";,#,#_"),
-        CoffeeScript => Language::new("#", "###", "###"),
-        ColdFusion => Language::new_multi("<!---", "--->"),
+        Clojure => Language::new_single(vec![";","#"]),
+        CoffeeScript => Language::new(vec!["#"], vec![("###", "###")]),
+        ColdFusion => Language::new_multi(vec![("<!---", "--->")]),
         ColdFusionScript => Language::new_c(),
         Coq => Language::new_func(),
         Cpp => Language::new_c(),
@@ -67,61 +70,62 @@ fn main() {
         D => Language::new_c(),
         Dart => Language::new_c(),
         DeviceTree => Language::new_c(),
-        Erlang => Language::new_single("%"),
-        FortranLegacy => Language::new_single("c,C,!,*"),
-        FortranModern => Language::new_single("!"),
+        Erlang => Language::new_single(vec!["%"]),
+        FortranLegacy => Language::new_single(vec!["c","C","!","*"]),
+        FortranModern => Language::new_single(vec!["!"]),
         Go => Language::new_c(),
-        Haskell => Language::new_single("--"),
+        Haskell => Language::new_single(vec!["--"]),
         Html => Language::new_html(),
-        Idris => Language::new("--", "{-", "-}"),
+        Idris => Language::new(vec!["--"], vec![("{-", "-}")]),
+        Isabelle => Language::new(vec!["--"], vec![("{*","*}"), ("(*","*)"), ("‹","›"), ("\\<open>", "\\<close>")]),
         Jai => Language::new_c(),
         Java => Language::new_c(),
         JavaScript => Language::new_c(),
         Json => Language::new_blank(),
         Jsx => Language::new_c(),
-        Julia => Language::new("#", "#=", "=#"),
+        Julia => Language::new(vec!["#"], vec![("#=", "=#")]),
         Kotlin => Language::new_c(),
         Less => Language::new_c(),
         LinkerScript => Language::new_c(),
-        Lisp => Language::new(";", "#|", "|#"),
-        Lua => Language::new("--", "--[[", "]]"),
+        Lisp => Language::new(vec![";"], vec![("#|", "|#")]),
+        Lua => Language::new(vec!["--"], vec![("--[[", "]]")]),
         Makefile => Language::new_hash(),
         Markdown => Language::new_blank(),
-        Mustache => Language::new_multi("{{!", "}}"),
+        Mustache => Language::new_multi(vec![("{{!", "}}")]),
         Nim => Language::new_hash(),
         ObjectiveC => Language::new_c(),
         ObjectiveCpp => Language::new_c(),
         OCaml => Language::new_func(),
         Oz => Language::new_pro(),
-        Pascal => Language::new("//,(*", "{", "}"),
-        Perl => Language::new("#", "=", "=cut"),
-        Php => Language::new("#,//", "/*", "*/"),
+        Pascal => Language::new(vec!["//","(*"], vec![("{", "}")]),
+        Perl => Language::new(vec!["#"], vec![("=", "=cut")]),
+        Php => Language::new(vec!["#","//"], vec![("/*", "*/")]),
         Polly => Language::new_html(),
         Prolog => Language::new_pro(),
-        Protobuf => Language::new_single("//"),
-        Python => Language::new("#", "'''", "'''"),
+        Protobuf => Language::new_single(vec!["//"]),
+        Python => Language::new(vec!["#"], vec![("'''", "'''")]),
         Qcl => Language::new_c(),
         R => Language::new_hash(),
-        Ruby => Language::new("#", "=begin", "=end"),
+        Ruby => Language::new(vec!["#"], vec![("=begin", "=end")]),
         RubyHtml => Language::new_html(),
-        Rust => Language::new("//,///,//!", "/*", "*/"),
+        Rust => Language::new_c().nested(),
         Sass => Language::new_c(),
+        Scala => Language::new_c(),
         Sml => Language::new_func(),
-        Sql => Language::new("--", "/*", "*/"),
+        Sql => Language::new(vec!["--"], vec![("/*", "*/")]),
         Swift => Language::new_c(),
-        Tex => Language::new_single("%"),
+        Tex => Language::new_single(vec!["%"]),
         Text => Language::new_blank(),
         Toml => Language::new_hash(),
         TypeScript => Language::new_c(),
         UnrealScript => Language::new_c(),
-        VimScript => Language::new_single("\""),
+        VimScript => Language::new_single(vec!["\""]),
         Wolfram => Language::new_func(),
         Xml => Language::new_html(),
         Yaml => Language::new_hash(),
         Zsh => Language::new_hash(),
     };
 
-    // Print every supported language.
     if language_option {
         for key in languages.keys() {
             println!("{:<25}", key);
@@ -130,38 +134,38 @@ fn main() {
     }
 
     if let Some(input) = input_option {
-        let res = match File::open(input) {
+        let deserded_map = match File::open(input) {
             Ok(mut file) => {
                 let contents = {
-                    let mut contents = Vec::new();
-                    file.read_to_end(&mut contents).unwrap();
+                    let mut contents = String::new();
+                    file.read_to_string(&mut contents).unwrap();
                     contents
                 };
 
-                convert_input(&contents)
+                convert_input(contents)
             }
             Err(_) => {
-
                 if input == "stdin" {
                     let mut stdin = std::io::stdin();
-                    let mut buffer = Vec::new();
+                    let mut buffer = String::new();
 
                     let _ = stdin.read_to_string(&mut buffer);
-                    convert_input(&buffer)
+                    convert_input(buffer)
                 } else {
-                    convert_input(&input.to_bytes())
+                    convert_input(String::from(input))
                 }
             }
         };
 
-        if let Some(res) = res {
-            for (name, res_language) in res {
-                if let Some(language) = languages.get_mut(&name) {
-                    *language += res_language;
+        if let Some(deserded_map) = deserded_map {
+            for (name, input_language) in deserded_map {
+                if let Some(language) = languages.get_mut(&LanguageName::from(name)) {
+                    *language += input_language;
                 }
             }
         } else {
-            panic!("Input provided wasn't a path, or valid CBOR, JSON, or YAML.");
+            println!("Input provided wasn't a path, or valid CBOR, JSON, or YAML.");
+            return;
         }
     }
 
@@ -177,7 +181,7 @@ fn main() {
         println!("{}", ROW);
     }
 
-    get_all_files(paths, &mut languages, ignored_directories);
+    get_all_files(paths, ignored_directories, &mut languages);
 
     let mut total = Language::new_blank();
 
@@ -215,6 +219,8 @@ fn main() {
         for file in files {
             let mut contents = String::new();
             let mut is_in_comments = false;
+            let mut comment_start = "";
+            let mut depth: usize = 0;
             let mut stats = Stats::new(opt_or_cont!(file.to_str()));
 
             let _ = rs_or_cont!(rs_or_cont!(File::open(file)).read_to_string(&mut contents));
@@ -240,30 +246,39 @@ fn main() {
                     continue;
                 }
 
-                if !language.multi_line.is_empty() {
-                    let multi_line = language.multi_line;
-                    let multi_line_end = language.multi_line_end;
+                for &(multi_line, multi_line_end) in &language.multi_line {
                     if line.starts_with(multi_line) ||
-                       contains_comments(line, multi_line, multi_line_end) {
+                       has_trailing_comments(line, language.nested, multi_line, multi_line_end) {
+                        comment_start = multi_line;
                         is_in_comments = true;
+                        if language.nested {
+                            depth += 1;
+                        }
                     }
                 }
 
 
                 if is_in_comments {
-                    if line.contains(language.multi_line_end) {
-                        is_in_comments = false;
+                    for &(multi_line, multi_line_end) in &language.multi_line {
+                        if multi_line == comment_start && line.contains(multi_line_end) {
+                            if language.nested {
+                                depth -= 1;
+                                if depth == 0 {
+                                    is_in_comments = false;
+                                }
+                            } else {
+                                is_in_comments = false;
+                            }
+                        }
                     }
                     stats.comments += 1;
                     continue;
                 }
 
-                if !language.line_comment.is_empty() {
-                    for single in language.line_comment.split(',') {
-                        if line.starts_with(single) {
-                            stats.comments += 1;
-                            continue 'line;
-                        }
+                for single in &language.line_comment {
+                    if line.starts_with(single) {
+                        stats.comments += 1;
+                        continue 'line;
                     }
                 }
                 stats.code += 1;
@@ -272,7 +287,9 @@ fn main() {
             *language += stats;
         }
 
-        print!("{}", CLEAR);
+        if output_option == None {
+            print!("{}", CLEAR);
+        }
         if !language.is_empty() {
             if sort_option == None && output_option == None {
                 if files_option {
@@ -302,17 +319,24 @@ fn main() {
 
     if let Some(format) = output_option {
 
+        let mut lang_map = BTreeMap::new();
+
+        for (key, value) in languages {
+            if !value.is_empty() {
+                lang_map.insert(format!("{:?}", key), value);
+            }
+        }
+
         match &*format {
             "cbor" => {
-                let cbor: Vec<_> = serde_cbor::to_vec(&languages).unwrap();
+                let cbor: Vec<_> = serde_cbor::to_vec(&lang_map).unwrap();
 
                 for byte in cbor {
                     print!("{:02x}", byte);
                 }
-                println!("");
             }
-            "json" => println!("{}", serde_json::to_string(&languages).unwrap()),
-            "yaml" => println!("{}", serde_yaml::to_string(&languages).unwrap()),
+            "json" => print!("{}", serde_json::to_string(&lang_map).unwrap()),
+            "yaml" => print!("{}", serde_yaml::to_string(&lang_map).unwrap()),
             _ => unreachable!(),
         }
     } else if let Some(sort_category) = sort_option {
@@ -359,6 +383,6 @@ fn main() {
         }
         total.print(__Total);
         println!("{}", ROW);
+        print!("\x1B[?25h\r");
     }
-    print!("\x1B[?25h\r");
 }

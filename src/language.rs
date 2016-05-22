@@ -1,7 +1,12 @@
 // Copyright (c) 2015 Aaron Power
 // Use of this source code is governed by the MIT/APACHE2.0 license that can be
 // found in the LICENCE-{APACHE - MIT} file.
-
+/**
+Hello world
+/**
+Hi
+*/
+Hello */
 use std::path::PathBuf;
 use std::ops::AddAssign;
 
@@ -14,49 +19,46 @@ pub struct Language {
     pub blanks: usize,
     pub code: usize,
     pub comments: usize,
-    #[serde(skip_serializing, skip_deserializing)]
+    #[serde(skip_deserializing, skip_serializing)]
     pub files: Vec<PathBuf>,
     pub stats: Vec<Stats>,
     pub lines: usize,
-    #[serde(skip_deserializing,skip_serializing, rename(serialize="lineComment"))]
-    pub line_comment: &'static str,
-    #[serde(skip_deserializing,skip_serializing, rename(serialize="multiLine"))]
-    pub multi_line: &'static str,
-    #[serde(skip_deserializing,skip_serializing, rename(serialize="multiLineEnd"))]
-    pub multi_line_end: &'static str,
+    #[serde(skip_deserializing, skip_serializing)]
+    pub line_comment: Vec<&'static str>,
+    #[serde(skip_deserializing, skip_serializing)]
+    pub multi_line: Vec<(&'static str, &'static str)>,
+    #[serde(skip_deserializing, skip_serializing)]
+    pub nested: bool,
     pub total_files: usize,
 }
 
 impl Language {
-    pub fn new(line_comment: &'static str,
-               multi_line: &'static str,
-               multi_line_end: &'static str)
+    pub fn new(line_comment: Vec<&'static str>,
+               multi_line: Vec<(&'static str, &'static str)>)
                -> Self {
 
         Language {
             line_comment: line_comment,
             multi_line: multi_line,
-            multi_line_end: multi_line_end,
             ..Self::default()
         }
     }
 
+    pub fn nested(mut self) -> Self {
+        self.nested = true;
+        self
+    }
+
     pub fn new_c() -> Self {
         Language {
-            line_comment: "//",
-            multi_line: "/*",
-            multi_line_end: "*/",
+            line_comment: vec!["//"],
+            multi_line: vec![("/*", "*/")],
             ..Self::default()
         }
     }
 
     pub fn new_html() -> Self {
-        Language {
-            line_comment: "<!--",
-            multi_line: "<!--",
-            multi_line_end: "-->",
-            ..Self::default()
-        }
+        Language { multi_line: vec![("<!--", "-->")], ..Self::default() }
     }
 
     pub fn new_blank() -> Self {
@@ -64,43 +66,35 @@ impl Language {
     }
 
     pub fn new_func() -> Self {
-        Language {
-            multi_line: "(*",
-            multi_line_end: "*)",
-            ..Self::default()
-        }
+        Language { multi_line: vec![("(*", "*)")], ..Self::default() }
     }
 
     pub fn new_hash() -> Self {
-        Self::new_single("#")
+        Self::new_single(vec!["#"])
     }
 
-    pub fn new_multi(multi_line: &'static str, multi_line_end: &'static str) -> Self {
-        Language {
-            multi_line: multi_line,
-            multi_line_end: multi_line_end,
-            ..Self::default()
-        }
+    pub fn new_multi(multi_line: Vec<(&'static str, &'static str)>) -> Self {
+        Language { multi_line: multi_line, ..Self::default() }
     }
 
     pub fn new_pro() -> Self {
         Language {
-            line_comment: "%",
-            multi_line: "/*",
-            multi_line_end: "*/",
+            line_comment: vec!["%"],
+            multi_line: vec![("/*", "*/")],
             ..Self::default()
         }
     }
 
-    pub fn new_single(line_comment: &'static str) -> Self {
+    pub fn new_single(line_comment: Vec<&'static str>) -> Self {
         Language { line_comment: line_comment, ..Self::default() }
     }
+
     pub fn is_empty(&self) -> bool {
         self.code == 0 && self.comments == 0 && self.blanks == 0 && self.lines == 0
     }
 
     pub fn is_blank(&self) -> bool {
-        self.line_comment == "" && self.multi_line == ""
+        self.line_comment.is_empty() && self.multi_line.is_empty()
     }
 
     pub fn sort_by(&mut self, category: &str) {
@@ -154,7 +148,6 @@ impl<'a> AddAssign<&'a mut Language> for Language {
     }
 }
 
-// Adding a file to the language.
 impl AddAssign<Stats> for Language {
     fn add_assign(&mut self, rhs: Stats) {
         self.lines += rhs.lines;
@@ -164,13 +157,3 @@ impl AddAssign<Stats> for Language {
         self.stats.push(rhs);
     }
 }
-
-// impl AddAssign<BTreeMap<LanguageName, Language>> for BTreeMap<LanguageName, Language> {
-//     fn add_assign(&mut self, rhs: BTreeMap<LanguageName, Language>) {
-//         for (name, rhs_language) in rhs {
-//             if let Some(language) = self.get_mut(name) {
-//                 language += rhs_language;
-//             }
-//         }
-//     }
-// }

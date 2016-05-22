@@ -1,6 +1,6 @@
 // Copyright (c) 2015 Aaron Power
-// Use of this source code is governed by the MIT license that can be
-// found in the LICENSE file.
+// Use of this source code is governed by the APACHE2.0/MIT licence that can be
+// found in the LICENCE-{APACHE/MIT} file.
 
 use std::collections::BTreeMap;
 use std::io::{BufRead, BufReader};
@@ -8,6 +8,7 @@ use std::fs::File;
 use std::path::Path;
 
 use glob::glob;
+use rustc_serialize::hex::FromHex;
 use serde_cbor;
 use serde_json;
 use serde_yaml;
@@ -17,9 +18,14 @@ use language::Language;
 use language_name::LanguageName;
 use language_name::LanguageName::*;
 
-pub fn contains_comments(file: &str, comment: &str, comment_end: &str) -> bool {
+/// This is used to catch lines like "let x = 5; /* Comment */"
+pub fn has_trailing_comments(line: &str,
+                             nested: bool,
+                             comment: &'static str,
+                             comment_end: &'static str)
+                             -> bool {
     let mut in_comments: usize = 0;
-    for chars in file.chars().collect::<Vec<char>>().windows(comment.len()) {
+    for chars in line.chars().collect::<Vec<char>>().windows(comment.len()) {
         let window = {
             let mut window = String::new();
             for ch in chars {
@@ -29,11 +35,17 @@ pub fn contains_comments(file: &str, comment: &str, comment_end: &str) -> bool {
         };
 
         if window == comment {
-            in_comments += 1;
+            if nested {
+                in_comments += 1;
+            } else {
+                in_comments = 1;
+            }
             continue;
         } else if window == comment_end {
-            if in_comments != 0 {
+            if nested && in_comments != 0 {
                 in_comments -= 1;
+            } else {
+                in_comments = 0;
             }
             continue;
         }
@@ -42,10 +54,12 @@ pub fn contains_comments(file: &str, comment: &str, comment_end: &str) -> bool {
 }
 
 pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
+                                                      ignored_directories: Vec<&str>,
                                                       languages: &mut BTreeMap<LanguageName,
-                                                                               Language>,
-                                                      ignored_directories: Vec<&str>) {
+                                                                               Language>) {
     for path in paths {
+        // A small metadata check to check if the file actually exists, this is used over calling
+        // File::open because we're going to be passing the path to either glob() or WalkDir::new()
         if let Err(_) = Path::new(path).metadata() {
             if let Ok(paths) = glob(path) {
                 for path in paths {
@@ -53,13 +67,11 @@ pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
                     let mut language = if opt_or_cont!(path.to_str()).contains("Makefile") {
                         languages.get_mut(&Makefile).unwrap()
                     } else {
-                        opt_or_cont!(languages.get_mut(&opt_or_cont!(get_language(&path))))
+                        opt_or_cont!(languages.get_mut(&opt_or_cont!(LanguageName::from_extension(&path))))
                     };
 
                     language.files.push(path.to_owned());
                 }
-            } else {
-
             }
         } else {
             let walker = WalkDir::new(path).into_iter().filter_entry(|entry| {
@@ -77,7 +89,7 @@ pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
                 let mut language = if opt_or_cont!(entry.path().to_str()).contains("Makefile") {
                     languages.get_mut(&Makefile).unwrap()
                 } else {
-                    opt_or_cont!(languages.get_mut(&opt_or_cont!(get_language(entry.path()))))
+                    opt_or_cont!(languages.get_mut(&opt_or_cont!(LanguageName::from_extension(entry.path()))))
                 };
 
                 language.files.push(entry.path().to_owned());
@@ -88,23 +100,25 @@ pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
 
 pub fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
     let path = path.as_ref();
-    let extension = match path.extension() {
+    match path.extension() {
         Some(extension_os) => {
             match extension_os.to_str() {
-                Some(ext) => ext,
-                None => return None,
+                Some(extension) => Some(extension.to_lowercase()),
+                None => None,
             }
         }
         None => {
             match get_filetype_from_shebang(path) {
-                Some(ext) => ext,
-                None => return None,
+                // Using String::from here because all file extensions from
+                // get_filetype_from_shebang are guaranteed to be lowercase.
+                Some(extension) => Some(String::from(extension)),
+                None => None,
             }
         }
-    };
-    Some(extension.to_lowercase())
-}
+    }
 
+}
+/// This is for getting the file type from the first line of a file
 pub fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str> {
     let file = match File::open(file) {
         Ok(file) => file,
@@ -130,96 +144,16 @@ pub fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str
     }
 }
 
-pub fn get_language<P: AsRef<Path>>(entry: P) -> Option<LanguageName> {
-    if let Some(extension) = get_extension(entry) {
-        match &*extension {
-            "as" => Some(ActionScript),
-            "bash" | "sh" => Some(Bash),
-            "bat" | "btm" | "cmd" => Some(Batch),
-            "c" | "ec" | "pgc" => Some(C),
-            "cc" | "cpp" | "cxx" | "c++" | "pcc" => Some(Cpp),
-            "cfc" => Some(ColdFusionScript),
-            "cfm" => Some(ColdFusion),
-            "clj" => Some(Clojure),
-            "coffee" => Some(CoffeeScript),
-            "cs" => Some(CSharp),
-            "csh" => Some(CShell),
-            "css" => Some(Css),
-            "d" => Some(D),
-            "dart" => Some(Dart),
-            "dts" | "dtsi" => Some(DeviceTree),
-            "el" | "lisp" | "lsp" | "sc" => Some(Lisp),
-            "erl" | "hrl" => Some(Erlang),
-            "f" | "for" | "ftn" | "f77" | "pfo" => Some(FortranLegacy),
-            "f03" | "f08" | "f90" | "f95" => Some(FortranModern),
-            "go" => Some(Go),
-            "h" => Some(CHeader),
-            "hh" | "hpp" | "hxx" => Some(CppHeader),
-            "hs" => Some(Haskell),
-            "html" => Some(Html),
-            "idr" | "lidr" => Some(Idris),
-            "jai" => Some(Jai),
-            "java" => Some(Java),
-            "jl" => Some(Julia),
-            "js" => Some(JavaScript),
-            "json" => Some(Json),
-            "jsx" => Some(Jsx),
-            "kt" | "kts" => Some(Kotlin),
-            "lds" => Some(LinkerScript),
-            "less" => Some(Less),
-            "lua" => Some(Lua),
-            "m" => Some(ObjectiveC),
-            "markdown" | "md" => Some(Markdown),
-            "ml" | "mli" => Some(OCaml),
-            "mm" => Some(ObjectiveCpp),
-            "makefile" => Some(Makefile),
-            "mustache" => Some(Mustache),
-            "nim" => Some(Nim),
-            "nb" | "wl" => Some(Wolfram),
-            "oz" => Some(Oz),
-            "p" | "pro" => Some(Prolog),
-            "pas" => Some(Pascal),
-            "php" => Some(Php),
-            "pl" => Some(Perl),
-            "qcl" => Some(Qcl),
-            "text" | "txt" => Some(Text),
-            "polly" => Some(Polly),
-            "proto" => Some(Protobuf),
-            "py" => Some(Python),
-            "r" => Some(R),
-            "rake" | "rb" => Some(Ruby),
-            "rhtml" => Some(RubyHtml),
-            "rs" => Some(Rust),
-            "s" => Some(Assembly),
-            "sass" | "scss" => Some(Sass),
-            "scala" => Some(Scala),
-            "sml" => Some(Sml),
-            "sql" => Some(Sql),
-            "swift" => Some(Swift),
-            "tex" | "sty" => Some(Tex),
-            "toml" => Some(Toml),
-            "ts" => Some(TypeScript),
-            "uc" | "uci" | "upkg" => Some(UnrealScript),
-            "v" => Some(Coq),
-            "vim" => Some(VimScript),
-            "xml" => Some(Xml),
-            "yaml" | "yml" => Some(Yaml),
-            "zsh" => Some(Zsh),
-            _ => None,
-        }
-    } else {
-        None
-    }
-}
-
-pub fn convert_input(contents: &[u8]) -> Option<BTreeMap<LanguageName, Language>> {
+/// This originally  too a &[u8], but the u8 didn't directly correspond with the hexadecimal u8, so 
+/// it had to be changed to a String, and add the rustc_serialize dependency.
+pub fn convert_input(contents: String) -> Option<BTreeMap<String, Language>> {
     if contents.is_empty() {
         None
-    } else if let Ok(result) = serde_json::from_slice(contents) {
+    } else if let Ok(result) = serde_json::from_str(&*contents) {
         Some(result)
-    } else if let Ok(result) = serde_yaml::from_slice(contents) {
+    } else if let Ok(result) = serde_yaml::from_str(&*contents) {
         Some(result)
-    } else if let Ok(result) = serde_cbor::from_slice(contents) {
+    } else if let Ok(result) = serde_cbor::from_slice(&*contents.from_hex().unwrap()) {
         Some(result)
     } else {
         None

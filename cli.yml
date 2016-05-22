@@ -1,49 +1,49 @@
 # Copyright (c) 2015 Aaron Power
 # Use of this source code is governed by the APACHE2.0/MIT license that can be
 # found in the LICENCE-{APACHE/MIT} file.
+about: Count Code, Quickly.
+author: Aaron P. <theaaronepower@gmail.com>
 bin_name: Tokei
 name: Tokei
 version: 2.0.0
-author: Aaron P. <theaaronepower@gmail.com>
-about: Count Code, Quickly.
 args:
     - exclude:
-        short: e
-        long: exclude
         help: Ignore all files & directories containing the word
+        long: exclude
+        short: e
         takes_value: true
-    - sort:
-        short: s
-        long: sort
+    - files:
+        help: Will print out statistics on individual files.
+        long: files
+        short: f
+        takes_value: false
+    - file_input:
+        help: "Gives statistics from a previous tokei run."
+        long: input
+        short: i
         takes_value: true
-        possible_values: [files, total, blanks, code, commments]
-        help: Will sort based on column
     - input:
+        conflicts_with:
+            - languages
+        help: The input file(s)/directory(ies)
         index: 1
         multiple: true
         required: true
-        help: The input file(s)/directory(ies)
-        conflicts_with:
-            - languages
-    - files:
-        short: f
-        long: files
-        takes_value: false
-        help: Will print out statistics on individual files.
     - languages:
-        short: l
-        long: languages
         conflicts_with:
             - input
         help: Prints out supported languages and their extensions
-    - file_input:
-        short: i
-        long: input
-        takes_value: true
-        help: "Gives statistics from a previous tokei run."
+        long: languages
+        short: l
     - output:
-        short: o
-        long: output
-        takes_value: true
         help: Outputs Tokei in a specific format.
+        long: output
         possible_values: [cbor, json, yaml]
+        short: o
+        takes_value: true
+    - sort:
+        help: Will sort based on column
+        long: sort
+        possible_values: [files, total, blanks, code, commments]
+        short: s
+        takes_value: true

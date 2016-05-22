@@ -4,6 +4,7 @@ extern crate glob;
 #[macro_use]
 extern crate maplit;
 extern crate rayon;
+extern crate rustc_serialize;
 extern crate serde;
 extern crate serde_cbor;
 extern crate serde_json;
