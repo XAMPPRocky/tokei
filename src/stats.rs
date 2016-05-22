@@ -19,7 +19,11 @@ impl Stats {
 
 impl fmt::Display for Stats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let name = if self.name.len() > 24 {
+        let name_length = self.name.len();
+
+        let name = if name_length == 25 {
+            self.name.clone()
+        } else if self.name.len() > 24 {
             let mut name = String::from("|");
             name.push_str(&self.name[self.name.len() - 24..]);
             name
