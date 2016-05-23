@@ -60,22 +60,24 @@ $ tokei ./path/to/code
 
 ## Options
 ```
-Tokei 2.0.0
+Tokei 2.1.1
 Aaron P. <theaaronepower@gmail.com>
-Count code, quickly.
+Count Code, Quickly.
 
 USAGE:
     Tokei [FLAGS] [OPTIONS] <input>...
 
 FLAGS:
-    -f, --files        Will print out the files found only recommended for debugging purposes
+    -f, --files        Will print out statistics on individual files.
     -h, --help         Prints help information
-    -l, --languages    prints out supported languages and their extensions
+    -l, --languages    Prints out supported languages and their extensions
     -V, --version      Prints version information
 
 OPTIONS:
-    -e, --exclude <exclude>    Will ignore all files and directories containing the word ie --exclude node_modules
-    -s, --sort <sort>          Will sort based on a certain column ie --sort=files will sort by file count. [values: files, total, blanks, code, commments]
+    -e, --exclude <exclude>     Ignore all files & directories containing the word
+    -i, --input <file_input>    Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to read from stdin
+    -o, --output <output>       Outputs Tokei in a specific format. [values: cbor, json, yaml]
+    -s, --sort <sort>           Will sort based on column [values: files, total, blanks, code, comments]
 
 ARGS:
     <input>...    The input file(s)/directory(ies)
