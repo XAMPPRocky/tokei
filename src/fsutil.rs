@@ -165,41 +165,41 @@ mod tests {
     use super::*;
     #[test]
     fn comment_start_in_quotes() {
-        assert!(has_trailing_comments("Hello \"/*\" World", "/*", "*/"));
+        assert!(has_trailing_comments("Hello \"/*\" World", true, "/*", "*/"));
     }
 
     #[test]
     fn both_comments_in_quotes() {
-        assert!(!has_trailing_comments("Hello \"/**/\" World", "/*", "*/"));
+        assert!(!has_trailing_comments("Hello \"/**/\" World", true, "/*", "*/"));
     }
 
     #[test]
     fn both_comments_in_line() {
-        assert!(!has_trailing_comments("Hello /**/ World", "/*", "*/"));
+        assert!(!has_trailing_comments("Hello /**/ World", true, "/*", "*/"));
     }
 
     #[test]
     fn comment_start_in_line() {
-        assert!(has_trailing_comments("Hello /* World", "/*", "*/"));
+        assert!(has_trailing_comments("Hello /* World", true, "/*", "*/"));
     }
 
     #[test]
     fn comment_start_in_quotes_ocaml() {
-        assert!(has_trailing_comments("Hello \"(*\" World", "(*", "*)"));
+        assert!(has_trailing_comments("Hello \"(*\" World", true, "(*", "*)"));
     }
 
     #[test]
     fn both_comments_in_quotes_ocaml() {
-        assert!(!has_trailing_comments("Hello \"(**)\" World", "(*", "*)"));
+        assert!(!has_trailing_comments("Hello \"(**)\" World", true, "(*", "*)"));
     }
 
     #[test]
     fn both_comments_in_line_ocaml() {
-        assert!(!has_trailing_comments("Hello (**) World", "(*", "*)"));
+        assert!(!has_trailing_comments("Hello (**) World", true, "(*", "*)"));
     }
 
     #[test]
     fn comment_start_in_line_ocaml() {
-        assert!(has_trailing_comments("Hello (* World", "(*", "*)"));
+        assert!(has_trailing_comments("Hello (* World", true,  "(*", "*)"));
     }
 }
