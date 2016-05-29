@@ -3,7 +3,7 @@
 # found in the LICENCE-{APACHE, MIT} file.
 [package]
 name = "tokei"
-version = "2.1.1"
+version = "2.2.0"
 authors = ["Aaronepower <theaaronepower@gmail.com>"]
 repository = "https://github.com/Aaronepower/tokei.git"
 homepage = "https://aaronepower.github.io/tokei/"
@@ -11,6 +11,14 @@ license = "MIT/Apache-2.0"
 readme = "README.md"
 description = "Count code, quickly."
 build = "build.rs"
+
+[lib]
+name = "tokei"
+path = "src/lib.rs"
+
+[[bin]]
+name = "tokei"
+path = "src/main.rs"
 
 # For building serde in stable.
 [build-dependencies]
@@ -27,6 +35,7 @@ syntex = "0.32.0"
 # - Serde_cbor: To CBOR. http://cbor.io/
 # - Serde_json: To JSON. http://json.org/
 # - Serde_yaml: To YAML. http://yaml.org/
+# - Toml: To TOML https://github.com/toml-lang/toml
 # - Walkdir: Handling recursively reading directories across Windows, OSX, and UNIX.
 [dependencies]
 clap = {version = "2.5.1", features = ["yaml"]}
@@ -38,4 +47,5 @@ serde = "0.7.5"
 serde_cbor = "0.3.3"
 serde_json = "0.7.0"
 serde_yaml = "0.2.4"
+toml = {version = "0.1.30", features = ["serde"]}
 walkdir = "0.1.5"

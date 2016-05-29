@@ -5,10 +5,10 @@ about: Count Code, Quickly.
 author: Aaron P. <theaaronepower@gmail.com>
 bin_name: Tokei
 name: Tokei
-version: 2.1.1
+version: 2.2.0
 args:
     - exclude:
-        help: Ignore all files & directories containing the word
+        help: Ignore all files & directories containing the word.
         long: exclude
         short: e
         takes_value: true
@@ -18,7 +18,7 @@ args:
         short: f
         takes_value: false
     - file_input:
-        help: "Gives statistics from a previous tokei run. Can be given a file path, or \"stdin\" to read from stdin" 
+        help: "Gives statistics from a previous tokei run. Can be given a file path, or \"stdin\" to read from stdin."
         long: input
         short: i
         takes_value: true
@@ -32,13 +32,13 @@ args:
     - languages:
         conflicts_with:
             - input
-        help: Prints out supported languages and their extensions
+        help: Prints out supported languages and their extensions.
         long: languages
         short: l
     - output:
         help: Outputs Tokei in a specific format.
         long: output
-        possible_values: [cbor, json, yaml]
+        possible_values: [cbor, json, toml, yaml]
         short: o
         takes_value: true
     - sort:

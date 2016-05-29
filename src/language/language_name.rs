@@ -1,7 +1,7 @@
 use std::fmt;
 use std::path::Path;
 
-use fsutil::*;
+use utils::fs::*;
 use self::LanguageName::*;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]

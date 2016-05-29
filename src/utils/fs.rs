@@ -14,15 +14,14 @@ use serde_json;
 use serde_yaml;
 use walkdir::{WalkDir, WalkDirIterator};
 
-use language::Language;
-use language_name::LanguageName;
-use language_name::LanguageName::*;
+use language::{Language, LanguageName};
+use language::LanguageName::*;
 
 /// This is used to catch lines like "let x = 5; /* Comment */"
 pub fn has_trailing_comments(line: &str,
-                             nested: bool,
                              comment: &'static str,
-                             comment_end: &'static str)
+                             comment_end: &'static str,
+                             nested: bool)
                              -> bool {
     let mut in_comments: usize = 0;
     for chars in line.chars().collect::<Vec<char>>().windows(comment.len()) {
@@ -163,43 +162,24 @@ pub fn convert_input(contents: String) -> Option<BTreeMap<String, Language>> {
 #[allow(dead_code, unused_imports)]
 mod tests {
     use super::*;
-    #[test]
-    fn comment_start_in_quotes() {
-        assert!(has_trailing_comments("Hello \"/*\" World", true, "/*", "*/"));
-    }
-
-    #[test]
-    fn both_comments_in_quotes() {
-        assert!(!has_trailing_comments("Hello \"/**/\" World", true, "/*", "*/"));
-    }
 
     #[test]
     fn both_comments_in_line() {
-        assert!(!has_trailing_comments("Hello /**/ World", true, "/*", "*/"));
+        assert!(!has_trailing_comments("Hello /* /* */ World", "/*", "*/", false));
     }
 
     #[test]
     fn comment_start_in_line() {
-        assert!(has_trailing_comments("Hello /* World", true, "/*", "*/"));
+        assert!(has_trailing_comments("Hello /* World", "/*", "*/", false));
     }
 
     #[test]
-    fn comment_start_in_quotes_ocaml() {
-        assert!(has_trailing_comments("Hello \"(*\" World", true, "(*", "*)"));
+    fn both_comments_in_line_nested() {
+        assert!(has_trailing_comments("Hello (* (* *) World", "(*", "*)", true));
     }
 
     #[test]
-    fn both_comments_in_quotes_ocaml() {
-        assert!(!has_trailing_comments("Hello \"(**)\" World", true, "(*", "*)"));
-    }
-
-    #[test]
-    fn both_comments_in_line_ocaml() {
-        assert!(!has_trailing_comments("Hello (**) World", true, "(*", "*)"));
-    }
-
-    #[test]
-    fn comment_start_in_line_ocaml() {
-        assert!(has_trailing_comments("Hello (* World", true,  "(*", "*)"));
+    fn comment_start_in_line_nested() {
+        assert!(has_trailing_comments("Hello (* World", "(*", "*)", true));
     }
 }
