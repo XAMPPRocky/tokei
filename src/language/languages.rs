@@ -1,5 +1,21 @@
-use super::{Language, LanguageName};
+use std::borrow::Cow;
+use std::collections::BTreeMap;
+use std::collections::btree_map;
+use std::fs::File;
+use std::io::Read;
+use std::iter::IntoIterator;
 
+use serde_cbor;
+use serde_json;
+use serde_yaml;
+use rustc_serialize::hex::FromHex;
+use rayon::prelude::*;
+
+use utils::*;
+use super::{Language, LanguageName};
+use super::LanguageName::*;
+use self::LanguageError::*;
+use stats::Stats;
 
 #[derive(Debug)]
 pub struct Languages {
@@ -8,34 +24,65 @@ pub struct Languages {
 
 
 impl Languages {
-    pub fn convert_input(contents: String) -> Option<BTreeMap<String, Language>> {
-        if contents.is_empty() {
-            None
-        } else if let Ok(result) = serde_json::from_str(&*contents) {
-            Some(result)
-        } else if let Ok(result) = serde_yaml::from_str(&*contents) {
-            Some(result)
-        } else if let Ok(result) = serde_cbor::from_slice(&*contents.from_hex().unwrap()) {
-            Some(result)
-        } else {
-            None
+    pub fn from_previous(previous: String) -> Result<Self, LanguageError> {
+        let mut _self = Self::new();
+        let map: Result<BTreeMap<LanguageName, Language>, LanguageError> = {
+            if previous.is_empty() {
+                Err(SerdeEmpty)
+            } else if let Ok(result) = serde_json::from_str(&*previous) {
+                Ok(result)
+            } else if let Ok(result) = serde_yaml::from_str(&*previous) {
+                Ok(result)
+            } else if let Ok(result) = serde_cbor::from_slice(&*previous.from_hex().unwrap()) {
+                Ok(result)
+            } else {
+                Err(InvalidFormat)
+            }
+        };
+
+        match map {
+            Ok(map) => {
+                for (name, input_language) in map {
+                    if let Some(language) = _self.get_mut(&LanguageName::from(name)) {
+                        *language += input_language;
+                    }
+                }
+                Ok(_self)
+            }
+            Err(error) => Err(error),
         }
     }
 
-    pub fn get_statistics<I, P>(paths: P, ignored: P)
-        where I: Iterator<Item = &str>,
-              P: Into<Cow<'a, I>>
+    pub fn add_previous(&mut self, previous: String) -> Result<(), LanguageError> {
+        let previous_languages = match Self::from_previous(previous) {
+            Ok(result) => result,
+            Err(error) => return Err(error),
+        };
+
+        for (key, previous) in previous_languages {
+            if let Some(language) = self.get_mut(&key) {
+                *language += previous;
+            }
+        }
+        Ok(())
+    }
+
+    pub fn get_statistics<'a, I, C>(&mut self, paths: C, ignored: C)
+        where I: 'a + Iterator<Item = &'a str> + Clone,
+              C: Into<Cow<'a, I>>
     {
 
-        get_all_files(paths.into(), ignored_directories.into(), &mut self.inner);
+        get_all_files(paths.into(), ignored.into(), &mut self.inner);
 
-        self.inner.par_iter_mut().for_each(|&mut (name, ref mut language)| {
+        let mut language_iter: Vec<_> = self.inner.iter_mut().collect();
+
+        language_iter.par_iter_mut().for_each(|&mut (name, ref mut language)| {
             if language.files.is_empty() {
                 return;
             }
 
             language.total_files = language.files.len();
-            let is_fortran = name == FortranModern || name == FortranLegacy;
+            let is_fortran = name == &FortranModern || name == &FortranLegacy;
 
             let files: Vec<_> = language.files.drain(..).collect();
             for file in files {
@@ -46,12 +93,12 @@ impl Languages {
 
                 let contents = {
                     let mut contents = String::new();
-                    let _ = rs_or_cont!(rs_or_cont!(File::open(file)).read_to_string(&mut contents));
+                    let _ = rs_or_cont!(rs_or_cont!(File::open(file))
+                        .read_to_string(&mut contents));
                     contents
                 };
 
                 let lines = contents.lines();
-                stats.lines += lines.size_hint().0;
 
                 if language.is_blank() {
                     stats.code += lines.count();
@@ -59,8 +106,11 @@ impl Languages {
                 }
 
                 'line: for line in lines {
-                    // FORTRAN has a rule where it only counts as a comment if it's the first character
-                    // in the column, so removing starting whitespace could cause a miscount.
+                    stats.lines += 1;
+
+                    // FORTRAN has a rule where it only counts as a comment if it's the first
+                    // character in the column, so removing starting whitespace could cause a
+                    // miscount.
                     let line = if is_fortran {
                         line
                     } else {
@@ -74,7 +124,10 @@ impl Languages {
 
                     for &(multi_line, multi_line_end) in &language.multi_line {
                         if line.starts_with(multi_line) ||
-                           has_trailing_comments(line, multi_line, multi_line_end, language.nested) {
+                           has_trailing_comments(line,
+                                                 multi_line,
+                                                 multi_line_end,
+                                                 language.nested) {
                             previous_comment_start = multi_line;
                             is_in_comments = true;
                             if language.nested {
@@ -86,7 +139,8 @@ impl Languages {
 
                     if is_in_comments {
                         for &(multi_line, multi_line_end) in &language.multi_line {
-                            if multi_line == previous_comment_start && line.contains(multi_line_end) {
+                            if multi_line == previous_comment_start &&
+                               line.contains(multi_line_end) {
                                 if language.nested {
                                     comment_depth -= 1;
                                     if comment_depth == 0 {
@@ -110,12 +164,17 @@ impl Languages {
                     stats.code += 1;
                 }
 
-                *language += stats;
+                **language += stats;
             }
         });
     }
 
+    pub fn get_mut(&mut self, key: &LanguageName) -> Option<&mut Language> {
+        self.inner.get_mut(key)
+    }
+
     pub fn new() -> Self {
+        use super::LanguageName::*;
         let map = btreemap! {
             ActionScript => Language::new_c(),
             Assembly => Language::new_single(vec![";"]),
@@ -194,4 +253,48 @@ impl Languages {
 
         Languages { inner: map }
     }
+
+    pub fn to_cbor(&self) -> Result<Vec<u8>, serde_cbor::Error> {
+        serde_cbor::to_vec(&self.inner)
+    }
+    pub fn to_json(&self) -> Result<String, serde_json::Error> {
+        serde_json::to_string(&self.inner)
+    }
+    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
+        serde_yaml::to_string(&self.inner)
+    }
+}
+
+
+impl IntoIterator for Languages {
+    type Item = <BTreeMap<LanguageName, Language> as IntoIterator>::Item;
+    type IntoIter = <BTreeMap<LanguageName, Language> as IntoIterator>::IntoIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.inner.into_iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a Languages {
+    type Item = (&'a LanguageName, &'a Language);
+    type IntoIter = btree_map::Iter<'a, LanguageName, Language>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.inner.iter()
+    }
+}
+
+impl<'a> IntoIterator for &'a mut Languages {
+    type Item = (&'a LanguageName, &'a mut Language);
+    type IntoIter = btree_map::IterMut<'a, LanguageName, Language>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.inner.iter_mut()
+    }
+}
+
+#[derive(Debug)]
+pub enum LanguageError {
+    SerdeEmpty,
+    InvalidFormat,
 }

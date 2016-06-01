@@ -2,16 +2,13 @@
 // Use of this source code is governed by the APACHE2.0/MIT licence that can be
 // found in the LICENCE-{APACHE/MIT} file.
 
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::io::{BufRead, BufReader};
 use std::fs::File;
 use std::path::Path;
 
 use glob::glob;
-use rustc_serialize::hex::FromHex;
-use serde_cbor;
-use serde_json;
-use serde_yaml;
 use walkdir::{WalkDir, WalkDirIterator};
 
 use language::{Language, LanguageName};
@@ -52,17 +49,26 @@ pub fn has_trailing_comments(line: &str,
     in_comments != 0
 }
 
-pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
-                                                      ignored_directories: Vec<&str>,
-                                                      languages: &mut BTreeMap<LanguageName,
-                                                                               Language>) {
+pub fn get_all_files<'a, I>(mut paths: Cow<'a, I>,
+                            mut ignored_directories: Cow<'a, I>,
+                            languages: &mut BTreeMap<LanguageName, Language>)
+    where I: Iterator<Item = &'a str> + Clone + 'a
+{
+    let paths = paths.to_mut();
+    let ignored_directories = ignored_directories.to_mut();
     for path in paths {
         // A small metadata check to check if the file actually exists, this is used over calling
         // File::open because we're going to be passing the path to either glob() or WalkDir::new()
         if let Err(_) = Path::new(path).metadata() {
             if let Ok(paths) = glob(path) {
-                for path in paths {
+                'path: for path in paths {
                     let path = rs_or_cont!(path);
+
+                    for ig in ignored_directories.clone() {
+                        if opt_or_cont!(path.to_str()).contains(ig) {
+                            continue 'path;
+                        }
+                    }
                     let mut language = if opt_or_cont!(path.to_str()).contains("Makefile") {
                         languages.get_mut(&Makefile).unwrap()
                     } else {
@@ -74,7 +80,7 @@ pub fn get_all_files<'a, I: Iterator<Item = &'a str>>(paths: I,
             }
         } else {
             let walker = WalkDir::new(path).into_iter().filter_entry(|entry| {
-                for ig in ignored_directories.to_owned() {
+                for ig in ignored_directories.clone() {
                     if entry.path().to_str().unwrap().contains(&*ig) {
                         return false;
                     }
@@ -143,23 +149,7 @@ pub fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str
     }
 }
 
-/// This originally  too a &[u8], but the u8 didn't directly correspond with the hexadecimal u8, so 
-/// it had to be changed to a String, and add the rustc_serialize dependency.
-pub fn convert_input(contents: String) -> Option<BTreeMap<String, Language>> {
-    if contents.is_empty() {
-        None
-    } else if let Ok(result) = serde_json::from_str(&*contents) {
-        Some(result)
-    } else if let Ok(result) = serde_yaml::from_str(&*contents) {
-        Some(result)
-    } else if let Ok(result) = serde_cbor::from_slice(&*contents.from_hex().unwrap()) {
-        Some(result)
-    } else {
-        None
-    }
-}
-
-#[allow(dead_code, unused_imports)]
+#[cfg(test)]
 mod tests {
     use super::*;
 

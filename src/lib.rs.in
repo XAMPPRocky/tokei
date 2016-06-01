@@ -1,18 +1,6 @@
-extern crate glob;
-#[macro_use]
-extern crate maplit;
-extern crate rayon;
-extern crate rustc_serialize;
-extern crate serde;
-extern crate serde_cbor;
-extern crate serde_json;
-extern crate serde_yaml;
-extern crate toml;
-extern crate walkdir;
-
 #[macro_use]
 mod utils;
-mod language;
-mod stats;
+pub mod language;
+pub mod stats;
 
-pub use language::Languages;
+pub use language::*;
