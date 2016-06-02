@@ -228,6 +228,8 @@ fn main() {
 
             if language.is_blank() {
                 stats.code += lines.count();
+                stats.lines += stats.code;
+                *language += stats;
                 continue;
             }
 
