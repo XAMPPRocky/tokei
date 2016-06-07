@@ -10,6 +10,7 @@ extern crate serde_yaml;
 extern crate rustc_serialize;
 extern crate tokei;
 
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::Read;
@@ -129,7 +130,7 @@ fn main() {
         if !language.is_empty() {
             if sort_option == None && output_option == None {
                 if files_option {
-                    print_language(language, name);
+                    print_language(&language, name);
                     println!("{}", ROW);
 
                     for stat in &language.stats {
@@ -137,7 +138,7 @@ fn main() {
                     }
                     println!("{}", ROW);
                 } else if output_option == None {
-                    print_language(language, name);
+                    print_language(&language, name);
                 }
             }
         }
@@ -179,7 +180,6 @@ fn main() {
                 CODE => language.sort_by(CODE),
                 FILES => language.sort_by(FILES),
                 LINES => language.sort_by(LINES),
-                TOTAL => language.sort_by(TOTAL),
                 _ => unreachable!(),
             }
         }
@@ -192,16 +192,15 @@ fn main() {
             CODE => languages.sort_by(|a, b| b.1.code.cmp(&a.1.code)),
             FILES => {}
             LINES => languages.sort_by(|a, b| b.1.files.len().cmp(&a.1.files.len())),
-            TOTAL => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
             _ => unreachable!(),
         }
 
         for (name, language) in languages {
             if !language.is_empty() {
                 if !files_option {
-                    print_language(language, name);
+                    print_language(&language, name);
                 } else {
-                    print_language(language, name);
+                    print_language(&language, name);
                     println!("{}", ROW);
                     for file in &language.stats {
                         println!("{}", file);
@@ -216,7 +215,7 @@ fn main() {
         if !files_option {
             println!("{}", ROW);
         }
-        total.print(LanguageType::__Total);
+        print_language(&total, LanguageType::__Total);
         println!("{}", ROW);
     }
 }
@@ -225,6 +224,7 @@ fn main() {
 /// This originally  too a &[u8], but the u8 didn't directly correspond with the hexadecimal u8, so
 /// it had to be changed to a String, and add the rustc_serialize dependency.
 pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language>> {
+
     if contents.is_empty() {
         None
     } else if let Ok(result) = serde_json::from_str(&*contents) {
@@ -243,9 +243,9 @@ fn print_language<'a, C>(language: &'a Language, name: C)
 {
     println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
              name.into().name(),
-             self.total_files,
-             self.lines,
-             self.code,
-             self.comments,
-             self.blanks)
+             language.total_files,
+             language.lines,
+             language.code,
+             language.comments,
+             language.blanks)
 }
