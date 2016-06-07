@@ -10,15 +10,16 @@ homepage = "https://aaronepower.github.io/tokei/"
 license = "MIT/Apache-2.0"
 readme = "README.md"
 description = "Count code, quickly."
-build = "build.rs"
+build = "src/lib/build.rs"
 
 [lib]
 name = "tokei"
-path = "src/lib.rs"
+path = "src/lib/lib.rs"
 
 [[bin]]
 name = "tokei"
 path = "src/main.rs"
+doc = false
 
 # For building serde in stable.
 [build-dependencies]
@@ -35,6 +36,7 @@ syntex = "0.33.0"
 # - Serde_cbor: To CBOR. http://cbor.io/
 # - Serde_json: To JSON. http://json.org/
 # - Serde_yaml: To YAML. http://yaml.org/
+# - serializable_enum: To fix a dumb change in behaviour in serde, hopefully to be removed next release. https://github.com/serde-rs/serde/issues/251
 # - Toml: To TOML https://github.com/toml-lang/toml
 # - Walkdir: Handling recursively reading directories across Windows, OSX, and UNIX.
 [dependencies]
@@ -47,5 +49,6 @@ serde = "0.7.5"
 serde_cbor = "0.3.3"
 serde_json = "0.7.0"
 serde_yaml = "0.2.4"
+serializable_enum = "0.3.0"
 toml = {version = "0.1.30", features = ["serde"]}
 walkdir = "0.1.5"
