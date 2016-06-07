@@ -1,0 +1,1309 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"lANGUAG",
+				"Languages"
+			],
+			[
+				"Lan",
+				"LanguageStatistics"
+			],
+			[
+				"Langu",
+				"LanguageName"
+			],
+			[
+				"from",
+				"from_previous"
+			],
+			[
+				"Iter",
+				"IterMut"
+			],
+			[
+				"btr",
+				"btree_map"
+			],
+			[
+				"into",
+				"into_iter"
+			],
+			[
+				"Ln",
+				"Language"
+			],
+			[
+				"Into",
+				"IntoIter"
+			],
+			[
+				"lan",
+				"languages"
+			],
+			[
+				"langu",
+				"languages"
+			],
+			[
+				"get_",
+				"get_mut"
+			],
+			[
+				"if",
+				"if-let	if let … = … { … }"
+			],
+			[
+				"Lang",
+				"Languages"
+			],
+			[
+				"Langua",
+				"Language"
+			],
+			[
+				"Languag",
+				"LanguageError"
+			],
+			[
+				"In",
+				"InvalidFormat"
+			],
+			[
+				"impl",
+				"impl	impl … { … }"
+			],
+			[
+				"L",
+				"Languages"
+			],
+			[
+				"st",
+				"struct	struct … { … }"
+			],
+			[
+				"la",
+				"languages"
+			],
+			[
+				"net",
+				"nested"
+			],
+			[
+				"name",
+				"name_length"
+			],
+			[
+				"has",
+				"has_trailing_comments"
+			],
+			[
+				"in",
+				"in_comments"
+			],
+			[
+				"lAN",
+				"LanguageName"
+			],
+			[
+				"is_",
+				"is_in_comments"
+			],
+			[
+				"is",
+				"is_present"
+			],
+			[
+				"mul",
+				"multi_line"
+			],
+			[
+				"comen",
+				"comment_start"
+			],
+			[
+				"to_",
+				"to_owned"
+			],
+			[
+				"new",
+				"new_c"
+			],
+			[
+				"ass",
+				"assert_eq	assert_eq!(…, …)"
+			],
+			[
+				"con",
+				"convert_input"
+			],
+			[
+				"sdt",
+				"stdin"
+			],
+			[
+				"add",
+				"add_assign_all_types"
+			],
+			[
+				"languag",
+				"languages"
+			],
+			[
+				"rhs",
+				"rhs_language"
+			],
+			[
+				"Add",
+				"AddAssign"
+			],
+			[
+				"lang",
+				"languages"
+			],
+			[
+				"ser",
+				"serde_json"
+			],
+			[
+				"serd",
+				"serde_json"
+			],
+			[
+				"serde",
+				"serde_cbor"
+			],
+			[
+				"input",
+				"input_option"
+			],
+			[
+				"inpu",
+				"input_option"
+			],
+			[
+				"val",
+				"value_of"
+			],
+			[
+				"out",
+				"output_option"
+			],
+			[
+				"langua",
+				"language"
+			],
+			[
+				"ou",
+				"output_option"
+			],
+			[
+				"match",
+				"matches"
+			],
+			[
+				"inp",
+				"input_option"
+			],
+			[
+				"ex",
+				"extern-crate	extern crate …;"
+			],
+			[
+				"Unr",
+				"UnrealScript"
+			],
+			[
+				"m",
+				"multi_line"
+			],
+			[
+				"La",
+				"Language"
+			],
+			[
+				"Language",
+				"Language"
+			],
+			[
+				"exter",
+				"extern-crate	extern crate …;"
+			],
+			[
+				"Fi",
+				"FILES"
+			],
+			[
+				"sort",
+				"sort_by"
+			],
+			[
+				"sort_",
+				"sort_category"
+			],
+			[
+				"prin",
+				"println	println!(…)"
+			],
+			[
+				"line",
+				"line_comment"
+			],
+			[
+				"For",
+				"FortranLegacy"
+			],
+			[
+				"get",
+				"get_language_from_extension"
+			],
+			[
+				"pri",
+				"println	println!(…)"
+			],
+			[
+				"files",
+				"files_option"
+			],
+			[
+				"Ref",
+				"RefMut"
+			],
+			[
+				"bor",
+				"borrow"
+			],
+			[
+				"borro",
+				"borrow_mut"
+			],
+			[
+				"bo",
+				"borrow"
+			],
+			[
+				"unwrap",
+				"unwrap_opt_cont"
+			],
+			[
+				"full",
+				"fullScreen	Window"
+			],
+			[
+				"bord",
+				"border-left"
+			],
+			[
+				"margin",
+				"margin-right"
+			],
+			[
+				"class",
+				"className	Element"
+			],
+			[
+				"fon",
+				"font-family"
+			],
+			[
+				"ng",
+				"ng-change"
+			],
+			[
+				"querySel",
+				"querySelector(selectors)	Element"
+			],
+			[
+				"querySelectors",
+				"querySelectorAll(selectors)	Element"
+			],
+			[
+				"Thunderfor",
+				"Thunderforest_TransportDark"
+			],
+			[
+				"border",
+				"border-top"
+			],
+			[
+				"background",
+				"backgroundColor	Style CSS"
+			],
+			[
+				"getElem",
+				"getElementById(id)	Element"
+			],
+			[
+				"query",
+				"querySelector(selectors)	Element"
+			],
+			[
+				"f",
+				"f	Anonymous Function"
+			],
+			[
+				"unw",
+				"unwrap_rs_cont"
+			],
+			[
+				"boo",
+				"borrow"
+			],
+			[
+				"boor",
+				"borrow_mut"
+			],
+			[
+				"new_",
+				"new_blank"
+			],
+			[
+				"hand",
+				"handle"
+			],
+			[
+				"han",
+				"handle"
+			],
+			[
+				"unwr",
+				"unwrap"
+			],
+			[
+				"de",
+				"device_tree"
+			],
+			[
+				"pr",
+				"println	println!(…)"
+			],
+			[
+				"Buf",
+				"BufReader"
+			],
+			[
+				"ext",
+				"extension"
+			],
+			[
+				"Err",
+				"ErrorKind"
+			],
+			[
+				"l",
+				"let	let … = …;"
+			],
+			[
+				"Er",
+				"Err	Err(…)"
+			],
+			[
+				"Error",
+				"ErrorKind"
+			],
+			[
+				"igno",
+				"ignored_directories"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"text",
+				"text-transform"
+			],
+			[
+				"text-",
+				"text-decoration"
+			],
+			[
+				"inl",
+				"inline-block"
+			],
+			[
+				"marg",
+				"margin-top"
+			],
+			[
+				"rgb",
+				"rgba()"
+			],
+			[
+				"pos",
+				"position"
+			],
+			[
+				"mar",
+				"margin"
+			],
+			[
+				"ine",
+				"inline-block"
+			],
+			[
+				"innerW",
+				"innerHeight	Window"
+			],
+			[
+				"font-",
+				"font-weight"
+			],
+			[
+				"console",
+				"console.log()"
+			],
+			[
+				"op",
+				"opacity"
+			],
+			[
+				"for",
+				"for	for (…) {…}"
+			],
+			[
+				"inner",
+				"innerWidth	Window"
+			],
+			[
+				"rand",
+				"Math.random()	Math"
+			],
+			[
+				"quer",
+				"querySelector(selectors)	Element"
+			],
+			[
+				"g",
+				"generated"
+			],
+			[
+				"lcoa",
+				"locales_dir"
+			],
+			[
+				"un",
+				"unwrap_render"
+			],
+			[
+				"rea",
+				"read_to_string"
+			],
+			[
+				"Cod",
+				"CodegenResult"
+			],
+			[
+				"W",
+				"WrongNumberOfArguments"
+			],
+			[
+				"no",
+				"NoSuchComponent"
+			],
+			[
+				"err",
+				"error"
+			],
+			[
+				"Fom",
+				"FromUtf8Error"
+			],
+			[
+				"Com",
+				"CompPassedToComp"
+			]
+		]
+	},
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					""
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/Rust/Cargo.sublime-build",
+					"Test"
+				],
+				[
+					"Packages/Rust/Rust.sublime-build",
+					""
+				],
+				[
+					"Packages/Rust/Rust.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/User/CPP.sublime-build",
+					""
+				]
+			],
+			[
+				"Packages/Rust/Cargo.sublime-build",
+				"Run"
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 357.0,
+		"last_filter": "Sublime",
+		"selected_items":
+		[
+			[
+				"Sublime",
+				"SublimeGDB: Start Debugging"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"UPP",
+				"Convert Case: Upper Case"
+			],
+			[
+				"reind",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"rein",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"rei",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"swap",
+				"Convert Case: Swap Case"
+			],
+			[
+				"sw",
+				"Convert Case: Swap Case"
+			],
+			[
+				"up",
+				"Convert Case: Upper Case"
+			],
+			[
+				"u",
+				"Convert Case: Upper Case"
+			],
+			[
+				"upp",
+				"Convert Case: Upper Case"
+			],
+			[
+				"low",
+				"Convert Case: Lower Case"
+			],
+			[
+				"JSN",
+				"Set Syntax: JSON (Javascript Next)"
+			],
+			[
+				"r",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"forma",
+				"Standard Format: Format current file"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"bash",
+				"Set Syntax: Shell Script (Bash)"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"rust",
+				"Set Syntax: Rust"
+			],
+			[
+				"bea",
+				"BeautifyRust"
+			],
+			[
+				"lower",
+				"Convert Case: Lower Case"
+			],
+			[
+				"upper",
+				"Convert Case: Upper Case"
+			],
+			[
+				"htm",
+				"Set Syntax: HTML"
+			],
+			[
+				"css",
+				"Set Syntax: CSS"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"update",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"Upp",
+				"Convert Case: Upper Case"
+			],
+			[
+				"Snippet: Bibtex MI",
+				"Snippet: BibTeX Misc"
+			],
+			[
+				"uppe",
+				"Convert Case: Upper Case"
+			],
+			[
+				"java",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"pref",
+				"Preferences: Settings - User"
+			],
+			[
+				"swap c",
+				"Convert Case: Swap Case"
+			],
+			[
+				"conve",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"Snippet: Bibtex ",
+				"Snippet: BibTeX Article"
+			],
+			[
+				"Snippet: Bibtex misc",
+				"Snippet: BibTeX Misc"
+			],
+			[
+				"cas",
+				"Convert Case: Swap Case"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Upgrade/Overwrite All Packages"
+			],
+			[
+				"conv",
+				"Convert Case: Swap Case"
+			],
+			[
+				"Snippet",
+				"Snippet: New Article"
+			],
+			[
+				"chapte",
+				"Snippet: Chapter"
+			],
+			[
+				"Chapte",
+				"Snippet: Chapter"
+			],
+			[
+				"Snippet: Bibtex ms",
+				"Snippet: BibTeX Misc"
+			],
+			[
+				"preview",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"powers",
+				"Set Syntax: PowerShell"
+			],
+			[
+				"mark",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"mar",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"remov",
+				"Package Control: Remove Package"
+			],
+			[
+				"re",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"makrdown",
+				"Markdown Preview: Save to HTML"
+			],
+			[
+				"syntax mark",
+				"Set Syntax: MultiMarkdown"
+			],
+			[
+				"markdown",
+				"Set Syntax: Markdown Extended"
+			],
+			[
+				"mak",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"markd",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"makr",
+				"Set Syntax: Markdown"
+			],
+			[
+				"jav",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"in",
+				"Package Control: Install Package"
+			],
+			[
+				"toml",
+				"Set Syntax: TOML"
+			],
+			[
+				"broswer",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"cheat",
+				"Markdown Preview: Open Markdown Cheat sheet"
+			],
+			[
+				"ma",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"",
+				"About"
+			]
+		],
+		"width": 432.0
+	},
+	"console":
+	{
+		"height": 174.0,
+		"history":
+		[
+			"clear()",
+			"clear",
+			"cls",
+			"view.encoding()",
+			"import urllib.request,os,hashlib; h = 'eb2297e1a458f27d836c04bb0cbaf282' + 'd0e7a3098092775ccb37ca9d6b2e4b7d'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": true,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/Aaron/Documents/GitHub/polly/src/main.rs",
+		"/C/Users/Aaron/AppData/Roaming/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/C/Users/Aaron/Documents/GitHub/tokei/build.rs",
+		"/C/Users/Aaron/Documents/GitHub/tokei/src/lib.rs.in",
+		"/C/Users/Aaron/Documents/GitHub/tokei/target/debug/build/tokei-c142288c85558087/out/lib.rs",
+		"/C/Users/Aaron/Documents/GitHub/polly/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/tokei/src/utils/mod.rs",
+		"/C/Users/Aaron/Documents/GitHub/tokei/src/utils/fs.rs",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/aclui/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/aclui/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/activeds/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/activeds/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/adsiid/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/adsiid/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/advapi32/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/advapi32/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/advpack/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/advpack/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/ahadmin/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/ahadmin/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/alink/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/alink/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/amstrmid/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/amstrmid/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/api-ms-win-net-isolation-l1-1-0/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/api-ms-win-net-isolation-l1-1-0/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/apidll/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/apidll/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/appmgmts/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/appmgmts/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/appmgr/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/appmgr/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/appnotify/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/appnotify/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/asycfilt/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/asycfilt/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/audiobaseprocessingobject/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/audiobaseprocessingobject/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/audioeng/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/audioeng/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/audiomediatypecrt/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/audiomediatypecrt/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/authz/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/authz/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/aux_ulib/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/aux_ulib/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/avifil32/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/avifil32/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/avrt/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/avrt/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/basesrv/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/basesrv/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bcrypt/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bcrypt/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bits/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bits/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bluetoothapis/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bluetoothapis/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bthprops/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bthprops/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bufferoverflow/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bufferoverflow/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bufferoverflowu/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/bufferoverflowu/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cabinet/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cabinet/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certadm/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certadm/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certca/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certca/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certcli/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certcli/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certidl/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certidl/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certpoleng/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/certpoleng/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cfgmgr32/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cfgmgr32/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/clfsmgmt/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/clfsmgmt/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/clfsw32/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/clfsw32/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/clusapi/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/clusapi/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comctl32/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comctl32/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comdlg32/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comdlg32/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comppkgsup/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comppkgsup/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/compstui/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/compstui/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comsvcs/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/comsvcs/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/corguids/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/corguids/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/correngine/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/correngine/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/credui/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/credui/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/crypt32/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/crypt32/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptdll/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptdll/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptnet/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptnet/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptui/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptui/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptxml/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cryptxml/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cscapi/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cscapi/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cscdll/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/cscdll/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d2d1/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d2d1/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d10/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d10/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d10_1/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d10_1/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d11/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d11/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d12/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d12/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d9/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3d9/README.md",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3dcompiler/Cargo.toml",
+		"/C/Users/Aaron/Documents/GitHub/winapi-rs/lib/d3dcompiler/README.md"
+	],
+	"find":
+	{
+		"height": 36.0
+	},
+	"find_in_files":
+	{
+		"height": 96.0,
+		"where_history":
+		[
+			"C:\\Users\\Aaron\\Documents\\GitHub\\tokei\\src",
+			"C:\\Users\\Aaron\\Documents\\GitHub\\winapi-rs\\lib",
+			"C:\\Users\\Aaron\\Documents\\GitHub\\rust\\src",
+			"C:\\Users\\Aaron\\Documents\\GitHub\\tokei\\src",
+			"G:\\College\\4th-Year\\Thesis\\tex",
+			"G:\\polly\\src",
+			"G:\\rust\\src",
+			"G:\\poly\\src",
+			"G:\\rust\\src\\",
+			"G:\\poly\\src\\",
+			"-node_modules/ ,-public/, -docs/,G:\\poly\\src\\",
+			"-node_modules/ ,-public/, -docs/,,G:\\poly\\src\\",
+			"-node_modules/ ,-public/, -docs/,,G:\\rust\\src\\",
+			"-node_modules/ ,-public/, -docs/,,G:\\College\\4th-Year\\Thesis",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\rust\\src",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\rust-e\\src",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\rust\\src",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\rust\\",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\tokei\\",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\tokeipus\\",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\RUST-E\\",
+			"-node_modules/ ,-public/, -docs/,C:\\Users\\Aaron\\Documents\\GitHub\\aaronepower.github.io",
+			"-node_modules/ ,-public/, -docs/",
+			"-node_modules/ ,-public/",
+			"-node_modules/",
+			"<open files>,C:\\Users\\Aaron\\Downloads\\bookstore\\BookstoreApp",
+			"<open files>",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"LanguageName",
+			"LanguageStatistics",
+			"clear",
+			"language.add_previous",
+			"&",
+			"I: Into<[u8]>",
+			"BTreeMap<LanguageName, LanguageStatistics>",
+			": Into<[u8]>",
+			"\n",
+			"Language",
+			"language",
+			"Language",
+			"language",
+			"Language",
+			"language",
+			"Language",
+			"language",
+			"Language",
+			"language",
+			"Language",
+			"rayon",
+			"String",
+			"Wrapper",
+			"'a,",
+			"'a",
+			"::std::collections::btree_map::",
+			"self",
+			"previous",
+			"T",
+			"files",
+			"FILES",
+			"Total",
+			"total",
+			"TOTAL",
+			"convert_input",
+			"C",
+			"P",
+			"into()",
+			"C",
+			"*language",
+			"is_empty",
+			"Some",
+			"self::language_name::LanguageName",
+			"language_name::Language",
+			"Language",
+			"btreemap!",
+			"btreemap",
+			"language_name",
+			"contents",
+			"_name",
+			"ocaml",
+			"true",
+			", true",
+			"has_trailing_comments",
+			"polly",
+			"depth",
+			"comment_start",
+			"https://retep998.github.io/doc/",
+			"http://retep998.github.io/doc/",
+			"null()",
+			"fn is_null",
+			"is_null",
+			"contains_comments",
+			"ext",
+			"get_language",
+			"opt_or_cont",
+			"new_single(",
+			"\"<!--\"",
+			"from_slice",
+			"read_to_end",
+			",",
+			"res_language",
+			"res",
+			"name",
+			"println",
+			"print",
+			"\"sc\"",
+			"Some(Coq),",
+			"LanguageName",
+			"from_slice",
+			"languages",
+			"lang_map",
+			"from_str",
+			"t",
+			"$func",
+			"rhs",
+			"lang_map",
+			"guess",
+			"result",
+			"=> Some(UnrealScript),",
+			"=> Some(Tex),",
+			" => Some(Swift),",
+			" => Some(Sql),",
+			"=> Some(Sml),",
+			"=> Some(Scala),",
+			"=> Some(R),",
+			"=> Some(Python),",
+			"=> Some(Protobuf),",
+			"=> Some(Polly),",
+			"=> Some(Text),",
+			"=> Some(Qcl),",
+			"=> Some(Perl),",
+			"=> Some(Php),",
+			"=> Some(Pascal),",
+			" => Some(Prolog),",
+			" => Some(Oz),",
+			"=> Some(Wolfram),",
+			"=> Some(Nim),",
+			" => Some(Mustache),",
+			"=> Some(Makefile),",
+			"=> Some(ObjectiveCpp),",
+			"=> Some(OCaml),",
+			"=> Some(Markdown),",
+			"=> Some(ObjectiveC),",
+			"Some(Lua),",
+			"Some(Less),",
+			"Some(LinkerScript),",
+			"Some(Jsx),",
+			"Some(Json),",
+			"Some(JavaScript),",
+			"Some(Julia),",
+			"Some(Java),",
+			" => Some(Idris),",
+			"Some(CppHeader),",
+			"Some(Html),",
+			"Some(Haskell),",
+			"Some(FortranLegacy),",
+			"Some(FortranModern),"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"https://retep998.github.io/doc/winapi/",
+			"https://retep998.github.io/doc/winapi",
+			"[!hbtp]",
+			"Lexer::new",
+			"ArgValue::Json",
+			"ArgKey::Json",
+			"ArgKey",
+			"element",
+			"Element",
+			"Token",
+			"AstError",
+			"TagType",
+			"SetText",
+			"NULL",
+			"LinkReference",
+			"Horizontal",
+			"FencedCode",
+			"IndentCode",
+			"line-break",
+			"sub_heading",
+			"work_container",
+			"work_title",
+			"work_header",
+			"work_header_title",
+			"down_button",
+			"second_heading",
+			"left_align",
+			"right_align",
+			"desktop_title",
+			"mobile_title",
+			"Echo",
+			"API.",
+			"auth"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 36.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 142.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"replace":
+	{
+		"height": 66.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"pars",
+				"poly\\src\\compiler\\parser.rs"
+			],
+			[
+				"203",
+				"aaronepower.github.io\\node_modules\\gulp-minify-css\\node_modules\\readable-stream\\doc\\wg-meetings\\2015-01-30.md"
+			],
+			[
+				"component.rs",
+				"poly\\src\\compiler\\tokens\\component.rs"
+			],
+			[
+				"compon",
+				"Intercom\\node_modules\\debug\\component.json"
+			],
+			[
+				"code",
+				"poly\\src\\compiler\\codegen.rs"
+			],
+			[
+				"lex",
+				"poly\\src\\compiler\\lexer.rs"
+			],
+			[
+				"skele",
+				"College\\4th-Year\\Advanced JavaScript\\CA1\\public\\stylesheets\\skeleton.css"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 264.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

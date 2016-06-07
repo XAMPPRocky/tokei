@@ -1,0 +1,14 @@
+{
+	"folders":
+	[
+		{
+			"path": "C:\\Users\\Aaron\\Documents\\GitHub"
+		}
+	],
+
+    "settings":
+    {
+        "sublimegdb_workingdir": "C:\\Users\\Aaron\\Documents\\GitHub\\tokei\\",
+        "sublimegdb_commandline": "gdb target\\debug\\tokei.exe"
+    }
+}
