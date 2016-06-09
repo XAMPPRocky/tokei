@@ -17,6 +17,8 @@ serializable_enum! {
         ActionScript,
         /// Assembly
         Assembly,
+        /// Autoconf
+        Autoconf,
         /// Bash
         Bash,
         /// Batch
@@ -159,7 +161,7 @@ serializable_enum! {
         Yaml,
         /// Zsh
         Zsh,
-        /// __Total
+        #[doc(hidden)]
         __Total,
     }
     LanguageTypeVisitor
@@ -180,6 +182,7 @@ impl_as_ref_from_str! {
     LanguageType {
         ActionScript => "ActionScript",
         Assembly => "Assembly",
+        Autoconf => "Autoconf",
         Bash => "BASH",
         Batch => "Batch",
         C => "C",
@@ -258,10 +261,18 @@ impl_as_ref_from_str! {
 
 
 impl LanguageType {
+    /// Returns the display name of a language.
+    ///
+    /// ```
+    /// let bash = LanguageType::Bash;
+    ///
+    /// assert_eq!(bash.name(), "BASH");
+    /// ```
     pub fn name(&self) -> &'static str {
         match *self {
             ActionScript => "ActionScript",
             Assembly => "Assembly",
+            Autoconf => "Autoconf",
             Bash => "BASH",
             Batch => "Batch",
             C => "C",
@@ -337,6 +348,13 @@ impl LanguageType {
         }
     }
 
+    /// Get language from it's file extension.
+    ///
+    /// ```
+    /// let rust = LanguageType::from_extension("rs");
+    ///
+    /// assert_eq!(rust, LanguageType::Rust);
+    /// ```
     pub fn from_extension<P: AsRef<Path>>(entry: P) -> Option<Self> {
         if let Some(extension) = get_extension(entry) {
             match &*extension {
@@ -365,6 +383,7 @@ impl LanguageType {
                 "hs" => Some(Haskell),
                 "html" => Some(Html),
                 "idr" | "lidr" => Some(Idris),
+                "in" => Some(Autoconf),
                 "jai" => Some(Jai),
                 "java" => Some(Java),
                 "jl" => Some(Julia),
@@ -396,7 +415,7 @@ impl LanguageType {
                 "r" => Some(R),
                 "rake" | "rb" => Some(Ruby),
                 "rhtml" => Some(RubyHtml),
-                "rs" | "in" => Some(Rust),
+                "rs" => Some(Rust),
                 "s" => Some(Assembly),
                 "sass" | "scss" => Some(Sass),
                 "sc" | "scala" => Some(Scala),
@@ -426,6 +445,7 @@ impl From<String> for LanguageType {
         match &*from {
             "ActionScript" => ActionScript,
             "Assembly" => Assembly,
+            "Autoconf" => Autoconf,
             "Bash" => Bash,
             "Batch" => Batch,
             "C" => C,

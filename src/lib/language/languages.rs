@@ -19,6 +19,7 @@ use super::{Language, LanguageType};
 use super::LanguageType::*;
 use stats::Stats;
 
+/// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
 #[derive(Debug, Clone)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
@@ -26,6 +27,7 @@ pub struct Languages {
 
 
 impl Languages {
+    /// Creates a `Languages` struct from cbor.
     pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self> {
         let map = try!(serde_cbor::from_slice(cbor.into()));
 
@@ -33,12 +35,43 @@ impl Languages {
     }
 
 
+    /// Creates a `Languages` struct from json.
+    ///
+    /// ```
+    /// let json = r#"{"Rust":{"blanks":5,"code":12,"comments":0,"stats":[{"blanks":5,"code":12,"comments":0,"lines":17,"name":".\\src\\lib\\build.rs"}],"lines":17,"total_files":1}}"#;
+    /// let languages = Languages::from_json(&json);
+    /// assert!(languages.get_mut(&LanguageType::Rust).unwrap().code == 12)
+    /// ```
     pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> serde_json::Result<Self> {
         let map = try!(serde_json::from_slice(json.into()));
 
         Ok(Self::from_previous(map))
     }
 
+    /// Creates a `Languages` struct from json.
+    ///
+    /// ```
+    /// let yaml = r#"
+    ///     ---
+    ///     "Rust":
+    ///         "blanks": 5
+    ///         "code": 12
+    ///         "comments": 0
+    ///         "lines": 17
+    ///         "stats":
+    ///             -
+    ///             "blanks": 5
+    ///             "code": 12
+    ///             "comments": 0
+    ///             "lines": 17
+    ///             "name": ".\\src\\lib\\build.rs"
+    ///         "total_files": 1
+    /// "#;
+    ///
+    /// let languages = Languages::from_yaml(&yaml);
+    ///
+    /// assert!(languages.get_mut(&LanguageType::Rust).unwrap().code == 12)
+    /// ```
     pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> serde_yaml::Result<Self> {
         let map = try!(serde_yaml::from_slice(yaml.into()));
 
@@ -49,13 +82,22 @@ impl Languages {
         let mut _self = Self::new();
 
         for (name, input_language) in map {
-            if let Some(language) = _self.get_mut(&LanguageType::from(name)) {
+            if let Some(language) = _self.get_mut(&name) {
                 *language += input_language;
             }
         }
         _self
     }
 
+    /// Get statistics from the list of paths provided, and a list ignored keywords
+    /// to ignore paths containing them.
+    ///
+    /// ```no_run
+    /// let languages = Languages::new();
+    /// languages.get_statistics(&vec!["."], &vec![".git", "target"]);
+    ///
+    /// println!("{:?}", languages);
+    /// ```
     pub fn get_statistics<'a, I>(&mut self, paths: I, ignored: I)
         where I: Into<Cow<'a, [&'a str]>>
     {
@@ -157,11 +199,17 @@ impl Languages {
         });
     }
 
+    /// Constructs a new, blank `Languages`.
+    ///
+    /// ```
+    /// let languages = Languages::new();
+    /// ```
     pub fn new() -> Self {
         use super::LanguageType::*;
         let map = btreemap! {
             ActionScript => Language::new_c(),
             Assembly => Language::new_single(vec![";"]),
+            Autoconf => Language::new_single(vec!["#", "dnl"]),
             Bash => Language::new_hash(),
             Batch => Language::new_single(vec!["REM"]),
             C => Language::new_c(),
@@ -246,7 +294,7 @@ impl Languages {
     }
 
     fn remove_empty(&self) -> BTreeMap<LanguageType, Language> {
-        let mut map: BTreeMap<LanguageType, Language> = BTreeMap::new();
+        let mut map = BTreeMap::new();
 
         for (name, language) in &self.inner {
             if !language.is_empty() {
@@ -256,12 +304,62 @@ impl Languages {
         map
     }
 
+    /// Converts `Languages` to CBOR.
+    ///
+    /// ```no_run
+    /// extern crate rustc_serialize;
+    /// use rustc_serialize::ToHex;
+    ///
+    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e74730\
+    ///     065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300656c\
+    ///     696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e657\
+    ///     3116b746f74616c5f66696c657301";
+    ///
+    /// let languages = Languages::new();
+    /// languages.get_statistics(&vec!["src/lib/build.rs"], &vec![".git"]);
+    ///
+    /// assert_eq!(cbor, languages.to_cbor().to_hex());
+    /// ```
     pub fn to_cbor(&self) -> Result<Vec<u8>, serde_cbor::Error> {
         serde_cbor::to_vec(&self.remove_empty())
     }
+
+    /// Converts `Languages` to JSON.
+    ///
+    /// ```no_run
+    ///
+    /// let json = r#"{"Rust":{"blanks":5,"code":12,"comments":0,"stats":[{"blanks":5,"code":12,"comments":0,"lines":17,"name":".\\src\\lib\\build.rs"}],"lines":17,"total_files":1}}"#;
+    /// let languages = Languages::new();
+    /// languages.get_statistics(&vec!["src/lib/build.rs"], &vec![".git"]);
+    ///
+    /// assert_eq!(json, languages.to_json());
+    /// ```
     pub fn to_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(&self.remove_empty())
     }
+    /// Converts `Languages` to YAML.
+    ///
+    /// ```no_run
+    ///
+    /// let yaml = r#"
+    ///     ---
+    ///     "Rust":
+    ///     "blanks": 5
+    ///     "code": 12
+    ///     "comments": 0
+    ///     "lines": 17
+    ///     "stats":
+    ///         -
+    ///         "blanks": 5
+    ///         "code": 12
+    ///         "comments": 0
+    ///         "lines": 17
+    ///         "name": ".\\src\\lib\\build.rs"
+    ///     "total_files": 1"#;
+    /// let languages = Languages::new();
+    /// languages.get_statistics(&vec!["src/lib/build.rs"], &vec![".git"]);
+    ///
+    /// assert_eq!(yaml, languages.to_yaml());
     pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
         serde_yaml::to_string(&self.remove_empty())
     }
@@ -305,6 +403,31 @@ impl AddAssign<BTreeMap<LanguageType, Language>> for Languages {
         }
     }
 }
+
+impl<'a> AddAssign<&'a BTreeMap<LanguageType, Language>> for Languages {
+    fn add_assign(&mut self, rhs: &'a BTreeMap<LanguageType, Language>) {
+
+        for (name, language) in rhs {
+
+            if let Some(result) = self.inner.get_mut(&name) {
+                *result += language;
+            }
+        }
+    }
+}
+
+impl<'a> AddAssign<&'a mut BTreeMap<LanguageType, Language>> for Languages {
+    fn add_assign(&mut self, rhs: &'a mut BTreeMap<LanguageType, Language>) {
+
+        for (name, language) in rhs {
+
+            if let Some(result) = self.inner.get_mut(&name) {
+                *result += language;
+            }
+        }
+    }
+}
+
 
 impl Deref for Languages {
     type Target = BTreeMap<LanguageType, Language>;

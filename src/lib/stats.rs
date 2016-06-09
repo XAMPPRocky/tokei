@@ -1,16 +1,27 @@
 use std::fmt;
 
+/// A struct representing the statistics of a file.
 #[derive(Clone, Default, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct Stats {
-    pub name: String,
-    pub code: usize,
+    /// Number of blank lines within the file.
     pub blanks: usize,
-    pub lines: usize,
+    /// Number of lines of code within the file.
+    pub code: usize,
+    /// Number of comments within the file. (_includes both multi line, and single line comments_)
     pub comments: usize,
+    /// Total number of lines within the file.
+    pub lines: usize,
+    /// File name.
+    pub name: String,
 }
 
 
 impl Stats {
+    /// Create a new `Stats` from a file path.
+    ///
+    /// ```
+    /// let stats = Stats::new("src/main.rs");
+    /// ```
     pub fn new<S: Into<String>>(name: S) -> Self {
         Stats { name: name.into(), ..Self::default() }
     }
