@@ -1,10 +1,9 @@
-
 #[macro_use]
-#![allow(missing_docs)]
 mod utils;
 mod language;
 mod stats;
+mod sort;
 
 pub use language::{LanguageType, Languages, Language};
 pub use stats::Stats;
-pub use utils::consts;
+pub use sort::Sort;

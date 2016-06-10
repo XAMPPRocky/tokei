@@ -7,6 +7,7 @@ extern crate clap;
 extern crate serde_cbor;
 extern crate serde_json;
 extern crate serde_yaml;
+extern crate toml;
 extern crate rustc_serialize;
 extern crate tokei;
 
@@ -23,10 +24,15 @@ use clap::App;
 use rustc_serialize::hex::FromHex;
 
 use tokei::{Languages, Language, LanguageType};
-use tokei::consts::*;
+use tokei::Sort::*;
 
 pub const ROW: &'static str = "-------------------------------------------------------------------\
                                 ------------";
+pub const BLANKS: &'static str = "blanks";
+pub const COMMENTS: &'static str = "comments";
+pub const CODE: &'static str = "code";
+pub const FILES: &'static str = "files";
+pub const LINES: &'static str = "lines";
 
 fn main() {
     // Get options at the beginning, so the program doesn't have to make any extra calls to get the
@@ -163,11 +169,7 @@ fn main() {
                 }
             }
             "json" => print!("{}", languages.to_json().unwrap()),
-            // "toml" => print!("{}", {
-            //     let encoder = toml::Encoder::new();
-            //     lang_map.encode(&mut encoder).unwrap();
-            //     encoder.toml
-            // }),
+            "toml" => print!("{}", languages.to_toml()),
             "yaml" => print!("{}", languages.to_yaml().unwrap()),
             _ => unreachable!(),
         }
@@ -175,11 +177,11 @@ fn main() {
 
         for (_, ref mut language) in &mut languages {
             match &*sort_category {
-                BLANKS => language.sort_by(BLANKS),
-                COMMENTS => language.sort_by(COMMENTS),
-                CODE => language.sort_by(CODE),
-                FILES => language.sort_by(FILES),
-                LINES => language.sort_by(LINES),
+                BLANKS => language.sort_by(Blanks),
+                COMMENTS => language.sort_by(Comments),
+                CODE => language.sort_by(Code),
+                FILES => language.sort_by(Files),
+                LINES => language.sort_by(Lines),
                 _ => unreachable!(),
             }
         }
@@ -215,7 +217,13 @@ fn main() {
         if !files_option {
             println!("{}", ROW);
         }
-        print_language(&total, LanguageType::__Total);
+        println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
+                 "Total",
+                 total.stats.len(),
+                 total.lines,
+                 total.code,
+                 total.comments,
+                 total.blanks);
         println!("{}", ROW);
     }
 }
@@ -231,7 +239,13 @@ pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language
         Some(result)
     } else if let Ok(result) = serde_yaml::from_str(&*contents) {
         Some(result)
-    } else if let Ok(result) = serde_cbor::from_slice(&*contents.from_hex().unwrap()) {
+    } else if let Ok(hex) = contents.from_hex() {
+        if let Ok(result) = serde_cbor::from_slice(&*hex) {
+            Some(result)
+        } else {
+            None
+        }
+    } else if let Some(result) = toml::decode_str(&*contents) {
         Some(result)
     } else {
         None
@@ -243,7 +257,7 @@ fn print_language<'a, C>(language: &'a Language, name: C)
 {
     println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
              name.into().name(),
-             language.total_files,
+             language.stats.len(),
              language.lines,
              language.code,
              language.comments,

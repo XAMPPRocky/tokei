@@ -1,7 +1,8 @@
 use std::path::PathBuf;
 use std::ops::AddAssign;
 
-use utils::*;
+use sort::Sort;
+use sort::Sort::*;
 use stats::Stats;
 
 /// Struct representing a single Language.
@@ -29,14 +30,13 @@ pub struct Language {
     /// Whether the language supports nested multi line comments or not.
     #[serde(skip_deserializing, skip_serializing)]
     pub nested: bool,
-    /// The total number of files from `stats`.
-    pub total_files: usize,
 }
 
 impl Language {
     /// Constructs a new  empty Language with the comments provided.
     ///
     /// ```
+    /// # use tokei::*;
     /// let mut rust = Language::new(vec!["//"], vec![("/*", "*/")]);
     /// ```
     pub fn new(line_comment: Vec<&'static str>,
@@ -53,9 +53,10 @@ impl Language {
     /// Convience constructor for creating a language that has no commenting syntax.
     ///
     /// ```
+    /// # use tokei::*;
     /// let json = Language::new_blank();
-    ///
-    /// assert_eq!(json.line_comment, vec![]);
+    /// let blank_vec: Vec<&str> = vec![];
+    /// assert_eq!(json.line_comment, blank_vec);
     /// ```
     pub fn new_blank() -> Self {
         Self::default()
@@ -64,6 +65,7 @@ impl Language {
     /// Convience constructor for creating a language that has the same commenting syntax as C like languages.
     ///
     /// ```
+    /// # use tokei::*;
     /// let rust = Language::new(vec!["//"], vec![("/*", "*/")]);
     /// let c = Language::new_c();
     ///
@@ -81,6 +83,7 @@ impl Language {
     /// Convience constructor for creating a language that has the same commenting syntax as ML like languages.
     ///
     /// ```
+    /// # use tokei::*;
     /// let ocaml = Language::new_multi(vec![("(*", "*)")]);
     /// let coq = Language::new_func();
     ///
@@ -94,6 +97,7 @@ impl Language {
     /// Convience constructor for creating a language that has the same commenting syntax as HTML like languages.
     ///
     /// ```
+    /// # use tokei::*;
     /// let xml = Language::new_multi(vec![("<!--", "-->")]);
     /// let html = Language::new_html();
     ///
@@ -107,6 +111,7 @@ impl Language {
     /// Convience constructor for creating a language that has the same commenting syntax as Bash.
     ///
     /// ```
+    /// # use tokei::*;
     /// let bash = Language::new_single(vec!["#"]);
     /// let yaml = Language::new_hash();
     ///
@@ -120,6 +125,7 @@ impl Language {
     /// Convience constructor for creating a language that only has multi line comments.
     ///
     /// ```
+    /// # use tokei::*;
     /// let mustache = Language::new_multi(vec![("{{!", "}}")]);
     /// ```
     pub fn new_multi(multi_line: Vec<(&'static str, &'static str)>) -> Self {
@@ -129,6 +135,7 @@ impl Language {
     /// Convience constructor for creating a language that has the same commenting syntax as Prolog.
     ///
     /// ```
+    /// # use tokei::*;
     /// let prolog = Language::new(vec!["%"], vec![("/*", "*/")]);
     /// let oz = Language::new_pro();
     ///
@@ -146,6 +153,7 @@ impl Language {
     /// Convience constructor for creating a language that only has single line comments.
     ///
     /// ```
+    /// # use tokei::*;
     /// let haskell = Language::new_single(vec!["--"]);
     /// ```
     pub fn new_single(line_comment: Vec<&'static str>) -> Self {
@@ -155,6 +163,7 @@ impl Language {
     /// Checks if the language is empty. Empty meaning it doesn't have any statistics.
     ///
     /// ```
+    /// # use tokei::*;
     /// let rust = Language::new_c();
     ///
     /// assert!(rust.is_empty());
@@ -166,6 +175,7 @@ impl Language {
     /// Checks if the language doesn't contain any comments.
     ///
     /// ```
+    /// # use tokei::*;
     /// let json = Language::new_blank();
     ///
     /// assert!(json.is_blank());
@@ -177,6 +187,7 @@ impl Language {
     /// Specify if the the language supports nested multi line comments.
     ///
     /// ```
+    /// # use tokei::*;
     /// let mut rust = Language::new(vec!["//"], vec![("/*", "*/")]).nested();
     /// assert!(rust.nested);
     /// ```
@@ -189,9 +200,10 @@ impl Language {
     /// panic!'s if given the wrong category.
     ///
     /// ```
+    /// # use tokei::*;
     /// let mut rust = Language::new_c();
-    /// let foo_stats = Stats::new();
-    /// let bar_stats = Stats::new();
+    /// let mut foo_stats = Stats::new("foo");
+    /// let mut bar_stats = Stats::new("bar");
     ///
     /// foo_stats.code += 20;
     /// bar_stats.code += 10;
@@ -201,26 +213,24 @@ impl Language {
     ///
     /// assert_eq!(rust.stats, vec![bar_stats.clone(), foo_stats.clone()]);
     ///
-    /// rust.sort_by(CODE);
+    /// rust.sort_by(Sort::Code);
     ///
     /// assert_eq!(rust.stats, vec![foo_stats, bar_stats]);
     ///
     /// ```
-    pub fn sort_by(&mut self, category: &str) {
+    pub fn sort_by(&mut self, category: Sort) {
         match category {
-            BLANKS => self.stats.sort_by(|a, b| b.blanks.cmp(&a.blanks)),
-            COMMENTS => self.stats.sort_by(|a, b| b.comments.cmp(&a.comments)),
-            CODE => self.stats.sort_by(|a, b| b.code.cmp(&a.code)),
-            FILES => self.stats.sort_by(|a, b| a.name.cmp(&b.name)),
-            LINES => self.stats.sort_by(|a, b| b.lines.cmp(&a.lines)),
-            _ => unreachable!(),
+            Blanks => self.stats.sort_by(|a, b| b.blanks.cmp(&a.blanks)),
+            Comments => self.stats.sort_by(|a, b| b.comments.cmp(&a.comments)),
+            Code => self.stats.sort_by(|a, b| b.code.cmp(&a.code)),
+            Files => self.stats.sort_by(|a, b| a.name.cmp(&b.name)),
+            Lines => self.stats.sort_by(|a, b| b.lines.cmp(&a.lines)),
         }
     }
 }
 
 impl AddAssign for Language {
     fn add_assign(&mut self, rhs: Self) {
-        self.total_files += rhs.total_files;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
@@ -231,7 +241,6 @@ impl AddAssign for Language {
 
 impl<'a> AddAssign<&'a Language> for Language {
     fn add_assign(&mut self, rhs: &'a Self) {
-        self.total_files += rhs.total_files;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
@@ -242,7 +251,6 @@ impl<'a> AddAssign<&'a Language> for Language {
 
 impl<'a> AddAssign<&'a mut Language> for Language {
     fn add_assign(&mut self, rhs: &mut Self) {
-        self.total_files += rhs.total_files;
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;

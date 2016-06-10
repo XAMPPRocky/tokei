@@ -20,6 +20,7 @@ impl Stats {
     /// Create a new `Stats` from a file path.
     ///
     /// ```
+    /// # use tokei::*;
     /// let stats = Stats::new("src/main.rs");
     /// ```
     pub fn new<S: Into<String>>(name: S) -> Self {

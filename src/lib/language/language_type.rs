@@ -161,8 +161,6 @@ serializable_enum! {
         Yaml,
         /// Zsh
         Zsh,
-        #[doc(hidden)]
-        __Total,
     }
     LanguageTypeVisitor
 }
@@ -254,7 +252,6 @@ impl_as_ref_from_str! {
         Xml => "XML",
         Yaml => "YAML",
         Zsh => "Zsh",
-        __Total => "Total",
     }
     Error::Parse
 }
@@ -264,6 +261,7 @@ impl LanguageType {
     /// Returns the display name of a language.
     ///
     /// ```
+    /// # use tokei::*;
     /// let bash = LanguageType::Bash;
     ///
     /// assert_eq!(bash.name(), "BASH");
@@ -344,16 +342,16 @@ impl LanguageType {
             Xml => "XML",
             Yaml => "YAML",
             Zsh => "Zsh",
-            __Total => "Total",
         }
     }
 
     /// Get language from it's file extension.
     ///
-    /// ```
-    /// let rust = LanguageType::from_extension("rs");
+    /// ```no_run
+    /// # use tokei::*;
+    /// let rust = LanguageType::from_extension("./main.rs");
     ///
-    /// assert_eq!(rust, LanguageType::Rust);
+    /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
     pub fn from_extension<P: AsRef<Path>>(entry: P) -> Option<Self> {
         if let Some(extension) = get_extension(entry) {

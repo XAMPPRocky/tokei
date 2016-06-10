@@ -238,7 +238,6 @@ name = "toml"
 version = "0.1.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 0.7.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

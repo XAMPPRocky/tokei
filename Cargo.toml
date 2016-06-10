@@ -3,7 +3,7 @@
 # found in the LICENCE-{APACHE, MIT} file.
 [package]
 name = "tokei"
-version = "2.1.3"
+version = "3.0.0"
 authors = ["Aaronepower <theaaronepower@gmail.com>"]
 repository = "https://github.com/Aaronepower/tokei.git"
 homepage = "https://aaronepower.github.io/tokei/"
@@ -50,5 +50,9 @@ serde_cbor = "0.3.3"
 serde_json = "0.7.0"
 serde_yaml = "0.2.4"
 serializable_enum = "0.3.0"
-toml = {version = "0.1.30", features = ["serde"]}
 walkdir = "0.1.5"
+
+[dependencies.toml]
+version = "0.1.30"
+default-features = false
+features = ["serde"]
