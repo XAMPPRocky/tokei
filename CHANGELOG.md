@@ -1,3 +1,17 @@
+# 3.0.0
+Tokei is now available as a library.
+
+Tokei now has a lot more tests.
+
+Tokei now supports TOML
+
+Fixed #41
+
+Fixed #44
+
+Fixed #45
+
+
 # 2.1.0
 Tokei, can now output results in various formats(_cbor, json, yaml_)
 
