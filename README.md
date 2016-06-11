@@ -15,7 +15,7 @@ Tokei is a program that allows you to count code, quickly.
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Supported Languages](#supported-languages)
-- [Changelog][CHANGELOG.md]
+- [Changelog][https://github.com/Aaronepower/tokei/blob/master/CHANGELOG.md]
 - [Common Issues](#common-issues)
 - [Copyright](#copyright)
 
