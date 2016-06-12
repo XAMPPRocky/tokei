@@ -1,4 +1,3 @@
-extern crate syntex;
 extern crate serde_codegen;
 
 use std::env;
@@ -10,8 +9,5 @@ pub fn main() {
     let src = Path::new("src/lib/lib.rs.in");
     let dst = Path::new(&out_dir).join("lib.rs");
 
-    let mut registry = syntex::Registry::new();
-
-    serde_codegen::register(&mut registry);
-    registry.expand("", &src, &dst).unwrap();
+    serde_codegen::expand(&src, &dst).unwrap();
 }
