@@ -5,7 +5,7 @@ about: Count Code, Quickly.
 author: Aaron P. <theaaronepower@gmail.com>
 bin_name: Tokei
 name: Tokei
-version: 3.0.0
+version: 3.0.1
 args:
     - exclude:
         help: Ignore all files & directories containing the word.

@@ -3,7 +3,7 @@
 # found in the LICENCE-{APACHE, MIT} file.
 [package]
 name = "tokei"
-version = "3.0.0"
+version = "3.0.1"
 authors = ["Aaronepower <theaaronepower@gmail.com>"]
 repository = "https://github.com/Aaronepower/tokei.git"
 homepage = "https://aaronepower.github.io/tokei/"
@@ -23,8 +23,8 @@ doc = false
 
 # For building serde in stable.
 [build-dependencies]
-serde_codegen = "0.7.7"
-syntex = "0.33.0"
+serde_codegen = "=0.7.10"
+syntex = "=0.35.0"
 
 # Dependencies, and why they are used.
 # - Clap: For CLI argument parsing.
@@ -45,10 +45,10 @@ glob = "0.2.11"
 maplit = "0.1.3"
 rayon = "0.3.1"
 rustc-serialize = "0.3.19"
-serde = "0.7.5"
+serde = "0.7.10"
 serde_cbor = "0.3.3"
-serde_json = "0.7.0"
-serde_yaml = "0.2.4"
+serde_json = "0.7.1"
+serde_yaml = "0.2.5"
 serializable_enum = "0.3.0"
 walkdir = "0.1.5"
 

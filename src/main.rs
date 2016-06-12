@@ -19,13 +19,11 @@ use std::thread;
 use std::time::Duration;
 use std::sync::mpsc::channel;
 
-
 use clap::App;
 use rustc_serialize::hex::FromHex;
 
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort::*;
-
 pub const ROW: &'static str = "-------------------------------------------------------------------\
                                 ------------";
 pub const BLANKS: &'static str = "blanks";
