@@ -9,9 +9,13 @@ use std::io::Read;
 use std::iter::IntoIterator;
 use std::ops::{AddAssign, Deref, DerefMut};
 
+#[cfg(feature = "cbor")]
 use serde_cbor;
+#[cfg(feature = "json")]
 use serde_json;
+#[cfg(feature = "yaml")]
 use serde_yaml;
+#[cfg(feature = "toml-io")]
 use toml;
 use rayon::prelude::*;
 
@@ -19,6 +23,11 @@ use utils::*;
 use super::{Language, LanguageType};
 use super::LanguageType::*;
 use stats::Stats;
+
+const CBOR_ERROR: &'static str = "Tokei was not compiled with the `cbor` flag.";
+const JSON_ERROR: &'static str = "Tokei was not compiled with the `json` flag.";
+const TOML_ERROR: &'static str = "Tokei was not compiled with the `toml-io` flag.";
+const YAML_ERROR: &'static str = "Tokei was not compiled with the `yaml` flag.";
 
 /// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
 #[derive(Debug, Clone)]
@@ -45,12 +54,17 @@ impl Languages {
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// # }
     /// ```
+    #[cfg(feature = "cbor")]
     pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self> {
         let map = try!(serde_cbor::from_slice(cbor.into()));
 
         Ok(Self::from_previous(map))
     }
 
+    #[cfg(not(feature = "cbor"))]
+    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> ! {
+        panic!(CBOR_ERROR)
+    }
 
     /// Creates a `Languages` struct from json.
     ///
@@ -76,10 +90,16 @@ impl Languages {
     /// let mut languages = Languages::from_json(json.as_bytes()).unwrap();
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
+    #[cfg(feature = "json")]
     pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> serde_json::Result<Self> {
         let map = try!(serde_json::from_slice(json.into()));
 
         Ok(Self::from_previous(map))
+    }
+
+    #[cfg(not(feature = "json"))]
+    pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> ! {
+        panic!(JSON_ERROR)
     }
 
     /// Creates a `Languages` struct from json.
@@ -106,10 +126,16 @@ impl Languages {
     ///
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
+    #[cfg(feature = "yaml")]
     pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> serde_yaml::Result<Self> {
         let map = try!(serde_yaml::from_slice(yaml.into()));
 
         Ok(Self::from_previous(map))
+    }
+
+    #[cfg(not(feature = "yaml"))]
+    pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> ! {
+        panic!(YAML_ERROR)
     }
 
     fn from_previous(map: BTreeMap<LanguageType, Language>) -> Self {
@@ -373,8 +399,14 @@ impl Languages {
     /// assert_eq!(cbor, languages.to_cbor().unwrap().to_hex());
     /// # }
     /// ```
+    #[cfg(feature = "cbor")]
     pub fn to_cbor(&self) -> Result<Vec<u8>, serde_cbor::Error> {
         serde_cbor::to_vec(&self.remove_empty())
+    }
+
+    #[cfg(not(feature = "cbor"))]
+    pub fn to_cbor(&self) -> ! {
+        panic!(CBOR_ERROR)
     }
 
     /// Converts `Languages` to JSON.
@@ -404,12 +436,24 @@ impl Languages {
     ///
     /// assert_eq!(json, languages.to_json().unwrap());
     /// ```
+    #[cfg(feature = "json")]
     pub fn to_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(&self.remove_empty())
     }
 
+    #[cfg(not(feature = "json"))]
+    pub fn to_json(&self) -> ! {
+        panic!(JSON_ERROR)
+    }
+
+    #[cfg(feature = "toml-io")]
     pub fn to_toml(&self) -> String {
         toml::encode_str(&self.remove_empty())
+    }
+
+    #[cfg(not(feature = "toml-io"))]
+    pub fn to_toml(&self) -> ! {
+        panic!(TOML_ERROR)
     }
 
     /// Converts `Languages` to YAML.
@@ -434,8 +478,14 @@ impl Languages {
     /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
     ///
     /// assert_eq!(yaml, languages.to_yaml().unwrap());
+    #[cfg(feature = "yaml")]
     pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
         serde_yaml::to_string(&self.remove_empty())
+    }
+
+    #[cfg(not(feature = "yaml"))]
+    pub fn to_yaml(&self) -> ! {
+        panic!(YAML_ERROR)
     }
 }
 

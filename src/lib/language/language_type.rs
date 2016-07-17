@@ -10,159 +10,157 @@ use std::path::Path;
 use utils::*;
 use self::LanguageType::*;
 
-serializable_enum! {
-    #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-    pub enum LanguageType {
-        /// ActionScript
-        ActionScript,
-        /// Assembly
-        Assembly,
-        /// Autoconf
-        Autoconf,
-        /// Bash
-        Bash,
-        /// Batch
-        Batch,
-        /// C
-        C,
-        /// CHeader
-        CHeader,
-        /// Clojure
-        Clojure,
-        /// CoffeeScript
-        CoffeeScript,
-        /// ColdFusion
-        ColdFusion,
-        /// ColdFusionScript
-        ColdFusionScript,
-        /// Coq
-        Coq,
-        /// Cpp
-        Cpp,
-        /// CppHeader
-        CppHeader,
-        /// CSharp
-        CSharp,
-        /// CShell
-        CShell,
-        /// Css
-        Css,
-        /// D
-        D,
-        /// Dart
-        Dart,
-        /// DeviceTree
-        DeviceTree,
-        /// Erlang
-        Erlang,
-        /// FortranLegacy
-        FortranLegacy,
-        /// FortranModern
-        FortranModern,
-        /// Go
-        Go,
-        /// Haskell
-        Haskell,
-        /// Html
-        Html,
-        /// Idris
-        Idris,
-        /// Isabelle
-        Isabelle,
-        /// Jai
-        Jai,
-        /// Java
-        Java,
-        /// JavaScript
-        JavaScript,
-        /// Julia
-        Julia,
-        /// Json
-        Json,
-        /// Jsx
-        Jsx,
-        /// Kotlin
-        Kotlin,
-        /// Less
-        Less,
-        /// LinkerScript
-        LinkerScript,
-        /// Lisp
-        Lisp,
-        /// Lua
-        Lua,
-        /// Makefile
-        Makefile,
-        /// Markdown
-        Markdown,
-        /// Mustache
-        Mustache,
-        /// Nim
-        Nim,
-        /// ObjectiveC
-        ObjectiveC,
-        /// ObjectiveCpp
-        ObjectiveCpp,
-        /// OCaml
-        OCaml,
-        /// Oz
-        Oz,
-        /// Pascal
-        Pascal,
-        /// Perl
-        Perl,
-        /// Polly
-        Polly,
-        /// Php
-        Php,
-        /// Protobuf
-        Protobuf,
-        /// Prolog
-        Prolog,
-        /// Python
-        Python,
-        /// Qcl
-        Qcl,
-        /// R
-        R,
-        /// Ruby
-        Ruby,
-        /// RubyHtml
-        RubyHtml,
-        /// Rust
-        Rust,
-        /// Sass
-        Sass,
-        /// Scala
-        Scala,
-        /// Sml
-        Sml,
-        /// Sql
-        Sql,
-        /// Swift
-        Swift,
-        /// Tex
-        Tex,
-        /// Text
-        Text,
-        /// Toml
-        Toml,
-        /// TypeScript
-        TypeScript,
-        /// VimScript
-        VimScript,
-        /// UnrealScript
-        UnrealScript,
-        /// Wolfram
-        Wolfram,
-        /// Xml
-        Xml,
-        /// Yaml
-        Yaml,
-        /// Zsh
-        Zsh,
-    }
-    LanguageTypeVisitor
+#[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum LanguageType {
+    /// ActionScript
+    ActionScript,
+    /// Assembly
+    Assembly,
+    /// Autoconf
+    Autoconf,
+    /// Bash
+    Bash,
+    /// Batch
+    Batch,
+    /// C
+    C,
+    /// CHeader
+    CHeader,
+    /// Clojure
+    Clojure,
+    /// CoffeeScript
+    CoffeeScript,
+    /// ColdFusion
+    ColdFusion,
+    /// ColdFusionScript
+    ColdFusionScript,
+    /// Coq
+    Coq,
+    /// Cpp
+    Cpp,
+    /// CppHeader
+    CppHeader,
+    /// CSharp
+    CSharp,
+    /// CShell
+    CShell,
+    /// Css
+    Css,
+    /// D
+    D,
+    /// Dart
+    Dart,
+    /// DeviceTree
+    DeviceTree,
+    /// Erlang
+    Erlang,
+    /// FortranLegacy
+    FortranLegacy,
+    /// FortranModern
+    FortranModern,
+    /// Go
+    Go,
+    /// Haskell
+    Haskell,
+    /// Html
+    Html,
+    /// Idris
+    Idris,
+    /// Isabelle
+    Isabelle,
+    /// Jai
+    Jai,
+    /// Java
+    Java,
+    /// JavaScript
+    JavaScript,
+    /// Julia
+    Julia,
+    /// Json
+    Json,
+    /// Jsx
+    Jsx,
+    /// Kotlin
+    Kotlin,
+    /// Less
+    Less,
+    /// LinkerScript
+    LinkerScript,
+    /// Lisp
+    Lisp,
+    /// Lua
+    Lua,
+    /// Makefile
+    Makefile,
+    /// Markdown
+    Markdown,
+    /// Mustache
+    Mustache,
+    /// Nim
+    Nim,
+    /// ObjectiveC
+    ObjectiveC,
+    /// ObjectiveCpp
+    ObjectiveCpp,
+    /// OCaml
+    OCaml,
+    /// Oz
+    Oz,
+    /// Pascal
+    Pascal,
+    /// Perl
+    Perl,
+    /// Polly
+    Polly,
+    /// Php
+    Php,
+    /// Protobuf
+    Protobuf,
+    /// Prolog
+    Prolog,
+    /// Python
+    Python,
+    /// Qcl
+    Qcl,
+    /// R
+    R,
+    /// Ruby
+    Ruby,
+    /// RubyHtml
+    RubyHtml,
+    /// Rust
+    Rust,
+    /// Sass
+    Sass,
+    /// Scala
+    Scala,
+    /// Sml
+    Sml,
+    /// Sql
+    Sql,
+    /// Swift
+    Swift,
+    /// Tex
+    Tex,
+    /// Text
+    Text,
+    /// Toml
+    Toml,
+    /// TypeScript
+    TypeScript,
+    /// VimScript
+    VimScript,
+    /// UnrealScript
+    UnrealScript,
+    /// Wolfram
+    Wolfram,
+    /// Xml
+    Xml,
+    /// Yaml
+    Yaml,
+    /// Zsh
+    Zsh,
 }
 
 #[derive(Debug)]
@@ -175,86 +173,86 @@ impl ::std::fmt::Display for Error {
         write!(f, "{:?}", self)
     }
 }
-
-impl_as_ref_from_str! {
-    LanguageType {
-        ActionScript => "ActionScript",
-        Assembly => "Assembly",
-        Autoconf => "Autoconf",
-        Bash => "BASH",
-        Batch => "Batch",
-        C => "C",
-        CHeader => "C Header",
-        Clojure => "Clojure",
-        CoffeeScript => "CoffeeScript",
-        ColdFusion => "ColdFusion",
-        ColdFusionScript => "ColdFusion CFScript",
-        Coq => "Coq",
-        Cpp => "C++",
-        CppHeader => "C++ Header",
-        CSharp => "C#",
-        CShell => "C Shell",
-        Css => "CSS",
-        D => "D",
-        Dart => "Dart",
-        DeviceTree => "Device Tree",
-        Erlang => "Erlang",
-        FortranLegacy => "FORTRAN Legacy",
-        FortranModern => "FORTRAN Modern",
-        Go => "Go",
-        Haskell => "Haskell",
-        Html => "HTML",
-        Idris => "Idris",
-        Isabelle => "Isabelle",
-        Jai => "JAI",
-        Java => "Java",
-        JavaScript => "JavaScript",
-        Json => "JSON",
-        Jsx => "JSX",
-        Julia => "Julia",
-        Kotlin => "Kotlin",
-        Less => "LESS",
-        LinkerScript => "LD Script",
-        Lisp => "LISP",
-        Lua => "Lua",
-        Makefile => "Makefile",
-        Markdown => "Markdown",
-        Mustache => "Mustache",
-        Nim => "Nim",
-        ObjectiveC => "Objective C",
-        ObjectiveCpp => "Objective C++",
-        OCaml => "OCaml",
-        Oz => "Oz",
-        Pascal => "Pascal",
-        Perl => "Perl",
-        Polly => "Polly",
-        Php => "PHP",
-        Protobuf => "Protocol Buffers",
-        Prolog => "Prolog",
-        Python => "Python",
-        Qcl => "QCL",
-        R => "R",
-        Ruby => "Ruby",
-        RubyHtml => "Ruby HTML",
-        Rust => "Rust",
-        Sass => "Sass",
-        Scala => "Scala",
-        Sml => "Standard ML",
-        Sql => "SQL",
-        Swift => "Swift",
-        Tex => "TeX",
-        Text => "Plain Text",
-        Toml => "TOML",
-        TypeScript => "TypeScript",
-        UnrealScript => "Unreal Script",
-        VimScript => "Vim Script",
-        Wolfram => "Wolfram",
-        Xml => "XML",
-        Yaml => "YAML",
-        Zsh => "Zsh",
-    }
-    Error::Parse
-}
+// #[cfg(feature = "io")]
+// impl_as_ref_from_str! {
+// LanguageType {
+// ActionScript => "ActionScript",
+// Assembly => "Assembly",
+// Autoconf => "Autoconf",
+// Bash => "BASH",
+// Batch => "Batch",
+// C => "C",
+// CHeader => "C Header",
+// Clojure => "Clojure",
+// CoffeeScript => "CoffeeScript",
+// ColdFusion => "ColdFusion",
+// ColdFusionScript => "ColdFusion CFScript",
+// Coq => "Coq",
+// Cpp => "C++",
+// CppHeader => "C++ Header",
+// CSharp => "C#",
+// CShell => "C Shell",
+// Css => "CSS",
+// D => "D",
+// Dart => "Dart",
+// DeviceTree => "Device Tree",
+// Erlang => "Erlang",
+// FortranLegacy => "FORTRAN Legacy",
+// FortranModern => "FORTRAN Modern",
+// Go => "Go",
+// Haskell => "Haskell",
+// Html => "HTML",
+// Idris => "Idris",
+// Isabelle => "Isabelle",
+// Jai => "JAI",
+// Java => "Java",
+// JavaScript => "JavaScript",
+// Json => "JSON",
+// Jsx => "JSX",
+// Julia => "Julia",
+// Kotlin => "Kotlin",
+// Less => "LESS",
+// LinkerScript => "LD Script",
+// Lisp => "LISP",
+// Lua => "Lua",
+// Makefile => "Makefile",
+// Markdown => "Markdown",
+// Mustache => "Mustache",
+// Nim => "Nim",
+// ObjectiveC => "Objective C",
+// ObjectiveCpp => "Objective C++",
+// OCaml => "OCaml",
+// Oz => "Oz",
+// Pascal => "Pascal",
+// Perl => "Perl",
+// Polly => "Polly",
+// Php => "PHP",
+// Protobuf => "Protocol Buffers",
+// Prolog => "Prolog",
+// Python => "Python",
+// Qcl => "QCL",
+// R => "R",
+// Ruby => "Ruby",
+// RubyHtml => "Ruby HTML",
+// Rust => "Rust",
+// Sass => "Sass",
+// Scala => "Scala",
+// Sml => "Standard ML",
+// Sql => "SQL",
+// Swift => "Swift",
+// Tex => "TeX",
+// Text => "Plain Text",
+// Toml => "TOML",
+// TypeScript => "TypeScript",
+// UnrealScript => "Unreal Script",
+// VimScript => "Vim Script",
+// Wolfram => "Wolfram",
+// Xml => "XML",
+// Yaml => "YAML",
+// Zsh => "Zsh",
+// }
+// Error::Parse
+// }
 
 
 impl LanguageType {

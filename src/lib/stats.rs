@@ -1,7 +1,8 @@
 use std::fmt;
 
 /// A struct representing the statistics of a file.
-#[derive(Clone, Default, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
+#[derive(Clone, Default, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Stats {
     /// Number of blank lines within the file.
     pub blanks: usize,

@@ -49,14 +49,24 @@
 #[macro_use]
 extern crate maplit;
 #[macro_use]
+#[cfg(feature = "io")]
 extern crate serializable_enum;
 extern crate glob;
 extern crate rayon;
+#[cfg(feature = "io")]
 extern crate serde;
+#[cfg(feature = "cbor")]
 extern crate serde_cbor;
+#[cfg(feature = "json")]
 extern crate serde_json;
+#[cfg(feature = "yaml")]
 extern crate serde_yaml;
+#[cfg(feature = "toml")]
 extern crate toml;
 extern crate walkdir;
 
-include!(concat!(env!("OUT_DIR"), "/lib.rs"));
+#[cfg(feature = "io")]
+include!(concat!(env!("OUT_DIR"), "/lib.rs.in"));
+
+#[not(cfg(feature = "io"))]
+include!("lib.rs.in");

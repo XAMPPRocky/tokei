@@ -21,9 +21,18 @@ name = "tokei"
 path = "src/main.rs"
 doc = false
 
+[features]
+default = []
+io = ["serde_codegen", "serde", "serializable_enum"]
+json = ["io", "serde_json"]
+cbor = ["io", "rustc-serialize","serde_cbor"]
+toml-io = ["io", "toml/serde"]
+yaml = ["io", "serde_yaml"]
+all = ["json", "cbor", "toml-io", "yaml"]
+
 # For building serde in stable.
 [build-dependencies]
-serde_codegen = "0.7.10"
+serde_codegen = {version = "0.7.10", optional = true}
 
 # Dependencies, and why they are used.
 # - Clap: For CLI argument parsing.
@@ -43,15 +52,16 @@ clap = {version = "2.5.1", features = ["yaml"]}
 glob = "0.2.11"
 maplit = "0.1.3"
 rayon = "0.3.1"
-rustc-serialize = "0.3.19"
-serde = "0.7.10"
-serde_cbor = "0.3.3"
-serde_json = "0.7.1"
-serde_yaml = "0.2.5"
-serializable_enum = "0.3.0"
+rustc-serialize = { version = "0.3.19", optional = true }
+serde = { version = "0.7.10", optional = true }
+serde_cbor = {version = "0.3.3", optional = true }
+serde_json = { version = "0.7.1", optional = true }
+serde_yaml = { version = "0.2.5", optional = true }
+serializable_enum = { version = "0.3.0", optional = true }
 walkdir = "0.1.5"
 
 [dependencies.toml]
 version = "0.1.30"
 default-features = false
 features = ["serde"]
+optional = true

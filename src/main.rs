@@ -4,10 +4,15 @@
 
 #[macro_use]
 extern crate clap;
+#[cfg(feature = "cbor")]
 extern crate serde_cbor;
+#[cfg(feature = "json")]
 extern crate serde_json;
+#[cfg(feature = "yaml")]
 extern crate serde_yaml;
+#[cfg(feature = "toml-io")]
 extern crate toml;
+#[cfg(feature = "cbor")]
 extern crate rustc_serialize;
 extern crate tokei;
 
@@ -20,17 +25,38 @@ use std::time::Duration;
 use std::sync::mpsc::channel;
 
 use clap::App;
+#[cfg(feature = "cbor")]
 use rustc_serialize::hex::FromHex;
 
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort::*;
-pub const ROW: &'static str = "-------------------------------------------------------------------\
+const ROW: &'static str = "-------------------------------------------------------------------\
                                 ------------";
-pub const BLANKS: &'static str = "blanks";
-pub const COMMENTS: &'static str = "comments";
-pub const CODE: &'static str = "code";
-pub const FILES: &'static str = "files";
-pub const LINES: &'static str = "lines";
+const BLANKS: &'static str = "blanks";
+const COMMENTS: &'static str = "comments";
+const CODE: &'static str = "code";
+const FILES: &'static str = "files";
+const LINES: &'static str = "lines";
+const OUTPUT_ERROR: &'static str = "This version of tokei was compiled without any serialization
+    formats, to enable serialization, reinstall tokei with the features flag.
+
+        ALL:
+        cargo install tokei --features all
+
+        JSON:
+        cargo install tokei --features json
+
+        CBOR:
+        cargo install tokei --features cbor
+
+        TOML:
+        cargo install tokei --features toml
+
+        YAML:
+        cargo install toke --features yaml
+
+    You can also have any mix of json cbor toml, or yaml.
+";
 
 fn main() {
     // Get options at the beginning, so the program doesn't have to make any extra calls to get the
@@ -158,19 +184,7 @@ fn main() {
     }
 
     if let Some(format) = output_option {
-        match &*format {
-            "cbor" => {
-                let cbor: Vec<_> = languages.to_cbor().unwrap();
-
-                for byte in cbor {
-                    print!("{:02x}", byte);
-                }
-            }
-            "json" => print!("{}", languages.to_json().unwrap()),
-            "toml" => print!("{}", languages.to_toml()),
-            "yaml" => print!("{}", languages.to_yaml().unwrap()),
-            _ => unreachable!(),
-        }
+        match_output(&format);
     } else if let Some(sort_category) = sort_option {
 
         for (_, ref mut language) in &mut languages {
@@ -229,8 +243,8 @@ fn main() {
 
 /// This originally  too a &[u8], but the u8 didn't directly correspond with the hexadecimal u8, so
 /// it had to be changed to a String, and add the rustc_serialize dependency.
+#[cfg(feature = "io")]
 pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language>> {
-
     if contents.is_empty() {
         None
     } else if let Ok(result) = serde_json::from_str(&*contents) {
@@ -248,6 +262,34 @@ pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language
     } else {
         None
     }
+}
+
+#[cfg(feature = "io")]
+fn match_output(format: &str) {
+    match format {
+        "cbor" => {
+            // let cbor: Vec<u8> = languages.to_cbor().unwrap();
+
+            // for byte in cbor {
+            //    print!("{:02x}", byte);
+            // }
+        }
+        "json" => print!("{}", languages.to_json().unwrap()),
+        "toml" => print!("{}", languages.to_toml()),
+        "yaml" => print!("{}", languages.to_yaml().unwrap()),
+        _ => unreachable!(),
+    }
+}
+
+#[cfg(not(feature = "io"))]
+fn match_output(format: &str) -> ! {
+    panic!(OUTPUT_ERROR)
+}
+
+
+#[cfg(not(feature = "io"))]
+pub fn convert_input(contents: String) -> ! {
+    panic!(OUTPUT_ERROR);
 }
 
 fn print_language<'a, C>(language: &'a Language, name: C)
