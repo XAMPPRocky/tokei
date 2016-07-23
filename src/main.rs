@@ -90,32 +90,7 @@ fn main() {
     let paths: Vec<&str> = matches.values_of("input").unwrap().collect();
 
     if let Some(input) = input_option {
-        let map = match File::open(input) {
-            Ok(mut file) => {
-                let contents = {
-                    let mut contents = String::new();
-                    file.read_to_string(&mut contents).unwrap();
-                    contents
-                };
-
-                convert_input(contents)
-            }
-            Err(_) => {
-                if input == "stdin" {
-                    let mut stdin = std::io::stdin();
-                    let mut buffer = String::new();
-
-                    let _ = stdin.read_to_string(&mut buffer);
-                    convert_input(buffer)
-                } else {
-                    convert_input(String::from(input))
-                }
-            }
-        };
-
-        if let Some(map) = map {
-            languages += map;
-        }
+        add_input(input, &mut languages);
     }
 
     if output_option == None {
@@ -238,6 +213,43 @@ fn main() {
                  total.blanks);
         println!("{}", ROW);
     }
+}
+
+
+#[cfg(feature = "io")]
+fn add_input(input: &str, map: &mut BTreeMap<LanguageType, Language>) {
+    let map = match File::open(input) {
+        Ok(mut file) => {
+            let contents = {
+                let mut contents = String::new();
+                file.read_to_string(&mut contents).unwrap();
+                contents
+            };
+
+            convert_input(contents)
+        }
+        Err(_) => {
+            if input == "stdin" {
+                let mut stdin = std::io::stdin();
+                let mut buffer = String::new();
+
+                let _ = stdin.read_to_string(&mut buffer);
+                convert_input(buffer)
+            } else {
+                convert_input(String::from(input))
+            }
+        }
+    };
+
+    if let Some(map) = map {
+        languages += map;
+    }
+
+}
+
+#[cfg(not(feature = "io"))]
+fn add_input(input: &str, map: &mut BTreeMap<LanguageType, Language>) -> ! {
+    panic!(OUTPUT_ERROR)
 }
 
 
