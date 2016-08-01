@@ -28,8 +28,8 @@ rayon = "~0.4.0"
 walkdir = "~0.1.5"
 
 [dependencies.clap]
-version = "~2.10.0"
 features = ["yaml"]
+version = "~2.10.0"
 
 [dependencies.rustc-serialize]
 optional = true
@@ -54,8 +54,8 @@ version = "~0.4.0"
 [dependencies.toml]
 default-features = false
 features = ["serde"]
+version = "~0.2.0"
 optional = true
-git = "https://github.com/alexcrichton/toml-rs"
 
 [features]
 all = ["json", "cbor", "toml-io", "yaml"]

@@ -6,6 +6,9 @@ Updated various dependencies.
 
 Internal dependencies removed.
 
+## Regressions
+- CBOR is not supported till it supports `serde 0.8`
+
 **Added languages**
 
 - Handlebars

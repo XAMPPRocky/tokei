@@ -12,7 +12,7 @@ dependencies = [
  "serde_codegen 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_yaml 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.1.30 (git+https://github.com/alexcrichton/toml-rs)",
+ "toml 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "walkdir 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -292,8 +292,8 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.1.30"
-source = "git+https://github.com/alexcrichton/toml-rs#dd109bc9e9b8a6a5585e8bf1093ec84dcad61309"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "serde 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
