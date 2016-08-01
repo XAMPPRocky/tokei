@@ -1,67 +1,71 @@
-# Copyright (c) 2015 Aaron Power
-# Use of this source code is governed by the MIT/APACHE2.0 license that can be
-# found in the LICENCE-{APACHE, MIT} file.
 [package]
-name = "tokei"
-version = "3.0.2"
 authors = ["Aaronepower <theaaronepower@gmail.com>"]
-repository = "https://github.com/Aaronepower/tokei.git"
-homepage = "https://aaronepower.github.io/tokei/"
-license = "MIT/Apache-2.0"
-readme = "README.md"
-description = "Count code, quickly."
 build = "src/lib/build.rs"
+description = "Count code, quickly."
+homepage = "https://aaronepower.github.io/tokei/"
 include = ["src/**/*", "cli.yml", "Cargo.toml", "LICENCE-APACHE.md", "LICENCE-MIT.md"]
-[lib]
+license = "MIT/Apache-2.0"
 name = "tokei"
-path = "src/lib/lib.rs"
+readme = "README.md"
+repository = "https://github.com/Aaronepower/tokei.git"
+version = "3.0.2"
 
 [[bin]]
+doc = false
 name = "tokei"
 path = "src/main.rs"
-doc = false
 
-[features]
-default = []
-io = ["serde_codegen", "serde", "serializable_enum"]
-json = ["io", "serde_json"]
-cbor = ["io", "rustc-serialize","serde_cbor"]
-toml-io = ["io", "toml/serde"]
-yaml = ["io", "serde_yaml"]
-all = ["json", "cbor", "toml-io", "yaml"]
-
-# For building serde in stable.
 [build-dependencies]
-serde_codegen = {version = "0.7.10", optional = true}
 
-# Dependencies, and why they are used.
-# - Clap: For CLI argument parsing.
-# - Glob: When a user passes in a ./*.rs path.
-# - Maplit: Cleaner initialization of the language map.
-# - Rayon: Parallelization of language analysation.
-# - Rustc-serialize: Converting String to hex, for CBOR.
-# - Serde: Converting Language struct to other formats.
-# - Serde_cbor: To CBOR. http://cbor.io/
-# - Serde_json: To JSON. http://json.org/
-# - Serde_yaml: To YAML. http://yaml.org/
-# - serializable_enum: To fix a dumb change in behaviour in serde, hopefully to be removed next release. https://github.com/serde-rs/serde/issues/251
-# - Toml: To TOML https://github.com/toml-lang/toml
-# - Walkdir: Handling recursively reading directories across Windows, OSX, and UNIX.
+[build-dependencies.serde_codegen]
+optional = true
+version = "0.8.0"
+
 [dependencies]
-clap = {version = "2.5.1", features = ["yaml"]}
-glob = "0.2.11"
-maplit = "0.1.3"
-rayon = "0.3.1"
-rustc-serialize = { version = "0.3.19", optional = true }
-serde = { version = "0.7.10", optional = true }
-serde_cbor = {version = "0.3.3", optional = true }
-serde_json = { version = "0.7.1", optional = true }
-serde_yaml = { version = "0.2.5", optional = true }
-serializable_enum = { version = "0.3.0", optional = true }
-walkdir = "0.1.5"
+glob = "~0.2.11"
+maplit = "~0.1.3"
+rayon = "~0.4.0"
+walkdir = "~0.1.5"
+
+[dependencies.clap]
+version = "~2.10.0"
+features = ["yaml"]
+
+[dependencies.rustc-serialize]
+optional = true
+version = "~0.3.19"
+
+[dependencies.serde]
+optional = true
+version = "~0.8.0"
+
+[dependencies.serde_cbor]
+optional = true
+version = "~0.3.3"
+
+[dependencies.serde_json]
+optional = true
+version = "~0.8.0"
+
+[dependencies.serde_yaml]
+optional = true
+version = "~0.4.0"
 
 [dependencies.toml]
-version = "0.1.30"
 default-features = false
 features = ["serde"]
 optional = true
+version = "~0.1.30"
+
+[features]
+all = ["json", "cbor", "toml-io", "yaml"]
+cbor = ["io", "rustc-serialize", "serde_cbor"]
+default = []
+io = ["serde_codegen", "serde"]
+json = ["io", "serde_json"]
+toml-io = ["io", "toml/serde"]
+yaml = ["io", "serde_yaml"]
+
+[lib]
+name = "tokei"
+path = "src/lib/lib.rs"

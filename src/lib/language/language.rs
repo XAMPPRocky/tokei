@@ -6,8 +6,8 @@ use sort::Sort::*;
 use stats::Stats;
 
 /// Struct representing a single Language.
-#[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
-#[derive(Clone, Debug,  Default, Eq, Ord, PartialEq, PartialOrd)]
+#[cfg_attr(feature = "io", derive(Clone, Debug, Deserialize, Default, Eq, Ord, PartialEq, PartialOrd, Serialize))]
+#[cfg(feature = "io")]
 pub struct Language {
     /// Number of blank lines.
     pub blanks: usize,
@@ -16,22 +16,46 @@ pub struct Language {
     /// Number of comments(both single, and multi-line)
     pub comments: usize,
     /// A collection of files to be analysed.
-    #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
+    #[serde(skip_deserializing, skip_serializing)]
     pub files: Vec<PathBuf>,
     /// A collection of statistics based on the files provide from `files`
     pub stats: Vec<Stats>,
     /// Number of total lines.
     pub lines: usize,
     /// A collection of single line comments in the language. ie. `//` in Rust.
-    #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
+    #[serde(skip_deserializing, skip_serializing)]
     pub line_comment: Vec<&'static str>,
     /// A collection of tuples representing the start and end of multi line comments. ie. `/* comment */` in Rust.
-    #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
+    #[serde(skip_deserializing, skip_serializing)]
     pub multi_line: Vec<(&'static str, &'static str)>,
     /// Whether the language supports nested multi line comments or not.
-    #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
+    #[serde(skip_deserializing, skip_serializing)]
     pub nested: bool,
 }
+
+#[cfg(not(feature = "io"))]
+#[derive(Clone, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
+pub struct Language {
+    /// Number of blank lines.
+    pub blanks: usize,
+    /// Number of lines of code.
+    pub code: usize,
+    /// Number of comments(both single, and multi-line)
+    pub comments: usize,
+    /// A collection of files to be analysed.
+    pub files: Vec<PathBuf>,
+    /// A collection of statistics based on the files provide from `files`
+    pub stats: Vec<Stats>,
+    /// Number of total lines.
+    pub lines: usize,
+    /// A collection of single line comments in the language. ie. `//` in Rust.
+    pub line_comment: Vec<&'static str>,
+    /// A collection of tuples representing the start and end of multi line comments. ie. `/* comment */` in Rust.
+    pub multi_line: Vec<(&'static str, &'static str)>,
+    /// Whether the language supports nested multi line comments or not.
+    pub nested: bool,
+}
+
 
 impl Language {
     /// Constructs a new  empty Language with the comments provided.

@@ -48,9 +48,6 @@
 
 #[macro_use]
 extern crate maplit;
-#[macro_use]
-#[cfg(feature = "io")]
-extern crate serializable_enum;
 extern crate glob;
 extern crate rayon;
 #[cfg(feature = "io")]
@@ -68,5 +65,5 @@ extern crate walkdir;
 #[cfg(feature = "io")]
 include!(concat!(env!("OUT_DIR"), "/lib.rs.in"));
 
-#[not(cfg(feature = "io"))]
+#[cfg(not(feature = "io"))]
 include!("lib.rs.in");
