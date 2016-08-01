@@ -6,6 +6,15 @@ rust:
 - stable
 - beta
 - nightly
+script:
+    - cargo build --verbose --release
+    - cargo build --verbose  --release --features io
+    - cargo build --verbose --release --features json
+    - cargo build --verbose --release --features yaml
+    - cargo build --verbose --release --features toml-io
+    - cargo build --verbose --release --features all
+    - cargo test --verbose --release
+    - cargo test --verbose --release --features all
 matrix:
   allow_failure:
   - rust: nightly

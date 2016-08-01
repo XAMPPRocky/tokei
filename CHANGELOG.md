@@ -1,3 +1,16 @@
+# 4.0.0
+
+Tokei now has a minimal version without `serde` for faster compilation.
+
+Updated various dependencies.
+
+Internal dependencies removed.
+
+**Added languages**
+
+- Handlebars
+
+
 # 3.0.0
 Tokei is now available as a library.
 
