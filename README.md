@@ -80,10 +80,10 @@ $ tokei ./foo, ./bar, ./baz
 ```
 
 #### Excluding folders
-The `--exclude` option will allow to pass in a sequence of string to exclude any path including those words
+The `--exclude` option accepts a comma-separated list of strings. Any file or directory containing a term will be ignored:
 
 ```shell
-$ tokei ./foo --exclude node_modules, target
+$ tokei ./foo --exclude node_modules,.cache,tmp target
 ```
 
 #### Sorting output
