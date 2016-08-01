@@ -40,19 +40,7 @@ const LINES: &'static str = "lines";
 const OUTPUT_ERROR: &'static str = "This version of tokei was compiled without any serialization
     formats, to enable serialization, reinstall tokei with the features flag.
 
-        ALL:
         cargo install tokei --features all
-
-        JSON:
-        cargo install tokei --features json
-
-        TOML:
-        cargo install tokei --features toml
-
-        YAML:
-        cargo install toke --features yaml
-
-    You can also have any mix of json, toml, or yaml.
 ";
 
 fn main() {
@@ -213,7 +201,7 @@ fn main() {
 }
 
 
-#[cfg(feature = "io")]
+#[cfg(feature = "all")]
 fn add_input(input: &str, languages: &mut Languages) {
     use std::fs::File;
     use std::io::Read;
@@ -256,7 +244,7 @@ fn add_input(input: &str, map: &mut Languages) -> ! {
 
 /// This originally  too a &[u8], but the u8 didn't directly correspond with the hexadecimal u8, so
 /// it had to be changed to a String, and add the rustc_serialize dependency.
-#[cfg(feature = "io")]
+#[cfg(feature = "all")]
 pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language>> {
     if contents.is_empty() {
         None
@@ -271,7 +259,7 @@ pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language
     }
 }
 
-#[cfg(feature = "io")]
+#[cfg(feature = "all")]
 fn match_output(format: &str, languages: &Languages) {
     match format {
         "cbor" => {
