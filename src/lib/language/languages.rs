@@ -9,8 +9,8 @@ use std::io::Read;
 use std::iter::IntoIterator;
 use std::ops::{AddAssign, Deref, DerefMut};
 
-#[cfg(feature = "cbor")]
-use serde_cbor;
+// #[cfg(feature = "cbor")]
+// use serde_cbor;
 #[cfg(feature = "json")]
 use serde_json;
 #[cfg(feature = "yaml")]
@@ -24,9 +24,11 @@ use super::{Language, LanguageType};
 use super::LanguageType::*;
 use stats::Stats;
 
-const CBOR_ERROR: &'static str = "Tokei was not compiled with the `cbor` flag.";
+#[cfg(not(feature = "json"))]
 const JSON_ERROR: &'static str = "Tokei was not compiled with the `json` flag.";
+#[cfg(not(feature = "toml-io"))]
 const TOML_ERROR: &'static str = "Tokei was not compiled with the `toml-io` flag.";
+#[cfg(not(feature = "yaml"))]
 const YAML_ERROR: &'static str = "Tokei was not compiled with the `yaml` flag.";
 
 /// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
@@ -37,34 +39,34 @@ pub struct Languages {
 
 
 impl Languages {
-    /// Creates a `Languages` struct from cbor.
-    ///
-    /// ```
-    /// # extern crate tokei;
-    /// # use tokei::*;
-    /// # extern crate rustc_serialize;
-    /// # use rustc_serialize::hex::FromHex;
-    /// # fn main () {
-    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e7473\
-    ///     0065737461747381a566626c616e6b730564636f64650c68636f6d6d656e74730065\
-    ///     6c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e\
-    ///     6573116b746f74616c5f66696c657301";
-    ///
-    /// let mut languages = Languages::from_cbor(&*cbor.from_hex().unwrap()).unwrap();
-    /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
-    /// # }
-    /// ```
-    #[cfg(feature = "cbor")]
-    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self> {
-        let map = try!(serde_cbor::from_slice(cbor.into()));
+    // /// Creates a `Languages` struct from cbor.
+    // ///
+    // /// ```
+    // /// # extern crate tokei;
+    // /// # use tokei::*;
+    // /// # extern crate rustc_serialize;
+    // /// # use rustc_serialize::hex::FromHex;
+    // /// # fn main () {
+    // /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e7473\
+    // ///     0065737461747381a566626c616e6b730564636f64650c68636f6d6d656e74730065\
+    // ///     6c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e\
+    // ///     6573116b746f74616c5f66696c657301";
+    // ///
+    // /// let mut languages = Languages::from_cbor(&*cbor.from_hex().unwrap()).unwrap();
+    // /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
+    // /// # }
+    // /// ```
+    // #[cfg(feature = "cbor")]
+    // pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self> {
+    //    let map = try!(serde_cbor::from_slice(cbor.into()));
+    //
+    //    Ok(Self::from_previous(map))
+    // }
 
-        Ok(Self::from_previous(map))
-    }
-
-    #[cfg(not(feature = "cbor"))]
-    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> ! {
-        panic!(CBOR_ERROR)
-    }
+    // #[cfg(not(feature = "cbor"))]
+    // pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> ! {
+    // panic!(CBOR_ERROR)
+    // }
 
     /// Creates a `Languages` struct from json.
     ///
@@ -98,6 +100,7 @@ impl Languages {
     }
 
     #[cfg(not(feature = "json"))]
+    #[allow(unused_variables)]
     pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> ! {
         panic!(JSON_ERROR)
     }
@@ -134,10 +137,12 @@ impl Languages {
     }
 
     #[cfg(not(feature = "yaml"))]
+    #[allow(unused_variables)]
     pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> ! {
         panic!(YAML_ERROR)
     }
 
+    #[cfg(feature = "io")]
     fn from_previous(map: BTreeMap<LanguageType, Language>) -> Self {
         let mut _self = Self::new();
 
@@ -292,6 +297,7 @@ impl Languages {
             FortranLegacy => Language::new_single(vec!["c","C","!","*"]),
             FortranModern => Language::new_single(vec!["!"]),
             Go => Language::new_c(),
+            Handlebars => Language::new_multi(vec![("<!--", "-->"), ("{{!", "}}")]),
             Haskell => Language::new_single(vec!["--"]),
             Html => Language::new_html(),
             Idris => Language::new(vec!["--"], vec![("{-", "-}")]),
@@ -379,35 +385,36 @@ impl Languages {
         map
     }
 
-    /// Converts `Languages` to CBOR.
-    ///
-    /// ```no_run
-    /// extern crate tokei;
-    /// # use tokei::*;
-    /// extern crate rustc_serialize;
-    /// use rustc_serialize::hex::ToHex;
-    ///
-    /// # fn main () {
-    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e74730\
-    ///     065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300656c\
-    ///     696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e657\
-    ///     3116b746f74616c5f66696c657301";
-    ///
-    /// let mut languages = Languages::new();
-    /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
-    ///
-    /// assert_eq!(cbor, languages.to_cbor().unwrap().to_hex());
-    /// # }
-    /// ```
-    #[cfg(feature = "cbor")]
-    pub fn to_cbor(&self) -> Result<Vec<u8>, serde_cbor::Error> {
-        serde_cbor::to_vec(&self.remove_empty())
-    }
+    // /// Converts `Languages` to CBOR.
+    // ///
+    // /// ```no_run
+    // /// extern crate tokei;
+    // /// # use tokei::*;
+    // /// extern crate rustc_serialize;
+    // /// use rustc_serialize::hex::ToHex;
+    // ///
+    // /// # fn main () {
+    // /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e74730\
+    // ///     065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300656c\
+    // ///     696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e657\
+    // ///     3116b746f74616c5f66696c657301";
+    // ///
+    // /// let mut languages = Languages::new();
+    // /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
+    // ///
+    // /// assert_eq!(cbor, languages.to_cbor().unwrap().to_hex());
+    // /// # }
+    // /// ```
+    // #[cfg(feature = "cbor")]
+    // pub fn to_cbor(&self) -> Result<Vec<u8>, serde_cbor::Error> {
+    // serde_cbor::to_vec(&self.remove_empty())
+    // }
 
-    #[cfg(not(feature = "cbor"))]
-    pub fn to_cbor(&self) -> ! {
-        panic!(CBOR_ERROR)
-    }
+    // #[cfg(not(feature = "cbor"))]
+    // #[allow(unused_variables)]
+    // pub fn to_cbor(&self) -> ! {
+    // panic!(CBOR_ERROR)
+    // }
 
     /// Converts `Languages` to JSON.
     ///
@@ -442,6 +449,7 @@ impl Languages {
     }
 
     #[cfg(not(feature = "json"))]
+    #[allow(unused_variables)]
     pub fn to_json(&self) -> ! {
         panic!(JSON_ERROR)
     }
@@ -452,6 +460,7 @@ impl Languages {
     }
 
     #[cfg(not(feature = "toml-io"))]
+    #[allow(unused_variables)]
     pub fn to_toml(&self) -> ! {
         panic!(TOML_ERROR)
     }
@@ -484,6 +493,7 @@ impl Languages {
     }
 
     #[cfg(not(feature = "yaml"))]
+    #[allow(unused_variables)]
     pub fn to_yaml(&self) -> ! {
         panic!(YAML_ERROR)
     }

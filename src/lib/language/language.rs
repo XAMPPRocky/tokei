@@ -6,8 +6,8 @@ use sort::Sort::*;
 use stats::Stats;
 
 /// Struct representing a single Language.
-#[cfg_attr(feature = "io", derive(Clone, Debug, Deserialize, Default, Eq, Ord, PartialEq, PartialOrd, Serialize))]
 #[cfg(feature = "io")]
+#[cfg_attr(feature = "io", derive(Clone, Debug, Deserialize, Default, Eq, Ord, PartialEq, PartialOrd, Serialize))]
 pub struct Language {
     /// Number of blank lines.
     pub blanks: usize,

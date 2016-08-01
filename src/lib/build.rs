@@ -1,16 +1,15 @@
 #[cfg(feature = "io")]
 extern crate serde_codegen;
 
-use std::env;
-use std::path::Path;
-
-pub fn main() {
+fn main() {
     expand();
 }
 
-
 #[cfg(feature = "io")]
 fn expand() {
+    use std::env;
+    use std::path::Path;
+
     let out_dir = env::var_os("OUT_DIR").unwrap();
 
     let src = Path::new("src/lib/lib.rs.in");

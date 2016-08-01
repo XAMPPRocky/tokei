@@ -4,29 +4,28 @@
 
 #[macro_use]
 extern crate clap;
-#[cfg(feature = "cbor")]
-extern crate serde_cbor;
+// #[cfg(feature = "cbor")]
+// extern crate serde_cbor;
 #[cfg(feature = "json")]
 extern crate serde_json;
 #[cfg(feature = "yaml")]
 extern crate serde_yaml;
 #[cfg(feature = "toml-io")]
 extern crate toml;
-#[cfg(feature = "cbor")]
-extern crate rustc_serialize;
+// #[cfg(feature = "cbor")]
+// extern crate rustc_serialize;
 extern crate tokei;
 
 use std::borrow::Cow;
+#[cfg(feature = "io")]
 use std::collections::BTreeMap;
-use std::fs::File;
-use std::io::Read;
 use std::thread;
 use std::time::Duration;
 use std::sync::mpsc::channel;
 
 use clap::App;
-#[cfg(feature = "cbor")]
-use rustc_serialize::hex::FromHex;
+// #[cfg(feature = "cbor")]
+// use rustc_serialize::hex::FromHex;
 
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort::*;
@@ -37,6 +36,7 @@ const COMMENTS: &'static str = "comments";
 const CODE: &'static str = "code";
 const FILES: &'static str = "files";
 const LINES: &'static str = "lines";
+#[cfg(not(feature = "io"))]
 const OUTPUT_ERROR: &'static str = "This version of tokei was compiled without any serialization
     formats, to enable serialization, reinstall tokei with the features flag.
 
@@ -46,16 +46,13 @@ const OUTPUT_ERROR: &'static str = "This version of tokei was compiled without a
         JSON:
         cargo install tokei --features json
 
-        CBOR:
-        cargo install tokei --features cbor
-
         TOML:
         cargo install tokei --features toml
 
         YAML:
         cargo install toke --features yaml
 
-    You can also have any mix of json cbor toml, or yaml.
+    You can also have any mix of json, toml, or yaml.
 ";
 
 fn main() {
@@ -159,7 +156,7 @@ fn main() {
     }
 
     if let Some(format) = output_option {
-        match_output(&format);
+        match_output(&format, &languages);
     } else if let Some(sort_category) = sort_option {
 
         for (_, ref mut language) in &mut languages {
@@ -217,7 +214,10 @@ fn main() {
 
 
 #[cfg(feature = "io")]
-fn add_input(input: &str, map: &mut BTreeMap<LanguageType, Language>) {
+fn add_input(input: &str, languages: &mut Languages) {
+    use std::fs::File;
+    use std::io::Read;
+
     let map = match File::open(input) {
         Ok(mut file) => {
             let contents = {
@@ -242,13 +242,14 @@ fn add_input(input: &str, map: &mut BTreeMap<LanguageType, Language>) {
     };
 
     if let Some(map) = map {
-        languages += map;
+        *languages += map;
     }
 
 }
 
 #[cfg(not(feature = "io"))]
-fn add_input(input: &str, map: &mut BTreeMap<LanguageType, Language>) -> ! {
+#[allow(unused_variables)]
+fn add_input(input: &str, map: &mut Languages) -> ! {
     panic!(OUTPUT_ERROR)
 }
 
@@ -263,12 +264,6 @@ pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language
         Some(result)
     } else if let Ok(result) = serde_yaml::from_str(&*contents) {
         Some(result)
-    } else if let Ok(hex) = contents.from_hex() {
-        if let Ok(result) = serde_cbor::from_slice(&*hex) {
-            Some(result)
-        } else {
-            None
-        }
     } else if let Some(result) = toml::decode_str(&*contents) {
         Some(result)
     } else {
@@ -277,7 +272,7 @@ pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language
 }
 
 #[cfg(feature = "io")]
-fn match_output(format: &str) {
+fn match_output(format: &str, languages: &Languages) {
     match format {
         "cbor" => {
             // let cbor: Vec<u8> = languages.to_cbor().unwrap();
@@ -294,12 +289,14 @@ fn match_output(format: &str) {
 }
 
 #[cfg(not(feature = "io"))]
-fn match_output(format: &str) -> ! {
+#[allow(unused_variables)]
+fn match_output(format: &str, languages: &Languages) -> ! {
     panic!(OUTPUT_ERROR)
 }
 
 
 #[cfg(not(feature = "io"))]
+#[allow(unused_variables)]
 pub fn convert_input(contents: String) -> ! {
     panic!(OUTPUT_ERROR);
 }

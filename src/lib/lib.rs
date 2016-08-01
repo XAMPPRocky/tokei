@@ -52,13 +52,13 @@ extern crate glob;
 extern crate rayon;
 #[cfg(feature = "io")]
 extern crate serde;
-#[cfg(feature = "cbor")]
-extern crate serde_cbor;
+// #[cfg(feature = "cbor")]
+// extern crate serde_cbor;
 #[cfg(feature = "json")]
 extern crate serde_json;
 #[cfg(feature = "yaml")]
 extern crate serde_yaml;
-#[cfg(feature = "toml")]
+#[cfg(feature = "toml-io")]
 extern crate toml;
 extern crate walkdir;
 

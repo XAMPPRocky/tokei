@@ -55,7 +55,7 @@ version = "~0.4.0"
 default-features = false
 features = ["serde"]
 optional = true
-version = "~0.1.30"
+git = "https://github.com/alexcrichton/toml-rs"
 
 [features]
 all = ["json", "cbor", "toml-io", "yaml"]

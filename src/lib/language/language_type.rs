@@ -61,6 +61,8 @@ pub enum LanguageType {
     FortranModern,
     /// Go
     Go,
+    /// Handlebars
+    Handlebars,
     /// Haskell
     Haskell,
     /// Html
@@ -198,6 +200,7 @@ impl LanguageType {
             FortranLegacy => "FORTRAN Legacy",
             FortranModern => "FORTRAN Modern",
             Go => "Go",
+            Handlebars => "Handlebars",
             Haskell => "Haskell",
             Html => "HTML",
             Idris => "Idris",
@@ -283,6 +286,7 @@ impl LanguageType {
                 "f03" | "f08" | "f90" | "f95" => Some(FortranModern),
                 "go" => Some(Go),
                 "h" => Some(CHeader),
+                "hbs" | "handlebars" => Some(Handlebars),
                 "hh" | "hpp" | "hxx" => Some(CppHeader),
                 "hs" => Some(Haskell),
                 "html" => Some(Html),
@@ -371,6 +375,7 @@ impl From<String> for LanguageType {
             "FortranLegacy" => FortranLegacy,
             "FortranModern" => FortranModern,
             "Go" => Go,
+            "Handlebars" => Handlebars,
             "Haskell" => Haskell,
             "Html" => Html,
             "Idris" => Idris,
