@@ -15,6 +15,8 @@ use self::LanguageType::*;
 pub enum LanguageType {
     /// ActionScript
     ActionScript,
+    /// Ada
+    Ada,
     /// Assembly
     Assembly,
     /// Autoconf
@@ -55,6 +57,8 @@ pub enum LanguageType {
     DeviceTree,
     /// Erlang
     Erlang,
+    /// Forth
+    Forth,
     /// FortranLegacy
     FortranLegacy,
     /// FortranModern
@@ -177,6 +181,7 @@ impl LanguageType {
     pub fn name(&self) -> &'static str {
         match *self {
             ActionScript => "ActionScript",
+            Ada => "Ada",
             Assembly => "Assembly",
             Autoconf => "Autoconf",
             Bash => "BASH",
@@ -197,6 +202,7 @@ impl LanguageType {
             Dart => "Dart",
             DeviceTree => "Device Tree",
             Erlang => "Erlang",
+            Forth => "Forth",
             FortranLegacy => "FORTRAN Legacy",
             FortranModern => "FORTRAN Modern",
             Go => "Go",
@@ -266,6 +272,7 @@ impl LanguageType {
         if let Some(extension) = get_extension(entry) {
             match &*extension {
                 "as" => Some(ActionScript),
+                "ada" | "adb" | "ads" => Some(Ada),
                 "bash" | "sh" => Some(Bash),
                 "bat" | "btm" | "cmd" => Some(Batch),
                 "c" | "ec" | "pgc" => Some(C),
@@ -282,6 +289,7 @@ impl LanguageType {
                 "dts" | "dtsi" => Some(DeviceTree),
                 "el" | "lisp" | "lsp" => Some(Lisp),
                 "erl" | "hrl" => Some(Erlang),
+                "4th" | "forth" | "fr" | "frt" | "fth" | "f83" | "fb" | "fpm" | "e4" | "rx" | "ft" => Some(Forth),
                 "f" | "for" | "ftn" | "f77" | "pfo" => Some(FortranLegacy),
                 "f03" | "f08" | "f90" | "f95" => Some(FortranModern),
                 "go" => Some(Go),
@@ -352,6 +360,7 @@ impl From<String> for LanguageType {
     fn from(from: String) -> Self {
         match &*from {
             "ActionScript" => ActionScript,
+            "Ada" => Ada,
             "Assembly" => Assembly,
             "Autoconf" => Autoconf,
             "Bash" => Bash,
@@ -372,6 +381,7 @@ impl From<String> for LanguageType {
             "Dart" => Dart,
             "DeviceTree" => DeviceTree,
             "Erlang" => Erlang,
+            "Forth" => Forth,
             "FortranLegacy" => FortranLegacy,
             "FortranModern" => FortranModern,
             "Go" => Go,

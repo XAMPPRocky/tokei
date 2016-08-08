@@ -274,6 +274,7 @@ impl Languages {
         use super::LanguageType::*;
         let map = btreemap! {
             ActionScript => Language::new_c(),
+            Ada => Language::new_single(vec!["--"]),
             Assembly => Language::new_single(vec![";"]),
             Autoconf => Language::new_single(vec!["#", "dnl"]),
             Bash => Language::new_hash(),
@@ -294,6 +295,7 @@ impl Languages {
             Dart => Language::new_c(),
             DeviceTree => Language::new_c(),
             Erlang => Language::new_single(vec!["%"]),
+            Forth => Language::new(vec!["\\"], vec![("(", ")")]),
             FortranLegacy => Language::new_single(vec!["c","C","!","*"]),
             FortranModern => Language::new_single(vec!["!"]),
             Go => Language::new_c(),

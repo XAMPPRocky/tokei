@@ -1,3 +1,13 @@
+# 4.1.0
+
+Tokei is now **~40%** faster.
+
+**Added languages**
+
+- Ada
+- Forth
+
+
 # 4.0.0
 
 Tokei now has a minimal version without `serde` for faster compilation.

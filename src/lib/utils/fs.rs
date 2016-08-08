@@ -20,41 +20,63 @@ pub fn has_trailing_comments(line: &str,
                              comment_end: &'static str,
                              nested: bool)
                              -> bool {
-    let mut in_comments: usize = 0;
-    for chars in line.chars().collect::<Vec<char>>().windows(comment.len()) {
-        let window = {
-            let mut window = String::new();
-            for ch in chars {
-                window.push(*ch);
-            }
-            window
-        };
+    let mut is_in_comments: u8 = 0;
 
-        if window == comment {
-            if nested {
-                in_comments += 1;
+    if let Some(start) = line.find(comment) {
+        if let Some(end) = line.rfind(comment_end) {
+
+            let section = &line[start..end + comment_end.len()];
+            
+            let length = if comment.len() > comment_end.len() {
+                comment.len()
             } else {
-                in_comments = 1;
+                comment_end.len()
+            };
+
+            let vec = section.chars().collect::<Vec<char>>();
+
+            for chars in vec.windows(length) {
+                let window = {
+                    let mut window = String::new();
+                    for ch in chars {
+                        window.push(*ch);
+                    }
+                    window
+                };
+
+                if window.contains(comment) {
+                    if nested {
+                        is_in_comments += 1;
+                    } else {
+                        is_in_comments = 1;
+                    }
+                    continue;
+                } else if window.contains(comment_end) {
+                    if nested && is_in_comments != 0 {
+                        is_in_comments -= 1;
+                    } else {
+                        is_in_comments = 0;
+                    }
+                    continue;
+                }
             }
-            continue;
-        } else if window == comment_end {
-            if nested && in_comments != 0 {
-                in_comments -= 1;
-            } else {
-                in_comments = 0;
-            }
-            continue;
+
+        } else {
+            is_in_comments = 1;
         }
     }
-    in_comments != 0
+
+    is_in_comments != 0
+
 }
 
 pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
                          ignored_directories: Cow<'a, [&'a str]>,
                          languages: &mut BTreeMap<LanguageType, Language>) {
     for path in &*paths {
-        // A small metadata check to check if the file actually exists, this is used over calling
-        // File::open because we're going to be passing the path to either glob() or WalkDir::new()
+        // A small metadata check to check if the file actually exists,
+        // this is used over calling  File::open because we're going to be
+        // passing the path to either glob() or WalkDir::new()
         if let Err(_) = Path::new(path).metadata() {
             if let Ok(paths) = glob(path) {
                 'path: for path in paths {
@@ -69,7 +91,8 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
                         languages.get_mut(&Makefile).unwrap()
                     } else {
                         opt_or_cont!(
-                            languages.get_mut(&opt_or_cont!(LanguageType::from_extension(&path))))
+                            languages.get_mut(
+                                &opt_or_cont!(LanguageType::from_extension(&path))))
                     };
 
                     language.files.push(path.to_owned());
