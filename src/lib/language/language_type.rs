@@ -289,7 +289,8 @@ impl LanguageType {
                 "dts" | "dtsi" => Some(DeviceTree),
                 "el" | "lisp" | "lsp" => Some(Lisp),
                 "erl" | "hrl" => Some(Erlang),
-                "4th" | "forth" | "fr" | "frt" | "fth" | "f83" | "fb" | "fpm" | "e4" | "rx" | "ft" => Some(Forth),
+                "4th" | "forth" | "fr" | "frt" | "fth" | "f83" | "fb" | "fpm" | "e4" | "rx" |
+                "ft" => Some(Forth),
                 "f" | "for" | "ftn" | "f77" | "pfo" => Some(FortranLegacy),
                 "f03" | "f08" | "f90" | "f95" => Some(FortranModern),
                 "go" => Some(Go),
@@ -358,6 +359,12 @@ impl LanguageType {
 
 impl From<String> for LanguageType {
     fn from(from: String) -> Self {
+        LanguageType::from(&*from)
+    }
+}
+
+impl<'a> From<&'a str> for LanguageType {
+    fn from(from: &str) -> Self {
         match &*from {
             "ActionScript" => ActionScript,
             "Ada" => Ada,

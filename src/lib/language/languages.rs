@@ -180,6 +180,8 @@ impl Languages {
             let is_fortran = name == &FortranModern || name == &FortranLegacy;
 
             let files: Vec<_> = language.files.drain(..).collect();
+            let mut contents = String::new();
+
             for file in files {
                 let mut is_in_comments = false;
                 let mut previous_comment_start = "";
@@ -187,7 +189,7 @@ impl Languages {
                 let mut stats = Stats::new(opt_or_cont!(file.to_str()));
 
                 let contents = {
-                    let mut contents = String::new();
+                    contents.clear();
                     let _ = rs_or_cont!(rs_or_cont!(File::open(file))
                         .read_to_string(&mut contents));
                     contents
@@ -217,39 +219,37 @@ impl Languages {
                         continue;
                     }
 
-                    for &(multi_line, multi_line_end) in &language.multi_line {
-                        if line.starts_with(multi_line) ||
-                           has_trailing_comments(line,
-                                                 multi_line,
-                                                 multi_line_end,
-                                                 language.nested) {
-                            previous_comment_start = multi_line;
-                            is_in_comments = true;
-                            if language.nested {
-                                comment_depth += 1;
-                            }
-                        }
-                    }
-
-
-                    if is_in_comments {
-                        for &(multi_line, multi_line_end) in &language.multi_line {
-                            if multi_line == previous_comment_start &&
-                               line.contains(multi_line_end) {
-                                if language.nested {
-                                    comment_depth -= 1;
-                                    if comment_depth == 0 {
-                                        is_in_comments = false;
-                                    }
-                                } else {
-                                    is_in_comments = false;
-                                }
-                            }
-                        }
-                        stats.comments += 1;
-                        continue;
-                    }
-
+                    stats.comments += handle_multi_line();
+                    // if line.starts_with(multi_line) {
+                    // if let Some(multi_line) = has_trailing_comments(line, &language) {
+                    // previous_comment_start = multi_line;
+                    // is_in_comments = true;
+                    // if language.nested {
+                    // comment_depth += 1;
+                    // }
+                    // }
+                    // }
+                    //
+                    //
+                    // if is_in_comments {
+                    // for &(multi_line, multi_line_end) in &language.multi_line {
+                    // if multi_line == previous_comment_start {
+                    // if let Some(pos) = line.find(multi_line_end) {
+                    // if language.nested {
+                    // comment_depth -= 1;
+                    // if comment_depth == 0 {
+                    // is_in_comments = false;
+                    // }
+                    // } else {
+                    // is_in_comments = false;
+                    // }
+                    // }
+                    // }
+                    // }
+                    // stats.comments += 1;
+                    // continue;
+                    // }
+                    //
                     for single in &language.line_comment {
                         if line.starts_with(single) {
                             stats.comments += 1;
@@ -291,7 +291,7 @@ impl Languages {
             CSharp => Language::new_c(),
             CShell => Language::new_hash(),
             Css => Language::new_c(),
-            D => Language::new_c(),
+            D => Language::new(vec!["//"], vec![("/*", "*/"), ("/+", "+/")]).nested(),
             Dart => Language::new_c(),
             DeviceTree => Language::new_c(),
             Erlang => Language::new_single(vec!["%"]),
@@ -575,5 +575,117 @@ impl Deref for Languages {
 impl DerefMut for Languages {
     fn deref_mut(&mut self) -> &mut BTreeMap<LanguageType, Language> {
         &mut self.inner
+    }
+}
+
+
+#[cfg(test)]
+mod accuracy_tests {
+    use super::*;
+    use std::io;
+
+    fn write(contents: &'static str, extension: &'static str) -> io::Result<()> {
+        use std::io::prelude::*;
+        use std::fs::File;
+
+        let mut f = try!(File::create(format!("./_temp/_temp_file.{}", extension)));
+
+        try!(f.write_all(&contents.as_bytes()));
+        Ok(())
+    }
+
+    fn cleanup() -> io::Result<()> {
+        try!(::std::fs::remove_dir_all("./_temp/"));
+        Ok(())
+    }
+
+    fn test_accuracy(ext: &'static str, num: u32, contents: &'static str) {
+        write(contents, ext).unwrap();
+        let mut l = Languages::new();
+
+        l.get_statistics(vec!["./temp/"], vec![]);
+
+        assert_eq!(num as usize,
+                   l.get_mut(&::language::LanguageType::from(ext)).unwrap().code);
+        let _ = cleanup();
+
+    }
+
+    #[test]
+    fn inside_quotes() {
+        test_accuracy("rs",
+                      8,
+                      "fn main() {
+            let start = \"/*\";
+            loop {
+                \
+                       if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
+                \
+                       break;
+                }
+            }
+        }
+        ")
+    }
+
+    #[test]
+    fn shouldnt_panic() {
+        test_accuracy("rs",
+                      9,
+                      "fn foo() {
+            let this_ends = \"a \\\"test/*.\";
+            \
+                       call1();
+            call2();
+            let this_does_not = /* a /* \
+                       nested */ comment \" */
+                                \"*/another /*test
+            \
+                       call3();
+            */\";
+        }")
+    }
+
+    #[test]
+    fn all_quotes_no_comment() {
+        test_accuracy("rs",
+                      10,
+                      "fn foobar() {
+        let does_not_start = // \"
+            \"until here,
+            \
+                       test/*
+            test\"; // a quote: \"
+        let also_doesnt_start = \
+                       /* \" */
+            \"until here,
+            test,*/
+            test\"; \
+                       // another quote: \"
+        }")
+    }
+
+    #[test]
+    fn commenting_on_comments() {
+        test_accuracy("rs",
+                      5,
+                      "fn foo() {
+            let a = 4; // /*
+            let b = 5;
+            \
+                       let c = 6; // */
+        }")
+    }
+
+    #[test]
+    fn deez_nesting_comments() {
+        test_accuracy("d",
+                      5,
+                      "void main() {
+            auto x = 5; /+ a /+ nested +/ comment /* +/
+            \
+                       writefln(\"hello\");
+            auto y = 4; // */
+        }")
     }
 }
