@@ -20,54 +20,38 @@ pub fn has_trailing_comments(line: &str,
                              comment_end: &'static str,
                              nested: bool)
                              -> bool {
-    let mut is_in_comments: u8 = 0;
+    let mut is_in_comments = 0u64;
 
-    if let Some(start) = line.find(comment) {
-        if let Some(end) = line.rfind(comment_end) {
+    let start = match line.find(comment) {
+        Some(start) => start,
+        None => return false,
+    };
 
-            let section = &line[start..end + comment_end.len()];
-            
-            let length = if comment.len() > comment_end.len() {
-                comment.len()
+    let end = match line.rfind(comment_end) {
+        Some(end) => end,
+        None => return true,
+    };
+
+    let mut chars = line[start..end + comment_end.len()].chars();
+    loop {
+        let window = chars.as_str();
+
+        if window.starts_with(comment) {
+            if nested {
+                is_in_comments += 1;
             } else {
-                comment_end.len()
-            };
-
-            let vec = section.chars().collect::<Vec<char>>();
-
-            for chars in vec.windows(length) {
-                let window = {
-                    let mut window = String::new();
-                    for ch in chars {
-                        window.push(*ch);
-                    }
-                    window
-                };
-
-                if window.contains(comment) {
-                    if nested {
-                        is_in_comments += 1;
-                    } else {
-                        is_in_comments = 1;
-                    }
-                    continue;
-                } else if window.contains(comment_end) {
-                    if nested && is_in_comments != 0 {
-                        is_in_comments -= 1;
-                    } else {
-                        is_in_comments = 0;
-                    }
-                    continue;
-                }
+                is_in_comments = 1;
             }
+        } else if window.starts_with(comment_end) {
+            is_in_comments = is_in_comments.saturating_sub(1);
+        }
 
-        } else {
-            is_in_comments = 1;
+        if chars.next().is_none() {
+            break;
         }
     }
 
     is_in_comments != 0
-
 }
 
 pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
