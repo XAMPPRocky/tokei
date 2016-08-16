@@ -219,37 +219,34 @@ impl Languages {
                         continue;
                     }
 
-                    stats.comments += handle_multi_line();
-                    // if line.starts_with(multi_line) {
-                    // if let Some(multi_line) = has_trailing_comments(line, &language) {
-                    // previous_comment_start = multi_line;
-                    // is_in_comments = true;
-                    // if language.nested {
-                    // comment_depth += 1;
-                    // }
-                    // }
-                    // }
-                    //
-                    //
-                    // if is_in_comments {
-                    // for &(multi_line, multi_line_end) in &language.multi_line {
-                    // if multi_line == previous_comment_start {
-                    // if let Some(pos) = line.find(multi_line_end) {
-                    // if language.nested {
-                    // comment_depth -= 1;
-                    // if comment_depth == 0 {
-                    // is_in_comments = false;
-                    // }
-                    // } else {
-                    // is_in_comments = false;
-                    // }
-                    // }
-                    // }
-                    // }
-                    // stats.comments += 1;
-                    // continue;
-                    // }
-                    //
+                    if line.starts_with(multi_line) {
+                        if let Some(multi_line) = has_trailing_comments(line, &language) {
+                            previous_comment_start = multi_line;
+                            is_in_comments = true;
+                            if language.nested {
+                                comment_depth += 1;
+                            }
+                        }
+                    }
+                    if is_in_comments {
+                        for &(multi_line, multi_line_end) in &language.multi_line {
+                            if multi_line == previous_comment_start {
+                                if let Some(pos) = line.find(multi_line_end) {
+                                    if language.nested {
+                                        comment_depth -= 1;
+                                        if comment_depth == 0 {
+                                            is_in_comments = false;
+                                        }
+                                    } else {
+                                        is_in_comments = false;
+                                    }
+                                }
+                            }
+                        }
+                        stats.comments += 1;
+                        continue;
+                    }
+
                     for single in &language.line_comment {
                         if line.starts_with(single) {
                             stats.comments += 1;

@@ -1,10 +1,5 @@
 use std::cmp;
 
-pub fn handle_multi_line() -> usize {
-    unreachable!()
-}
-
-
 /// This is used to catch lines like "let x = 5; /* Comment */"
 pub fn has_trailing_comments(line: &str, language: &Language) -> Vec<&'static str> {
     let line = slice_to_single(line, language);
@@ -12,11 +7,11 @@ pub fn has_trailing_comments(line: &str, language: &Language) -> Vec<&'static st
     let mut start = None;
     let mut stack = vec![];
 
-    for &(comment, comment_end) in &language {
-        start = line.find(comment).and_then(|x| cmp::min(x, start.unwrap_or(|| x)));
+    for &(comment, comment_end) in &language.multi_line {
+        start = line.find(comment).and_then(|x| cmp::min(x, start.unwrap_or(x)));
 
         // This should short circuit 99% of languages.
-        if start != None && !language.nested && language.multi_line.len() == 1 {
+        if start.is_none() && !language.nested && language.multi_line.len() == 1 {
             if let Some(end) = line.rfind(comment_end) {
                 if let Some(end_check) = line.rfind(comment) {
                     if end_check > end {
@@ -37,17 +32,34 @@ pub fn has_trailing_comments(line: &str, language: &Language) -> Vec<&'static st
     };
 
     let mut chars = line[start..].chars();
+    let mut cont = false;
     loop {
         let window = chars.as_str();
 
-        if window.starts_with(comment) {
-            if nested {
-                is_in_comments += 1;
-            } else {
-                is_in_comments = 1;
+        // Prevents counting overlaps like /*/*
+        if cont {
+            cont = false;
+            continue;
+        }
+
+        if let Some(last) = stack.last() {
+            if window.starts_with(last) {
+                stack.pop();
+                cont = true;
+                continue;
             }
-        } else if window.starts_with(comment_end) {
-            is_in_comments = is_in_comments.saturating_sub(1);
+        }
+
+        for &(comment, comment_end) in &language.multi_line {
+            if window.starts_with(comment) {
+                if nested {
+                    stack.push(comment_end);
+                } else if stack.len() == 0 {
+                    stack.push(comment_end);
+                }
+                cont = true;
+                continue;
+            }
         }
 
         if chars.next().is_none() {
