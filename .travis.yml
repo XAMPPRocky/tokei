@@ -1,18 +1,19 @@
 os:
-  - linux
-  - osx
+    - linux
+    - osx
+env:
+    - RUST_TEST_THREADS=1
 language: rust
 rust:
-- stable
-- beta
-- nightly
+    - stable
+    - beta
+    - nightly
 script:
     - cargo build --verbose --release
     - cargo build --verbose --release --features all
     - cargo test --verbose --release
     - cargo test --verbose --release --features all
 matrix:
-  allow_failure:
-  - rust: nightly
+    allow_failure:
+        - rust: nightly
 sudo: false
-
