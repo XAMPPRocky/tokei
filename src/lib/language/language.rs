@@ -31,6 +31,12 @@ pub struct Language {
     /// Whether the language supports nested multi line comments or not.
     #[serde(skip_deserializing, skip_serializing)]
     pub nested: bool,
+    /// A list of specific nested comments if this is empty all `multi_line` comments count.
+    #[serde(skip_deserializing, skip_serializing)]
+    pub nested_comments: Vec<(&'static str, &'static str)>,
+    /// A list of quotes by default it is `""`.
+    #[serde(skip_deserializing, skip_serializing)]
+    pub quotes: Vec<(&'static str, &'static str)>,
 }
 
 #[cfg(not(feature = "io"))]
@@ -54,6 +60,10 @@ pub struct Language {
     pub multi_line: Vec<(&'static str, &'static str)>,
     /// Whether the language supports nested multi line comments or not.
     pub nested: bool,
+    /// A list of specific nested comments if this is empty all `multi_line` comments count.
+    pub nested_comments: Vec<(&'static str, &'static str)>,
+    /// A list of quotes by default it is `""`.
+    pub quotes: Vec<(&'static str, &'static str)>,
 }
 
 
@@ -101,6 +111,7 @@ impl Language {
         Language {
             line_comment: vec!["//"],
             multi_line: vec![("/*", "*/")],
+            quotes: vec![("\"", "\"")],
             ..Self::default()
         }
     }
@@ -116,7 +127,11 @@ impl Language {
     /// assert_eq!(ocaml.multi_line, coq.multi_line);
     /// ```
     pub fn new_func() -> Self {
-        Language { multi_line: vec![("(*", "*)")], ..Self::default() }
+        Language {
+            multi_line: vec![("(*", "*)")],
+            quotes: vec![("\"", "\"")],
+            ..Self::default()
+        }
     }
 
     /// Convience constructor for creating a language that has the same commenting syntax as HTML like languages.
@@ -130,7 +145,11 @@ impl Language {
     /// assert_eq!(xml.multi_line, html.multi_line);
     /// ```
     pub fn new_html() -> Self {
-        Language { multi_line: vec![("<!--", "-->")], ..Self::default() }
+        Language {
+            multi_line: vec![("<!--", "-->")],
+            quotes: vec![("\"", "\"")],
+            ..Self::default()
+        }
     }
 
     /// Convience constructor for creating a language that has the same commenting syntax as Bash.
@@ -154,7 +173,11 @@ impl Language {
     /// let mustache = Language::new_multi(vec![("{{!", "}}")]);
     /// ```
     pub fn new_multi(multi_line: Vec<(&'static str, &'static str)>) -> Self {
-        Language { multi_line: multi_line, ..Self::default() }
+        Language {
+            multi_line: multi_line,
+            quotes: vec![("\"", "\"")],
+            ..Self::default()
+        }
     }
 
     /// Convience constructor for creating a language that has the same commenting syntax as Prolog.
@@ -171,6 +194,7 @@ impl Language {
         Language {
             line_comment: vec!["%"],
             multi_line: vec![("/*", "*/")],
+            quotes: vec![("\"", "\"")],
             ..Self::default()
         }
     }
@@ -182,7 +206,11 @@ impl Language {
     /// let haskell = Language::new_single(vec!["--"]);
     /// ```
     pub fn new_single(line_comment: Vec<&'static str>) -> Self {
-        Language { line_comment: line_comment, ..Self::default() }
+        Language {
+            line_comment: line_comment,
+            quotes: vec![("\"", "\"")],
+            ..Self::default()
+        }
     }
 
     /// Checks if the language is empty. Empty meaning it doesn't have any statistics.
@@ -221,7 +249,40 @@ impl Language {
         self
     }
 
-    /// Sorts each of the `Stats` structs contained in the language based on what category is provided
+    /// Specify if the the language supports nested multi line comments.
+    /// And which are nested. If this is specified there is no need to
+    /// call the `nested` function.
+    ///
+    /// ```
+    /// # use tokei::*;
+    /// let mut d = Language::new(vec!["//"], vec![("/*", "*/")])
+    ///                         .nested_comments(vec![("/+", "+/")]);
+    /// assert!(d.nested);
+    /// assert_eq!(d.nested_comments, vec![("/+", "+/")]);
+    /// ```
+    pub fn nested_comments(mut self, nested_comments: Vec<(&'static str, &'static str)>) -> Self {
+        self.nested = true;
+        self.nested_comments = nested_comments;
+        self
+    }
+
+    /// Specifies if the language has a quotes to define a string where
+    /// the commenting syntax would be ignored. By default it is only
+    /// `""` quotes that are ignored.
+    ///
+    /// ```
+    /// # use tokei::*;
+    /// let mut javascript = Language::new(vec!["//"], vec![("/*", "*/")])
+    ///                         .set_quotes(vec![("\"", "\""), ("'", "'")]);
+    /// assert!(!javascript.quotes.is_empty());
+    /// ```
+    pub fn set_quotes(mut self, quotes: Vec<(&'static str, &'static str)>) -> Self {
+        self.quotes = quotes;
+        self
+    }
+
+    /// Sorts each of the `Stats` structs contained in the language based
+    /// on what category is provided
     /// panic!'s if given the wrong category.
     ///
     /// ```

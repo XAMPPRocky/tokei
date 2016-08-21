@@ -1,40 +1,20 @@
-use std::cmp;
+use language::Language;
 
 /// This is used to catch lines like "let x = 5; /* Comment */"
-pub fn has_trailing_comments(line: &str, language: &Language) -> Vec<&'static str> {
-    let line = slice_to_single(line, language);
-    let mut is_in_comments = 0u64;
-    let mut start = None;
-    let mut stack = vec![];
-
-    for &(comment, comment_end) in &language.multi_line {
-        start = line.find(comment).and_then(|x| cmp::min(x, start.unwrap_or(x)));
-
-        // This should short circuit 99% of languages.
-        if start.is_none() && !language.nested && language.multi_line.len() == 1 {
-            if let Some(end) = line.rfind(comment_end) {
-                if let Some(end_check) = line.rfind(comment) {
-                    if end_check > end {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-            } else {
-                return true;
-            }
-        }
-    }
-
-    let start = match start {
-        Some(pos) => pos,
-        None => return stack,
-    };
-
-    let mut chars = line[start..].chars();
+pub fn handle_multi_line(line: &str,
+                         language: &Language,
+                         stack: &mut Vec<&'static str>,
+                         quote: &mut Option<&'static str>) {
+    let mut chars = line.chars();
     let mut cont = false;
-    loop {
+    let nested_is_empty = language.nested_comments.is_empty();
+
+    'window: loop {
         let window = chars.as_str();
+        if window.is_empty() {
+            break;
+        }
+        chars.next();
 
         // Prevents counting overlaps like /*/*
         if cont {
@@ -42,90 +22,135 @@ pub fn has_trailing_comments(line: &str, language: &Language) -> Vec<&'static st
             continue;
         }
 
+        let mut end = false;
+
+        if let &mut Some(quote_str) = quote {
+            if window.starts_with("\\") {
+                cont = true;
+                continue;
+            } else if window.starts_with(quote_str) {
+                end = true;
+            }
+        }
+
+        if end {
+            if let &mut Some(quote_str) = quote {
+                *quote = None;
+
+                if quote_str.chars().count() == 1 {
+                    cont = true
+                }
+                continue;
+            }
+        }
+
+        if quote.is_some() {
+            continue;
+        }
+
+        let mut pop = false;
         if let Some(last) = stack.last() {
             if window.starts_with(last) {
-                stack.pop();
-                cont = true;
-                continue;
+                pop = true;
             }
         }
 
-        for &(comment, comment_end) in &language.multi_line {
+        if pop {
+            stack.pop();
+            cont = true;
+            continue;
+        }
+
+
+        if stack.is_empty() {
+            for &(start, end) in &language.quotes {
+                if window.starts_with(start) {
+                    *quote = Some(end);
+                    cont = true;
+                    continue 'window;
+                }
+            }
+        }
+
+
+        for comment in &language.line_comment {
             if window.starts_with(comment) {
-                if nested {
-                    stack.push(comment_end);
+                break 'window;
+            }
+        }
+
+        for &(start, end) in &language.nested_comments {
+            if window.starts_with(start) {
+                stack.push(end);
+                cont = true;
+                continue 'window;
+            }
+        }
+
+        for &(start, end) in &language.multi_line {
+            if window.starts_with(start) {
+                if language.nested && nested_is_empty {
+                    stack.push(end);
                 } else if stack.len() == 0 {
-                    stack.push(comment_end);
+                    stack.push(end);
                 }
                 cont = true;
-                continue;
+                continue 'window;
             }
         }
-
-        if chars.next().is_none() {
-            break;
-        }
-    }
-
-    stack
-}
-
-#[inline]
-fn slice_to_single(line: &str, language: &language) -> &str {
-    if !language.single.is_empty() {
-        let found = None;
-        for single in &language.line_comment {
-            if let Some(pos) = line.find(single) {
-                found = Some(pos);
-                break;
-            }
-        }
-
-        if let Some(pos) = found {
-            &line[0..pos]
-        } else {
-            line
-        }
-    } else {
-        line
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use language::Language;
 
     #[test]
     fn both_comments_in_line() {
-        assert!(!has_trailing_comments("Hello /* /* */ World", "//", ("/*", "*/"), false));
+        let mut stack = vec![];
+        let mut quote = None;
+        let language = Language::new_c();
+        handle_multi_line("Hello /* /* */ World", &language, &mut stack, &mut quote);
+        assert_eq!(stack.len(), 0);
     }
 
     #[test]
     fn comment_hidden_in_single() {
-        assert!(has_trailing_comments("Hello /* World // */", "//", ("/*", "*/"), true))
+        let mut stack = vec![];
+        let mut quote = None;
+        let language = Language::new_c();
+        handle_multi_line("Hello World // /*", &language, &mut stack, &mut quote);
+        assert_eq!(stack.len(), 0);
     }
 
     #[test]
-    fn comment_start_in_line() {
-        assert!(has_trailing_comments("Hello /* World", "//", ("/*", "*/"), false));
+    fn comment_start() {
+        let mut stack = vec![];
+        let mut quote = None;
+        let language = Language::new_c();
+        handle_multi_line("/*Hello World", &language, &mut stack, &mut quote);
+        assert_eq!(stack.len(), 1);
     }
 
     #[test]
     fn both_comments_in_line_nested() {
-        assert!(has_trailing_comments("Hello (* (* *) World", "--", ("(*", "*)"), true));
+        let mut stack = vec![];
+        let mut quote = None;
+        let language = Language::new_func().nested();
+        handle_multi_line("Hello (* (* *) World", &language, &mut stack, &mut quote);
+        assert_eq!(stack.len(), 1);
     }
-
 
     #[test]
     fn comments_of_uneven_length() {
-        assert!(has_trailing_comments("Hello \\<open> \\<open> \\<close> World",
-                                      "",
-                                      ("\\<open>", "\\<close>"),
-                                      true));
-    }
-
-    #[test]
-    fn comment_start_in_line_nested() {
-        assert!(has_trailing_comments("Hello (* World", "", ("(*", "*)"), true));
+        let mut stack = vec![];
+        let mut quote = None;
+        let language = Language::new(vec![], vec![("\\<open>", "\\<close>")]).nested();
+        handle_multi_line("Hello \\<open> \\<open> \\<close> World",
+                          &language,
+                          &mut stack,
+                          &mut quote);
+        assert_eq!(stack.len(), 1);
     }
 }

@@ -19,7 +19,7 @@ use serde_yaml;
 use toml;
 use rayon::prelude::*;
 
-use utils::*;
+use utils::{fs, multi_line};
 use super::{Language, LanguageType};
 use super::LanguageType::*;
 use stats::Stats;
@@ -30,6 +30,87 @@ const JSON_ERROR: &'static str = "Tokei was not compiled with the `json` flag.";
 const TOML_ERROR: &'static str = "Tokei was not compiled with the `toml-io` flag.";
 #[cfg(not(feature = "yaml"))]
 const YAML_ERROR: &'static str = "Tokei was not compiled with the `yaml` flag.";
+
+fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
+
+    let &mut (name, ref mut language) = language_tuple;
+
+    if language.files.is_empty() {
+        return;
+    }
+
+    let is_fortran = name == &FortranModern || name == &FortranLegacy;
+
+    let files: Vec<_> = language.files.drain(..).collect();
+    let mut contents = String::new();
+    let mut stack = vec![];
+    let mut quote = None;
+
+    for file in files {
+        let mut stats = Stats::new(opt_or_cont!(file.to_str()));
+        stack.clear();
+        contents.clear();
+
+        rs_or_cont!(rs_or_cont!(File::open(file)).read_to_string(&mut contents));
+
+        let lines = contents.lines();
+
+        if language.is_blank() {
+            stats.code += lines.count();
+            continue;
+        }
+
+
+        'line: for line in lines {
+            stats.lines += 1;
+            // FORTRAN has a rule where it only counts as a comment if it's the first
+            // character in the column, so removing starting whitespace could cause a
+            // miscount.
+            let line = if is_fortran {
+                line
+            } else {
+                line.trim()
+            };
+
+            if line.trim().is_empty() {
+                stats.blanks += 1;
+                continue;
+            }
+
+            for single in &language.line_comment {
+                if line.starts_with(single) {
+                    stats.comments += 1;
+                    continue 'line;
+                }
+            }
+
+            let mut started_with = false;
+            if quote.is_none() {
+                let chain = language.multi_line.iter().chain(language.nested_comments.iter());
+
+                for &(start, _) in chain {
+                    if line.starts_with(start) {
+                        started_with = true;
+                    }
+                }
+            }
+
+            multi_line::handle_multi_line(line, &language, &mut stack, &mut quote);
+
+            if !stack.is_empty() {
+                if started_with {
+                    stats.code += 1;
+                } else {
+                    stats.comments += 1;
+                }
+            } else {
+                stats.code += 1;
+            }
+        }
+
+        **language += stats;
+    }
+}
 
 /// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
 #[derive(Debug, Clone)]
@@ -168,97 +249,11 @@ impl Languages {
         where I: Into<Cow<'a, [&'a str]>>
     {
 
-        get_all_files(paths.into(), ignored.into(), &mut self.inner);
+        fs::get_all_files(paths.into(), ignored.into(), &mut self.inner);
 
         let mut language_iter: Vec<_> = self.inner.iter_mut().collect();
 
-        language_iter.par_iter_mut().for_each(|&mut (name, ref mut language)| {
-            if language.files.is_empty() {
-                return;
-            }
-
-            let is_fortran = name == &FortranModern || name == &FortranLegacy;
-
-            let files: Vec<_> = language.files.drain(..).collect();
-            let mut contents = String::new();
-
-            for file in files {
-                let mut is_in_comments = false;
-                let mut previous_comment_start = "";
-                let mut comment_depth: usize = 0;
-                let mut stats = Stats::new(opt_or_cont!(file.to_str()));
-
-                let contents = {
-                    contents.clear();
-                    let _ = rs_or_cont!(rs_or_cont!(File::open(file))
-                        .read_to_string(&mut contents));
-                    contents
-                };
-
-                let lines = contents.lines();
-
-                if language.is_blank() {
-                    stats.code += lines.count();
-                    continue;
-                }
-
-                'line: for line in lines {
-                    stats.lines += 1;
-
-                    // FORTRAN has a rule where it only counts as a comment if it's the first
-                    // character in the column, so removing starting whitespace could cause a
-                    // miscount.
-                    let line = if is_fortran {
-                        line
-                    } else {
-                        line.trim()
-                    };
-
-                    if line.trim().is_empty() {
-                        stats.blanks += 1;
-                        continue;
-                    }
-
-                    if line.starts_with(multi_line) {
-                        if let Some(multi_line) = has_trailing_comments(line, &language) {
-                            previous_comment_start = multi_line;
-                            is_in_comments = true;
-                            if language.nested {
-                                comment_depth += 1;
-                            }
-                        }
-                    }
-                    if is_in_comments {
-                        for &(multi_line, multi_line_end) in &language.multi_line {
-                            if multi_line == previous_comment_start {
-                                if let Some(pos) = line.find(multi_line_end) {
-                                    if language.nested {
-                                        comment_depth -= 1;
-                                        if comment_depth == 0 {
-                                            is_in_comments = false;
-                                        }
-                                    } else {
-                                        is_in_comments = false;
-                                    }
-                                }
-                            }
-                        }
-                        stats.comments += 1;
-                        continue;
-                    }
-
-                    for single in &language.line_comment {
-                        if line.starts_with(single) {
-                            stats.comments += 1;
-                            continue 'line;
-                        }
-                    }
-                    stats.code += 1;
-                }
-
-                **language += stats;
-            }
-        });
+        language_iter.par_iter_mut().for_each(count_files);
     }
 
     /// Constructs a new, blank `Languages`.
@@ -279,7 +274,8 @@ impl Languages {
             C => Language::new_c(),
             CHeader => Language::new_c(),
             Clojure => Language::new_single(vec![";","#"]),
-            CoffeeScript => Language::new(vec!["#"], vec![("###", "###")]),
+            CoffeeScript => Language::new(vec!["#"], vec![("###", "###")])
+                                     .set_quotes(vec![("\"", "\""), ("'", "'")]),
             ColdFusion => Language::new_multi(vec![("<!---", "--->")]),
             ColdFusionScript => Language::new_c(),
             Coq => Language::new_func(),
@@ -287,8 +283,9 @@ impl Languages {
             CppHeader => Language::new_c(),
             CSharp => Language::new_c(),
             CShell => Language::new_hash(),
-            Css => Language::new_c(),
-            D => Language::new(vec!["//"], vec![("/*", "*/"), ("/+", "+/")]).nested(),
+            Css => Language::new_c()
+                            .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            D => Language::new(vec!["//"], vec![("/*", "*/")]).nested_comments(vec![("/+", "+/")]),
             Dart => Language::new_c(),
             DeviceTree => Language::new_c(),
             Erlang => Language::new_single(vec!["%"]),
@@ -296,9 +293,11 @@ impl Languages {
             FortranLegacy => Language::new_single(vec!["c","C","!","*"]),
             FortranModern => Language::new_single(vec!["!"]),
             Go => Language::new_c(),
-            Handlebars => Language::new_multi(vec![("<!--", "-->"), ("{{!", "}}")]),
+            Handlebars => Language::new_multi(vec![("<!--", "-->"), ("{{!", "}}")])
+                                   .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Haskell => Language::new_single(vec!["--"]),
-            Html => Language::new_html(),
+            Html => Language::new_html()
+                             .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Idris => Language::new(vec!["--"], vec![("{-", "-}")]),
             Isabelle => Language::new(
                 vec!["--"],
@@ -310,9 +309,11 @@ impl Languages {
             ),
             Jai => Language::new_c(),
             Java => Language::new_c(),
-            JavaScript => Language::new_c(),
+            JavaScript => Language::new_c()
+                                   .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Json => Language::new_blank(),
-            Jsx => Language::new_c(),
+            Jsx => Language::new_c()
+                            .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Julia => Language::new(vec!["#"], vec![("#=", "=#")]),
             Kotlin => Language::new_c(),
             Less => Language::new_c(),
@@ -580,12 +581,14 @@ impl DerefMut for Languages {
 mod accuracy_tests {
     use super::*;
     use std::io;
+    use language::LanguageType;
 
-    fn write(contents: &'static str, extension: &'static str) -> io::Result<()> {
+    fn write(contents: &'static str, file_name: &str) -> io::Result<()> {
         use std::io::prelude::*;
-        use std::fs::File;
+        use std::fs::{File, create_dir};
 
-        let mut f = try!(File::create(format!("./_temp/_temp_file.{}", extension)));
+        let _ = create_dir("./_temp/");
+        let mut f = try!(File::create(file_name));
 
         try!(f.write_all(&contents.as_bytes()));
         Ok(())
@@ -596,93 +599,84 @@ mod accuracy_tests {
         Ok(())
     }
 
-    fn test_accuracy(ext: &'static str, num: u32, contents: &'static str) {
-        write(contents, ext).unwrap();
+    fn test_accuracy(file_name: &'static str, expected: u32, contents: &'static str) {
+        let file_name = format!("./_temp/{}", file_name);
+        write(contents, &*file_name).unwrap();
         let mut l = Languages::new();
+        let l_type = LanguageType::from_extension(file_name).expect("Can't find language type");
 
-        l.get_statistics(vec!["./temp/"], vec![]);
+        l.get_statistics(vec!["./_temp/"], vec![]);
 
-        assert_eq!(num as usize,
-                   l.get_mut(&::language::LanguageType::from(ext)).unwrap().code);
         let _ = cleanup();
+        let language = l.get_mut(&l_type).expect("Couldn't find language");
 
+        assert_eq!(expected as usize, language.code);
     }
 
     #[test]
     fn inside_quotes() {
-        test_accuracy("rs",
+        test_accuracy("inside_quotes.rs",
                       8,
-                      "fn main() {
-            let start = \"/*\";
+                      r#"fn main() {
+            let start = "/*";
             loop {
-                \
-                       if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
-                \
-                       break;
+                if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
+                break;
                 }
             }
-        }
-        ")
+        }"#)
     }
 
     #[test]
     fn shouldnt_panic() {
-        test_accuracy("rs",
+        test_accuracy("shouldnt_panic.rs",
                       9,
-                      "fn foo() {
-            let this_ends = \"a \\\"test/*.\";
-            \
-                       call1();
+                      r#"fn foo() {
+            let this_ends = "a \"test/*.";
+            call1();
             call2();
-            let this_does_not = /* a /* \
-                       nested */ comment \" */
-                                \"*/another /*test
-            \
-                       call3();
-            */\";
-        }")
+            let this_does_not = /* a /* nested */ comment " */
+                                "*/another /*test
+            call3();
+            */";
+        }"#)
     }
 
     #[test]
     fn all_quotes_no_comment() {
-        test_accuracy("rs",
+        test_accuracy("all_quotes_no_comment.rs",
                       10,
-                      "fn foobar() {
-        let does_not_start = // \"
-            \"until here,
-            \
-                       test/*
-            test\"; // a quote: \"
-        let also_doesnt_start = \
-                       /* \" */
-            \"until here,
-            test,*/
-            test\"; \
-                       // another quote: \"
-        }")
+                      r#"fn foobar() {
+    let does_not_start = // "
+        "until here,
+        test/*
+        test"; // a quote: "
+    let also_doesnt_start = /* " */
+        "until here,
+        test,*/
+        test"; // another quote: "
+}"#)
     }
 
     #[test]
     fn commenting_on_comments() {
-        test_accuracy("rs",
+        test_accuracy("commenting_on_comments.rs",
                       5,
-                      "fn foo() {
-            let a = 4; // /*
-            let b = 5;
-            \
-                       let c = 6; // */
-        }")
+                      r#"fn foo() {
+    let a = 4; // /*
+    let b = 5;
+    let c = 6; // */
+}"#)
     }
 
     #[test]
-    fn deez_nesting_comments() {
-        test_accuracy("d",
+    fn nesting_with_nesting_comments() {
+        test_accuracy("nesting_with_nesting_comments.d",
                       5,
-                      "void main() {
-            auto x = 5; /+ a /+ nested +/ comment /* +/
-            \
-                       writefln(\"hello\");
-            auto y = 4; // */
-        }")
+                      r#"void main() {
+    auto x = 5; /+ a /+ nested +/ comment /* +/
+    writefln("hello");
+    auto y = 4; // */
+}"#)
     }
 }

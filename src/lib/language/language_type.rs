@@ -7,7 +7,7 @@ use std::borrow::Cow;
 use std::fmt;
 use std::path::Path;
 
-use utils::*;
+use utils::fs;
 use self::LanguageType::*;
 
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
@@ -269,7 +269,7 @@ impl LanguageType {
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
     pub fn from_extension<P: AsRef<Path>>(entry: P) -> Option<Self> {
-        if let Some(extension) = get_extension(entry) {
+        if let Some(extension) = fs::get_extension(entry) {
             match &*extension {
                 "as" => Some(ActionScript),
                 "ada" | "adb" | "ads" => Some(Ada),
