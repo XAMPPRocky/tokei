@@ -19,6 +19,10 @@ pub enum LanguageType {
     Ada,
     /// Assembly
     Assembly,
+    /// ASP
+    Asp,
+    /// ASP.Net
+    AspNet,
     /// Autoconf
     Autoconf,
     /// Bash
@@ -131,6 +135,8 @@ pub enum LanguageType {
     Qcl,
     /// R
     R,
+    /// Razor
+    Razor,
     /// Ruby
     Ruby,
     /// RubyHtml
@@ -183,6 +189,8 @@ impl LanguageType {
             ActionScript => "ActionScript",
             Ada => "Ada",
             Assembly => "Assembly",
+            Asp => "ASP",
+            AspNet => "ASP.Net",
             Autoconf => "Autoconf",
             Bash => "BASH",
             Batch => "Batch",
@@ -239,6 +247,7 @@ impl LanguageType {
             Python => "Python",
             Qcl => "QCL",
             R => "R",
+            Razor => "Razor",
             Ruby => "Ruby",
             RubyHtml => "Ruby HTML",
             Rust => "Rust",
@@ -272,7 +281,9 @@ impl LanguageType {
         if let Some(extension) = fs::get_extension(entry) {
             match &*extension {
                 "as" => Some(ActionScript),
-                "ada" | "adb" | "ads" => Some(Ada),
+                "ada" | "adb" | "ads" | "pad" => Some(Ada),
+                "asa" | "asp" => Some(Asp),
+                "asax" | "ascx"| "asmx"| "aspx"| "master"| "sitemap"| "webinfo" => Some(AspNet),
                 "bash" | "sh" => Some(Bash),
                 "bat" | "btm" | "cmd" => Some(Batch),
                 "c" | "ec" | "pgc" => Some(C),
@@ -282,6 +293,7 @@ impl LanguageType {
                 "clj" => Some(Clojure),
                 "coffee" => Some(CoffeeScript),
                 "cs" => Some(CSharp),
+                "cshtml" => Some(Razor),
                 "csh" => Some(CShell),
                 "css" => Some(Css),
                 "d" => Some(D),
@@ -333,7 +345,7 @@ impl LanguageType {
                 "rake" | "rb" => Some(Ruby),
                 "rhtml" => Some(RubyHtml),
                 "rs" => Some(Rust),
-                "s" => Some(Assembly),
+                "s" | "asm" => Some(Assembly),
                 "sass" | "scss" => Some(Sass),
                 "sc" | "scala" => Some(Scala),
                 "sml" => Some(Sml),
@@ -369,6 +381,8 @@ impl<'a> From<&'a str> for LanguageType {
             "ActionScript" => ActionScript,
             "Ada" => Ada,
             "Assembly" => Assembly,
+            "ASP" => Asp,
+            "ASP.Net" => AspNet,
             "Autoconf" => Autoconf,
             "Bash" => Bash,
             "Batch" => Batch,
@@ -424,6 +438,7 @@ impl<'a> From<&'a str> for LanguageType {
             "Python" => Python,
             "Qcl" => Qcl,
             "R" => R,
+            "Razor" => Razor,
             "Ruby" => Ruby,
             "RubyHtml" => RubyHtml,
             "Rust" => Rust,
