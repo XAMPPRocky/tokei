@@ -75,8 +75,12 @@ pub enum LanguageType {
     Haskell,
     /// Html
     Html,
+    /// HEX
+    Hex,
     /// Idris
     Idris,
+    /// Intel HEX
+    IntelHex,
     /// Isabelle
     Isabelle,
     /// Jai
@@ -143,6 +147,8 @@ pub enum LanguageType {
     RubyHtml,
     /// Rust
     Rust,
+    /// ReStructuredText
+    ReStructuredText,
     /// Sass
     Sass,
     /// Scala
@@ -217,7 +223,9 @@ impl LanguageType {
             Handlebars => "Handlebars",
             Haskell => "Haskell",
             Html => "HTML",
+            Hex => "HEX",
             Idris => "Idris",
+            IntelHex => "Intel HEX",
             Isabelle => "Isabelle",
             Jai => "JAI",
             Java => "Java",
@@ -251,6 +259,7 @@ impl LanguageType {
             Ruby => "Ruby",
             RubyHtml => "Ruby HTML",
             Rust => "Rust",
+            ReStructuredText => "ReStructuredText",
             Sass => "Sass",
             Scala => "Scala",
             Sml => "Standard ML",
@@ -311,7 +320,9 @@ impl LanguageType {
                 "hh" | "hpp" | "hxx" => Some(CppHeader),
                 "hs" => Some(Haskell),
                 "html" => Some(Html),
+                "hex" => Some(Hex),
                 "idr" | "lidr" => Some(Idris),
+                "ihex" => Some(IntelHex),
                 "in" => Some(Autoconf),
                 "jai" => Some(Jai),
                 "java" => Some(Java),
@@ -345,6 +356,7 @@ impl LanguageType {
                 "rake" | "rb" => Some(Ruby),
                 "rhtml" => Some(RubyHtml),
                 "rs" => Some(Rust),
+                "rst" => Some(ReStructuredText),
                 "s" | "asm" => Some(Assembly),
                 "sass" | "scss" => Some(Sass),
                 "sc" | "scala" => Some(Scala),
@@ -409,6 +421,8 @@ impl<'a> From<&'a str> for LanguageType {
             "Handlebars" => Handlebars,
             "Haskell" => Haskell,
             "Html" => Html,
+            "HEX" => Hex,
+            "Intel HEX" => IntelHex,
             "Idris" => Idris,
             "Jai" => Jai,
             "Java" => Java,
@@ -442,6 +456,7 @@ impl<'a> From<&'a str> for LanguageType {
             "Ruby" => Ruby,
             "RubyHtml" => RubyHtml,
             "Rust" => Rust,
+            "ReStructuredText" => ReStructuredText,
             "Sass" => Sass,
             "Scala" => Scala,
             "Sml" => Sml,

@@ -44,32 +44,35 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
     let files: Vec<_> = language.files.drain(..).collect();
     let mut contents = String::new();
     let mut stack = vec![];
-    let mut quote = None;
+    let mut quote;
 
     for file in files {
         let mut stats = Stats::new(opt_or_cont!(file.to_str()));
         stack.clear();
         contents.clear();
+        quote = None;
 
         rs_or_cont!(rs_or_cont!(File::open(file)).read_to_string(&mut contents));
-
+        
         let lines = contents.lines();
 
         if language.is_blank() {
             stats.code += lines.count();
+            **language += stats;
             continue;
         }
 
 
         'line: for line in lines {
             stats.lines += 1;
+            let no_stack = stack.is_empty();
             // FORTRAN has a rule where it only counts as a comment if it's the first
             // character in the column, so removing starting whitespace could cause a
             // miscount.
             let line = if is_fortran {
                 line
             } else {
-                line.trim()
+                line.trim_left()
             };
 
             if line.trim().is_empty() {
@@ -84,30 +87,14 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
                 }
             }
 
-            let mut started_with = false;
-            if quote.is_none() {
-                let chain = language.multi_line.iter().chain(language.nested_comments.iter());
-
-                for &(start, _) in chain {
-                    if line.starts_with(start) {
-                        started_with = true;
-                    }
-                }
-            }
-
             multi_line::handle_multi_line(line, &language, &mut stack, &mut quote);
 
-            if !stack.is_empty() {
-                if started_with {
-                    stats.code += 1;
-                } else {
-                    stats.comments += 1;
-                }
+            if no_stack {
+                stats.comments += 1;
             } else {
                 stats.code += 1;
             }
         }
-
         **language += stats;
     }
 }
@@ -300,7 +287,9 @@ impl Languages {
             Haskell => Language::new_single(vec!["--"]),
             Html => Language::new_html()
                              .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Hex => Language::new_blank(),
             Idris => Language::new(vec!["--"], vec![("{-", "-}")]),
+            IntelHex => Language::new_blank(),
             Isabelle => Language::new(
                 vec!["--"],
                 vec![   ("{*","*}"),
@@ -343,6 +332,7 @@ impl Languages {
             Ruby => Language::new(vec!["#"], vec![("=begin", "=end")]),
             RubyHtml => Language::new_html(),
             Rust => Language::new_c().nested(),
+            ReStructuredText => Language::new_blank(),
             Sass => Language::new_c(),
             Scala => Language::new_c(),
             Sml => Language::new_func(),

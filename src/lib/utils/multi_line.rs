@@ -6,7 +6,6 @@ pub fn handle_multi_line(line: &str,
                          stack: &mut Vec<&'static str>,
                          quote: &mut Option<&'static str>) {
     let mut chars = line.chars();
-    let mut cont = false;
     let nested_is_empty = language.nested_comments.is_empty();
 
     'window: loop {
@@ -16,17 +15,11 @@ pub fn handle_multi_line(line: &str,
         }
         chars.next();
 
-        // Prevents counting overlaps like /*/*
-        if cont {
-            cont = false;
-            continue;
-        }
-
         let mut end = false;
 
         if let &mut Some(quote_str) = quote {
             if window.starts_with("\\") {
-                cont = true;
+                chars.next();
                 continue;
             } else if window.starts_with(quote_str) {
                 end = true;
@@ -38,7 +31,7 @@ pub fn handle_multi_line(line: &str,
                 *quote = None;
 
                 if quote_str.chars().count() == 1 {
-                    cont = true
+                    chars.next();
                 }
                 continue;
             }
@@ -57,7 +50,7 @@ pub fn handle_multi_line(line: &str,
 
         if pop {
             stack.pop();
-            cont = true;
+            chars.next();
             continue;
         }
 
@@ -66,7 +59,7 @@ pub fn handle_multi_line(line: &str,
             for &(start, end) in &language.quotes {
                 if window.starts_with(start) {
                     *quote = Some(end);
-                    cont = true;
+                    chars.next();
                     continue 'window;
                 }
             }
@@ -82,7 +75,7 @@ pub fn handle_multi_line(line: &str,
         for &(start, end) in &language.nested_comments {
             if window.starts_with(start) {
                 stack.push(end);
-                cont = true;
+                chars.next();
                 continue 'window;
             }
         }
@@ -94,7 +87,7 @@ pub fn handle_multi_line(line: &str,
                 } else if stack.len() == 0 {
                     stack.push(end);
                 }
-                cont = true;
+                chars.next();
                 continue 'window;
             }
         }
