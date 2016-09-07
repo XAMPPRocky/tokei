@@ -29,6 +29,14 @@ impl Stats {
     }
 }
 
+fn find_char_boundary(s: &str, index: usize) -> usize {
+    for i in 0..4 {
+        if s.is_char_boundary(index + i) {
+            return index + i;
+        }
+    }
+    unreachable!();
+}
 
 impl fmt::Display for Stats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -38,7 +46,8 @@ impl fmt::Display for Stats {
             self.name.clone()
         } else if self.name.len() > 24 {
             let mut name = String::from("|");
-            name.push_str(&self.name[self.name.len() - 24..]);
+            let from = find_char_boundary(&self.name, self.name.len() - 24);
+            name.push_str(&self.name[from..]);
             name
         } else {
             self.name.clone()
