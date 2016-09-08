@@ -90,9 +90,9 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
             multi_line::handle_multi_line(line, &language, &mut stack, &mut quote);
 
             if no_stack {
-                stats.comments += 1;
-            } else {
                 stats.code += 1;
+            } else {
+                stats.comments += 1;
             }
         }
         **language += stats;
@@ -572,38 +572,26 @@ impl DerefMut for Languages {
 
 #[cfg(test)]
 mod accuracy_tests {
+    extern crate tempdir;
     use super::*;
-    use std::io;
+    use std::io::Write;
+    use std::fs::File;
     use language::LanguageType;
+    use self::tempdir::TempDir;
 
-    fn write(contents: &'static str, file_name: &str) -> io::Result<()> {
-        use std::io::prelude::*;
-        use std::fs::{File, create_dir};
 
-        let _ = create_dir("./_temp/");
-        let mut f = try!(File::create(file_name));
+    fn test_accuracy(file_name: &'static str, expected: usize, contents: &'static str) {
+        let tmp_dir = TempDir::new("test").expect("Couldn't create temp dir");
+        let file_name = tmp_dir.path().join(file_name);
+        let mut file = File::create(&file_name).expect("Couldn't create file");
+        file.write(contents.as_bytes()).expect("couldn't write to file");
 
-        try!(f.write_all(&contents.as_bytes()));
-        Ok(())
-    }
-
-    fn cleanup() -> io::Result<()> {
-        try!(::std::fs::remove_dir_all("./_temp/"));
-        Ok(())
-    }
-
-    fn test_accuracy(file_name: &'static str, expected: u32, contents: &'static str) {
-        let file_name = format!("./_temp/{}", file_name);
-        write(contents, &*file_name).unwrap();
         let mut l = Languages::new();
-        let l_type = LanguageType::from_extension(file_name).expect("Can't find language type");
-
-        l.get_statistics(vec!["./_temp/"], vec![]);
-
-        let _ = cleanup();
+        let l_type = LanguageType::from_extension(&file_name).expect("Can't find language type");
+        l.get_statistics(vec![file_name.to_str().unwrap()], vec![]);
         let language = l.get_mut(&l_type).expect("Couldn't find language");
 
-        assert_eq!(expected as usize, language.code);
+        assert_eq!(expected, language.code);
     }
 
     #[test]

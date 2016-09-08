@@ -15,7 +15,8 @@ doc = false
 name = "tokei"
 path = "src/main.rs"
 
-[build-dependencies]
+[dev-dependencies]
+tempdir = "~0.3.5"
 
 [build-dependencies.serde_codegen]
 optional = true

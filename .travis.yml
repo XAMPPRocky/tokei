@@ -1,8 +1,6 @@
 os:
     - linux
     - osx
-env:
-    - RUST_TEST_THREADS=1
 language: rust
 rust:
     - stable
