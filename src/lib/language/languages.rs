@@ -42,7 +42,7 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
     let is_fortran = name == &FortranModern || name == &FortranLegacy;
 
     let files: Vec<_> = language.files.drain(..).collect();
-    let mut contents = String::new();
+    let mut contents = Vec::new();
     let mut stack = vec![];
     let mut quote;
 
@@ -52,9 +52,10 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
         contents.clear();
         quote = None;
 
-        rs_or_cont!(rs_or_cont!(File::open(file)).read_to_string(&mut contents));
-        
-        let lines = contents.lines();
+        rs_or_cont!(rs_or_cont!(File::open(file)).read_to_end(&mut contents));
+
+        let text = String::from_utf8_lossy(&contents);
+        let lines = text.lines();
 
         if language.is_blank() {
             stats.code += lines.count();
