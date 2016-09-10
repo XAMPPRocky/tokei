@@ -253,18 +253,21 @@ impl Languages {
         let map = btreemap! {
             ActionScript => Language::new_c(),
             Ada => Language::new_single(vec!["--"]),
-            Assembly => Language::new_single(vec![";"]),
+            Assembly => Language::new_single(vec![";"])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Asp => Language::new_single(vec!["'", "REM"]),
             AspNet => Language::new_multi(vec![("<!--", "-->"), ("<%--", "-->")]),
             Autoconf => Language::new_single(vec!["#", "dnl"]),
-            Bash => Language::new_hash(),
-            Batch => Language::new_single(vec!["REM"]),
+            Bash => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Batch => Language::new_single(vec!["REM", "::"]).set_quotes(vec![]),
             C => Language::new_c(),
             CHeader => Language::new_c(),
             Clojure => Language::new_single(vec![";"]),
             CoffeeScript => Language::new(vec!["#"], vec![("###", "###")])
-                                     .set_quotes(vec![("\"", "\""), ("'", "'")]),
-            ColdFusion => Language::new_multi(vec![("<!---", "--->")]),
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            ColdFusion => Language::new_multi(vec![("<!---", "--->")])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             ColdFusionScript => Language::new_c(),
             Coq => Language::new_func(),
             Cpp => Language::new_c(),
@@ -272,22 +275,29 @@ impl Languages {
             CSharp => Language::new_c(),
             CShell => Language::new_hash(),
             Css => Language::new_c()
-                            .set_quotes(vec![("\"", "\""), ("'", "'")]),
-            D => Language::new(vec!["//"], vec![("/*", "*/")]).nested_comments(vec![("/+", "+/")]),
-            Dart => Language::new_c(),
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            D => Language::new(vec!["//"], vec![("/*", "*/")])
+                .nested_comments(vec![("/+", "+/")])
+                .set_quotes(vec![("\"", "\""), ("`", "`")]),
+            Dart => Language::new_c()
+                .set_quotes(vec![("\"", "\""), ("'", "'"), ("\"\"\"", "\"\"\""), ("'''", "'''")]),
             DeviceTree => Language::new_c(),
             Erlang => Language::new_single(vec!["%"]),
-            Forth => Language::new(vec!["\\"], vec![("( ", ")")]),
-            FortranLegacy => Language::new_single(vec!["c","C","!","*"]),
-            FortranModern => Language::new_single(vec!["!"]),
+            Forth => Language::new(vec!["\\"], vec![("( ", ")")])
+                .set_quotes(vec![("\"", "\"")]),
+            FortranLegacy => Language::new_single(vec!["c","C","!","*"])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            FortranModern => Language::new_single(vec!["!"])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Go => Language::new_c(),
             Handlebars => Language::new_multi(vec![("<!--", "-->"), ("{{!", "}}")])
-                                   .set_quotes(vec![("\"", "\""), ("'", "'")]),
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Haskell => Language::new(vec!["--"], vec![("{-", "-}")]),
             Html => Language::new_html()
-                             .set_quotes(vec![("\"", "\""), ("'", "'")]),
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Hex => Language::new_blank(),
-            Idris => Language::new(vec!["--"], vec![("{-", "-}")]),
+            Idris => Language::new(vec!["--"], vec![("{-", "-}")])
+                .set_quotes(vec![("\"", "\""), ("\"\"\"", "\"\"\"")]),
             IntelHex => Language::new_blank(),
             Isabelle => Language::new(
                 vec!["--"],
@@ -296,59 +306,75 @@ impl Languages {
                         ("‹","›"),
                         ("\\<open>", "\\<close>"),
                     ]
-            ),
+            ).set_quotes(vec![("''", "''")]),
             Jai => Language::new_c().nested(),
             Java => Language::new_c(),
             JavaScript => Language::new_c()
-                                   .set_quotes(vec![("\"", "\""), ("'", "'")]),
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Json => Language::new_blank(),
             Jsx => Language::new_c()
-                            .set_quotes(vec![("\"", "\""), ("'", "'")]),
-            Julia => Language::new(vec!["#"], vec![("#=", "=#")]).nested(),
-            Kotlin => Language::new_c().nested(),
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Julia => Language::new(vec!["#"], vec![("#=", "=#")]).nested()
+                .set_quotes(vec![("\"", "\""), ("\"\"\"", "\"\"\"")]),
+            Kotlin => Language::new_c().nested()
+                .set_quotes(vec![("\"", "\""), ("\"\"\"", "\"\"\"")]),
             Less => Language::new_c(),
             LinkerScript => Language::new_c(),
-            Lisp => Language::new(vec![";"], vec![("#|", "|#")]),
-            Lua => Language::new(vec!["--"], vec![("--[[", "]]")]),
+            Lisp => Language::new(vec![";"], vec![("#|", "|#")]).nested(),
+            Lua => Language::new(vec!["--"], vec![("--[[", "]]")])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Makefile => Language::new_hash(),
             Markdown => Language::new_blank(),
-            Mustache => Language::new_multi(vec![("{{!", "}}")]),
-            Nim => Language::new_hash(),
+            Mustache => Language::new_multi(vec![("{{!", "}}")])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Nim => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("\"\"\"", "\"\"\"")]),
             ObjectiveC => Language::new_c(),
             ObjectiveCpp => Language::new_c(),
             OCaml => Language::new_func(),
             Oz => Language::new_pro(),
             Pascal => Language::new_multi(
-                vec![("{", "}"), ("(*", "*)"), ("{", "*)"), ("(*", "}")]),
-            Perl => Language::new(vec!["#"], vec![("=pod", "=cut")]),
-            Php => Language::new(vec!["#", "//"], vec![("/*", "*/")]),
+                vec![("{", "}"), ("(*", "*)"), ("{", "*)"), ("(*", "}")])
+                .set_quotes(vec![("'", "'")]),
+            Perl => Language::new(vec!["#"], vec![("=pod", "=cut")])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Php => Language::new(vec!["#", "//"], vec![("/*", "*/")])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Polly => Language::new_html(),
             Prolog => Language::new_pro(),
             Protobuf => Language::new_single(vec!["//"]),
-            Python => Language::new(
-                vec!["#"], vec![("'''", "'''"), ("\"\"\"", "\"\"\"")]),
+            Python => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'"), ("\"\"\"", "\"\"\""), ("'''", "'''")]),
             Qcl => Language::new_c(),
             R => Language::new_hash(),
             Razor => Language::new_multi(vec![("<!--", "-->"), ("@*", "*@")]),
-            Ruby => Language::new(vec!["#"], vec![("=begin", "=end")]),
+            Ruby => Language::new(vec!["#"], vec![("=begin", "=end")])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             RubyHtml => Language::new_html(),
             Rust => Language::new_c().nested(),
             ReStructuredText => Language::new_blank(),
-            Sass => Language::new_c(),
+            Sass => Language::new_c()
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Scala => Language::new_c(),
             Sml => Language::new_func(),
-            Sql => Language::new(vec!["--"], vec![("/*", "*/")]),
+            Sql => Language::new(vec!["--"], vec![("/*", "*/")])
+                .set_quotes(vec![("'", "'")]),
             Swift => Language::new_c().nested(),
             Tex => Language::new_single(vec!["%"]),
             Text => Language::new_blank(),
-            Toml => Language::new_hash(),
-            TypeScript => Language::new_c(),
+            Toml => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'"), ("\"\"\"", "\"\"\""), ("'''", "'''")]),
+            TypeScript => Language::new_c()
+                .set_quotes(vec![("\"", "\""), ("'", "'"), ("`", "`")]),
             UnrealScript => Language::new_c(),
-            VimScript => Language::new_single(vec!["\""]),
+            VimScript => Language::new_single(vec!["\""])
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Wolfram => Language::new_func(),
             Xml => Language::new_html(),
-            Yaml => Language::new_hash(),
-            Zsh => Language::new_hash(),
+            Yaml => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Zsh => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
         };
 
         Languages { inner: map }
