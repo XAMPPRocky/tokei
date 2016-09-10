@@ -58,7 +58,9 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
         let lines = text.lines();
 
         if language.is_blank() {
-            stats.code += lines.count();
+            let count = lines.count();
+            stats.lines += count;
+            stats.code += count;
             **language += stats;
             continue;
         }
