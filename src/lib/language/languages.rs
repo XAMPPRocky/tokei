@@ -292,11 +292,11 @@ impl Languages {
             Go => Language::new_c(),
             Handlebars => Language::new_multi(vec![("<!--", "-->"), ("{{!", "}}")])
                 .set_quotes(vec![("\"", "\""), ("'", "'")]),
-            Haskell => Language::new(vec!["--"], vec![("{-", "-}")]),
+            Haskell => Language::new(vec!["--"], vec![("{-", "-}")]).nested(),
             Html => Language::new_html()
                 .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Hex => Language::new_blank(),
-            Idris => Language::new(vec!["--"], vec![("{-", "-}")])
+            Idris => Language::new(vec!["--"], vec![("{-", "-}")]).nested()
                 .set_quotes(vec![("\"", "\""), ("\"\"\"", "\"\"\"")]),
             IntelHex => Language::new_blank(),
             Isabelle => Language::new(
