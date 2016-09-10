@@ -344,6 +344,7 @@ impl Languages {
             Prolog => Language::new_pro(),
             Protobuf => Language::new_single(vec!["//"]),
             Python => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'"), ("\"\"\"", "\"\"\""), ("'''", "'''")]),
             Qcl => Language::new_c(),
             R => Language::new_hash(),
             Razor => Language::new_multi(vec![("<!--", "-->"), ("@*", "*@")]),
