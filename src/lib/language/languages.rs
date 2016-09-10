@@ -72,11 +72,7 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
             // FORTRAN has a rule where it only counts as a comment if it's the first
             // character in the column, so removing starting whitespace could cause a
             // miscount.
-            let line = if is_fortran {
-                line
-            } else {
-                line.trim_left()
-            };
+            let line = if is_fortran { line } else { line.trim_left() };
 
             if line.trim().is_empty() {
                 stats.blanks += 1;
@@ -265,7 +261,7 @@ impl Languages {
             Batch => Language::new_single(vec!["REM"]),
             C => Language::new_c(),
             CHeader => Language::new_c(),
-            Clojure => Language::new_single(vec![";","#"]),
+            Clojure => Language::new_single(vec![";"]),
             CoffeeScript => Language::new(vec!["#"], vec![("###", "###")])
                                      .set_quotes(vec![("\"", "\""), ("'", "'")]),
             ColdFusion => Language::new_multi(vec![("<!---", "--->")]),
@@ -281,13 +277,13 @@ impl Languages {
             Dart => Language::new_c(),
             DeviceTree => Language::new_c(),
             Erlang => Language::new_single(vec!["%"]),
-            Forth => Language::new(vec!["\\"], vec![("(", ")")]),
+            Forth => Language::new(vec!["\\"], vec![("( ", ")")]),
             FortranLegacy => Language::new_single(vec!["c","C","!","*"]),
             FortranModern => Language::new_single(vec!["!"]),
             Go => Language::new_c(),
             Handlebars => Language::new_multi(vec![("<!--", "-->"), ("{{!", "}}")])
                                    .set_quotes(vec![("\"", "\""), ("'", "'")]),
-            Haskell => Language::new_single(vec!["--"]),
+            Haskell => Language::new(vec!["--"], vec![("{-", "-}")]),
             Html => Language::new_html()
                              .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Hex => Language::new_blank(),
@@ -301,15 +297,15 @@ impl Languages {
                         ("\\<open>", "\\<close>"),
                     ]
             ),
-            Jai => Language::new_c(),
+            Jai => Language::new_c().nested(),
             Java => Language::new_c(),
             JavaScript => Language::new_c()
                                    .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Json => Language::new_blank(),
             Jsx => Language::new_c()
                             .set_quotes(vec![("\"", "\""), ("'", "'")]),
-            Julia => Language::new(vec!["#"], vec![("#=", "=#")]),
-            Kotlin => Language::new_c(),
+            Julia => Language::new(vec!["#"], vec![("#=", "=#")]).nested(),
+            Kotlin => Language::new_c().nested(),
             Less => Language::new_c(),
             LinkerScript => Language::new_c(),
             Lisp => Language::new(vec![";"], vec![("#|", "|#")]),
@@ -322,13 +318,15 @@ impl Languages {
             ObjectiveCpp => Language::new_c(),
             OCaml => Language::new_func(),
             Oz => Language::new_pro(),
-            Pascal => Language::new(vec!["//","(*"], vec![("{", "}")]),
-            Perl => Language::new(vec!["#"], vec![("=", "=cut")]),
-            Php => Language::new(vec!["#","//"], vec![("/*", "*/")]),
+            Pascal => Language::new_multi(
+                vec![("{", "}"), ("(*", "*)"), ("{", "*)"), ("(*", "}")]),
+            Perl => Language::new(vec!["#"], vec![("=pod", "=cut")]),
+            Php => Language::new(vec!["#", "//"], vec![("/*", "*/")]),
             Polly => Language::new_html(),
             Prolog => Language::new_pro(),
             Protobuf => Language::new_single(vec!["//"]),
-            Python => Language::new(vec!["#"], vec![("'''", "'''")]),
+            Python => Language::new(
+                vec!["#"], vec![("'''", "'''"), ("\"\"\"", "\"\"\"")]),
             Qcl => Language::new_c(),
             R => Language::new_hash(),
             Razor => Language::new_multi(vec![("<!--", "-->"), ("@*", "*@")]),
@@ -340,7 +338,7 @@ impl Languages {
             Scala => Language::new_c(),
             Sml => Language::new_func(),
             Sql => Language::new(vec!["--"], vec![("/*", "*/")]),
-            Swift => Language::new_c(),
+            Swift => Language::new_c().nested(),
             Tex => Language::new_single(vec!["%"]),
             Text => Language::new_blank(),
             Toml => Language::new_hash(),
