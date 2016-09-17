@@ -9,6 +9,8 @@ use std::io::Read;
 use std::iter::IntoIterator;
 use std::ops::{AddAssign, Deref, DerefMut};
 
+use encoding::{self, DecoderTrap};
+
 // #[cfg(feature = "cbor")]
 // use serde_cbor;
 #[cfg(feature = "json")]
@@ -54,7 +56,12 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
 
         rs_or_cont!(rs_or_cont!(File::open(file)).read_to_end(&mut contents));
 
-        let text = String::from_utf8_lossy(&contents);
+
+        let text = match encoding::decode(&contents, DecoderTrap::Replace, encoding::all::UTF_8) {
+            (Ok(string), _) => Cow::Owned(string),
+            (Err(cow), _) => cow,
+        };
+
         let lines = text.lines();
 
         if language.is_blank() {

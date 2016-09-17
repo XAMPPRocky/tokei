@@ -6,13 +6,17 @@
 
 //! # Tokei: Code Analysis Library
 //!
-//! A simple, effcient library for analysing code in directories.[_For the binary_](https://github.com/Aaronepower/tokei/)
+//! A simple, effcient library for counting code in directories.
+//! [_For the binary_](https://github.com/Aaronepower/tokei/)
 //!
 //! ## How to use
 //!
-//! Tokei provides both `Languages` a map of existing programming languages and `Language` for creating custom languages.
+//! Tokei provides both `Languages` struct which a map of many existing programming languages,
+//! and `Language` for creating custom languages.
 //!
-//! ### Example(Get total lines of code from all rust files in current directory, and all subdirectories)
+//! ### Example
+//!
+//! Gets the total lines of code from all rust files in current directory, and all subdirectories.
 //!
 //! ```no_run
 //! extern crate tokei;
@@ -46,9 +50,10 @@
 //! }
 //! ```
 
+extern crate encoding;
+extern crate glob;
 #[macro_use]
 extern crate maplit;
-extern crate glob;
 extern crate rayon;
 #[cfg(feature = "io")]
 extern crate serde;
