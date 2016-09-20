@@ -24,13 +24,18 @@ version = "0.8.0"
 [dependencies]
 encoding = "0.2.33"
 glob = "~0.2.11"
+log = "0.3.6"
 maplit = "~0.1.3"
-rayon = "~0.4.0"
+rayon = "0.4.2"
 walkdir = "~0.1.5"
 
 [dependencies.clap]
 features = ["yaml"]
 version = "~2.10.0"
+
+[dependencies.env_logger]
+features = [""]
+version = "~0.3.5"
 
 [dependencies.rustc-serialize]
 optional = true

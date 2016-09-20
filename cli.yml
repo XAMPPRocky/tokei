@@ -47,3 +47,7 @@ args:
         possible_values: [files, lines, blanks, code, comments]
         short: s
         takes_value: true
+    - verbose:
+        help: 'Set verbose output level: 1 for File IO errors 2: for unknown extensions'
+        short: v
+        multiple: true

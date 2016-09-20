@@ -4,6 +4,8 @@
 
 #[macro_use]
 extern crate clap;
+extern crate log;
+extern crate env_logger;
 // #[cfg(feature = "cbor")]
 // extern crate serde_cbor;
 #[cfg(feature = "json")]
@@ -24,6 +26,8 @@ use std::time::Duration;
 use std::sync::mpsc::channel;
 
 use clap::App;
+use log::LogLevelFilter;
+use env_logger::LogBuilder;
 // #[cfg(feature = "cbor")]
 // use rustc_serialize::hex::FromHex;
 
@@ -52,6 +56,7 @@ fn main() {
     let input_option = matches.value_of("file_input");
     let output_option = matches.value_of("output");
     let language_option = matches.is_present("languages");
+    let verbose_option = matches.occurrences_of("verbose");
     let sort_option = matches.value_of("sort");
     let ignored_directories = {
         let mut ignored_directories: Vec<&str> = vec![".git"];
@@ -62,6 +67,20 @@ fn main() {
         }
         ignored_directories
     };
+
+    if verbose_option != 0 {
+        let mut builder = LogBuilder::new();
+        match verbose_option {
+            1 => {
+                builder.filter(None, LogLevelFilter::Warn);
+            }
+            2 => {
+                builder.filter(None, LogLevelFilter::Info);
+            }
+            _ => {/* NOOP */}
+        }
+        builder.init().unwrap();
+    }
 
     let mut languages = Languages::new();
 
@@ -76,18 +95,6 @@ fn main() {
 
     if let Some(input) = input_option {
         add_input(input, &mut languages);
-    }
-
-    if output_option == None {
-        println!("{}", ROW);
-        println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
-                 "Language",
-                 "Files",
-                 "Lines",
-                 "Code",
-                 "Comments",
-                 "Blanks");
-        println!("{}", ROW);
     }
 
     let mut total = Language::new_blank();
@@ -114,6 +121,15 @@ fn main() {
     languages.get_statistics(paths, ignored_directories);
 
     if output_option == None {
+        println!("{}", ROW);
+        println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
+                 "Language",
+                 "Files",
+                 "Lines",
+                 "Code",
+                 "Comments",
+                 "Blanks");
+        println!("{}", ROW);
     }
 
     for (name, language) in &languages {

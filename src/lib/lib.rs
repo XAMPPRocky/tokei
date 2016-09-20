@@ -50,6 +50,8 @@
 //! }
 //! ```
 
+#[macro_use]
+extern crate log;
 extern crate encoding;
 extern crate glob;
 #[macro_use]

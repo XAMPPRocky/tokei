@@ -373,7 +373,10 @@ impl LanguageType {
                 "xml" => Some(Xml),
                 "yaml" | "yml" => Some(Yaml),
                 "zsh" => Some(Zsh),
-                _ => None,
+                extension => {
+                    info!("Unknown extension: {}", extension);
+                    None
+                },
             }
         } else {
             None

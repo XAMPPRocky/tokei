@@ -33,9 +33,9 @@ const TOML_ERROR: &'static str = "Tokei was not compiled with the `toml-io` flag
 #[cfg(not(feature = "yaml"))]
 const YAML_ERROR: &'static str = "Tokei was not compiled with the `yaml` flag.";
 
-fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
+fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
 
-    let &mut (name, ref mut language) = language_tuple;
+    let (name, ref mut language) = language_tuple;
 
     if language.files.is_empty() {
         return;
@@ -49,12 +49,12 @@ fn count_files(language_tuple: &mut (&LanguageType, &mut Language)) {
     let mut quote;
 
     for file in files {
-        let mut stats = Stats::new(opt_or_cont!(file.to_str()));
+        let mut stats = Stats::new(opt_warn!(file.to_str(), "Couldn't convert path to String."));
         stack.clear();
         contents.clear();
         quote = None;
 
-        rs_or_cont!(rs_or_cont!(File::open(file)).read_to_end(&mut contents));
+        rs_warn!(rs_warn!(File::open(file)).read_to_end(&mut contents));
 
 
         let text = match encoding::decode(&contents, DecoderTrap::Replace, encoding::all::UTF_8) {
@@ -241,12 +241,8 @@ impl Languages {
     pub fn get_statistics<'a, I>(&mut self, paths: I, ignored: I)
         where I: Into<Cow<'a, [&'a str]>>
     {
-
         fs::get_all_files(paths.into(), ignored.into(), &mut self.inner);
-
-        let mut language_iter: Vec<_> = self.inner.iter_mut().collect();
-
-        language_iter.par_iter_mut().for_each(count_files);
+        self.inner.par_iter_mut().for_each(count_files);
     }
 
     /// Constructs a new, blank `Languages`.
