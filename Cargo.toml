@@ -34,7 +34,7 @@ features = ["yaml"]
 version = "~2.10.0"
 
 [dependencies.env_logger]
-features = [""]
+features = []
 version = "~0.3.5"
 
 [dependencies.rustc-serialize]
