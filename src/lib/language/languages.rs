@@ -363,6 +363,8 @@ impl Languages {
             Sql => Language::new(vec!["--"], vec![("/*", "*/")])
                 .set_quotes(vec![("'", "'")]),
             Swift => Language::new_c().nested(),
+            Tcl => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Tex => Language::new_single(vec!["%"]),
             Text => Language::new_blank(),
             Toml => Language::new_hash()
