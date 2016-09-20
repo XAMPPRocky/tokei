@@ -1,3 +1,60 @@
+# 4.3.0
+
+- @lligo : Tokei no longer panics on non-character-boundary when printing file names.
+- Fixed regression where no comment style files(_json, markdown_) weren't counted.
+- Tokei can now handle files in different encodings.(_using the [encoding](https://crates.io/crates/encoding) library_)
+- Tokei now prints errors instead of sliently skipping them.
+- Tokei can now print unused extensions using `-v` option.
+
+
+**Added languages:**
+- Asp(_asa, asp_)
+- Asp.NET(_asax, ascx, asmx, aspx, master, sitemap, webinfo_)
+- Hex(_hex_)
+- Intel Hex(_ihex_)
+- ReStructuredText(_rst_)
+- Razor(_cshtml_)
+
+**Changes to existing languages Thanks to @mwilli20 :**
+- Another Ada extension(_pad_)
+- Assembly - Uses `' '` or `" "` and added another extension(_asm_)
+- Bash - Uses `' '` or `" "`
+- Batch - They don't use quotes for strings, added `::`
+- Cold Fusion - Uses `' '` or `" "`
+- D - Uses `" "` or
+- Dart - Uses `" "` or `' '` or `""" """` or `''' '''`
+- Forth - Uses `" "` but new, doesn't have a preset
+- Fortrans - Use `" "` or `' '`
+- Idris - Uses `" "` or `""" """`
+- Julia - Uses `" "` or `""" """`
+- Kotlin - Uses `" "` or `""" """`
+- Lisp - Comments can be nested
+- Moustache - Uses `" "` or `' '`
+- Nim - Uses `" "` or `""" """`
+- Pascal - Uses `' '`
+- Perl - Uses `" "` or `' '`
+- Php - Uses `" "` or `' '`
+- Python - Uses `" "` or `' '` or `""" """` or `''' '''`
+- Ruby - Uses `" "` or `' '`
+- Sass - Uses `" "` or `' '`
+- Sql - Uses `' '`
+- Toml - Uses `" "` or `' '` or `""" """` or `''' '''`
+- Typescript - Uses `" "` or `' '` or
+- Vimscript - Uses `" "` or `' '`
+- Yaml - Uses `" "` or `' '`
+- Zsh - Uses `" "` or `' '`
+-  Clojure - Removed `#`
+- Forth   - `( Comment)` style comments need a space after the opening paren
+- Haskell - Has nested comments
+- Idris - Has nested comments
+- Jai     - Has nested block comments
+- Julia   - Has nested block comments
+- Kotlin  - Has nested block comments
+- Pascal  - Pascal should be multiline from `{` or `(*` to `}` or `*)`
+- Perl    - Perl5 and earlier for multiline comments need `=pod` to `=cut`.
+- Swift   - Has nested block comments
+
+
 # 4.2.0
 
 Tokei is now more precise, and shouldn't ever panic.
