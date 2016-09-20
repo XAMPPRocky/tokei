@@ -73,8 +73,11 @@ $ tokei ./foo
 ```
 
 #### Multiple folders
-To have tokei report on multiple folders in the same call simply add a comma followed by another path.
+To have tokei report on multiple folders in the same call simply add a comma, or a space followed by another path.
 
+```shell
+$ tokei ./foo ./bar ./baz
+```
 ```shell
 $ tokei ./foo, ./bar, ./baz
 ```
@@ -125,7 +128,7 @@ $ tokei ./foo --input ./stats.json
 
 ## Options
 ```
-Tokei 3.0.0
+Tokei 4.3.0
 Aaron P. <theaaronepower@gmail.com>
 Count Code, Quickly.
 
@@ -137,10 +140,12 @@ FLAGS:
     -h, --help         Prints help information
     -l, --languages    Prints out supported languages and their extensions.
     -V, --version      Prints version information
+    -v                 Set verbose output level: 1 for File IO errors 2: for unknown extensions
 
 OPTIONS:
     -e, --exclude <exclude>     Ignore all files & directories containing the word.
-    -i, --input <file_input>    Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to read from stdin.
+    -i, --input <file_input>    Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to
+                                read from stdin.
     -o, --output <output>       Outputs Tokei in a specific format. [values: cbor, json, toml, yaml]
     -s, --sort <sort>           Will sort based on column [values: files, lines, blanks, code, comments]
 
@@ -158,7 +163,10 @@ If there is a language that you want added submit a pull request with the follow
 
 ```
 ActionScript
+Ada
 Assembly
+ASP
+ASP.Net
 Autoconf
 BASH
 Batch
@@ -178,12 +186,16 @@ D
 Dart
 Device Tree
 Erlang
+Forth
 FORTRAN Legacy
 FORTRAN Modern
 Go
+Handlebars
 Haskell
 HTML
+HEX
 Idris
+Intel HEX
 Isabelle
 JAI
 Java
@@ -213,9 +225,11 @@ Prolog
 Python
 QCL
 R
+Razor
 Ruby
 Ruby HTML
 Rust
+ReStructuredText
 Sass
 Scala
 Standard ML
