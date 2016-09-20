@@ -17,7 +17,7 @@ use language::LanguageType::*;
 macro_rules! get_language {
     ($languages:expr, $entry:expr) => {
         if let Some(language_type) = LanguageType::from_extension($entry) {
-            opt_warn!($languages.get_mut(&language_type), "Unknown Language? Shouldn't happen.")
+            opt_error!($languages.get_mut(&language_type), "Unknown Language? Shouldn't happen.")
         } else {
             continue;
         }
@@ -34,8 +34,8 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
         if let Err(_) = Path::new(path).metadata() {
             if let Ok(paths) = glob(path) {
                 'path: for path in paths {
-                    let path = rs_warn!(path);
-                    let path_str = opt_warn!(path.to_str(),
+                    let path = rs_error!(path);
+                    let path_str = opt_error!(path.to_str(),
                                              "DURING FILE LOOKUP: Couldn't convert path to string.");
 
                     for ig in &*ignored_directories {
@@ -63,9 +63,9 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
             });
 
             for entry in walker {
-                let entry = rs_warn!(entry);
+                let entry = rs_error!(entry);
 
-                let mut language = if opt_warn!(entry.path().to_str(),
+                let mut language = if opt_error!(entry.path().to_str(),
                                                 "Walkdir: Couldn't convert path to string")
                     .contains("Makefile") {
                     languages.get_mut(&Makefile).unwrap()
@@ -119,7 +119,7 @@ pub fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str
                 Some("python") | Some("python2") | Some("python3") => Some("py"),
                 Some("sh") => Some("sh"),
                 env => {
-                    info!("Unknown environment: {:?}", env);
+                    warn!("Unknown environment: {:?}", env);
                     None
                 }
             }

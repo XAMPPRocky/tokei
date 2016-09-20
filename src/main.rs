@@ -67,20 +67,16 @@ fn main() {
         }
         ignored_directories
     };
-
-    if verbose_option != 0 {
-        let mut builder = LogBuilder::new();
-        match verbose_option {
-            1 => {
-                builder.filter(None, LogLevelFilter::Warn);
-            }
-            2 => {
-                builder.filter(None, LogLevelFilter::Info);
-            }
-            _ => {/* NOOP */}
+    let mut builder = LogBuilder::new();
+    match verbose_option {
+        1 => {
+            builder.filter(None, LogLevelFilter::Warn);
         }
-        builder.init().unwrap();
+        _ => {
+            builder.filter(None, LogLevelFilter::Error);
+        }
     }
+    builder.init().unwrap();
 
     let mut languages = Languages::new();
 

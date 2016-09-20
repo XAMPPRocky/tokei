@@ -49,12 +49,12 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
     let mut quote;
 
     for file in files {
-        let mut stats = Stats::new(opt_warn!(file.to_str(), "Couldn't convert path to String."));
+        let mut stats = Stats::new(opt_error!(file.to_str(), "Couldn't convert path to String."));
         stack.clear();
         contents.clear();
         quote = None;
 
-        rs_warn!(rs_warn!(File::open(file)).read_to_end(&mut contents));
+        rs_error!(rs_error!(File::open(file)).read_to_end(&mut contents));
 
 
         let text = match encoding::decode(&contents, DecoderTrap::Replace, encoding::all::UTF_8) {

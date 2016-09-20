@@ -2,31 +2,6 @@
 // Use of this source code is governed by the MIT license that can be
 // found in the LICENSE file.
 
-macro_rules! opt_info {
-    ($option:expr, $message:expr) => {
-        match $option {
-            Some(result) => result,
-            None => {
-                info!($message);
-                continue;
-            },
-        }
-    }
-}
-
-macro_rules! rs_info {
-    ($result:expr, $message: expr) => {
-        match $result {
-            Ok(result) => result,
-            Err(error) => {
-                use std::error::Error;
-                info!("{}", error.description());
-                continue;
-            },
-        }
-    }
-}
-
 macro_rules! opt_warn {
     ($option:expr, $message:expr) => {
         match $option {
@@ -40,12 +15,37 @@ macro_rules! opt_warn {
 }
 
 macro_rules! rs_warn {
-    ($result:expr) => {
+    ($result:expr, $message: expr) => {
         match $result {
             Ok(result) => result,
             Err(error) => {
                 use std::error::Error;
                 warn!("{}", error.description());
+                continue;
+            },
+        }
+    }
+}
+
+macro_rules! opt_error {
+    ($option:expr, $message:expr) => {
+        match $option {
+            Some(result) => result,
+            None => {
+                error!($message);
+                continue;
+            },
+        }
+    }
+}
+
+macro_rules! rs_error {
+    ($result:expr) => {
+        match $result {
+            Ok(result) => result,
+            Err(error) => {
+                use std::error::Error;
+                error!("{}", error.description());
                 continue;
             },
         }

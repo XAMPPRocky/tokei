@@ -374,7 +374,7 @@ impl LanguageType {
                 "yaml" | "yml" => Some(Yaml),
                 "zsh" => Some(Zsh),
                 extension => {
-                    info!("Unknown extension: {}", extension);
+                    warn!("Unknown extension: {}", extension);
                     None
                 },
             }
