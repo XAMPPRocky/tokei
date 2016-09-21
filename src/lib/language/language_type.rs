@@ -159,6 +159,8 @@ pub enum LanguageType {
     Sql,
     /// Swift
     Swift,
+    /// Tcl
+    Tcl,
     /// Tex
     Tex,
     /// Text
@@ -265,6 +267,7 @@ impl LanguageType {
             Sml => "Standard ML",
             Sql => "SQL",
             Swift => "Swift",
+            Tcl => "TCL",
             Tex => "TeX",
             Text => "Plain Text",
             Toml => "TOML",
@@ -363,6 +366,7 @@ impl LanguageType {
                 "sml" => Some(Sml),
                 "sql" => Some(Sql),
                 "swift" => Some(Swift),
+                "tcl" => Some(Tcl),
                 "tex" | "sty" => Some(Tex),
                 "toml" => Some(Toml),
                 "ts" => Some(TypeScript),
