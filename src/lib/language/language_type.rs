@@ -350,6 +350,7 @@ impl LanguageType {
                 "pas" => Some(Pascal),
                 "php" => Some(Php),
                 "pl" => Some(Perl),
+                "pm" => Some(Perl),
                 "qcl" => Some(Qcl),
                 "text" | "txt" => Some(Text),
                 "polly" => Some(Polly),
