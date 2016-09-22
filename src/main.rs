@@ -129,19 +129,17 @@ fn main() {
     }
 
     for (name, language) in &languages {
-        if !language.is_empty() {
-            if sort_option == None && output_option == None {
-                if files_option {
-                    print_language(&language, name);
-                    println!("{}", ROW);
+        if !language.is_empty() && sort_option == None && output_option == None {
+            if files_option {
+                print_language(language, name);
+                println!("{}", ROW);
 
-                    for stat in &language.stats {
-                        println!("{}", stat);
-                    }
-                    println!("{}", ROW);
-                } else if output_option == None {
-                    print_language(&language, name);
+                for stat in &language.stats {
+                    println!("{}", stat);
                 }
+                println!("{}", ROW);
+            } else if output_option == None {
+                print_language(language, name);
             }
         }
     }
@@ -156,7 +154,7 @@ fn main() {
     }
 
     if let Some(format) = output_option {
-        match_output(&format, &languages);
+        match_output(format, &languages);
     } else if let Some(sort_category) = sort_option {
 
         for (_, ref mut language) in &mut languages {
