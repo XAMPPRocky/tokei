@@ -174,8 +174,8 @@ fn main() {
             BLANKS => languages.sort_by(|a, b| b.1.blanks.cmp(&a.1.blanks)),
             COMMENTS => languages.sort_by(|a, b| b.1.comments.cmp(&a.1.comments)),
             CODE => languages.sort_by(|a, b| b.1.code.cmp(&a.1.code)),
-            FILES => {}
-            LINES => languages.sort_by(|a, b| b.1.files.len().cmp(&a.1.files.len())),
+            FILES => languages.sort_by(|a, b| b.1.stats.len().cmp(&a.1.stats.len())),
+            LINES => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
             _ => unreachable!(),
         }
 
