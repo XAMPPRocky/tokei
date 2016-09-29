@@ -204,6 +204,7 @@ Julia
 JSON
 JSX
 Kotlin
+Lean
 LESS
 LD Script
 LISP
