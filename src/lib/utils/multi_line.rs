@@ -66,9 +66,11 @@ pub fn handle_multi_line(line: &str,
         }
 
 
-        for comment in &language.line_comment {
-            if window.starts_with(comment) {
-                break 'window;
+        if stack.is_empty() {
+            for comment in &language.line_comment {
+                if window.starts_with(comment) {
+                    break 'window;
+                }
             }
         }
 
@@ -114,6 +116,15 @@ mod tests {
         let mut quote = None;
         let language = Language::new_c();
         handle_multi_line("Hello World // /*", &language, &mut stack, &mut quote);
+        assert_eq!(stack.len(), 0);
+    }
+
+    #[test]
+    fn single_comment_in_multi() {
+        let mut stack = vec![];
+        let mut quote = None;
+        let language = Language::new_c();
+        handle_multi_line("Hello /* // */ world", &language, &mut stack, &mut quote);
         assert_eq!(stack.len(), 0);
     }
 
