@@ -321,6 +321,7 @@ impl Languages {
                 .set_quotes(vec![("\"", "\""), ("\"\"\"", "\"\"\"")]),
             Kotlin => Language::new_c().nested()
                 .set_quotes(vec![("\"", "\""), ("\"\"\"", "\"\"\"")]),
+            Lean => Language::new(vec!["--"], vec![("/-", "-/")]).nested(),
             Less => Language::new_c(),
             LinkerScript => Language::new_c(),
             Lisp => Language::new(vec![";"], vec![("#|", "|#")]).nested(),

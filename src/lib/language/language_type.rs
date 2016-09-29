@@ -97,6 +97,8 @@ pub enum LanguageType {
     Jsx,
     /// Kotlin
     Kotlin,
+    /// Lean
+    Lean,
     /// Less
     Less,
     /// LinkerScript
@@ -236,6 +238,7 @@ impl LanguageType {
             Jsx => "JSX",
             Julia => "Julia",
             Kotlin => "Kotlin",
+            Lean => "Lean",
             Less => "LESS",
             LinkerScript => "LD Script",
             Lisp => "LISP",
@@ -335,6 +338,7 @@ impl LanguageType {
                 "jsx" => Some(Jsx),
                 "kt" | "kts" => Some(Kotlin),
                 "lds" => Some(LinkerScript),
+                "lean" | "hlean" => Some(Lean),
                 "less" => Some(Less),
                 "lua" => Some(Lua),
                 "m" => Some(ObjectiveC),
@@ -439,6 +443,7 @@ impl<'a> From<&'a str> for LanguageType {
             "Json" => Json,
             "Jsx" => Jsx,
             "Kotlin" => Kotlin,
+            "Lean" => Lean,
             "Less" => Less,
             "LinkerScript" => LinkerScript,
             "Lisp" => Lisp,
