@@ -166,6 +166,21 @@ impl Language {
         Self::new_single(vec!["#"])
     }
 
+    /// Convience constructor for creating a language that has the same commenting syntax as
+    /// Haskell.
+    ///
+    /// ```
+    /// # use tokei::*;
+    /// let haskell = Language::new(vec!["--"], vec![("{-", "-}")]).nested();
+    /// let idris = Language::new_haskell();
+    ///
+    /// assert_eq!(haskell.line_comment, haskell.line_comment);
+    /// assert_eq!(haskell.multi_line, haskell.multi_line);
+    /// ```
+    pub fn new_haskell() -> Self {
+        Self::new(vec!["--"], vec![("{-", "-}")]).nested()
+    }
+
     /// Convience constructor for creating a language that only has multi line comments.
     ///
     /// ```

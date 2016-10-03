@@ -16,17 +16,23 @@ name = "tokei"
 path = "src/main.rs"
 
 [build-dependencies]
+serde_json = "~0.8.0"
+serde = "~0.8.0"
 
 [build-dependencies.serde_codegen]
 optional = true
 version = "0.8.0"
+
+[build-dependencies.handlebars]
+version = "0.21.1"
+features = ["serde_type"]
 
 [dependencies]
 encoding = "0.2.33"
 glob = "~0.2.11"
 log = "0.3.6"
 maplit = "~0.1.3"
-rayon = "0.4.2"
+rayon = "=0.4.2"
 walkdir = "~0.1.5"
 
 [dependencies.clap]

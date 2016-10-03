@@ -4,8 +4,6 @@
 
 use std::borrow::Cow;
 use std::collections::BTreeMap;
-use std::io::{BufRead, BufReader};
-use std::fs::File;
 use std::path::Path;
 
 use glob::glob;
@@ -13,6 +11,7 @@ use walkdir::{WalkDir, WalkDirIterator};
 
 use language::{Language, LanguageType};
 use language::LanguageType::*;
+pub use language::get_filetype_from_shebang;
 
 macro_rules! get_language {
     ($languages:expr, $entry:expr) => {
@@ -98,32 +97,4 @@ pub fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
         }
     }
 
-}
-/// This is for getting the file type from the first line of a file
-pub fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str> {
-    let file = match File::open(file) {
-        Ok(file) => file,
-        _ => return None,
-    };
-    let mut buf = BufReader::new(file);
-    let mut line = String::new();
-    let _ = buf.read_line(&mut line);
-
-    let mut words = line.split_whitespace();
-    match words.next() {
-        Some("#!/bin/sh") => Some("sh"),
-        Some("#!/bin/csh") => Some("csh"),
-        Some("#!/usr/bin/perl") => Some("pl"),
-        Some("#!/usr/bin/env") => {
-            match words.next() {
-                Some("python") | Some("python2") | Some("python3") => Some("py"),
-                Some("sh") => Some("sh"),
-                env => {
-                    warn!("Unknown environment: {:?}", env);
-                    None
-                }
-            }
-        }
-        _ => None,
-    }
 }

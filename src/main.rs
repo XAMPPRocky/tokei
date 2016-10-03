@@ -105,11 +105,11 @@ fn main() {
 
             if print_animation {
                 print!(" Counting files.  \r");
-                thread::sleep(Duration::from_millis(4));
+                thread::sleep(Duration::from_millis(10));
                 print!(" Counting files..\r");
-                thread::sleep(Duration::from_millis(4));
+                thread::sleep(Duration::from_millis(10));
                 print!(" Counting files...\r");
-                thread::sleep(Duration::from_millis(4));
+                thread::sleep(Duration::from_millis(10));
             }
         }
     });
