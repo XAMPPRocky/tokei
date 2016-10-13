@@ -183,6 +183,8 @@ pub enum LanguageType {
     Yaml,
     /// Zsh
     Zsh,
+    /// Elm
+    Elm
 }
 
 impl LanguageType {
@@ -281,6 +283,7 @@ impl LanguageType {
             Xml => "XML",
             Yaml => "YAML",
             Zsh => "Zsh",
+            Elm => "Elm"
         }
     }
 
@@ -382,6 +385,7 @@ impl LanguageType {
                 "xml" => Some(Xml),
                 "yaml" | "yml" => Some(Yaml),
                 "zsh" => Some(Zsh),
+                "elm" => Some(Elm),
                 extension => {
                     warn!("Unknown extension: {}", extension);
                     None
@@ -485,6 +489,7 @@ impl<'a> From<&'a str> for LanguageType {
             "Xml" => Xml,
             "Yaml" => Yaml,
             "Zsh" => Zsh,
+            "Elm" => Elm,
             _ => unreachable!(),
         }
     }

@@ -381,6 +381,7 @@ impl Languages {
                 .set_quotes(vec![("\"", "\""), ("'", "'")]),
             Zsh => Language::new_hash()
                 .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Elm => Language::new(vec!["--"], vec![("{-", "-}")]).nested(),
         };
 
         Languages { inner: map }
