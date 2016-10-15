@@ -10,7 +10,6 @@
 **Added languages:**
 - Asp(_asa, asp_)
 - Asp.NET(_asax, ascx, asmx, aspx, master, sitemap, webinfo_)
-- GLSL(_vert, tesc, tese, geom, frag, comp_)
 - Hex(_hex_)
 - Intel Hex(_ihex_)
 - ReStructuredText(_rst_)
