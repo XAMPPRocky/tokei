@@ -189,6 +189,7 @@ Erlang
 Forth
 FORTRAN Legacy
 FORTRAN Modern
+GLSL
 Go
 Handlebars
 Haskell
