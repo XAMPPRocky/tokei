@@ -285,6 +285,7 @@ impl Languages {
             Dart => Language::new_c()
                 .set_quotes(vec![("\"", "\""), ("'", "'"), ("\"\"\"", "\"\"\""), ("'''", "'''")]),
             DeviceTree => Language::new_c(),
+            Elm => Language::new(vec!["--"], vec![("{-", "-}")]).nested(),
             Erlang => Language::new_single(vec!["%"]),
             Forth => Language::new(vec!["\\"], vec![("( ", ")")])
                 .set_quotes(vec![("\"", "\"")]),

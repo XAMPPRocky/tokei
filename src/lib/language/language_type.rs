@@ -59,6 +59,8 @@ pub enum LanguageType {
     Dart,
     /// DeviceTree
     DeviceTree,
+    /// Elm
+    Elm,
     /// Erlang
     Erlang,
     /// Forth
@@ -221,6 +223,7 @@ impl LanguageType {
             D => "D",
             Dart => "Dart",
             DeviceTree => "Device Tree",
+            Elm => "Elm",
             Erlang => "Erlang",
             Forth => "Forth",
             FortranLegacy => "FORTRAN Legacy",
@@ -318,6 +321,7 @@ impl LanguageType {
                 "dart" => Some(Dart),
                 "dts" | "dtsi" => Some(DeviceTree),
                 "el" | "lisp" | "lsp" => Some(Lisp),
+                "elm" => Some(Elm),
                 "erl" | "hrl" => Some(Erlang),
                 "4th" | "forth" | "fr" | "frt" | "fth" | "f83" | "fb" | "fpm" | "e4" | "rx" |
                 "ft" => Some(Forth),
@@ -429,6 +433,7 @@ impl<'a> From<&'a str> for LanguageType {
             "D" => D,
             "Dart" => Dart,
             "DeviceTree" => DeviceTree,
+            "Elm" => Elm,
             "Erlang" => Erlang,
             "Forth" => Forth,
             "FortranLegacy" => FortranLegacy,
