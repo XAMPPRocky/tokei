@@ -67,6 +67,8 @@ pub enum LanguageType {
     FortranLegacy,
     /// FortranModern
     FortranModern,
+    /// GLSL
+    GLSL,
     /// Go
     Go,
     /// Handlebars
@@ -223,6 +225,7 @@ impl LanguageType {
             Forth => "Forth",
             FortranLegacy => "FORTRAN Legacy",
             FortranModern => "FORTRAN Modern",
+            GLSL => "GLSL",
             Go => "Go",
             Handlebars => "Handlebars",
             Haskell => "Haskell",
@@ -320,6 +323,7 @@ impl LanguageType {
                 "ft" => Some(Forth),
                 "f" | "for" | "ftn" | "f77" | "pfo" => Some(FortranLegacy),
                 "f03" | "f08" | "f90" | "f95" => Some(FortranModern),
+                "vert" | "tesc" | "tese" | "geom" | "frag" | "comp" => Some(GLSL),
                 "go" => Some(Go),
                 "h" => Some(CHeader),
                 "hbs" | "handlebars" => Some(Handlebars),
@@ -429,6 +433,7 @@ impl<'a> From<&'a str> for LanguageType {
             "Forth" => Forth,
             "FortranLegacy" => FortranLegacy,
             "FortranModern" => FortranModern,
+            "GLSL" => GLSL,
             "Go" => Go,
             "Handlebars" => Handlebars,
             "Haskell" => Haskell,
