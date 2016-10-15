@@ -292,6 +292,7 @@ impl Languages {
                 .set_quotes(vec![("\"", "\""), ("'", "'")]),
             FortranModern => Language::new_single(vec!["!"])
                 .set_quotes(vec![("\"", "\""), ("'", "'")]),
+            Glsl => Language::new_c(),
             Go => Language::new_c(),
             Handlebars => Language::new_multi(vec![("<!--", "-->"), ("{{!", "}}")])
                 .set_quotes(vec![("\"", "\""), ("'", "'")]),
