@@ -63,6 +63,8 @@ pub enum LanguageType {
     Elm,
     /// Erlang
     Erlang,
+    /// Elixir
+    Elixir,
     /// Forth
     Forth,
     /// FortranLegacy
@@ -225,6 +227,7 @@ impl LanguageType {
             DeviceTree => "Device Tree",
             Elm => "Elm",
             Erlang => "Erlang",
+            Elixir => "Elixir",
             Forth => "Forth",
             FortranLegacy => "FORTRAN Legacy",
             FortranModern => "FORTRAN Modern",
@@ -304,7 +307,9 @@ impl LanguageType {
                 "as" => Some(ActionScript),
                 "ada" | "adb" | "ads" | "pad" => Some(Ada),
                 "asa" | "asp" => Some(Asp),
-                "asax" | "ascx"| "asmx"| "aspx"| "master"| "sitemap"| "webinfo" => Some(AspNet),
+                "asax" | "ascx" | "asmx" | "aspx" | "master" | "sitemap" | "webinfo" => {
+                    Some(AspNet)
+                }
                 "bash" | "sh" => Some(Bash),
                 "bat" | "btm" | "cmd" => Some(Batch),
                 "c" | "ec" | "pgc" => Some(C),
@@ -323,6 +328,7 @@ impl LanguageType {
                 "el" | "lisp" | "lsp" => Some(Lisp),
                 "elm" => Some(Elm),
                 "erl" | "hrl" => Some(Erlang),
+                "ex" | "exs" => Some(Elixir),
                 "4th" | "forth" | "fr" | "frt" | "fth" | "f83" | "fb" | "fpm" | "e4" | "rx" |
                 "ft" => Some(Forth),
                 "f" | "for" | "ftn" | "f77" | "pfo" => Some(FortranLegacy),
@@ -393,7 +399,7 @@ impl LanguageType {
                 extension => {
                     warn!("Unknown extension: {}", extension);
                     None
-                },
+                }
             }
         } else {
             None

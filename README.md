@@ -186,6 +186,7 @@ D
 Dart
 Device Tree
 Erlang
+Elixir
 Forth
 FORTRAN Legacy
 FORTRAN Modern

@@ -287,6 +287,8 @@ impl Languages {
             DeviceTree => Language::new_c(),
             Elm => Language::new(vec!["--"], vec![("{-", "-}")]).nested(),
             Erlang => Language::new_single(vec!["%"]),
+            Elixir => Language::new_hash()
+                .set_quotes(vec![("\"", "\""), ("'", "'"), ("\"\"\"", "\"\"\""), ("'''", "'''")]),
             Forth => Language::new(vec!["\\"], vec![("( ", ")")])
                 .set_quotes(vec![("\"", "\"")]),
             FortranLegacy => Language::new_single(vec!["c","C","!","*"])
