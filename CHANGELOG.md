@@ -1,3 +1,19 @@
+# 4.4.0
+
+- Simplified language definitions, now consolidated into a single JSON file.
+- Fixed regression where lines and files weren't sorted.
+- @llogiq : made clippy fixes
+- @lligo : Added long verbose name
+
+**Added languages:**
+- @little-dude : Tcl(_tcl_)
+- @svenstaro : GLSL(_vert, tesc, tese, geom, frag, comp_)
+- @not-fl3 : Elm(_elm_)
+
+**Changes to existing languages:**
+- @xpayn : Added `pm` extension to Perl.
+
+
 # 4.3.0
 
 - @lligo : Tokei no longer panics on non-character-boundary when printing file names.

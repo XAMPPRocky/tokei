@@ -6,6 +6,26 @@
 
 Tokei is a program that allows you to count code, quickly.
 
+## Example Output
+This is tokei running on it's own directory
+
+```
+$ tokei .
+-------------------------------------------------------------------------------
+ Language            Files        Lines         Code     Comments       Blanks
+-------------------------------------------------------------------------------
+ Autoconf                1            9            7            1            1
+ Handlebars              1          235          218            0           17
+ JSON                    1         1205         1205            0            0
+ Markdown                4          553          553            0            0
+ Rust                   12         1803         1080          517          206
+ TOML                    1           86           70            0           16
+ YAML                    2           71           68            3            0
+-------------------------------------------------------------------------------
+ Total                  22         3962         3201          521          240
+-------------------------------------------------------------------------------
+```
+
 ## [Documentation](https://crates.fyi/crates/tokei/3.0.0/index.html)
 
 ## Table of Contents
