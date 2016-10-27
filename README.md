@@ -26,7 +26,7 @@ $ tokei .
 -------------------------------------------------------------------------------
 ```
 
-## [Documentation](https://crates.fyi/crates/tokei/3.0.0/index.html)
+## [Documentation](https://docs.rs/tokei)
 
 ## Table of Contents
 
