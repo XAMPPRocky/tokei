@@ -7,6 +7,8 @@ extern crate handlebars;
 use serde_json::Value;
 use handlebars::{Context, Handlebars};
 use std::fs::File;
+use std::env;
+use std::path::Path;
 
 fn main() {
     expand();
@@ -14,8 +16,6 @@ fn main() {
 
 #[cfg(feature = "io")]
 fn expand() {
-    use std::env;
-    use std::path::Path;
     use std::thread;
     render_handlebars();
 
@@ -43,11 +43,17 @@ fn expand() {
 fn render_handlebars() {
     let mut handlebars = Handlebars::new();
     handlebars.register_escape_fn(handlebars::no_escape);
-    let raw_data: Value = serde_json::from_reader(File::open(&"src/lib/languages.json").unwrap()).unwrap();
+    let raw_data: Value = serde_json::from_reader(
+        File::open(&"src/lib/languages.json").unwrap()).unwrap();
     let data = Context::wraps(&raw_data);
-    let mut source_template = File::open(&"src/lib/language/language_type.rs.hbs").expect("Can't find Template");
-    let mut output_file = File::create("src/lib/language/language_type.rs").expect("Can't create!");
-    if let Err(err) = handlebars.template_renderw2(&mut source_template, &data, &mut output_file) {
+    let out = Path::new(&env::var_os("OUT_DIR").unwrap()).join("language_type.rs");
+    let mut source_template = File::open(&"src/lib/language/language_type.rs.hbs")
+        .expect("Can't find Template");
+    let mut output_file = File::create(&out).expect("Can't create!");
+    if let Err(err) = handlebars.template_renderw2(&mut source_template,
+                                                   &data,
+                                                   &mut output_file)
+    {
         panic!("Failed to generate languages! ERROR: {:?}", err);
     }
 }

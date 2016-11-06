@@ -1,27 +1,30 @@
 use language::Language;
 
 /// This is used to catch lines like "let x = 5; /* Comment */"
+#[inline(never)]
 pub fn handle_multi_line(line: &str,
                          language: &Language,
                          stack: &mut Vec<&'static str>,
                          quote: &mut Option<&'static str>) {
-    let mut chars = line.chars();
     let nested_is_empty = language.nested_comments.is_empty();
+    let mut skip = false;
 
-    'window: loop {
-        let window = chars.as_str();
-        if window.is_empty() {
-            break;
+    let window_size = language.multi_line.iter()
+        .chain(language.nested_comments.iter())
+        .map(|&(first, second)| ::std::cmp::max(first.len(), second.len()))
+        .max().unwrap();
+
+    'window: for window in line.as_bytes().windows(window_size) {
+        if skip {
+            skip = false;
+            continue;
         }
-        chars.next();
-
         let mut end = false;
 
         if let &mut Some(quote_str) = quote {
-            if window.starts_with("\\") {
-                chars.next();
+            if window.starts_with(b"\\") {
                 continue;
-            } else if window.starts_with(quote_str) {
+            } else if window.starts_with(quote_str.as_bytes()) {
                 end = true;
             }
         }
@@ -30,8 +33,9 @@ pub fn handle_multi_line(line: &str,
             if let &mut Some(quote_str) = quote {
                 *quote = None;
 
+                // Prevent the quote being counted as both a end and start of a quote
                 if quote_str.chars().count() == 1 {
-                    chars.next();
+                    skip = true;
                 }
                 continue;
             }
@@ -43,53 +47,47 @@ pub fn handle_multi_line(line: &str,
 
         let mut pop = false;
         if let Some(last) = stack.last() {
-            if window.starts_with(last) {
+            if window.starts_with(last.as_bytes()) {
                 pop = true;
             }
         }
 
         if pop {
             stack.pop();
-            chars.next();
+            skip = true;
             continue;
         }
 
-
         if stack.is_empty() {
+            for comment in &language.line_comment {
+                if window.starts_with(comment.as_bytes()) {
+                    break 'window;
+                }
+            }
+
             for &(start, end) in &language.quotes {
-                if window.starts_with(start) {
+                if window.starts_with(start.as_bytes()) {
                     *quote = Some(end);
-                    chars.next();
+                    skip = true;
                     continue 'window;
                 }
             }
         }
 
-
-        if stack.is_empty() {
-            for comment in &language.line_comment {
-                if window.starts_with(comment) {
-                    break 'window;
-                }
-            }
-        }
-
         for &(start, end) in &language.nested_comments {
-            if window.starts_with(start) {
+            if window.starts_with(start.as_bytes()) {
                 stack.push(end);
-                chars.next();
+                skip = true;
                 continue 'window;
             }
         }
 
         for &(start, end) in &language.multi_line {
-            if window.starts_with(start) {
-                if language.nested && nested_is_empty {
-                    stack.push(end);
-                } else if stack.len() == 0 {
+            if window.starts_with(start.as_bytes()) {
+                if (language.nested && nested_is_empty) || stack.len() == 0 {
                     stack.push(end);
                 }
-                chars.next();
+                skip = true;
                 continue 'window;
             }
         }

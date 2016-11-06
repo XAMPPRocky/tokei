@@ -18,7 +18,6 @@ use Language;
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum LanguageType {
-
     {{~#each languages}}
         {{~@key}},
     {{/each}}

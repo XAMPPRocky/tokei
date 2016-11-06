@@ -1,6 +1,5 @@
  #![deny(missing_debug_implementations, missing_copy_implementations,
             trivial_casts, trivial_numeric_casts,
-            unsafe_code,
             unstable_features,
             unused_import_braces)]
 
@@ -51,23 +50,29 @@
 //! ```
 
 #[macro_use]
+extern crate lazy_static;
+#[macro_use]
 extern crate log;
 extern crate encoding;
 extern crate glob;
+
 #[macro_use]
 extern crate maplit;
+extern crate memmap;
 extern crate rayon;
+extern crate regex;
+extern crate walkdir;
+
 #[cfg(feature = "io")]
 extern crate serde;
-// #[cfg(feature = "cbor")]
-// extern crate serde_cbor;
+#[cfg(feature = "cbor")]
+extern crate serde_cbor;
 #[cfg(feature = "json")]
 extern crate serde_json;
 #[cfg(feature = "yaml")]
 extern crate serde_yaml;
 #[cfg(feature = "toml-io")]
 extern crate toml;
-extern crate walkdir;
 
 #[cfg(feature = "io")]
 include!(concat!(env!("OUT_DIR"), "/lib.rs.in"));

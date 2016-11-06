@@ -34,8 +34,7 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
             if let Ok(paths) = glob(path) {
                 'path: for path in paths {
                     let path = rs_error!(path);
-                    let path_str = opt_error!(path.to_str(),
-                                             "DURING FILE LOOKUP: Couldn't convert path to string.");
+                    let path_str = path.to_string_lossy();
 
                     for ig in &*ignored_directories {
                         if path_str.contains(ig) {
@@ -56,7 +55,7 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
         } else {
             let walker = WalkDir::new(path).into_iter().filter_entry(|entry| {
                 for ig in &*ignored_directories {
-                    if entry.path().to_str().unwrap().contains(&*ig) {
+                    if entry.path().to_string_lossy().contains(&*ig) {
                         return false;
                     }
                 }
@@ -65,13 +64,12 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
 
             for entry in walker {
                 let entry = rs_error!(entry);
+                let entry = entry.path();
 
-                let mut language = if opt_error!(entry.path().to_str(),
-                                                "Walkdir: Couldn't convert path to string")
-                    .contains("Makefile") {
+                let mut language = if entry.to_string_lossy().contains("Makefile") {
                     languages.get_mut(&Makefile).unwrap()
                 } else {
-                    get_language!(languages, entry.path())
+                    get_language!(languages, entry)
                 };
 
                 if rs_error!(entry.metadata()).is_file() {
@@ -86,10 +84,7 @@ pub fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
     let path = path.as_ref();
     match path.extension() {
         Some(extension_os) => {
-            match extension_os.to_str() {
-                Some(extension) => Some(extension.to_lowercase()),
-                None => None,
-            }
+            Some(extension_os.to_string_lossy().to_lowercase())
         }
         None => {
             match get_filetype_from_shebang(path) {

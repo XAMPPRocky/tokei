@@ -10,14 +10,15 @@ use std::iter::IntoIterator;
 use std::ops::{AddAssign, Deref, DerefMut};
 
 use encoding::{self, DecoderTrap};
+use memmap::{Mmap, Protection};
 
-// #[cfg(feature = "cbor")]
-// use serde_cbor;
-#[cfg(feature = "json")]
+#[cfg(feature = "io")]
+use serde_cbor;
+#[cfg(feature = "io")]
 use serde_json;
-#[cfg(feature = "yaml")]
+#[cfg(feature = "io")]
 use serde_yaml;
-#[cfg(feature = "toml-io")]
+#[cfg(feature = "io")]
 use toml;
 use rayon::prelude::*;
 
@@ -26,13 +27,10 @@ use super::{Language, LanguageType};
 use super::LanguageType::*;
 use stats::Stats;
 
-#[cfg(not(feature = "json"))]
-const JSON_ERROR: &'static str = "Tokei was not compiled with the `json` flag.";
-#[cfg(not(feature = "toml-io"))]
-const TOML_ERROR: &'static str = "Tokei was not compiled with the `toml-io` flag.";
-#[cfg(not(feature = "yaml"))]
-const YAML_ERROR: &'static str = "Tokei was not compiled with the `yaml` flag.";
+#[cfg(not(feature = "io"))]
+const IO_ERROR: &'static str = "Tokei was not compiled with the `io` flag.";
 
+#[inline(never)]
 fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
 
     let (name, ref mut language) = language_tuple;
@@ -44,18 +42,20 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
     let is_fortran = name == &FortranModern || name == &FortranLegacy;
 
     let files: Vec<_> = language.files.drain(..).collect();
-    let mut contents = Vec::new();
+    //let mut contents = Vec::new();
     let mut stack = vec![];
     let mut quote;
+    let has_multi_line = !language.multi_line.is_empty() && !language.nested_comments.is_empty();
 
     for file in files {
         let mut stats = Stats::new(opt_error!(file.to_str(), "Couldn't convert path to String."));
         stack.clear();
-        contents.clear();
+        //contents.clear();
         quote = None;
 
-        rs_error!(rs_error!(File::open(file)).read_to_end(&mut contents));
-
+        let file = rs_error!(Mmap::open_path(file, Protection::Read));
+        let contents = unsafe { file.as_slice() };
+        //rs_error!(rs_error!(File::open(file)).read_to_end(&mut contents));
 
         let text = match encoding::decode(&contents, DecoderTrap::Replace, encoding::all::UTF_8) {
             (Ok(string), _) => Cow::Owned(string),
@@ -72,19 +72,20 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
             continue;
         }
 
+        let should_handle_multi_line = has_multi_line && language.regex.is_match(&text);
 
         'line: for line in lines {
             stats.lines += 1;
             let no_stack = stack.is_empty();
-            // FORTRAN has a rule where it only counts as a comment if it's the first
-            // character in the column, so removing starting whitespace could cause a
-            // miscount.
-            let line = if is_fortran { line } else { line.trim_left() };
-
             if line.trim().is_empty() {
                 stats.blanks += 1;
                 continue;
             }
+
+            // FORTRAN has a rule where it only counts as a comment if it's the first
+            // character in the column, so removing starting whitespace could cause a
+            // miscount.
+            let line = if is_fortran { line } else { line.trim_left() };
 
             for single in &language.line_comment {
                 if line.starts_with(single) {
@@ -93,7 +94,9 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
                 }
             }
 
-            multi_line::handle_multi_line(line, &language, &mut stack, &mut quote);
+            if should_handle_multi_line {
+                multi_line::handle_multi_line(line, &language, &mut stack, &mut quote);
+            }
 
             if no_stack {
                 stats.code += 1;
@@ -105,7 +108,8 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
     }
 }
 
-/// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
+/// A collection of existing languages([_List of Languages_]
+/// (https://github.com/Aaronepower/tokei#supported-languages))
 #[derive(Debug, Clone)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
@@ -113,39 +117,40 @@ pub struct Languages {
 
 
 impl Languages {
-    // /// Creates a `Languages` struct from cbor.
-    // ///
-    // /// ```
-    // /// # extern crate tokei;
-    // /// # use tokei::*;
-    // /// # extern crate rustc_serialize;
-    // /// # use rustc_serialize::hex::FromHex;
-    // /// # fn main () {
-    // /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e7473\
-    // ///     0065737461747381a566626c616e6b730564636f64650c68636f6d6d656e74730065\
-    // ///     6c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e\
-    // ///     6573116b746f74616c5f66696c657301";
-    // ///
-    // /// let mut languages = Languages::from_cbor(&*cbor.from_hex().unwrap()).unwrap();
-    // /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
-    // /// # }
-    // /// ```
-    // #[cfg(feature = "cbor")]
-    // pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self> {
-    //    let map = try!(serde_cbor::from_slice(cbor.into()));
-    //
-    //    Ok(Self::from_previous(map))
-    // }
+    /// Creates a `Languages` struct from cbor.
+    ///
+    /// ```
+    /// extern crate tokei;
+    /// use tokei::*;
+    /// extern crate rustc_serialize;
+    /// use rustc_serialize::hex::FromHex;
+    /// # fn main () {
+    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e7473\
+    ///     0065737461747381a566626c616e6b730564636f64650c68636f6d6d656e74730065\
+    ///     6c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e\
+    ///     6573116b746f74616c5f66696c657301";
+    ///
+    /// let mut languages = Languages::from_cbor(&*cbor.from_hex().unwrap()).unwrap();
+    /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
+    /// # }
+    /// ```
+    #[cfg(feature = "cbor")]
+    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self> {
+        let map = try!(serde_cbor::from_slice(cbor.into()));
 
-    // #[cfg(not(feature = "cbor"))]
-    // pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> ! {
-    // panic!(CBOR_ERROR)
-    // }
+        Ok(Self::from_previous(map))
+    }
+
+    #[cfg(not(feature = "io"))]
+    #[allow(unused_variables)]
+    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> ! {
+        panic!(IO_ERROR)
+    }
 
     /// Creates a `Languages` struct from json.
     ///
     /// ```
-    /// # use tokei::*;
+    /// use tokei::*;
     /// let json = r#"{
     ///     "Rust": {
     ///         "blanks": 5,
@@ -176,7 +181,7 @@ impl Languages {
     #[cfg(not(feature = "json"))]
     #[allow(unused_variables)]
     pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> ! {
-        panic!(JSON_ERROR)
+        panic!(IO_ERROR)
     }
 
     /// Creates a `Languages` struct from json.
@@ -213,7 +218,7 @@ impl Languages {
     #[cfg(not(feature = "yaml"))]
     #[allow(unused_variables)]
     pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> ! {
-        panic!(YAML_ERROR)
+        panic!(IO_ERROR)
     }
 
     #[cfg(feature = "io")]
@@ -268,7 +273,7 @@ impl Languages {
     /// let empty_map = languages.remove_empty();
     /// let new_map: BTreeMap<LanguageType, Language> = BTreeMap::new();
     ///
-    /// assert_eq!(empty_map, new_map);
+    /// assert_eq!(empty_map.len(), 0);
     /// ```
     pub fn remove_empty(&self) -> BTreeMap<LanguageType, Language> {
         let mut map = BTreeMap::new();
@@ -347,7 +352,7 @@ impl Languages {
     #[cfg(not(feature = "json"))]
     #[allow(unused_variables)]
     pub fn to_json(&self) -> ! {
-        panic!(JSON_ERROR)
+        panic!(IO_ERROR)
     }
 
     #[cfg(feature = "toml-io")]
@@ -358,7 +363,7 @@ impl Languages {
     #[cfg(not(feature = "toml-io"))]
     #[allow(unused_variables)]
     pub fn to_toml(&self) -> ! {
-        panic!(TOML_ERROR)
+        panic!(IO_ERROR)
     }
 
     /// Converts `Languages` to YAML.
@@ -391,7 +396,7 @@ impl Languages {
     #[cfg(not(feature = "yaml"))]
     #[allow(unused_variables)]
     pub fn to_yaml(&self) -> ! {
-        panic!(YAML_ERROR)
+        panic!(IO_ERROR)
     }
 }
 

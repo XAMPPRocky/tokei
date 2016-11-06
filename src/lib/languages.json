@@ -453,15 +453,7 @@
             ]
         },
         "Haskell":{
-            "single":[
-                "--"
-            ],
-            "multi":[
-                [
-                    "{-",
-                    "-}"
-                ]
-            ],
+            "base": "haskell",
             "extensions":[
                 "hs"
             ]
