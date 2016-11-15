@@ -48,7 +48,9 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
                         get_language!(languages, &path)
                     };
 
-                    language.files.push(path.to_owned());
+                    if path.metadata().unwrap().is_file() {
+                        language.files.push(path.to_owned());
+                    }
                 }
             }
         } else {
@@ -72,7 +74,9 @@ pub fn get_all_files<'a>(paths: Cow<'a, [&'a str]>,
                     get_language!(languages, entry.path())
                 };
 
-                language.files.push(entry.path().to_owned());
+                if entry.metadata().unwrap().is_file() {
+                    language.files.push(entry.path().to_owned());
+                }
             }
         }
     }
