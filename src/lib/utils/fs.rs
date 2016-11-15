@@ -102,3 +102,27 @@ pub fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
     }
 
 }
+
+
+#[cfg(test)]
+mod test {
+    extern crate tempdir;
+    use super::*;
+    use std::fs::create_dir;
+    use language::languages::Languages;
+    use language::LanguageType;
+    use self::tempdir::TempDir;
+
+
+    #[test]
+    fn walker_directory_as_file() {
+        let tmp_dir = TempDir::new("test").expect("Couldn't create temp dir");
+        let path_name = tmp_dir.path().join("directory.rs");
+        create_dir(&path_name).expect("Couldn't create directory.rs within temp");
+
+        let mut l = Languages::new();
+        get_all_files(vec![tmp_dir.into_path().to_str().unwrap()].into(), vec![].into(), &mut l);
+
+        assert_eq!(0, l.get(&LanguageType::Rust).unwrap().files.len());
+    }
+}
