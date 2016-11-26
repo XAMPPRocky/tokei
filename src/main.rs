@@ -4,6 +4,7 @@
 
 #[macro_use]
 extern crate clap;
+#[macro_use]
 extern crate log;
 extern crate env_logger;
 // #[cfg(feature = "cbor")]
@@ -22,8 +23,10 @@ use std::borrow::Cow;
 #[cfg(feature = "io")]
 use std::collections::BTreeMap;
 use std::thread;
+use std::error::Error;
 use std::time::Duration;
 use std::sync::mpsc::channel;
+use std::io::{Write, stderr};
 
 use clap::App;
 use log::LogLevelFilter;
@@ -248,7 +251,10 @@ fn add_input(input: &str, languages: &mut Languages) {
 #[cfg(not(feature = "io"))]
 #[allow(unused_variables)]
 fn add_input(input: &str, map: &mut Languages) -> ! {
-    panic!(OUTPUT_ERROR)
+    if let Err(error) = write!(stderr(), "{}", OUTPUT_ERROR) {
+        error!("{}", error.description());
+    }
+    std::process::exit(1);
 }
 
 
@@ -289,14 +295,20 @@ fn match_output(format: &str, languages: &Languages) {
 #[cfg(not(feature = "io"))]
 #[allow(unused_variables)]
 fn match_output(format: &str, languages: &Languages) -> ! {
-    panic!(OUTPUT_ERROR)
+    if let Err(error) = write!(stderr(), "{}", OUTPUT_ERROR) {
+        error!("{}", error.description());
+    }
+    std::process::exit(1);
 }
 
 
 #[cfg(not(feature = "io"))]
 #[allow(unused_variables)]
 pub fn convert_input(contents: String) -> ! {
-    panic!(OUTPUT_ERROR);
+    if let Err(error) = write!(stderr(), "{}", OUTPUT_ERROR) {
+        error!("{}", error.description());
+    }
+    std::process::exit(1);
 }
 
 fn print_language<'a, C>(language: &'a Language, name: C)
