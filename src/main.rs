@@ -251,7 +251,6 @@ fn add_input(input: &str, languages: &mut Languages) {
 fn add_input(input: &str, map: &mut Languages) -> ! {
     write!(stderr(), "{}", OUTPUT_ERROR);
     std::process::exit(1);
-
 }
 
 
