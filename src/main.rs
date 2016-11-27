@@ -2,55 +2,33 @@
 // Use of this source code is governed by the MIT/APACHE2.0 license that can be
 // found in the LICENCE-{APACHE, MIT} file.
 
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate log;
+#[macro_use] extern crate clap;
+#[macro_use] extern crate log;
 extern crate env_logger;
 extern crate tokei;
 
-
-#[cfg(feature = "io")]
-extern crate serde_cbor;
-#[cfg(feature = "io")]
-extern crate serde_json;
-#[cfg(feature = "io")]
-extern crate serde_yaml;
-#[cfg(feature = "io")]
-extern crate toml;
-#[cfg(feature = "io")]
-extern crate rustc_serialize;
+mod input;
+use input::*;
 
 use std::borrow::Cow;
-#[cfg(feature = "io")]
-use std::collections::BTreeMap;
-use std::thread;
-use std::error::Error;
-use std::time::Duration;
 use std::sync::mpsc::channel;
-use std::io::{Write, stderr};
+use std::thread;
+use std::time::Duration;
 
 use clap::App;
-use log::LogLevelFilter;
 use env_logger::LogBuilder;
-#[cfg(feature = "io")]
-use rustc_serialize::hex::FromHex;
+use log::LogLevelFilter;
 
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort::*;
-const ROW: &'static str = "-------------------------------------------------------------------\
-                                ------------";
+
 const BLANKS: &'static str = "blanks";
-const COMMENTS: &'static str = "comments";
 const CODE: &'static str = "code";
+const COMMENTS: &'static str = "comments";
 const FILES: &'static str = "files";
 const LINES: &'static str = "lines";
-#[cfg(not(feature = "io"))]
-const OUTPUT_ERROR: &'static str = "This version of tokei was compiled without any serialization
-    formats, to enable serialization, reinstall tokei with the features flag.
-
-        cargo install tokei --features all
-";
+const ROW: &'static str = "----------------------------------------------------\
+          ---------------------------";
 
 fn main() {
     // Get options at the beginning, so the program doesn't have to make any extra calls to get the
@@ -103,6 +81,7 @@ fn main() {
     let print_animation = output_option == None;
     let (tx, rx) = channel();
     let child = thread::spawn(move || {
+        let time = 100;
         loop {
             if let Ok(_) = rx.try_recv() {
                 break;
@@ -110,11 +89,11 @@ fn main() {
 
             if print_animation {
                 print!(" Counting files.  \r");
-                thread::sleep(Duration::from_millis(10));
+                thread::sleep(Duration::from_millis(time));
                 print!(" Counting files..\r");
-                thread::sleep(Duration::from_millis(10));
+                thread::sleep(Duration::from_millis(time));
                 print!(" Counting files...\r");
-                thread::sleep(Duration::from_millis(10));
+                thread::sleep(Duration::from_millis(time));
             }
         }
     });
@@ -159,7 +138,7 @@ fn main() {
     }
 
     if let Some(format) = output_option {
-        match_output(format, &languages);
+        match_output(format, languages);
     } else if let Some(sort_category) = sort_option {
 
         for (_, ref mut language) in &mut languages {
@@ -215,103 +194,6 @@ fn main() {
     }
 }
 
-
-#[cfg(feature = "io")]
-fn add_input(input: &str, languages: &mut Languages) {
-    use std::fs::File;
-    use std::io::Read;
-
-    let map = match File::open(input) {
-        Ok(mut file) => {
-            let contents = {
-                let mut contents = String::new();
-                file.read_to_string(&mut contents).unwrap();
-                contents
-            };
-
-            convert_input(contents)
-        }
-        Err(_) => {
-            if input == "stdin" {
-                let mut stdin = std::io::stdin();
-                let mut buffer = String::new();
-
-                let _ = stdin.read_to_string(&mut buffer);
-                convert_input(buffer)
-            } else {
-                convert_input(String::from(input))
-            }
-        }
-    };
-
-    if let Some(map) = map {
-        *languages += map;
-    }
-
-}
-
-#[cfg(not(feature = "io"))]
-#[allow(unused_variables)]
-fn add_input(input: &str, map: &mut Languages) -> ! {
-    if let Err(error) = write!(stderr(), "{}", OUTPUT_ERROR) {
-        error!("{}", error.description());
-    }
-    std::process::exit(1);
-}
-
-
-/// This originally  too a &[u8], but the u8 didn't directly correspond with the hexadecimal u8, so
-/// it had to be changed to a String, and add the rustc_serialize dependency.
-#[cfg(feature = "io")]
-pub fn convert_input(contents: String) -> Option<BTreeMap<LanguageType, Language>> {
-    if contents.is_empty() {
-        None
-    } else if let Ok(result) = serde_json::from_str(&*contents) {
-        Some(result)
-    } else if let Ok(result) = serde_yaml::from_str(&*contents) {
-        Some(result)
-    } else if let Some(result) = toml::decode_str(&*contents) {
-        Some(result)
-    } else {
-        None
-    }
-}
-
-#[cfg(feature = "io")]
-fn match_output(format: &str, languages: &Languages) {
-    match format {
-        "cbor" => {
-            // let cbor: Vec<u8> = languages.to_cbor().unwrap();
-
-            // for byte in cbor {
-            //    print!("{:02x}", byte);
-            // }
-        }
-        "json" => print!("{}", languages.to_json().unwrap()),
-        "toml" => print!("{}", languages.to_toml()),
-        "yaml" => print!("{}", languages.to_yaml().unwrap()),
-        _ => unreachable!(),
-    }
-}
-
-#[cfg(not(feature = "io"))]
-#[allow(unused_variables)]
-fn match_output(format: &str, languages: &Languages) -> ! {
-    if let Err(error) = write!(stderr(), "{}", OUTPUT_ERROR) {
-        error!("{}", error.description());
-    }
-    std::process::exit(1);
-}
-
-
-#[cfg(not(feature = "io"))]
-#[allow(unused_variables)]
-pub fn convert_input(contents: String) -> ! {
-    if let Err(error) = write!(stderr(), "{}", OUTPUT_ERROR) {
-        error!("{}", error.description());
-    }
-    std::process::exit(1);
-}
 
 fn print_language<'a, C>(language: &'a Language, name: C)
     where C: Into<Cow<'a, LanguageType>>

@@ -1,17 +1,43 @@
-os:
-    - linux
-    - osx
 language: rust
-rust:
-    - stable
-    - beta
-    - nightly
+cache: cargo
 script:
-    - cargo build --verbose --release
-    - cargo build --verbose --release --features all
-    - cargo test --verbose --release
-    - cargo test --verbose --release --features all
+- cargo rustc --bin tokei --verbose --release -- -o tokei
+- cargo rustc --bin tokei --verbose --release --features all -- -o tokei_serde
+- cargo test --verbose --release
+- cargo test --verbose --release --features all
 matrix:
-    allow_failure:
-        - rust: nightly
+  include:
+    - os: linux
+      rust: stable
+      env: TARGET=i686-unknown-linux-musl
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-musl
+    - os: linux
+      rust: stable
+      env: TARGET=x86_64-unknown-linux-gnu
+    - os: osx
+      rust: stable
+      env: TARGET=x86_64-apple-darwin
 sudo: false
+deploy:
+  provider: releases
+  api_key:
+    secure: JAWZDa7izxqh/013aqxwSxhu4wndJfvQWngA/DMutC5J5ZTUEmA0UJG+VGCVcMVZOBu/IUy6tRmz3IgEqgW74FLc4UuBRH3RdInp+dpjUc2yTuUltOuT+skn5LGQXi+m8VeIxRS0PXCsN5twpOfSi0uuKu+UzMN9ZOX9wEy1svRlAUJdcT37LfvlS/lnxHoF+WuakZfFsP0QCrgI7uBY83X+wT6YAixiywzadKMqXDSNlJ7m0t9pJ1FsR0BgnoYiTI/L/3P3FDJCDzShujlU9P3xLvirV4/HB9NPG+IhuhTSCpBE8UIzCourAi6AgG3wdQGiR9S9QdwEuF3Y5Ya5l2tkJpqrk8FkBMVkH57m9iGV0j4mHDOvaRzMiPyYeuTTPKgbSWAvLOGouVRDP0SrZGjjcCvKSN4LVgO83uLjsg2XtdFoA89s/pNLsY2e07trT6jVm12P9uKdLWqkHdLJdGG4448aL8cIXntlCIHujpSmSikGtlGZZB6cvfkZQn/ZLhBxiGyk8n2V5hpqFml/tk6QDxyY04gSd1t/9aebOZmAGFYP0aufJpQe1GW13PQSdIQL6MZPtsk88OgP6EqUOSBCIAWuBd0cLds1SE+TELPyAPHWx5Z/y+mUEx4NoxRWWzNbQxOaMfXtLhE+xp7gdJYH7QtldagYz79UX/8wYbo=
+
+  file: "./target/release/tokei"
+  on:
+    condition: $TRAVIS_RUST_VERSION = stable
+    repo: Aaronepower/tokei
+branches:
+  only:
+    # Pushes and PR to the master branch
+    - master
+    # IMPORTANT Ruby regex to match tags. Required, or travis won't trigger 
+    # deploys when a new tag is pushed. This regex matches semantic versions 
+    # like v1.2.3-rc4+2016.02.22
+    - /^\d+\.\d+\.\d+.*$/
+
+notifications:
+  email:
+    on_success: never

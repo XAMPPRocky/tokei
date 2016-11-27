@@ -1,60 +1,47 @@
 use language::Language;
 
 /// This is used to catch lines like "let x = 5; /* Comment */"
-#[inline(never)]
 pub fn handle_multi_line(line: &str,
                          language: &Language,
                          stack: &mut Vec<&'static str>,
-                         quote: &mut Option<&'static str>) {
-    let nested_is_empty = language.nested_comments.is_empty();
-    let mut skip = false;
+                         quote: &mut Option<&'static str>)
+{
 
+    let nested_is_empty = language.nested_comments.is_empty();
+    let mut skip: u8 = 0;
     let window_size = language.multi_line.iter()
         .chain(language.nested_comments.iter())
         .map(|&(first, second)| ::std::cmp::max(first.len(), second.len()))
-        .max().unwrap();
+        .max()
+        .unwrap();
 
     'window: for window in line.as_bytes().windows(window_size) {
-        if skip {
-            skip = false;
+        while skip != 0 {
+            skip -= 1;
             continue;
         }
-        let mut end = false;
 
         if let &mut Some(quote_str) = quote {
             if window.starts_with(b"\\") {
-                continue;
+                skip = 1;
             } else if window.starts_with(quote_str.as_bytes()) {
+                *quote = None;
+                skip_by_str_length!(skip, quote_str);
+            }
+            continue;
+        }
+
+
+        let mut end = false;
+        if let Some(last) = stack.last() {
+            if window.starts_with(last.as_bytes()) {
                 end = true;
             }
         }
 
         if end {
-            if let &mut Some(quote_str) = quote {
-                *quote = None;
-
-                // Prevent the quote being counted as both a end and start of a quote
-                if quote_str.chars().count() == 1 {
-                    skip = true;
-                }
-                continue;
-            }
-        }
-
-        if quote.is_some() {
-            continue;
-        }
-
-        let mut pop = false;
-        if let Some(last) = stack.last() {
-            if window.starts_with(last.as_bytes()) {
-                pop = true;
-            }
-        }
-
-        if pop {
-            stack.pop();
-            skip = true;
+            let last = stack.pop().unwrap();
+            skip_by_str_length!(skip, last);
             continue;
         }
 
@@ -68,7 +55,7 @@ pub fn handle_multi_line(line: &str,
             for &(start, end) in &language.quotes {
                 if window.starts_with(start.as_bytes()) {
                     *quote = Some(end);
-                    skip = true;
+                    skip_by_str_length!(skip, start);
                     continue 'window;
                 }
             }
@@ -77,7 +64,7 @@ pub fn handle_multi_line(line: &str,
         for &(start, end) in &language.nested_comments {
             if window.starts_with(start.as_bytes()) {
                 stack.push(end);
-                skip = true;
+                skip_by_str_length!(skip, start);
                 continue 'window;
             }
         }
@@ -87,7 +74,7 @@ pub fn handle_multi_line(line: &str,
                 if (language.nested && nested_is_empty) || stack.len() == 0 {
                     stack.push(end);
                 }
-                skip = true;
+                skip_by_str_length!(skip, start);
                 continue 'window;
             }
         }

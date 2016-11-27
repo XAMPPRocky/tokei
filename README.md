@@ -1,4 +1,3 @@
-# Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
 
 [![](https://img.shields.io/travis/Aaronepower/tokei.svg)](https://travis-ci.org/Aaronepower/tokei)
 [![](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
@@ -128,7 +127,7 @@ $ tokei ./foo --files
 Tokei normally outputs into a nice human readable format designed for the terminal. 
 There is also using the `--output` option various other formats that are more useful for bringing the data into another program.
 
-**Current supported formats**
+**Currently supported formats**
 - JSON `--output json`
 - YAML `--output yaml`
 - TOML `--output toml`

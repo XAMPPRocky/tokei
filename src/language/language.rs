@@ -1,6 +1,6 @@
 use std::borrow::Cow;
-use std::path::PathBuf;
 use std::ops::AddAssign;
+use std::path::PathBuf;
 
 use regex::{self, Regex};
 
@@ -8,94 +8,24 @@ use sort::Sort;
 use sort::Sort::*;
 use stats::Stats;
 
-/// Struct representing a single Language.
-#[cfg(feature = "io")]
-#[cfg_attr(feature = "io",
-           derive(Clone,
-                  Debug,
-                  Deserialize,
-                  Serialize
-                 ))]
-pub struct Language {
-    /// Number of blank lines.
-    pub blanks: usize,
-    /// Number of lines of code.
-    pub code: usize,
-    /// Number of comments(both single, and multi-line)
-    pub comments: usize,
-    /// A collection of files to be analysed.
-    #[serde(skip_deserializing, skip_serializing)]
-    pub files: Vec<PathBuf>,
-    /// A collection of statistics based on the files provide from `files`
-    pub stats: Vec<Stats>,
-    /// Number of total lines.
-    pub lines: usize,
-    /// A collection of single line comments in the language. ie. `//` in Rust.
-    #[serde(skip_deserializing, skip_serializing)]
-    pub line_comment: Vec<&'static str>,
-    /// A collection of tuples representing the start and end of multi line
-    /// comments. ie. `/* comment */` in Rust.
-    #[serde(skip_deserializing, skip_serializing)]
-    pub multi_line: Vec<(&'static str, &'static str)>,
-    /// Whether the language supports nested multi line comments or not.
-    #[serde(skip_deserializing, skip_serializing)]
-    pub nested: bool,
-    /// A list of specific nested comments if this is empty all `multi_line`
-    /// comments count.
-    #[serde(skip_deserializing, skip_serializing)]
-    pub nested_comments: Vec<(&'static str, &'static str)>,
-    /// A list of quotes by default it is `""`.
-    #[serde(skip_deserializing, skip_serializing)]
-    pub quotes: Vec<(&'static str, &'static str)>,
-    #[serde(skip_deserializing, skip_serializing)]
-    pub regex: Cow<'static, Regex>
-}
-
 #[cfg(not(feature = "io"))]
-#[derive(Clone, Debug)]
-pub struct Language {
-    /// Number of blank lines.
-    pub blanks: usize,
-    /// Number of lines of code.
-    pub code: usize,
-    /// Number of comments(both single, and multi-line)
-    pub comments: usize,
-    /// A collection of files to be analysed.
-    pub files: Vec<PathBuf>,
-    /// A collection of statistics based on the files provide from `files`
-    pub stats: Vec<Stats>,
-    /// Number of total lines.
-    pub lines: usize,
-    /// A collection of single line comments in the language. ie. `//` in Rust.
-    pub line_comment: Vec<&'static str>,
-    /// A collection of tuples representing the start and end of multi line
-    /// comments. ie. `/* comment */` in Rust.
-    pub multi_line: Vec<(&'static str, &'static str)>,
-    /// Whether the language supports nested multi line comments or not.
-    pub nested: bool,
-    /// A list of specific nested comments if this is empty all `multi_line`
-    /// comments count.
-    pub nested_comments: Vec<(&'static str, &'static str)>,
-    /// A list of quotes by default it is `""`.
-    pub quotes: Vec<(&'static str, &'static str)>,
-    /// A regular expression for searching for multi line comments.
-    pub regex: Cow<'static, Regex>
-}
+include!("serde_types.in.rs");
 
+#[cfg(feature = "io")]
+include!(concat!(env!("OUT_DIR"), "/language_serde_types.rs"));
 
 fn generate_regex(multi_line: &[(&'static str, &'static str)]) -> Cow<'static, Regex> {
     let mut raw_regex = String::new();
     for &(start, _) in multi_line {
-        raw_regex.push_str(start);
+        raw_regex.push_str(&regex::quote(start));
         raw_regex.push_str("|");
     }
     let _ = raw_regex.pop();
-    Cow::Owned(Regex::new(&*regex::quote(&*raw_regex)).unwrap())
+    Cow::Owned(Regex::new(&raw_regex).unwrap())
 }
 
 lazy_static! {
     static ref C_REGEX: Regex = Regex::new(r"/\*").unwrap();
-    static ref EMPTY_REGEX: Regex = Regex::new("").unwrap();
 }
 
 impl Language {
@@ -107,15 +37,15 @@ impl Language {
     /// ```
     pub fn new(line_comment: Vec<&'static str>,
                multi_line: Vec<(&'static str, &'static str)>)
-        -> Self {
-
-            Language {
-                line_comment: line_comment,
-                regex: generate_regex(&multi_line),
-                multi_line: multi_line,
-                ..Self::default()
-            }
+        -> Self
+    {
+        Language {
+            line_comment: line_comment,
+            regex: Some(generate_regex(&multi_line)),
+            multi_line: multi_line,
+            ..Self::default()
         }
+    }
 
     /// Convience constructor for creating a language that has no commenting
     /// syntax.
@@ -142,12 +72,11 @@ impl Language {
     /// assert_eq!(rust.multi_line, c.multi_line);
     /// ```
     pub fn new_c() -> Self {
-
         Language {
             line_comment: vec!["//"],
             multi_line: vec![("/*", "*/")],
             quotes: vec![("\"", "\"")],
-            regex: Cow::Borrowed(&*C_REGEX),
+            regex: Some(Cow::Borrowed(&*C_REGEX)),
             ..Self::default()
         }
     }
@@ -170,7 +99,7 @@ impl Language {
         Language {
             multi_line: vec![("(*", "*)")],
             quotes: vec![("\"", "\"")],
-            regex: Cow::Borrowed(&*FUNC_REGEX),
+            regex: Some(Cow::Borrowed(&*FUNC_REGEX)),
             ..Self::default()
         }
     }
@@ -193,7 +122,7 @@ impl Language {
         Language {
             multi_line: vec![("<!--", "-->")],
             quotes: vec![("\"", "\"")],
-            regex: Cow::Borrowed(&*HTML_REGEX),
+            regex: Some(Cow::Borrowed(&*HTML_REGEX)),
             ..Self::default()
         }
     }
@@ -228,7 +157,14 @@ impl Language {
         lazy_static! {
             static ref HASKELL_REGEX: Regex = Regex::new(r"\{-").unwrap();
         }
-        Self::new(vec!["--"], vec![("{-", "-}")]).nested().regex(Cow::Borrowed(&*HASKELL_REGEX))
+
+        Language {
+            regex: Some(Cow::Borrowed(&*HASKELL_REGEX)),
+            line_comment: vec!["--"],
+            multi_line: vec![("{-", "-}")],
+            nested: true,
+            ..Self::default()
+        }
     }
 
     /// Convience constructor for creating a language that only has multi line
@@ -240,7 +176,7 @@ impl Language {
     /// ```
     pub fn new_multi(multi_line: Vec<(&'static str, &'static str)>) -> Self {
         Language {
-            regex: generate_regex(&multi_line),
+            regex: Some(generate_regex(&multi_line)),
             multi_line: multi_line,
             quotes: vec![("\"", "\"")],
             ..Self::default()
@@ -263,7 +199,7 @@ impl Language {
             line_comment: vec!["%"],
             multi_line: vec![("/*", "*/")],
             quotes: vec![("\"", "\"")],
-            regex: Cow::Borrowed(&*C_REGEX),
+            regex: Some(Cow::Borrowed(&*C_REGEX)),
             ..Self::default()
         }
     }
@@ -293,7 +229,10 @@ impl Language {
     /// assert!(rust.is_empty());
     /// ```
     pub fn is_empty(&self) -> bool {
-        self.code == 0 && self.comments == 0 && self.blanks == 0 && self.lines == 0
+        self.code == 0 &&
+            self.comments == 0 &&
+            self.blanks == 0 &&
+            self.lines == 0
     }
 
     /// Checks if the language doesn't contain any comments.
@@ -334,15 +273,9 @@ impl Language {
     pub fn nested_comments(mut self,
                            nested_comments: Vec<(&'static str, &'static str)>)
         -> Self
-        {
-            self.nested = true;
-            self.nested_comments = nested_comments;
-            self
-        }
-
-    /// Adds a regex for searching for multi line comments within a file.
-    fn regex(mut self, regex: Cow<'static, Regex>) -> Self {
-        self.regex = regex;
+    {
+        self.nested = true;
+        self.nested_comments = nested_comments;
         self
     }
 
@@ -359,10 +292,10 @@ impl Language {
     pub fn set_quotes(mut self,
                       quotes: Vec<(&'static str, &'static str)>)
         -> Self
-        {
-            self.quotes = quotes;
-            self
-        }
+    {
+        self.quotes = quotes;
+        self
+    }
 
     /// Sorts each of the `Stats` structs contained in the language based
     /// on what category is provided
@@ -452,7 +385,7 @@ impl Default for Language {
             nested: false,
             nested_comments: Vec::new(),
             quotes: Vec::new(),
-            regex: Cow::Borrowed(&*EMPTY_REGEX),
+            regex: None,
         }
     }
 }

@@ -8,9 +8,11 @@ use std::fs::File;
 use std::io::Read;
 use std::iter::IntoIterator;
 use std::ops::{AddAssign, Deref, DerefMut};
+use std::sync::{mpsc, Mutex};
 
-use encoding::{self, DecoderTrap};
-use memmap::{Mmap, Protection};
+use encoding;
+use encoding::all::UTF_8;
+use encoding::DecoderTrap::Replace;
 
 #[cfg(feature = "io")]
 use serde_cbor;
@@ -22,15 +24,14 @@ use serde_yaml;
 use toml;
 use rayon::prelude::*;
 
-use utils::{fs, multi_line};
-use super::{Language, LanguageType};
-use super::LanguageType::*;
 use stats::Stats;
+use super::LanguageType::*;
+use super::{Language, LanguageType};
+use utils::{fs, multi_line};
 
 #[cfg(not(feature = "io"))]
 const IO_ERROR: &'static str = "Tokei was not compiled with the `io` flag.";
 
-#[inline(never)]
 fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
 
     let (name, ref mut language) = language_tuple;
@@ -41,38 +42,41 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
 
     let is_fortran = name == &FortranModern || name == &FortranLegacy;
 
-    let files: Vec<_> = language.files.drain(..).collect();
-    //let mut contents = Vec::new();
-    let mut stack = vec![];
-    let mut quote;
-    let has_multi_line = !language.multi_line.is_empty() && !language.nested_comments.is_empty();
+    let (tx, rx) = mpsc::channel();
+    let has_multi_line = !language.multi_line.is_empty() &&
+        !language.nested_comments.is_empty();
+    let synced_tx = Mutex::new(tx);
+    let is_blank = language.is_blank();
 
-    for file in files {
-        let mut stats = Stats::new(opt_error!(file.to_str(), "Couldn't convert path to String."));
-        stack.clear();
-        //contents.clear();
-        quote = None;
+    language.files.par_iter().for_each(|file| {
+        let mut stats = Stats::new(
+            opt_ret_error!(file.to_str(), "Couldn't convert path to String.")
+        );
+        let mut stack = Vec::new();
+        let mut contents = Vec::new();
+        let mut quote = None;
 
-        let file = rs_error!(Mmap::open_path(file, Protection::Read));
-        let contents = unsafe { file.as_slice() };
-        //rs_error!(rs_error!(File::open(file)).read_to_end(&mut contents));
+        rs_ret_error!(rs_ret_error!(File::open(file)).read_to_end(&mut contents));
 
-        let text = match encoding::decode(&contents, DecoderTrap::Replace, encoding::all::UTF_8) {
+        let text = match encoding::decode(&contents, Replace, UTF_8) {
             (Ok(string), _) => Cow::Owned(string),
             (Err(cow), _) => cow,
         };
 
         let lines = text.lines();
 
-        if language.is_blank() {
+        if is_blank {
             let count = lines.count();
             stats.lines += count;
             stats.code += count;
-            **language += stats;
-            continue;
+            rs_ret_error!(rs_ret_error!(synced_tx.lock()).send(stats));
+            return;
         }
 
-        let should_handle_multi_line = has_multi_line && language.regex.is_match(&text);
+        let should_handle_multi_line = has_multi_line && match &language.regex {
+            &Some(ref regex) => regex.is_match(&text),
+            &None => false,
+        };
 
         'line: for line in lines {
             stats.lines += 1;
@@ -82,9 +86,9 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
                 continue;
             }
 
-            // FORTRAN has a rule where it only counts as a comment if it's the first
-            // character in the column, so removing starting whitespace could cause a
-            // miscount.
+            // FORTRAN has a rule where it only counts as a comment if it's the
+            // first character in the column, so removing starting whitespace
+            // could cause a miscount.
             let line = if is_fortran { line } else { line.trim_left() };
 
             for single in &language.line_comment {
@@ -95,7 +99,51 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
             }
 
             if should_handle_multi_line {
-                multi_line::handle_multi_line(line, &language, &mut stack, &mut quote);
+                multi_line::handle_multi_line(
+                    line,
+                    &language,
+                    &mut stack,
+                    &mut quote
+                );
+            } else {
+                let mut skip: u8 = 0;
+                let window_size = language.line_comment.iter()
+                    .map(|a| a.len())
+                    .max()
+                    .unwrap();
+
+                'window: for window in line.as_bytes().windows(window_size) {
+                    while skip != 0 {
+                        skip -= 1;
+                        continue 'window;
+                    }
+
+                    if quote.is_none() {
+                        for single in &language.line_comment {
+                            if window.starts_with(single.as_bytes()) {
+                                break 'window;
+                            }
+                        }
+                    }
+
+                    if let &mut Some(quote_str) = &mut quote {
+                        if window.starts_with(&*b"\\") {
+                            skip = 1;
+                        } else if window.starts_with(quote_str.as_bytes()) {
+                            quote = None;
+                            skip_by_str_length!(skip, quote_str);
+                        }
+                        continue 'window;
+                    }
+
+                    for &(start, end) in &language.quotes  {
+                        if window.starts_with(start.as_bytes()) {
+                            quote = Some(end);
+                            skip_by_str_length!(skip, start);
+                            continue 'window;
+                        }
+                    }
+                }
             }
 
             if no_stack {
@@ -104,13 +152,16 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
                 stats.comments += 1;
             }
         }
-        **language += stats;
+        rs_ret_error!(rs_ret_error!(synced_tx.lock()).send(stats));
+    });
+
+    for stat in rx {
+        **language += stat;
     }
 }
 
 /// A collection of existing languages([_List of Languages_]
 /// (https://github.com/Aaronepower/tokei#supported-languages))
-#[derive(Debug, Clone)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
 }
@@ -122,20 +173,24 @@ impl Languages {
     /// ```
     /// extern crate tokei;
     /// use tokei::*;
-    /// extern crate rustc_serialize;
-    /// use rustc_serialize::hex::FromHex;
+    /// # #[cfg(test)]
+    /// extern crate hex;
+    /// use hex::FromHex;
     /// # fn main () {
-    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e7473\
-    ///     0065737461747381a566626c616e6b730564636f64650c68636f6d6d656e74730065\
-    ///     6c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e\
-    ///     6573116b746f74616c5f66696c657301";
+    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e747\
+    ///     30065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300\
+    ///     656c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c6\
+    ///     96e6573116b746f74616c5f66696c657301";
     ///
-    /// let mut languages = Languages::from_cbor(&*cbor.from_hex().unwrap()).unwrap();
+    /// let hex = cbor.from_hex().unwrap();
+    ///
+    /// let mut languages = Languages::from_cbor(&hex).unwrap();
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// # }
     /// ```
     #[cfg(feature = "cbor")]
-    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self> {
+    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self>
+    {
         let map = try!(serde_cbor::from_slice(cbor.into()));
 
         Ok(Self::from_previous(map))
@@ -172,7 +227,8 @@ impl Languages {
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
     #[cfg(feature = "json")]
-    pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> serde_json::Result<Self> {
+    pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> serde_json::Result<Self>
+    {
         let map = try!(serde_json::from_slice(json.into()));
 
         Ok(Self::from_previous(map))
@@ -209,7 +265,8 @@ impl Languages {
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
     #[cfg(feature = "yaml")]
-    pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> serde_yaml::Result<Self> {
+    pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> serde_yaml::Result<Self>
+    {
         let map = try!(serde_yaml::from_slice(yaml.into()));
 
         Ok(Self::from_previous(map))
@@ -233,19 +290,15 @@ impl Languages {
         _self
     }
 
-    /// Get statistics from the list of paths provided, and a list ignored keywords
-    /// to ignore paths containing them.
+    /// Get statistics from the list of paths provided, and a list ignored
+    /// keywords to ignore paths containing them.
     ///
     /// ```no_run
     /// # use tokei::*;
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(&*vec!["."], &*vec![".git", "target"]);
-    ///
-    /// println!("{:?}", languages);
+    /// languages.get_statistics(vec!["."], vec![".git", "target"]);
     /// ```
-    pub fn get_statistics<'a, I>(&mut self, paths: I, ignored: I)
-        where I: Into<Cow<'a, [&'a str]>>
-    {
+    pub fn get_statistics(&mut self, paths: Vec<&str>, ignored: Vec<&str>) {
         fs::get_all_files(paths.into(), ignored.into(), &mut self.inner);
         self.inner.par_iter_mut().for_each(count_files);
     }
@@ -271,51 +324,50 @@ impl Languages {
     /// languages.get_statistics(vec!["doesnt/exist"], vec![".git"]);
     ///
     /// let empty_map = languages.remove_empty();
-    /// let new_map: BTreeMap<LanguageType, Language> = BTreeMap::new();
     ///
     /// assert_eq!(empty_map.len(), 0);
     /// ```
-    pub fn remove_empty(&self) -> BTreeMap<LanguageType, Language> {
+    pub fn remove_empty(self) -> BTreeMap<LanguageType, Language> {
         let mut map = BTreeMap::new();
 
-        for (name, language) in &self.inner {
+        for (name, language) in self.inner {
             if !language.is_empty() {
-                map.insert(name.clone(), language.clone());
+                map.insert(name, language);
             }
         }
         map
     }
 
-    // /// Converts `Languages` to CBOR.
-    // ///
-    // /// ```no_run
-    // /// extern crate tokei;
-    // /// # use tokei::*;
-    // /// extern crate rustc_serialize;
-    // /// use rustc_serialize::hex::ToHex;
-    // ///
-    // /// # fn main () {
-    // /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e74730\
-    // ///     065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300656c\
-    // ///     696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c696e657\
-    // ///     3116b746f74616c5f66696c657301";
-    // ///
-    // /// let mut languages = Languages::new();
-    // /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
-    // ///
-    // /// assert_eq!(cbor, languages.to_cbor().unwrap().to_hex());
-    // /// # }
-    // /// ```
-    // #[cfg(feature = "cbor")]
-    // pub fn to_cbor(&self) -> Result<Vec<u8>, serde_cbor::Error> {
-    // serde_cbor::to_vec(&self.remove_empty())
-    // }
+    /// Converts `Languages` to CBOR.
+    ///
+    /// ```no_run
+    /// extern crate tokei;
+    /// # use tokei::*;
+    /// extern crate hex;
+    /// use hex::ToHex;
+    ///
+    /// # fn main () {
+    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e747\
+    ///     30065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300\
+    ///     656c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c6\
+    ///     96e6573116b746f74616c5f66696c657301";
+    ///
+    /// let mut languages = Languages::new();
+    /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
+    ///
+    /// assert_eq!(cbor, languages.to_cbor().unwrap().to_hex());
+    /// # }
+    /// ```
+    #[cfg(feature = "cbor")]
+    pub fn to_cbor(self) -> Result<Vec<u8>, serde_cbor::Error> {
+        serde_cbor::to_vec(&self.remove_empty())
+    }
 
-    // #[cfg(not(feature = "cbor"))]
-    // #[allow(unused_variables)]
-    // pub fn to_cbor(&self) -> ! {
-    // panic!(CBOR_ERROR)
-    // }
+    #[cfg(not(feature = "cbor"))]
+    #[allow(unused_variables)]
+    pub fn to_cbor(&self) -> ! {
+        panic!(IO_ERROR)
+    }
 
     /// Converts `Languages` to JSON.
     ///
@@ -345,7 +397,7 @@ impl Languages {
     /// assert_eq!(json, languages.to_json().unwrap());
     /// ```
     #[cfg(feature = "json")]
-    pub fn to_json(&self) -> Result<String, serde_json::Error> {
+    pub fn to_json(self) -> Result<String, serde_json::Error> {
         serde_json::to_string(&self.remove_empty())
     }
 
@@ -356,7 +408,7 @@ impl Languages {
     }
 
     #[cfg(feature = "toml-io")]
-    pub fn to_toml(&self) -> String {
+    pub fn to_toml(self) -> String {
         toml::encode_str(&self.remove_empty())
     }
 
@@ -389,7 +441,7 @@ impl Languages {
     ///
     /// assert_eq!(yaml, languages.to_yaml().unwrap());
     #[cfg(feature = "yaml")]
-    pub fn to_yaml(&self) -> Result<String, serde_yaml::Error> {
+    pub fn to_yaml(self) -> Result<String, serde_yaml::Error> {
         serde_yaml::to_string(&self.remove_empty())
     }
 
@@ -402,7 +454,8 @@ impl Languages {
 
 impl IntoIterator for Languages {
     type Item = <BTreeMap<LanguageType, Language> as IntoIterator>::Item;
-    type IntoIter = <BTreeMap<LanguageType, Language> as IntoIterator>::IntoIter;
+    type IntoIter =
+        <BTreeMap<LanguageType, Language> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
         self.inner.into_iter()
@@ -488,14 +541,18 @@ mod accuracy_tests {
     use self::tempdir::TempDir;
 
 
-    fn test_accuracy(file_name: &'static str, expected: usize, contents: &'static str) {
+    fn test_accuracy(file_name: &'static str,
+                     expected: usize,
+                     contents: &'static str)
+    {
         let tmp_dir = TempDir::new("test").expect("Couldn't create temp dir");
         let file_name = tmp_dir.path().join(file_name);
         let mut file = File::create(&file_name).expect("Couldn't create file");
         file.write(contents.as_bytes()).expect("couldn't write to file");
 
         let mut l = Languages::new();
-        let l_type = LanguageType::from_extension(&file_name).expect("Can't find language type");
+        let l_type = LanguageType::from_extension(&file_name)
+            .expect("Can't find language type");
         l.get_statistics(vec![file_name.to_str().unwrap()], vec![]);
         let language = l.get_mut(&l_type).expect("Couldn't find language");
 

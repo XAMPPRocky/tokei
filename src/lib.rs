@@ -1,7 +1,7 @@
- #![deny(missing_debug_implementations, missing_copy_implementations,
-            trivial_casts, trivial_numeric_casts,
-            unstable_features,
-            unused_import_braces)]
+ #![deny(trivial_casts, 
+         trivial_numeric_casts,
+         unstable_features,
+         unused_import_braces)]
 
 //! # Tokei: Code Analysis Library
 //!
@@ -36,7 +36,7 @@
 //!     let mut languages = Languages::new();
 //!
 //!     // Get statistics
-//!     languages.get_statistics(&*paths, &*excluded);
+//!     languages.get_statistics(paths, excluded);
 //!
 //!     // Remove empty languages
 //!     let language_map = languages.remove_empty();
@@ -54,14 +54,12 @@ extern crate lazy_static;
 #[macro_use]
 extern crate log;
 extern crate encoding;
-extern crate glob;
+extern crate ignore;
 
 #[macro_use]
 extern crate maplit;
-extern crate memmap;
 extern crate rayon;
 extern crate regex;
-extern crate walkdir;
 
 #[cfg(feature = "io")]
 extern crate serde;
@@ -74,8 +72,12 @@ extern crate serde_yaml;
 #[cfg(feature = "toml-io")]
 extern crate toml;
 
-#[cfg(feature = "io")]
-include!(concat!(env!("OUT_DIR"), "/lib.rs.in"));
+#[macro_use]
+mod utils;
+mod language;
+mod stats;
+mod sort;
 
-#[cfg(not(feature = "io"))]
-include!("lib.rs.in");
+pub use language::{LanguageType, Languages, Language};
+pub use stats::Stats;
+pub use sort::Sort;
