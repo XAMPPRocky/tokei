@@ -105,7 +105,7 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
                     &mut stack,
                     &mut quote
                 );
-            } else {
+            } else if language.line_comment.len() != 0 {
                 let mut skip: u8 = 0;
                 let window_size = language.line_comment.iter()
                     .map(|a| a.len())

@@ -1,6 +1,6 @@
 [root]
 name = "tokei"
-version = "4.5.0"
+version = "4.5.2"
 dependencies = [
  "clap 2.10.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "encoding 0.2.33 (registry+https://github.com/rust-lang/crates.io-index)",
