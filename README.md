@@ -31,6 +31,8 @@ $ tokei .
 
 - [Canonical Source](#canonical-source)
 - [Installation](#installation)
+    - [Automatic](#automatic)
+    - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Supported Languages](#supported-languages)
@@ -45,7 +47,8 @@ The canonical source of this repo is hosted on [GitHub](https://github.com/Aaron
 ## Installation
 
 ### Automatic
-If you have [`cargo 0.6.0>=`](https://www.rust-lang.org/downloads.html) installed just run the `cargo install` command.
+If you have [`cargo`](https://www.rust-lang.org/downloads.html) installed you
+can run the `cargo install` command.
 
 ```shell
 $ cargo install tokei
@@ -54,7 +57,9 @@ $ cargo install tokei
 ### Manual
 
 #### Fedora 64 bit
-Install rust and cargo from either the [official page](https://www.rust-lang.org) or use a copr repo such as [Rust](https://copr.fedoraproject.org/coprs/phnxrbrn/rust/)
+Install rust and cargo from either the
+[official page](https://www.rust-lang.org) or use a copr repo such as
+[Rust](https://copr.fedoraproject.org/coprs/phnxrbrn/rust/)
 ```shell
 $ dnf copr enable phnxrbrn/tokei
 $ dnf install tokei
@@ -85,14 +90,16 @@ $ cargo build --release
 
 #### Basic usage
 
-This is the basic way to use tokei. Which will report on the code in `./foo` and all subfolders.
+This is the basic way to use tokei. Which will report on the code in `./foo`
+and all subfolders.
 
 ```shell
 $ tokei ./foo
 ```
 
 #### Multiple folders
-To have tokei report on multiple folders in the same call simply add a comma, or a space followed by another path.
+To have tokei report on multiple folders in the same call simply add a comma,
+or a space followed by another path.
 
 ```shell
 $ tokei ./foo ./bar ./baz
@@ -102,14 +109,18 @@ $ tokei ./foo, ./bar, ./baz
 ```
 
 #### Excluding folders
-The `--exclude` option accepts a comma-separated list of strings. Any file or directory containing a term will be ignored:
+Tokei will respect all `.gitignore` and `.ignore` files, and you can optionally
+the `--exclude` option to exclude any addtional files. The `--exclude` flag has
+the same semantics as `.gitignore`.
 
 ```shell
-$ tokei ./foo --exclude node_modules,.cache,tmp target
+$ tokei ./foo --exclude *.rs
 ```
 
 #### Sorting output
-By default tokei sorts alphabetically by language name, however using `--sort` tokei can also sort by any of the columns.
+By default tokei sorts alphabetically by language name, however using `--sort`
+tokei can also sort by any of the columns.
+
 `blanks, code, comments, lines`
 
 ```shell
@@ -117,15 +128,17 @@ $ tokei ./foo --sort code
 ```
 
 #### Outputing file statistics
-By default tokei only outputs the total of the languages, and using `--files` flag tokei can also output individual file statistics.
+By default tokei only outputs the total of the languages, and using `--files`
+flag tokei can also output individual file statistics.
 
 ```shell
 $ tokei ./foo --files
 ```
 
 #### Outputting into different formats
-Tokei normally outputs into a nice human readable format designed for the terminal. 
-There is also using the `--output` option various other formats that are more useful for bringing the data into another program.
+Tokei normally outputs into a nice human readable format designed for terminals.
+There is also using the `--output` option various other formats that are more
+useful for bringing the data into another program.
 
 **Currently supported formats**
 - JSON `--output json`
@@ -138,8 +151,9 @@ $ tokei ./foo --output json
 ```
 
 #### Reading in stored formats
-Tokei can also take in the outputted formats added the previous results to it's current run.
-Tokei can take either a path to a file, the format passed in as a value to the option, or from stdin.
+Tokei can also take in the outputted formats added the previous results to it's
+current run. Tokei can take either a path to a file, the format passed in as a
+value to the option, or from stdin.
 
 ```shell
 $ tokei ./foo --input ./stats.json
@@ -159,7 +173,7 @@ FLAGS:
     -h, --help         Prints help information
     -l, --languages    Prints out supported languages and their extensions.
     -V, --version      Prints version information
-    -v                 Set verbose output level: 1 for File IO errors 2: for unknown extensions
+    -v                 Set verbose output level: 1: for unknown extensions
 
 OPTIONS:
     -e, --exclude <exclude>     Ignore all files & directories containing the word.
@@ -174,23 +188,28 @@ ARGS:
 
 ## Supported Languages
 
-If there is a language that you want added submit a pull request with the following information
+If there is a language that you want added, feel free to submit a pull request
+with the following information. If you're unsure have a look at
+[`languages.json`](./languages.json) to see how other languages are defined.
 
 - Name of language
-- File Extension
+- File Extension(s)
 - The comment syntax (_Does it have block comments? is it the same as C?_)
+- The string literal syntax
 
 ```
 ActionScript
 Ada
-Assembly
 ASP
-ASP.Net
+ASP.NET
+Assembly
 Autoconf
 BASH
 Batch
 C
 C Header
+C#
+C Shell
 Clojure
 CoffeeScript
 ColdFusion
@@ -198,12 +217,12 @@ ColdFusion CFScript
 Coq
 C++
 C++ Header
-C#
-C Shell
 CSS
 D
 Dart
 Device Tree
+Elixir
+Elm
 Erlang
 Forth
 FORTRAN Legacy
@@ -212,17 +231,17 @@ GLSL
 Go
 Handlebars
 Haskell
-HTML
 HEX
+HTML
 Idris
 Intel HEX
 Isabelle
 JAI
 Java
 JavaScript
-Julia
 JSON
 JSX
+Julia
 Kotlin
 Lean
 LESS
@@ -233,35 +252,36 @@ Makefile
 Markdown
 Mustache
 Nim
+OCaml
 Objective C
 Objective C++
-OCaml
 Oz
 Pascal
 Perl
-Polly
 PHP
-Protocol Buffers
+Polly
 Prolog
+Protocol Buffers
 Python
 QCL
 R
 Razor
+ReStructuredText
 Ruby
 Ruby HTML
 Rust
-ReStructuredText
 Sass
 Scala
 Standard ML
 SQL
 Swift
+TCL
 TeX
 Plain Text
 TOML
 TypeScript
-Vim Script
 Unreal Script
+Vim Script
 Wolfram
 XML
 YAML
@@ -271,10 +291,12 @@ Zsh
 ## Common issues
 
 ### Tokei says I have a lot of D code, but I know there is no D code!
-This is likely due to `gcc` generating `.d` files. Until the D people decide on a different file extension, you can always exclude `.d` files using the `-e --exclude` flag like so
+This is likely due to `gcc` generating `.d` files. Until the D people decide on
+a different file extension, you can always exclude `.d` files using the
+`-e --exclude` flag like so
 
 ```
-$ tokei . -e .d
+$ tokei . -e *.d
 ```
 
 ## Copyright and License

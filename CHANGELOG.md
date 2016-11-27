@@ -1,3 +1,20 @@
+# 4.5.0
+
+- Added Regex based hueristics so more expensive multi line handling isn't used
+  if there are no multi line comments in the file.
+- Now uses the `ignore` crate for getting files. Which now also makes 
+  determining language from path/file parallelised
+- File counting used to only be parallelised per language, now it is also 
+  parallelised per file per language.
+- Updated homepage, and documentation links
+- @rmbreak Tokei will now not add directories with `foo.bar` like syntax
+  to a language.
+- @Michael-F-Bryan tokei will now exit gracefully when a feature is missing
+  instead of panicing
+
+**Added languages:**
+- @hauleth Added Elixir support
+
 # 4.4.0
 
 - Simplified language definitions, now consolidated into a single JSON file.
