@@ -154,6 +154,7 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
         }
         rs_ret_error!(rs_ret_error!(synced_tx.lock()).send(stats));
     });
+    drop(synced_tx);
 
     for stat in rx {
         **language += stat;
