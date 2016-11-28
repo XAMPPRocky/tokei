@@ -1,3 +1,4 @@
+# Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
 
 [![Linux build status](https://img.shields.io/travis/Aaronepower/tokei.svg?branch=master)](https://travis-ci.org/Aaronepower/tokei)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/Aaronepower/tokei?svg=true)](https://ci.appveyor.com/project/Aaronepower/tokei)
