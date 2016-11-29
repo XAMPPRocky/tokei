@@ -408,6 +408,13 @@
                 "f95"
             ]
         },
+        "Gdscript":{
+            "name":"GDScript",
+            "base":"hash",
+            "extensions":[
+                "gd"
+            ]
+        },
         "Glsl":{
             "name":"GLSL",
             "base":"c",
