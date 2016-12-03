@@ -4,7 +4,83 @@
 * [Bug Reports](#bug-reports)
 
 # Language Addition
-In order to properly add a language to count, there is a couple of key pieces needed.
+Currently tokei generates languages from the [`languages.json`](languages.json)
+file. JSON was decided to make it easy to add new languages, and change code
+structure without changing large data structures. Here we will go over the
+properties of a language in `languages.json`, through examples.
+
+```
+"JavaScript":{
+    "base":"c",
+    "quotes":[
+        [
+            "\\\"",
+            "\\\""
+        ],
+        [
+            "'",
+            "'"
+        ],
+        [
+            "`",
+            "`"
+        ]
+    ],
+    "extensions":[
+        "js"
+    ]
+},
+```
+
+Above is the JavaScript's definition. The first thing that needs to be defined
+is the key, the keys format should be same as 
+[Rust's enum style](https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md#general-naming-conventions).
+As this key will be used in an enum for identifying the language. For a lot of 
+language's this also works for showing the language when we print to the screen. 
+However there are some languages whose names don't work with the enum style.
+For example `JSON` is usually shown in all caps, but that doesn't fit in Rust's
+enum style. So we have an additional optional field called `name`, which defines
+how the language should look when displayed to the user.
+
+```json
+"Json" {
+    "name": "JSON",
+```
+
+For defining comments has a few properties: firstly is the most commonly used
+`single` property which defines single line comments. Comments which don't
+continue onto the next line.
+
+```rust
+let x = 5; // default x position
+let y = 0; // default y position
+```
+
+The `single` property expects an array of strings, as some languages have 
+multiple syntaxes for defining a a single line comment. For example `PHP` allows
+both `#` and `//` as comments.
+
+```json
+"Php": {
+    "single": [
+        "#",
+        "//"
+    ]
+```
+
+For defining comments that also have a ending syntax, there is the `multi_line`
+property.
+
+```
+let x = /* There is a reason
+    for this comment I swear */
+    10;
+```
+
+A lot of languages have the same commenting syntax usually inheriting from the 
+authors previous language or preferred language. In order to avoid code reuse
+tokei's languages have a `base` property which says to use a common comment
+syntax. 
 
 * Name of the language
 * Any file extensions associated with the language

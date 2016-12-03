@@ -1,5 +1,6 @@
- #![deny(trivial_casts, 
+ #![deny(trivial_casts,
          trivial_numeric_casts,
+         unused_variables,
          unstable_features,
          unused_import_braces)]
 

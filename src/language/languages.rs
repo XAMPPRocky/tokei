@@ -14,23 +14,16 @@ use encoding;
 use encoding::all::UTF_8;
 use encoding::DecoderTrap::Replace;
 
-#[cfg(feature = "io")]
-use serde_cbor;
-#[cfg(feature = "io")]
-use serde_json;
-#[cfg(feature = "io")]
-use serde_yaml;
-#[cfg(feature = "io")]
-use toml;
+#[cfg(feature = "cbor")] use serde_cbor;
+#[cfg(feature = "json")] use serde_json;
+#[cfg(feature = "yaml")] use serde_yaml;
+#[cfg(feature = "toml")] use toml;
 use rayon::prelude::*;
 
 use stats::Stats;
 use super::LanguageType::*;
 use super::{Language, LanguageType};
 use utils::{fs, multi_line};
-
-#[cfg(not(feature = "io"))]
-const IO_ERROR: &'static str = "Tokei was not compiled with the `io` flag.";
 
 fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
 
@@ -171,36 +164,34 @@ pub struct Languages {
 impl Languages {
     /// Creates a `Languages` struct from cbor.
     ///
-    /// ```
+    /// ```no_run
     /// extern crate tokei;
     /// use tokei::*;
-    /// # #[cfg(test)]
     /// extern crate hex;
-    /// use hex::FromHex;
     /// # fn main () {
+    /// use hex::FromHex;
     /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e747\
     ///     30065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300\
     ///     656c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c6\
     ///     96e6573116b746f74616c5f66696c657301";
     ///
-    /// let hex = cbor.from_hex().unwrap();
+    /// let hex = Vec::from_hex(cbor).unwrap();
     ///
     /// let mut languages = Languages::from_cbor(&hex).unwrap();
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// # }
     /// ```
     #[cfg(feature = "cbor")]
-    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> serde_cbor::Result<Self>
+    pub fn from_cbor(cbor: &[u8]) -> serde_cbor::Result<Self>
     {
         let map = try!(serde_cbor::from_slice(cbor.into()));
 
         Ok(Self::from_previous(map))
     }
 
-    #[cfg(not(feature = "io"))]
-    #[allow(unused_variables)]
-    pub fn from_cbor<'a, I: Into<&'a [u8]>>(cbor: I) -> ! {
-        panic!(IO_ERROR)
+    #[cfg(not(feature = "cbor"))]
+    pub fn from_cbor(_: &[u8]) -> Result<Self, ()> {
+        Err(())
     }
 
     /// Creates a `Languages` struct from json.
@@ -228,7 +219,7 @@ impl Languages {
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
     #[cfg(feature = "json")]
-    pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> serde_json::Result<Self>
+    pub fn from_json(json: &[u8]) -> serde_json::Result<Self>
     {
         let map = try!(serde_json::from_slice(json.into()));
 
@@ -236,9 +227,8 @@ impl Languages {
     }
 
     #[cfg(not(feature = "json"))]
-    #[allow(unused_variables)]
-    pub fn from_json<'a, I: Into<&'a [u8]>>(json: I) -> ! {
-        panic!(IO_ERROR)
+    pub fn from_json(_: &[u8]) -> Result<Self, ()> {
+        Err(())
     }
 
     /// Creates a `Languages` struct from json.
@@ -266,7 +256,7 @@ impl Languages {
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
     #[cfg(feature = "yaml")]
-    pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> serde_yaml::Result<Self>
+    pub fn from_yaml(yaml: &[u8]) -> serde_yaml::Result<Self>
     {
         let map = try!(serde_yaml::from_slice(yaml.into()));
 
@@ -274,9 +264,8 @@ impl Languages {
     }
 
     #[cfg(not(feature = "yaml"))]
-    #[allow(unused_variables)]
-    pub fn from_yaml<'a, I: Into<&'a [u8]>>(yaml: I) -> ! {
-        panic!(IO_ERROR)
+    pub fn from_yaml(_: &[u8]) -> Result<Self, ()> {
+        Err(())
     }
 
     #[cfg(feature = "io")]
@@ -354,9 +343,9 @@ impl Languages {
     ///     96e6573116b746f74616c5f66696c657301";
     ///
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
+    /// languages.get_statistics(vec!["build.rs"], vec![]);
     ///
-    /// assert_eq!(cbor, languages.to_cbor().unwrap().to_hex());
+    /// assert_eq!(cbor, &languages.to_cbor().unwrap().to_hex());
     /// # }
     /// ```
     #[cfg(feature = "cbor")]
@@ -365,9 +354,8 @@ impl Languages {
     }
 
     #[cfg(not(feature = "cbor"))]
-    #[allow(unused_variables)]
-    pub fn to_cbor(&self) -> ! {
-        panic!(IO_ERROR)
+    pub fn to_cbor(&self) -> Result<Vec<u8>, ()> {
+        Err(())
     }
 
     /// Converts `Languages` to JSON.
@@ -386,14 +374,14 @@ impl Languages {
     ///                 "code": 12,
     ///                 "comments": 0,
     ///                 "lines": 17,
-    ///                 "name": ".\\src\\lib\\build.rs"
+    ///                 "name": ".\\build.rs"
     ///             }
     ///         ],
     ///         "lines": 17
     ///     }
     /// }"#;
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
+    /// languages.get_statistics(vec!["build.rs"], vec![]);
     ///
     /// assert_eq!(json, languages.to_json().unwrap());
     /// ```
@@ -403,9 +391,8 @@ impl Languages {
     }
 
     #[cfg(not(feature = "json"))]
-    #[allow(unused_variables)]
-    pub fn to_json(&self) -> ! {
-        panic!(IO_ERROR)
+    pub fn to_json(&self) -> Result<String, ()> {
+        Err(())
     }
 
     #[cfg(feature = "toml-io")]
@@ -414,15 +401,15 @@ impl Languages {
     }
 
     #[cfg(not(feature = "toml-io"))]
-    #[allow(unused_variables)]
-    pub fn to_toml(&self) -> ! {
-        panic!(IO_ERROR)
+    pub fn to_toml(&self) -> String {
+        String::new()
     }
 
     /// Converts `Languages` to YAML.
     ///
     /// ```no_run
-    /// # use tokei::*;
+    /// use tokei::*;
+    /// 
     /// let yaml = r#"
     ///     ---
     ///     "Rust":
@@ -436,9 +423,9 @@ impl Languages {
     ///         "code": 12
     ///         "comments": 0
     ///         "lines": 17
-    ///         "name": ".\\src\\lib\\build.rs"#;
+    ///         "name": ".\\build.rs"#;
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(&*vec!["src/lib/build.rs"], &*vec![".git"]);
+    /// languages.get_statistics(vec!["build.rs"], vec![]);
     ///
     /// assert_eq!(yaml, languages.to_yaml().unwrap());
     #[cfg(feature = "yaml")]
@@ -447,9 +434,8 @@ impl Languages {
     }
 
     #[cfg(not(feature = "yaml"))]
-    #[allow(unused_variables)]
-    pub fn to_yaml(&self) -> ! {
-        panic!(IO_ERROR)
+    pub fn to_yaml(&self) -> Result<String, ()> {
+        Err(())
     }
 }
 
