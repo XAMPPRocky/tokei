@@ -3,6 +3,7 @@
 // found in the LICENCE-{APACHE, MIT} file.
 
 #[macro_use] extern crate clap;
+#[macro_use] extern crate errln;
 #[macro_use] extern crate log;
 extern crate env_logger;
 extern crate tokei;
@@ -31,8 +32,8 @@ const ROW: &'static str = "----------------------------------------------------\
           ---------------------------";
 
 fn main() {
-    // Get options at the beginning, so the program doesn't have to make any extra calls to get the
-    // information, and there isn't any magic strings.
+    // Get options at the beginning, so the program doesn't have to make any
+    // extra calls to get the information, and there isn't any magic strings.
     let yaml = load_yaml!("../cli.yml");
     let matches = App::from_yaml(yaml).get_matches();
     let files_option = matches.is_present(FILES);
@@ -50,15 +51,15 @@ fn main() {
         }
         ignored_directories
     };
+
     let mut builder = LogBuilder::new();
-    match verbose_option {
-        1 => {
-            builder.filter(None, LogLevelFilter::Warn);
-        }
-        _ => {
-            builder.filter(None, LogLevelFilter::Error);
-        }
-    }
+
+    let filter_level = match verbose_option {
+        1 => LogLevelFilter::Warn,
+        _ => LogLevelFilter::Error,
+    };
+
+    builder.filter(None, filter_level);
     builder.init().unwrap();
 
     let mut languages = Languages::new();

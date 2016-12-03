@@ -15,36 +15,6 @@ env:
 matrix:
   include:
     # Stable channel
-    - os: linux
-      rust: stable
-      env: TARGET=aarch64-unknown-linux-gnu
-      # need Trusty because the glibc in Precise is too old and doesn't support
-      # 64-bit arm
-      dist: trusty
-      sudo: required
-      # Extra packages only for this job
-      addons:
-        apt:
-          packages: &aarch64_unknown_linux_gnu
-            # Transparent emulation
-            - qemu-user-static
-            - binfmt-support
-    - os: linux
-      rust: stable
-      env: TARGET=armv7-unknown-linux-gnueabihf
-      # sudo is needed for binfmt_misc, which is needed for transparent user
-      # qemu emulation
-      sudo: required
-      addons:
-        apt:
-          packages: &armv7_unknown_linux_gnueabihf
-            # Cross compiler and cross compiled C libraries
-            - gcc-arm-linux-gnueabihf
-            - libc6-armhf-cross
-            - libc6-dev-armhf-cross
-            # Transparent emulation
-            - qemu-user-static
-            - binfmt-support
     - os: osx
       rust: stable
       env: TARGET=i686-apple-darwin
@@ -82,22 +52,6 @@ matrix:
         apt:
           packages: *musl_packages
     # Beta channel
-    - os: linux
-      rust: beta
-      env: TARGET=aarch64-unknown-linux-gnu
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: *aarch64_unknown_linux_gnu
-    - os: linux
-      rust: beta
-      env: TARGET=armv7-unknown-linux-gnueabihf
-      sudo: required
-      addons:
-        apt:
-          # Use the same packages the stable version uses
-          packages: *armv7_unknown_linux_gnueabihf
     - os: osx
       rust: beta
       env: TARGET=i686-apple-darwin
@@ -130,22 +84,6 @@ matrix:
         apt:
           packages: *musl_packages
     # Nightly channel
-    - os: linux
-      rust: nightly
-      env: TARGET=aarch64-unknown-linux-gnu
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: *aarch64_unknown_linux_gnu
-    - os: linux
-      rust: nightly
-      env: TARGET=armv7-unknown-linux-gnueabihf
-      sudo: required
-      addons:
-        apt:
-          # Use the same packages the stable version uses
-          packages: *armv7_unknown_linux_gnueabihf
     - os: osx
       rust: nightly
       env: TARGET=i686-apple-darwin
