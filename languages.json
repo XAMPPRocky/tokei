@@ -78,6 +78,26 @@
                 "in"
             ]
         },
+        "Sh":{
+            "name":"sh",
+            "base":"hash",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "env":[
+                "sh"
+            ],
+            "extensions":[
+                "sh"
+            ]
+        },
         "Bash":{
             "name":"BASH",
             "base":"hash",
@@ -92,12 +112,10 @@
                 ]
             ],
             "env":[
-                "bash",
-                "sh"
+                "bash"
             ],
             "extensions":[
-                "bash",
-                "sh"
+                "bash"
             ]
         },
         "Batch":{
