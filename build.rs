@@ -34,7 +34,7 @@ fn expand(out_dir: OsString) {
             ),
             (
                 &*hbs,
-                Path::new(&out_dir).join("language_type.rs"),
+                hbs.to_owned(),
             ),
             (
                 Path::new("src/serde_types.in.rs"),
@@ -67,7 +67,7 @@ fn render_handlebars(out_dir: &OsString) -> PathBuf {
     ).expect("Can't parse JSON");
 
     let data = Context::wraps(&raw_data);
-    let out = Path::new(&out_dir).join("language_type_serded.rs");
+    let out = Path::new(&out_dir).join("language_type.rs");
     let mut source_template = File::open(&"src/language/language_type.hbs.rs")
         .expect("Can't find Template");
     let mut output_file = File::create(&out).expect("Can't create output");

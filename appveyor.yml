@@ -45,7 +45,7 @@ before_deploy:
   - appveyor PushArtifact ../%PROJECT_NAME%-%APPVEYOR_REPO_TAG_NAME%-%TARGET%.zip
 
 deploy:
-  description: 'Windows release'
+  description: 'Automatically deployed release'
   # All the zipped artifacts will be deployed
   artifact: /.*\.zip/
   auth_token:
