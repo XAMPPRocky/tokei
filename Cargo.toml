@@ -11,8 +11,9 @@ repository = "https://github.com/Aaronepower/tokei.git"
 version = "4.5.3"
 
 [build-dependencies]
-serde = "~0.8.0"
-serde_json = "~0.8.0"
+serde = "~0.8.19"
+serde_json = "~0.8.4"
+errln = "0.1.0"
 
 [build-dependencies.handlebars]
 features = ["serde_type"]
@@ -20,7 +21,7 @@ version = "0.21.1"
 
 [build-dependencies.serde_codegen]
 optional = true
-version = "0.8.0"
+version = "0.8.19"
 
 [dependencies]
 encoding = "~0.2.33"
@@ -34,7 +35,7 @@ regex = "~0.1.80"
 
 [dependencies.clap]
 features = ["yaml"]
-version = "~2.10.0"
+version = "~2.19.1"
 
 [dependencies.env_logger]
 features = []
@@ -42,7 +43,7 @@ version = "~0.3.5"
 
 [dependencies.serde]
 optional = true
-version = "~0.8.0"
+version = "~0.8.19"
 
 [dependencies.serde_cbor]
 optional = true
@@ -50,7 +51,7 @@ version = "~0.4.0"
 
 [dependencies.serde_json]
 optional = true
-version = "~0.8.0"
+version = "~0.8.4"
 
 [dependencies.serde_yaml]
 optional = true
@@ -60,7 +61,7 @@ version = "~0.4.0"
 default-features = false
 features = ["serde"]
 optional = true
-version = "~0.2.0"
+version = "~0.2.1"
 
 [dev-dependencies]
 tempdir = "~0.3.5"

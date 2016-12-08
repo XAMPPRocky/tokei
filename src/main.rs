@@ -60,7 +60,7 @@ fn main() {
     };
 
     builder.filter(None, filter_level);
-    builder.init().unwrap();
+    builder.init().expect("Couldn't create ENV Logger");
 
     let mut languages = Languages::new();
 

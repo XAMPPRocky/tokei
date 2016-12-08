@@ -1,8 +1,8 @@
-#[cfg(feature = "io")]
-extern crate serde_codegen;
+#[cfg(feature = "io")] extern crate serde_codegen;
 extern crate serde;
 extern crate serde_json;
 extern crate handlebars;
+#[macro_use] extern crate errln;
 
 use serde_json::Value;
 use handlebars::{Context, Handlebars};
@@ -27,16 +27,26 @@ fn expand(out_dir: OsString) {
 
     let handle = builder.spawn(move || {
 
-        let src = Path::new("src/language/serde_types.in.rs");
-        let dst = Path::new(&out_dir).join("language_serde_types.rs");
+        let paths = [
+            (
+                Path::new("src/language/serde_types.in.rs"),
+                Path::new(&out_dir).join("language_serde_types.rs"),
+            ),
+            (
+                &*hbs,
+                Path::new(&out_dir).join("language_type.rs"),
+            ),
+            (
+                Path::new("src/serde_types.in.rs"),
+                Path::new(&out_dir).join("stats_serde_types.in.rs"),
+            ),
+        ];
 
-        serde_codegen::expand(&src, &dst).expect("Can't serde language.rs");
-        serde_codegen::expand(&hbs, &hbs).expect("Can't serde handlebars");
 
-        let src = Path::new("src/serde_types.in.rs");
-        let dst = Path::new(&out_dir).join("stats_serde_types.in.rs");
-
-        serde_codegen::expand(&src, &dst).expect("Can't serde stats.rs");
+        for &(ref src, ref dst) in &paths {
+            serde_codegen::expand(src, dst)
+                .expect(&format!("Can't serde {:?}", src));
+        }
     });
 
     let _ = handle.unwrap().join();
@@ -57,7 +67,7 @@ fn render_handlebars(out_dir: &OsString) -> PathBuf {
     ).expect("Can't parse JSON");
 
     let data = Context::wraps(&raw_data);
-    let out = Path::new(&out_dir).join("language_type.rs");
+    let out = Path::new(&out_dir).join("language_type_serded.rs");
     let mut source_template = File::open(&"src/language/language_type.hbs.rs")
         .expect("Can't find Template");
     let mut output_file = File::create(&out).expect("Can't create output");

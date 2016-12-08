@@ -22,7 +22,8 @@ mod io {
             Ok(mut file) => {
                 let contents = {
                     let mut contents = String::new();
-                    file.read_to_string(&mut contents).unwrap();
+                    file.read_to_string(&mut contents)
+                        .expect("Couldn't read file");
                     contents
                 };
 
@@ -117,15 +118,18 @@ mod io {
     pub fn match_output(format: &str, languages: Languages) {
         match format {
             "cbor" => {
-                let cbor: Vec<u8> = languages.to_cbor().unwrap();
+                let cbor: Vec<u8> = languages.to_cbor()
+                    .expect("Couldn't convert to CBOR");
 
                 for byte in cbor {
                     print!("{:02x}", byte);
                 }
             }
-            "json" => print!("{}", languages.to_json().unwrap()),
+            "json" => print!("{}", languages.to_json()
+                             .expect("Couldn't convert to JSON")),
             "toml" => print!("{}", languages.to_toml()),
-            "yaml" => print!("{}", languages.to_yaml().unwrap()),
+            "yaml" => print!("{}", languages.to_yaml()
+                             .expect("Couldn't convert to YAML")),
             _ => unreachable!(),
         }
     }

@@ -1,6 +1,6 @@
 /// Struct representing a single Language.
 #[cfg(feature = "io")]
-#[cfg_attr(feature = "io", derive(Clone, Debug, Deserialize, Serialize))]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Language {
     /// Number of blank lines.
     pub blanks: usize,
