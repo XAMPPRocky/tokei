@@ -37,7 +37,7 @@ dobin() {
     local f prefix=$(gcc_prefix)
     for f in "$@"; do
         install -m0755 $f $dtd/debian/usr/bin/
-        ${prefix}strip -s $dtd/debian/usr/bin/$(basename $f)
+        strip -s $dtd/debian/usr/bin/$(basename $f)
     done
 }
 
