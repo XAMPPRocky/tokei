@@ -6,7 +6,7 @@ set -ex
 
 # Generate artifacts for release
 mk_artifacts() {
-    cargo build --target $TARGET --release
+    cargo build --target $TARGET --release --features all
 }
 
 mk_tarball() {
