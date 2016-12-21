@@ -48,7 +48,7 @@ args:
         short: s
         takes_value: true
     - verbose:
-        help: 'Set verbose output level: 1 for File IO errors 2: for unknown extensions'
+        help: 'Set verbose output level: 1: for unknown extensions'
         long: verbose
         short: v
         multiple: true

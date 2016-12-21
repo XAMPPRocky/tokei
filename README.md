@@ -3,9 +3,10 @@
 [![Linux build status](https://img.shields.io/travis/Aaronepower/tokei.svg?branch=master)](https://travis-ci.org/Aaronepower/tokei)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/Aaronepower/tokei?svg=true)](https://ci.appveyor.com/project/Aaronepower/tokei)
 [![](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
-[![](https://img.shields.io/github/issues-raw/Aaronepower/tokei.svg)](http://github.com/Aaronepower/tokei/issues)
+[![](https://img.shields.io/github/issues-raw/Aaronepower/tokei.svg)](https://github.com/Aaronepower/tokei/issues)
+[![](https://tokei.rs/b1/github/Aaronepower/tokei?category=code)](https://github.com/Aaronepower/tokei)
 
-Tokei is a program that allows you to count code, quickly.
+Tokei is a program that allows you to count your code, quickly.
 
 ## Example Output
 This is tokei running on it's own directory
@@ -15,15 +16,14 @@ $ tokei .
 -------------------------------------------------------------------------------
  Language            Files        Lines         Code     Comments       Blanks
 -------------------------------------------------------------------------------
- Autoconf                1            9            7            1            1
- Handlebars              1          235          218            0           17
- JSON                    1         1205         1205            0            0
- Markdown                4          553          553            0            0
- Rust                   12         1803         1080          517          206
- TOML                    1           86           70            0           16
- YAML                    2           71           68            3            0
+ BASH                    4          224          161           23           40
+ JSON                    1         1263         1263            0            0
+ Markdown                4          707          707            0            0
+ Rust                   17         2367         1626          463          278
+ TOML                    1           80           66            0           14
+ YAML                    2          120           95           19            6
 -------------------------------------------------------------------------------
- Total                  22         3962         3201          521          240
+ Total                  29         4761         3918          505          338
 -------------------------------------------------------------------------------
 ```
 
@@ -37,6 +37,7 @@ $ tokei .
     - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
+- [Badges](#badges)
 - [Supported Languages](#supported-languages)
 - [Changelog](CHANGELOG.md)
 - [Common Issues](#common-issues)
@@ -68,6 +69,9 @@ $ dnf install tokei
 ```
 
 #### Other
+You can download prebuilt binaries in the
+[releases section](https://github.com/Aaronepower/tokei/releases), or create
+from source.
 ```shell
 $ git clone https://github.com/Aaronepower/tokei.git
 $ cd tokei
@@ -162,8 +166,9 @@ $ tokei ./foo --input ./stats.json
 ```
 
 ## Options
+
 ```
-Tokei 4.3.0
+Tokei 4.5.3
 Aaron P. <theaaronepower@gmail.com>
 Count Code, Quickly.
 
@@ -175,17 +180,39 @@ FLAGS:
     -h, --help         Prints help information
     -l, --languages    Prints out supported languages and their extensions.
     -V, --version      Prints version information
-    -v                 Set verbose output level: 1: for unknown extensions
+    -v, --verbose      Set verbose output level: 1: for unknown extensions
 
 OPTIONS:
     -e, --exclude <exclude>     Ignore all files & directories containing the word.
-    -i, --input <file_input>    Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to
-                                read from stdin.
+    -i, --input <file_input>    Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to read from stdin.
     -o, --output <output>       Outputs Tokei in a specific format. [values: cbor, json, toml, yaml]
     -s, --sort <sort>           Will sort based on column [values: files, lines, blanks, code, comments]
 
 ARGS:
     <input>...    The input file(s)/directory(ies)
+```
+
+## Badges
+Tokei has support for badges. For example
+[![](https://tokei.rs/b1/github/Aaronepower/tokei)](https://github.com/Aaronepower/tokei).
+
+```
+[![](https://tokei.rs/b1/github/Aaronepower/tokei)](https://github.com/Aaronepower/tokei).
+```
+
+Tokei's URL scheme is as follows.
+
+```
+https://tokei.rs/{host: values: github|gitlab}/{Repo Owner eg: Aaronepower}/{Repo name eg: tokei}
+```
+
+By default the badge will show the repo's LoC(_Lines of Code_), you can also
+specify for it to show a different category, by using the `?category=` query
+string. It can be either `code`, `blanks`, `files`, `lines`, `comments`,
+Example show total lines:
+
+```
+[![](https://tokei.rs/b1/github/Aaronepower/tokei?category=lines)](https://github.com/Aaronepower/tokei).
 ```
 
 ## Supported Languages
