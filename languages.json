@@ -441,6 +441,22 @@
                 "f95"
             ]
         },
+        "FSharp":{
+            "name":"F#",
+            "single":[
+                "//"
+            ],
+            "multi":[[
+                "(*",
+                "*)"
+            ]],
+            "extensions":[
+                "fs",
+                "fsi",
+                "fsx",
+                "fsscript"
+            ]
+        },
         "GdScript":{
             "name":"GDScript",
             "base":"hash",
