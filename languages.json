@@ -358,6 +358,13 @@
                 "hrl"
             ]
         },
+        "Fstar":{
+            "name":"F*",
+            "base":"func",
+            "extensions":[
+                "fst"
+            ]
+        },
         "Forth":{
             "single":[
                 "\\\\"
