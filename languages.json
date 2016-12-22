@@ -176,6 +176,14 @@
                 "coffee"
             ]
         },
+        "Cogent":{
+            "single":[
+                "--"
+            ],
+            "extensions":[
+                "cogent"
+            ]
+        },
         "ColdFusion":{
             "multi":[[
                 "<!---",
