@@ -17,6 +17,12 @@
                 "pad"
             ]
         },
+        "Agda":{
+            "base": "haskell",
+            "extensions":[
+                "agda"
+            ]
+        },
         "Assembly":{
             "single":[
                 ";"
