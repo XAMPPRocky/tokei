@@ -12,9 +12,6 @@ mod input;
 use input::*;
 
 use std::borrow::Cow;
-use std::sync::mpsc::channel;
-use std::thread;
-use std::time::Duration;
 
 use clap::App;
 use env_logger::LogBuilder;
@@ -43,11 +40,9 @@ fn main() {
     let verbose_option = matches.occurrences_of("verbose");
     let sort_option = matches.value_of("sort");
     let ignored_directories = {
-        let mut ignored_directories: Vec<&str> = vec![".git"];
+        let mut ignored_directories: Vec<&str> = Vec::new();
         if let Some(user_ignored) = matches.values_of("exclude") {
-            for ignored in user_ignored {
-                ignored_directories.push(ignored);
-            }
+            ignored_directories.extend(user_ignored);
         }
         ignored_directories
     };
@@ -65,7 +60,7 @@ fn main() {
     let mut languages = Languages::new();
 
     if language_option {
-        for key in languages.keys() {
+        for key in LanguageType::list() {
             println!("{:<25}", key);
         }
         return;
@@ -77,31 +72,9 @@ fn main() {
         add_input(input, &mut languages);
     }
 
-    let mut total = Language::new_blank();
-
-    let print_animation = output_option == None;
-    let (tx, rx) = channel();
-    let child = thread::spawn(move || {
-        let time = 100;
-        loop {
-            if let Ok(_) = rx.try_recv() {
-                break;
-            }
-
-            if print_animation {
-                print!(" Counting files.  \r");
-                thread::sleep(Duration::from_millis(time));
-                print!(" Counting files..\r");
-                thread::sleep(Duration::from_millis(time));
-                print!(" Counting files...\r");
-                thread::sleep(Duration::from_millis(time));
-            }
-        }
-    });
-
     languages.get_statistics(paths, ignored_directories);
 
-    if output_option == None {
+    if output_option.is_none() {
         println!("{}", ROW);
         println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
                  "Language",
@@ -111,32 +84,24 @@ fn main() {
                  "Comments",
                  "Blanks");
         println!("{}", ROW);
-    }
 
-    for (name, language) in &languages {
-        if !language.is_empty() && sort_option == None && output_option == None {
-            if files_option {
-                print_language(language, name);
-                println!("{}", ROW);
+        if sort_option.is_none() {
+            for (name, language) in languages.iter().filter(isnt_empty) {
+                if files_option {
+                    print_language(language, name);
+                    println!("{}", ROW);
 
-                for stat in &language.stats {
-                    println!("{}", stat);
+                    for stat in &language.stats {
+                        println!("{}", stat);
+                    }
+                    println!("{}", ROW);
+                } else if output_option.is_none() {
+                    print_language(language, name);
                 }
-                println!("{}", ROW);
-            } else if output_option == None {
-                print_language(language, name);
             }
         }
     }
 
-    let _ = tx.send(());
-    let _ = child.join();
-
-    for (_, language) in &languages {
-        if !language.is_empty() {
-            total += language;
-        }
-    }
 
     if let Some(format) = output_option {
         match_output(format, languages);
@@ -153,7 +118,7 @@ fn main() {
             }
         }
 
-        let mut languages: Vec<_> = languages.into_iter().collect();
+        let mut languages: Vec<_> = languages.iter().collect();
 
         match &*sort_category {
             BLANKS => languages.sort_by(|a, b| b.1.blanks.cmp(&a.1.blanks)),
@@ -184,6 +149,10 @@ fn main() {
         if !files_option {
             println!("{}", ROW);
         }
+        let mut total = Language::new_blank();
+        for (_, language) in languages {
+            total += language;
+        }
         println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
                  "Total",
                  total.stats.len(),
@@ -195,6 +164,9 @@ fn main() {
     }
 }
 
+fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
+    !language.is_empty()
+}
 
 fn print_language<'a, C>(language: &'a Language, name: C)
     where C: Into<Cow<'a, LanguageType>>

@@ -10,11 +10,27 @@ impl Stats {
     /// Create a new `Stats` from a file path.
     ///
     /// ```
-    /// # use tokei::*;
-    /// let stats = Stats::new("src/main.rs");
+    /// use std::path::PathBuf;
+    /// use tokei::Stats;
+    ///
+    /// let path = PathBuf::from("src/main.rs");
+    ///
+    /// let stats = Stats::new(path);
     /// ```
-    pub fn new<S: Into<String>>(name: S) -> Self {
-        Stats { name: name.into(), ..Self::default() }
+    pub fn new(name: PathBuf) -> Self {
+        Stats { name: name, ..Self::default() }
+    }
+}
+
+impl Default for Stats {
+    fn default() -> Self {
+        Stats {
+            name: PathBuf::new(),
+            lines: usize::default(),
+            code: usize::default(),
+            comments: usize::default(),
+            blanks: usize::default(),
+        }
     }
 }
 
@@ -27,26 +43,30 @@ fn find_char_boundary(s: &str, index: usize) -> usize {
     unreachable!();
 }
 
+macro_rules! display_stats {
+    ($f:expr, $this:expr, $name:expr) => {
+        write!($f,
+               " {: <25} {:>12} {:>12} {:>12} {:>12}",
+               $name,
+               $this.lines,
+               $this.code,
+               $this.comments,
+               $this.blanks)
+    }
+}
+
 impl fmt::Display for Stats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let name_length = self.name.len();
+        let name = self.name.to_string_lossy();
+        let name_length = name.len();
 
-        let name = if name_length == 25 {
-            self.name.clone()
-        } else if self.name.len() > 24 {
-            let mut name = String::from("|");
-            let from = find_char_boundary(&self.name, self.name.len() - 24);
-            name.push_str(&self.name[from..]);
-            name
+        if name_length == 25 || name_length <= 24 {
+            display_stats!(f, self, name)
         } else {
-            self.name.clone()
-        };
-        write!(f,
-               " {: <25} {:>12} {:>12} {:>12} {:>12}",
-               name,
-               self.lines,
-               self.code,
-               self.comments,
-               self.blanks)
+            let mut formatted = String::from("|");
+            let from = find_char_boundary(&name, name_length - 24);
+            formatted.push_str(&name[from..]);
+            display_stats!(f, self, formatted)
+        }
     }
 }

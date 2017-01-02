@@ -7,6 +7,7 @@ use std::collections::{btree_map, BTreeMap};
 use std::fs::File;
 use std::io::Read;
 use std::iter::IntoIterator;
+use std::mem;
 use std::ops::{AddAssign, Deref, DerefMut};
 use std::sync::{mpsc, Mutex};
 
@@ -25,31 +26,22 @@ use super::LanguageType::*;
 use super::{Language, LanguageType};
 use utils::{fs, multi_line};
 
-fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
-
-    let (name, ref mut language) = language_tuple;
-
-    if language.files.is_empty() {
-        return;
-    }
+fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
     let is_fortran = name == &FortranModern || name == &FortranLegacy;
-
     let (tx, rx) = mpsc::channel();
-    let has_multi_line = !language.multi_line.is_empty() &&
-        !language.nested_comments.is_empty();
     let synced_tx = Mutex::new(tx);
+    let has_multi_line = !language.multi_line.is_empty() || !language.nested_comments.is_empty();
     let is_blank = language.is_blank();
 
-    language.files.par_iter().for_each(|file| {
-        let mut stats = Stats::new(
-            opt_ret_error!(file.to_str(), "Couldn't convert path to String.")
-        );
+    let files = mem::replace(&mut language.files, Vec::new());
+
+    files.into_par_iter().for_each(|file| {
         let mut stack = Vec::new();
         let mut contents = Vec::new();
         let mut quote = None;
 
-        rs_ret_error!(rs_ret_error!(File::open(file)).read_to_end(&mut contents));
+        rs_ret_error!(rs_ret_error!(File::open(&file)).read_to_end(&mut contents));
 
         let text = match encoding::decode(&contents, Replace, UTF_8) {
             (Ok(string), _) => Cow::Owned(string),
@@ -57,7 +49,7 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
         };
 
         let lines = text.lines();
-
+        let mut stats = Stats::new(file);
         if is_blank {
             let count = lines.count();
             stats.lines += count;
@@ -120,7 +112,7 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
                     }
 
                     if let &mut Some(quote_str) = &mut quote {
-                        if window.starts_with(&*b"\\") {
+                        if window.starts_with(&*br"\") {
                             skip = 1;
                         } else if window.starts_with(quote_str.as_bytes()) {
                             quote = None;
@@ -139,7 +131,10 @@ fn count_files(mut language_tuple: (&LanguageType, &mut Language)) {
                 }
             }
 
-            if no_stack {
+            let starts_with_comment = language.multi_line.iter().chain(&language.nested_comments)
+                .any(|&(start, _)| line.starts_with(start));
+
+            if no_stack && !starts_with_comment {
                 stats.code += 1;
             } else {
                 stats.comments += 1;
@@ -300,8 +295,7 @@ impl Languages {
     /// let languages = Languages::new();
     /// ```
     pub fn new() -> Self {
-        let map = Self::generate_languages();
-        Languages { inner: map }
+        Languages { inner: BTreeMap::new() }
     }
 
     /// Creates a new map that only contains non empty languages.
@@ -409,7 +403,7 @@ impl Languages {
     ///
     /// ```no_run
     /// use tokei::*;
-    /// 
+    ///
     /// let yaml = r#"
     ///     ---
     ///     "Rust":
@@ -479,31 +473,6 @@ impl AddAssign<BTreeMap<LanguageType, Language>> for Languages {
     }
 }
 
-impl<'a> AddAssign<&'a BTreeMap<LanguageType, Language>> for Languages {
-    fn add_assign(&mut self, rhs: &'a BTreeMap<LanguageType, Language>) {
-
-        for (name, language) in rhs {
-
-            if let Some(result) = self.inner.get_mut(&name) {
-                *result += language;
-            }
-        }
-    }
-}
-
-impl<'a> AddAssign<&'a mut BTreeMap<LanguageType, Language>> for Languages {
-    fn add_assign(&mut self, rhs: &'a mut BTreeMap<LanguageType, Language>) {
-
-        for (name, language) in rhs {
-
-            if let Some(result) = self.inner.get_mut(&name) {
-                *result += language;
-            }
-        }
-    }
-}
-
-
 impl Deref for Languages {
     type Target = BTreeMap<LanguageType, Language>;
 
@@ -511,105 +480,9 @@ impl Deref for Languages {
         &self.inner
     }
 }
+
 impl DerefMut for Languages {
     fn deref_mut(&mut self) -> &mut BTreeMap<LanguageType, Language> {
         &mut self.inner
-    }
-}
-
-
-#[cfg(test)]
-mod accuracy_tests {
-    extern crate tempdir;
-    use super::*;
-    use std::io::Write;
-    use std::fs::File;
-    use language::LanguageType;
-    use self::tempdir::TempDir;
-
-
-    fn test_accuracy(file_name: &'static str,
-                     expected: usize,
-                     contents: &'static str)
-    {
-        let tmp_dir = TempDir::new("test").expect("Couldn't create temp dir");
-        let file_name = tmp_dir.path().join(file_name);
-        let mut file = File::create(&file_name).expect("Couldn't create file");
-        file.write(contents.as_bytes()).expect("couldn't write to file");
-
-        let mut l = Languages::new();
-        let l_type = LanguageType::from_extension(&file_name)
-            .expect("Can't find language type");
-        l.get_statistics(vec![file_name.to_str().unwrap()], vec![]);
-        let language = l.get_mut(&l_type).expect("Couldn't find language");
-
-        assert_eq!(expected, language.code);
-    }
-
-    #[test]
-    fn inside_quotes() {
-        test_accuracy("inside_quotes.rs",
-                      8,
-                      r#"fn main() {
-            let start = "/*";
-            loop {
-                if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
-                break;
-                }
-            }
-        }"#)
-    }
-
-    #[test]
-    fn shouldnt_panic() {
-        test_accuracy("shouldnt_panic.rs",
-                      9,
-                      r#"fn foo() {
-            let this_ends = "a \"test/*.";
-            call1();
-            call2();
-            let this_does_not = /* a /* nested */ comment " */
-                                "*/another /*test
-            call3();
-            */";
-        }"#)
-    }
-
-    #[test]
-    fn all_quotes_no_comment() {
-        test_accuracy("all_quotes_no_comment.rs",
-                      10,
-                      r#"fn foobar() {
-    let does_not_start = // "
-        "until here,
-        test/*
-        test"; // a quote: "
-    let also_doesnt_start = /* " */
-        "until here,
-        test,*/
-        test"; // another quote: "
-}"#)
-    }
-
-    #[test]
-    fn commenting_on_comments() {
-        test_accuracy("commenting_on_comments.rs",
-                      5,
-                      r#"fn foo() {
-    let a = 4; // /*
-    let b = 5;
-    let c = 6; // */
-}"#)
-    }
-
-    #[test]
-    fn nesting_with_nesting_comments() {
-        test_accuracy("nesting_with_nesting_comments.d",
-                      5,
-                      r#"void main() {
-    auto x = 5; /+ a /+ nested +/ comment /* +/
-    writefln("hello");
-    auto y = 4; // */
-}"#)
     }
 }

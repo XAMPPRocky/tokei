@@ -18,11 +18,11 @@ pub fn handle_multi_line(line: &str,
     'window: for window in line.as_bytes().windows(window_size) {
         while skip != 0 {
             skip -= 1;
-            continue;
+            continue 'window;
         }
 
         if let &mut Some(quote_str) = quote {
-            if window.starts_with(b"\\") {
+            if window.starts_with(br"\") {
                 skip = 1;
             } else if window.starts_with(quote_str.as_bytes()) {
                 *quote = None;

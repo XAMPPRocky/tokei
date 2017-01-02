@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 use std::ops::AddAssign;
 use std::path::PathBuf;
+use std::mem;
 
 use regex::{self, Regex};
 
@@ -24,9 +25,14 @@ fn generate_regex(multi_line: &[(&'static str, &'static str)]) -> Cow<'static, R
     Cow::Owned(Regex::new(&raw_regex).unwrap())
 }
 
-lazy_static! {
-    static ref C_REGEX: Regex = Regex::new(r"/\*").unwrap();
+fn get_c_regex() -> &'static Regex {
+    lazy_static! {
+        static ref C_REGEX: Regex = Regex::new(r"/\*").unwrap();
+    }
+
+    &*C_REGEX
 }
+
 
 impl Language {
     /// Constructs a new  empty Language with the comments provided.
@@ -43,6 +49,7 @@ impl Language {
             line_comment: line_comment,
             regex: Some(generate_regex(&multi_line)),
             multi_line: multi_line,
+            quotes: vec![("\"", "\"")],
             ..Self::default()
         }
     }
@@ -76,7 +83,7 @@ impl Language {
             line_comment: vec!["//"],
             multi_line: vec![("/*", "*/")],
             quotes: vec![("\"", "\"")],
-            regex: Some(Cow::Borrowed(&*C_REGEX)),
+            regex: Some(Cow::Borrowed(get_c_regex())),
             ..Self::default()
         }
     }
@@ -94,7 +101,7 @@ impl Language {
     /// ```
     pub fn new_func() -> Self {
         lazy_static! {
-            static ref FUNC_REGEX: Regex = Regex::new(r"\(\*").unwrap();
+            static ref FUNC_REGEX: Regex = Regex::new(&regex::quote(r"\(\*")).unwrap();
         }
         Language {
             multi_line: vec![("(*", "*)")],
@@ -155,7 +162,7 @@ impl Language {
     /// ```
     pub fn new_haskell() -> Self {
         lazy_static! {
-            static ref HASKELL_REGEX: Regex = Regex::new(r"\{-").unwrap();
+            static ref HASKELL_REGEX: Regex = Regex::new(&regex::quote(r"\{-")).unwrap();
         }
 
         Language {
@@ -199,7 +206,7 @@ impl Language {
             line_comment: vec!["%"],
             multi_line: vec![("/*", "*/")],
             quotes: vec![("\"", "\"")],
-            regex: Some(Cow::Borrowed(&*C_REGEX)),
+            regex: Some(Cow::Borrowed(get_c_regex())),
             ..Self::default()
         }
     }
@@ -302,10 +309,12 @@ impl Language {
     /// panic!'s if given the wrong category.
     ///
     /// ```
-    /// # use tokei::*;
+    /// use tokei::{Language, Stats, Sort};
+    /// use std::path::PathBuf;
+    ///
     /// let mut rust = Language::new_c();
-    /// let mut foo_stats = Stats::new("foo");
-    /// let mut bar_stats = Stats::new("bar");
+    /// let mut foo_stats = Stats::new(PathBuf::from("foo"));
+    /// let mut bar_stats = Stats::new(PathBuf::from("bar"));
     ///
     /// foo_stats.code += 20;
     /// bar_stats.code += 10;
@@ -332,32 +341,12 @@ impl Language {
 }
 
 impl AddAssign for Language {
-    fn add_assign(&mut self, rhs: Self) {
+    fn add_assign(&mut self, mut rhs: Self) {
         self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
         self.code += rhs.code;
-        self.stats.extend_from_slice(&*rhs.stats);
-    }
-}
-
-impl<'a> AddAssign<&'a Language> for Language {
-    fn add_assign(&mut self, rhs: &'a Self) {
-        self.lines += rhs.lines;
-        self.comments += rhs.comments;
-        self.blanks += rhs.blanks;
-        self.code += rhs.code;
-        self.stats.extend_from_slice(&*rhs.stats);
-    }
-}
-
-impl<'a> AddAssign<&'a mut Language> for Language {
-    fn add_assign(&mut self, rhs: &mut Self) {
-        self.lines += rhs.lines;
-        self.comments += rhs.comments;
-        self.blanks += rhs.blanks;
-        self.code += rhs.code;
-        self.stats.extend_from_slice(&*rhs.stats);
+        self.stats.extend(mem::replace(&mut rhs.stats, Vec::new()));
     }
 }
 

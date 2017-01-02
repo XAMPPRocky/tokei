@@ -11,19 +11,9 @@ use ignore::WalkBuilder;
 use ignore::overrides::OverrideBuilder;
 use ignore::WalkState::*;
 
-use language::{Language, LanguageType};
+use language::{Language, Languages, LanguageType};
 use language::LanguageType::*;
 pub use language::get_filetype_from_shebang;
-
-macro_rules! get_language {
-    ($languages:expr, $entry:expr) => {
-        if let Some(language_type) = LanguageType::from_extension($entry) {
-            opt_error!($languages.get_mut(&language_type), "Unknown Language? Shouldn't happen.")
-        } else {
-            continue;
-        }
-    }
-}
 
 pub fn get_all_files(paths: Vec<&str>,
                      ignored_directories: Vec<&str>,
@@ -84,7 +74,9 @@ pub fn get_all_files(paths: Vec<&str>,
     });
 
     for (language_type, pathbuf) in rx {
-        opt_error!(languages.get_mut(&language_type), "??!").files.push(pathbuf);
+        languages.entry(language_type)
+                 .or_insert(Languages::generate_language(language_type))
+                 .files.push(pathbuf);
     }
 }
 
@@ -124,8 +116,8 @@ mod test {
         create_dir(&path_name).expect("Couldn't create directory.rs within temp");
 
         let mut l = Languages::new();
-        get_all_files(vec![tmp_dir.into_path().to_str().unwrap()].into(), vec![].into(), &mut l);
+        get_all_files(vec![tmp_dir.into_path().to_str().unwrap()], vec![], &mut l);
 
-        assert_eq!(0, l.get(&LanguageType::Rust).unwrap().files.len());
+        assert!(l.get(&LanguageType::Rust).is_none());
     }
 }
