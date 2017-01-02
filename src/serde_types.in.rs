@@ -1,6 +1,7 @@
+use std::path::PathBuf;
 /// A struct representing the statistics of a file.
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
-#[derive(Clone, Default, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Stats {
     /// Number of blank lines within the file.
     pub blanks: usize,
@@ -11,6 +12,6 @@ pub struct Stats {
     /// Total number of lines within the file.
     pub lines: usize,
     /// File name.
-    pub name: String,
+    pub name: PathBuf,
 }
 

@@ -7,7 +7,6 @@ use std::fmt;
 use std::path::Path;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::collections::BTreeMap;
 
 use utils::fs;
 use self::LanguageType::*;
@@ -45,6 +44,15 @@ impl LanguageType {
         }
     }
 
+    /// Provides every variant in a Vec
+    pub fn list() -> Vec<Self> {
+        return vec! [
+            {{#each languages}}
+                {{@key}},
+            {{~/each}}
+        ]
+    }
+
     /// Get language from it's file extension.
     ///
     /// ```no_run
@@ -74,10 +82,9 @@ impl LanguageType {
 }
 
 impl Languages {
-    #[inline]
-    pub fn generate_languages() -> BTreeMap<LanguageType, Language> {
-        btreemap! {
-            {{~#each languages}}
+    pub fn generate_language(language: LanguageType) -> Language {
+        match language {
+            {{#each languages}}
                 {{~@key}} =>
                 {{~#if this.base}}
                     Language::new_{{this.base}}()
@@ -192,11 +199,14 @@ impl<'a> From<&'a LanguageType> for Cow<'a, LanguageType> {
 
 
 /// This is for getting the file type from the first line of a file
-pub fn get_filetype_from_shebang<P: AsRef<Path>>(file: P) -> Option<&'static str> {
+pub fn get_filetype_from_shebang<P>(file: P) -> Option<&'static str>
+    where P: AsRef<Path>
+{
     let file = match File::open(file) {
         Ok(file) => file,
         _ => return None,
     };
+
     let mut buf = BufReader::new(file);
     let mut line = String::new();
     let _ = buf.read_line(&mut line);

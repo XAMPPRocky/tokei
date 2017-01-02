@@ -8,67 +8,70 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/Aaronepower/tokei.git"
-version = "4.5.4"
+version = "5.0.3"
+
+[profile.release]
+panic="abort"
 
 [build-dependencies]
-serde = "~0.8.19"
-serde_json = "~0.8.4"
-errln = "0.1.0"
+serde = "0.8"
+serde_json = "0.8"
+errln = "0.1"
 
 [build-dependencies.handlebars]
 features = ["serde_type"]
-version = "0.21.1"
+version = "~0.24"
 
 [build-dependencies.serde_codegen]
 optional = true
-version = "0.8.19"
+version = "0.8"
 
 [dependencies]
-encoding = "~0.2.33"
-errln = "0.1.0"
-ignore = "~0.1.5"
-lazy_static = "~0.2.1"
-log = "~0.3.6"
-maplit = "~0.1.3"
-rayon = "=0.4.2"
-regex = "~0.1.80"
+encoding = "0.2"
+errln = "0.1"
+ignore = "0.1"
+lazy_static = "0.2"
+log = "0.3"
+maplit = "0.1"
+rayon = "0.6"
+regex = "0.1"
 
 [dependencies.clap]
 features = ["yaml"]
-version = "~2.19.1"
+version = "2.19"
 
 [dependencies.env_logger]
 features = []
-version = "~0.3.5"
+version = "0.3"
+
+[dependencies.hex]
+version = "0.2"
+optional = true
 
 [dependencies.serde]
 optional = true
-version = "~0.8.19"
+version = "0.8"
 
 [dependencies.serde_cbor]
 optional = true
-version = "~0.4.0"
+version = "0.4"
 
 [dependencies.serde_json]
 optional = true
-version = "~0.8.4"
+version = "0.8"
 
 [dependencies.serde_yaml]
 optional = true
-version = "~0.4.0"
+version = "0.4"
 
 [dependencies.toml]
 default-features = false
 features = ["serde"]
 optional = true
-version = "~0.2.1"
+version = "0.2"
 
 [dev-dependencies]
-tempdir = "~0.3.5"
-
-[dependencies.hex]
-version = "~0.2.0"
-optional = true
+tempdir = "0.3"
 
 [features]
 all = ["json", "cbor", "toml-io", "yaml"]

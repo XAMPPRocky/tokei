@@ -85,7 +85,7 @@
             ]
         },
         "Sh":{
-            "name":"sh",
+            "name":"Shell",
             "base":"hash",
             "quotes":[
                 [
@@ -452,10 +452,9 @@
             "single":[
                 "//"
             ],
-            "multi":[[
-                "(*",
-                "*)"
-            ]],
+            "multi":[
+                ["(*", "*)"]
+            ],
             "extensions":[
                 "fs",
                 "fsi",
