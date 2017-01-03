@@ -265,11 +265,17 @@ impl Languages {
 
     #[cfg(feature = "io")]
     fn from_previous(map: BTreeMap<LanguageType, Language>) -> Self {
+        use std::collections::btree_map::Entry::*;
         let mut _self = Self::new();
 
         for (name, input_language) in map {
-            if let Some(language) = _self.get_mut(&name) {
-                *language += input_language;
+            match _self.entry(name) {
+                Occupied(mut entry) => {
+                    *entry.get_mut() += input_language;
+                }
+                Vacant(entry) => {
+                    entry.insert(input_language);
+                }
             }
         }
         _self
