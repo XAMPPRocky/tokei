@@ -105,6 +105,7 @@ fn main() {
 
     if let Some(format) = output_option {
         match_output(format, languages);
+        return
     } else if let Some(sort_category) = sort_option {
 
         for (_, ref mut language) in &mut languages {
@@ -145,23 +146,21 @@ fn main() {
         }
     }
 
-    if output_option == None {
-        if !files_option {
-            println!("{}", ROW);
-        }
-        let mut total = Language::new_blank();
-        for (_, language) in languages {
-            total += language;
-        }
-        println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
-                 "Total",
-                 total.stats.len(),
-                 total.lines,
-                 total.code,
-                 total.comments,
-                 total.blanks);
+    if !files_option {
         println!("{}", ROW);
     }
+    let mut total = Language::new_blank();
+    for (_, language) in languages {
+        total += language;
+    }
+    println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
+             "Total",
+             total.stats.len(),
+             total.lines,
+             total.code,
+             total.comments,
+             total.blanks);
+    println!("{}", ROW);
 }
 
 fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
