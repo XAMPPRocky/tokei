@@ -18,8 +18,8 @@ lazy_static! {
 
 macro_rules! get_digit {
     ($regex:expr, $text:expr) => {{
-        let (begin, end) = $regex.find(&$text).expect("Couldn't find category");
-        $text[begin..end].split_whitespace()
+        let matched = $regex.find(&$text).expect("Couldn't find category");
+        matched.as_str().split_whitespace()
             .next()
             .unwrap()
             .parse::<usize>()

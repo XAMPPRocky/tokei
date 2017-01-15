@@ -18,7 +18,7 @@ include!(concat!(env!("OUT_DIR"), "/language_serde_types.rs"));
 fn generate_regex(multi_line: &[(&'static str, &'static str)]) -> Cow<'static, Regex> {
     let mut raw_regex = String::new();
     for &(start, _) in multi_line {
-        raw_regex.push_str(&regex::quote(start));
+        raw_regex.push_str(&regex::escape(start));
         raw_regex.push_str("|");
     }
     let _ = raw_regex.pop();
@@ -101,7 +101,7 @@ impl Language {
     /// ```
     pub fn new_func() -> Self {
         lazy_static! {
-            static ref FUNC_REGEX: Regex = Regex::new(&regex::quote(r"\(\*")).unwrap();
+            static ref FUNC_REGEX: Regex = Regex::new(r"\(\*").unwrap();
         }
         Language {
             multi_line: vec![("(*", "*)")],
@@ -162,7 +162,7 @@ impl Language {
     /// ```
     pub fn new_haskell() -> Self {
         lazy_static! {
-            static ref HASKELL_REGEX: Regex = Regex::new(&regex::quote(r"\{-")).unwrap();
+            static ref HASKELL_REGEX: Regex = Regex::new(r"\{-").unwrap();
         }
 
         Language {

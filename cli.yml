@@ -29,6 +29,7 @@ args:
         index: 1
         multiple: true
         required: true
+        default_value: "."
     - languages:
         conflicts_with:
             - input

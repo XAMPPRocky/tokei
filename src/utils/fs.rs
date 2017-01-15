@@ -30,16 +30,13 @@ pub fn get_all_files(paths: Vec<&str>,
     }
 
     if !ignored_directories.is_empty() {
-        let mut ignored_directories = ignored_directories.iter();
-        let mut overrides = OverrideBuilder::new(
-            &format!("!{}", ignored_directories.next().unwrap())
-        );
+        let mut overrides = OverrideBuilder::new(".");
 
         for ignored in ignored_directories {
             rs_error!(overrides.add(&format!("!{}", ignored)));
         }
 
-        walker.overrides(overrides.build().unwrap());
+        walker.overrides(overrides.build().expect("Excludes were in invalid"));
     }
 
     walker.build_parallel().run(move|| {
