@@ -12,7 +12,7 @@ Tokei is a program that displays statistics about your code. Tokei will show num
 This is tokei running on it's own directory
 
 ```
-$ tokei .
+$ tokei
 -------------------------------------------------------------------------------
  Language            Files        Lines         Code     Comments       Blanks
 -------------------------------------------------------------------------------
@@ -34,6 +34,9 @@ $ tokei .
 - [Canonical Source](#canonical-source)
 - [Installation](#installation)
     - [Automatic](#automatic)
+        - [Arch Linux](#arch-linux)
+        - [Cargo](#cargo)
+        - [Fedora](#fedora)
     - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
@@ -50,25 +53,24 @@ The canonical source of this repo is hosted on [GitHub](https://github.com/Aaron
 ## Installation
 
 ### Automatic
-If you have [`cargo`](https://www.rust-lang.org/downloads.html) installed you
-can run the `cargo install` command.
 
+#### Arch Linux
+```shell
+$ pacman -S tokei
+```
+
+#### Cargo
 ```shell
 $ cargo install tokei
 ```
 
-### Manual
-
 #### Fedora 64 bit
-Install rust and cargo from either the
-[official page](https://www.rust-lang.org) or use a copr repo such as
-[Rust](https://copr.fedoraproject.org/coprs/phnxrbrn/rust/)
 ```shell
 $ dnf copr enable phnxrbrn/tokei
 $ dnf install tokei
 ```
 
-#### Other
+### Manual
 You can download prebuilt binaries in the
 [releases section](https://github.com/Aaronepower/tokei/releases), or create
 from source.
