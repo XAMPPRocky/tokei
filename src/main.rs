@@ -66,7 +66,10 @@ fn main() {
         return;
     }
 
-    let paths: Vec<&str> = matches.values_of("input").unwrap().collect();
+    let paths: Vec<&str> = match matches.values_of("input") {
+        Some(vs) => vs.collect(),
+        None => vec!["."],
+    };
 
     if let Some(input) = input_option {
         add_input(input, &mut languages);
