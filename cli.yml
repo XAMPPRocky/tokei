@@ -28,7 +28,6 @@ args:
         help: The input file(s)/directory(ies)
         index: 1
         multiple: true
-        required: true
     - languages:
         conflicts_with:
             - input
