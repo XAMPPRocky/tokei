@@ -8,10 +8,17 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/Aaronepower/tokei.git"
-version = "5.0.6"
+version = "5.0.7"
+keywords = ["utility", "cli", "cloc", "lines"]
+categories = ["command-line-utilities", "development-tools", "visualization"]
+
+[badges]
+travis-ci = { repository = "Aaronepower/tokei" }
+appveyor = { repository = "Aaronepower/tokei" }
 
 [profile.release]
 panic="abort"
+lto=true
 
 [build-dependencies]
 serde = "0.8"
