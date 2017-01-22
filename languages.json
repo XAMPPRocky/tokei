@@ -1109,7 +1109,7 @@
             ]
         },
         "Sml":{
-            "name":"Standard ML",
+            "name":"Standard ML (SML)",
             "base":"func",
             "extensions":[
                 "sml"
