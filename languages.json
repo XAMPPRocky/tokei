@@ -1228,6 +1228,23 @@
                 "upkg"
             ]
         },
+        "UrWeb":{
+            "name":"Ur/Web",
+            "base":"func",
+            "extensions":[
+                "ur",
+                "urs"
+            ]
+        },
+        "UrWebProject":{
+            "name":"Ur/Web Project",
+            "single":[
+                "#"
+            ],
+            "extensions":[
+                "urp"
+            ]
+        },
         "VimScript":{
             "name":"Vim Script",
             "single":[
