@@ -8,7 +8,7 @@ fun main () = return <xml>
      line
      comment *)
 
-  <body>
+  <body> (* uncounted comment *)
     <h1>Hello world!</h1>
   </body>
 </xml>
