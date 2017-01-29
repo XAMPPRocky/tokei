@@ -976,6 +976,12 @@
                 "proto"
             ]
         },
+        "PureScript":{
+            "base":"haskell",
+            "extensions":[
+                "purs"
+            ]
+        },
         "Python":{
             "base":"hash",
             "quotes":[
