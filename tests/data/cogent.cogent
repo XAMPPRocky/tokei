@@ -1,0 +1,7 @@
+-- 7 lines 2 code 2 comments 3 blanks
+
+type A -- uncounted comment
+
+-- comment
+
+type B
