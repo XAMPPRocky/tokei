@@ -239,7 +239,9 @@
             "extensions":[
                 "hh",
                 "hpp",
-                "hxx"
+                "hxx",
+                "inl",
+                "ipp"
             ]
         },
         "CSharp":{
@@ -547,7 +549,8 @@
                 ]
             ],
             "extensions":[
-                "html"
+                "html",
+                "htm"
             ]
         },
         "Hex":{
@@ -804,7 +807,9 @@
         "Makefile":{
             "base":"hash",
             "extensions":[
-                "makefile"
+                "makefile",
+                "mak",
+                "mk"
             ]
         },
         "Markdown":{
