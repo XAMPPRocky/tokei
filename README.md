@@ -312,6 +312,7 @@ Plain Text
 TOML
 TypeScript
 Unreal Script
+VHDL
 Vim Script
 Wolfram
 XML
