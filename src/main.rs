@@ -13,7 +13,6 @@ use input::*;
 
 use std::borrow::Cow;
 
-use clap::App;
 use env_logger::LogBuilder;
 use log::LogLevelFilter;
 
@@ -31,8 +30,19 @@ const ROW: &'static str = "----------------------------------------------------\
 fn main() {
     // Get options at the beginning, so the program doesn't have to make any
     // extra calls to get the information, and there isn't any magic strings.
-    let yaml = load_yaml!("../cli.yml");
-    let matches = App::from_yaml(yaml).get_matches();
+    let matches = clap_app!(tokei =>
+        (version: crate_version!())
+        (author: "Aaron P. <theaaronepower@gmail.com> + Contributors")
+        (about: crate_description!())
+        (@arg exclude: -e --exclude +takes_value "Ignore all files & directories containing the word.")
+        (@arg file_input: -i --input +takes_value "Gives statistics from a previous tokei run. Can be given a file path, or \"stdin\" to read from stdin.")
+        (@arg files: -f --files "Will print out statistics on individual files.")
+        (@arg input: conflicts_with[languages] ... "The input file(s)/directory(ies) to be counted.")
+        (@arg languages: -l --languages conflicts_with[input] "Prints out supported languages and their extensions.")
+        (@arg output: -o --output possible_values(&["cbor", "json", "toml", "yaml"]) +takes_value "Outputs Tokei in a specific format.")
+        (@arg verbose: -v --verbose ... "Set verbose output level: 1: for unknown extensions")
+        (@arg sort: -s --sort possible_values(&["files", "lines", "blanks", "code", "comments"]) +takes_value "Sort languages based on column")
+    ).get_matches();
     let files_option = matches.is_present(FILES);
     let input_option = matches.value_of("file_input");
     let output_option = matches.value_of("output");
@@ -77,39 +87,21 @@ fn main() {
 
     languages.get_statistics(paths, ignored_directories);
 
-    if output_option.is_none() {
-        println!("{}", ROW);
-        println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
-                 "Language",
-                 "Files",
-                 "Lines",
-                 "Code",
-                 "Comments",
-                 "Blanks");
-        println!("{}", ROW);
-
-        if sort_option.is_none() {
-            for (name, language) in languages.iter().filter(isnt_empty) {
-                if files_option {
-                    print_language(language, name);
-                    println!("{}", ROW);
-
-                    for stat in &language.stats {
-                        println!("{}", stat);
-                    }
-                    println!("{}", ROW);
-                } else if output_option.is_none() {
-                    print_language(language, name);
-                }
-            }
-        }
-    }
-
-
     if let Some(format) = output_option {
         match_output(format, languages);
-        return
-    } else if let Some(sort_category) = sort_option {
+    }
+
+    println!("{}", ROW);
+    println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
+                "Language",
+                "Files",
+                "Lines",
+                "Code",
+                "Comments",
+                "Blanks");
+    println!("{}", ROW);
+
+    if let Some(sort_category) = sort_option {
 
         for (_, ref mut language) in &mut languages {
             match &*sort_category {
@@ -145,6 +137,20 @@ fn main() {
                     }
                     println!("{}", ROW);
                 }
+            }
+        }
+    } else  {
+        for (name, language) in languages.iter().filter(isnt_empty) {
+            if files_option {
+                print_language(language, name);
+                println!("{}", ROW);
+
+                for stat in &language.stats {
+                    println!("{}", stat);
+                }
+                println!("{}", ROW);
+            } else  {
+                print_language(language, name);
             }
         }
     }

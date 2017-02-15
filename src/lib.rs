@@ -63,6 +63,10 @@ extern crate rayon;
 extern crate regex;
 
 #[cfg(feature = "io")]
+#[macro_use]
+extern crate serde_derive;
+
+#[cfg(feature = "io")]
 extern crate serde;
 #[cfg(feature = "cbor")]
 extern crate serde_cbor;

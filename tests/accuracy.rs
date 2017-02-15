@@ -27,33 +27,4 @@ macro_rules! get_digit {
     }}
 }
 
-#[test]
-fn languages() {
-    use ignore::Walk;
-    let walker = Walk::new("./tests/data/").filter(|p| {
-        match p {
-            &Ok(ref p) => !p.metadata().unwrap().is_dir(),
-            _ => false,
-        }
-    });
-    for path in walker {
-        let path = path.unwrap();
-        let path = path.path().to_str().unwrap();
-        let mut languages = Languages::new();
-        languages.get_statistics(vec![path], vec![]);
-        let mut contents = String::new();
-        File::open(path).unwrap().read_to_string(&mut contents).unwrap();
-
-
-        for (name, language) in languages {
-            assert_eq!(get_digit!(LINES, contents), language.lines);
-            println!("{} LINES MATCH", name);
-            assert_eq!(get_digit!(CODE, contents), language.code);
-            println!("{} CODE MATCH", name);
-            assert_eq!(get_digit!(COMMENTS, contents), language.comments);
-            println!("{} COMMENTS MATCH", name);
-            assert_eq!(get_digit!(BLANKS, contents), language.blanks);
-            println!("{} BLANKS MATCH", name);
-        }
-    }
-}
+include!(concat!(env!("OUT_DIR"), "/tests.rs"));

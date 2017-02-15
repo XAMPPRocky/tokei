@@ -31,7 +31,7 @@ $ tokei
 
 ## Table of Contents
 
-- [Canonical Source](#canonical-source)
+- [Features](#features)
 - [Installation](#installation)
     - [Automatic](#automatic)
         - [Arch Linux](#arch-linux)
@@ -44,11 +44,33 @@ $ tokei
 - [Supported Languages](#supported-languages)
 - [Changelog](CHANGELOG.md)
 - [Common Issues](#common-issues)
+- [Canonical Source](#canonical-source)
 - [Copyright](#copyright)
 
+## Features
 
-## Canonical Source
-The canonical source of this repo is hosted on [GitHub](https://github.com/Aaronepower/tokei). If you have a GitHub account, please make your issues, and pull requests there.
+- Tokei is **very fast**, below are the Tokei's times on a select few large
+  repositories, with a  hot cache(_times are in seconds and measured using
+  `/usr/bin/time` on macOS Sierra, with 2.7 GHz Intel Core i7, results will vary_).
+
+| Repository       | Real |
+| **DragonFlyBSD** | 1.20 |
+| **Rust**         | 0.50 |
+| **CPython**      | 0.18 |
+
+- Tokei is **accurate**, Tokei correctly handles multi line comments,
+  nested comments, and not counting comments that are in strings. Providing an
+  accurate code statistics.
+
+- Tokei has huge range of languages, supporting over **100** languages, and
+  their various extensions.
+
+- Tokei can output in multiple formats(**CBOR**, **JSON**, **TOML**, **YAML**)
+  allowing Tokei's output to be easily stored, and reused. These can also be
+  reused in tokei combining a previous run's statistics with another set.
+
+- Tokei is available on **Mac**, **Linux**, and **Windows**. See [installation
+  instructions](#installation) for how to get Tokei on your platform.
 
 ## Installation
 
@@ -329,6 +351,11 @@ a different file extension, you can always exclude `.d` files using the
 ```
 $ tokei . -e *.d
 ```
+
+## Canonical Source
+The canonical source of this repo is hosted on
+[GitHub](https://github.com/Aaronepower/tokei). If you have a GitHub account,
+please make your issues, and pull requests there.
 
 ## Copyright and License
 (C) Copyright 2015 by Aaron Power and contributors

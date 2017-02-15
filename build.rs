@@ -1,65 +1,24 @@
-#[cfg(feature = "io")] extern crate serde_codegen;
-extern crate serde;
 extern crate serde_json;
+extern crate ignore;
 extern crate handlebars;
-#[macro_use] extern crate errln;
 
-use serde_json::Value;
-use handlebars::Handlebars;
-use std::fs::File;
 use std::env;
-use std::path::{Path, PathBuf};
-use std::ffi::OsString;
+use std::fs::File;
+use std::path::Path;
+use std::ffi::OsStr;
+
+use handlebars::Handlebars;
+use serde_json::Value;
 
 fn main() {
     let out_dir = env::var_os("OUT_DIR").expect("can't get OUT_DIR");
-    expand(out_dir);
+    generate_languages(&out_dir);
+    generate_tests(&out_dir);
 }
 
-#[cfg(feature = "io")]
-fn expand(out_dir: OsString) {
-    use std::thread;
-    let hbs = render_handlebars(&out_dir);
-
-    let builder = thread::Builder::new()
-        .name(String::from("Build Thread"))
-        .stack_size(16388608);
-
-    let handle = builder.spawn(move || {
-
-        let paths = [
-            (
-                Path::new("src/language/serde_types.in.rs"),
-                Path::new(&out_dir).join("language_serde_types.rs"),
-            ),
-            (
-                &*hbs,
-                hbs.to_owned(),
-            ),
-            (
-                Path::new("src/serde_types.in.rs"),
-                Path::new(&out_dir).join("stats_serde_types.in.rs"),
-            ),
-        ];
-
-
-        for &(ref src, ref dst) in &paths {
-            serde_codegen::expand(src, dst)
-                .expect(&format!("Can't serde {:?}", src));
-        }
-    });
-
-    let _ = handle.unwrap().join();
-}
-
-#[cfg(not(feature = "io"))]
-fn expand(out_dir: OsString) {
-    render_handlebars(&out_dir);
-}
-
-fn render_handlebars(out_dir: &OsString) -> PathBuf {
-
+fn generate_languages(out_dir: &OsStr) {
     let mut handlebars = Handlebars::new();
+
     handlebars.register_escape_fn(handlebars::no_escape);
 
     let data: Value = serde_json::from_reader(
@@ -77,5 +36,56 @@ fn render_handlebars(out_dir: &OsString) -> PathBuf {
     {
         panic!("Failed to generate languages! ERROR: {:?}", err);
     }
-    out
+}
+
+fn generate_tests(out_dir: &OsStr) {
+    use std::io::Write;
+
+    use ignore::Walk;
+
+    let mut string = String::new();
+
+    let walker = Walk::new("./tests/data/").filter(|p| {
+        match p {
+            &Ok(ref p) => {
+                if let Ok(ref p) = p.metadata() {
+                    p.is_file()
+                } else {
+                    false
+                }
+            },
+            _ => false,
+        }
+    });
+
+    for path in walker {
+        let path = path.unwrap();
+        let path = path.path();
+
+        let name = path.file_stem().unwrap().to_str().unwrap();
+
+        string.push_str(&format!(r#"
+        #[test]
+        fn {0}() {{
+            let mut languages = Languages::new();
+            languages.get_statistics(vec!["{1}"], Vec::new());
+            let mut contents = String::new();
+            File::open("{1}").unwrap().read_to_string(&mut contents).unwrap();
+
+            for (name, language) in languages {{
+                assert_eq!(get_digit!(LINES, contents), language.lines);
+                println!("{{}} LINES MATCH", name);
+                assert_eq!(get_digit!(CODE, contents), language.code);
+                println!("{{}} CODE MATCH", name);
+                assert_eq!(get_digit!(COMMENTS, contents), language.comments);
+                println!("{{}} COMMENTS MATCH", name);
+                assert_eq!(get_digit!(BLANKS, contents), language.blanks);
+                println!("{{}} BLANKS MATCH", name);
+            }}
+        }}
+        "#, name, path.display()));
+    }
+
+    File::create(Path::new(&out_dir).join("tests.rs")).unwrap()
+        .write_all(string.as_bytes()).unwrap();
 }

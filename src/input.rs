@@ -96,8 +96,9 @@ mod io {
     }
 
     #[cfg(feature = "toml-io")]
-    pub fn from_toml(contents: &String) -> Result<LanguageMap, ()> {
-        toml::decode_str(&contents).ok_or(())
+    pub fn from_toml(contents: &String) -> Result<LanguageMap, toml::de::Error>
+    {
+        toml::from_str(&contents)
     }
 
     #[cfg(not(feature = "toml-io"))]
@@ -115,7 +116,7 @@ mod io {
         Err(())
     }
 
-    pub fn match_output(format: &str, languages: Languages) {
+    pub fn match_output(format: &str, languages: Languages) -> ! {
         match format {
             "cbor" => {
                 let cbor: Vec<u8> = languages.to_cbor()
@@ -127,11 +128,13 @@ mod io {
             }
             "json" => print!("{}", languages.to_json()
                              .expect("Couldn't convert to JSON")),
-            "toml" => print!("{}", languages.to_toml()),
+            "toml" => print!("{}", languages.to_toml()
+                             .expect("Couldn't convert to TOML")),
             "yaml" => print!("{}", languages.to_yaml()
                              .expect("Couldn't convert to YAML")),
             _ => unreachable!(),
         }
+        ::std::process::exit(0)
     }
 
 }
