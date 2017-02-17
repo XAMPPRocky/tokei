@@ -31,7 +31,8 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
     let is_fortran = name == &FortranModern || name == &FortranLegacy;
     let (tx, rx) = mpsc::channel();
     let synced_tx = Mutex::new(tx);
-    let has_multi_line = !language.multi_line.is_empty() || !language.nested_comments.is_empty();
+    let has_multi_line = !language.multi_line.is_empty() ||
+                         !language.nested_comments.is_empty();
     let is_blank = language.is_blank();
 
     let files = mem::replace(&mut language.files, Vec::new());
@@ -75,7 +76,6 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
             let line = if is_fortran { line } else { line.trim_left() };
-
             for single in &language.line_comment {
                 if line.starts_with(single) {
                     stats.comments += 1;
@@ -103,14 +103,6 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                         continue 'window;
                     }
 
-                    if quote.is_none() {
-                        for single in &language.line_comment {
-                            if window.starts_with(single.as_bytes()) {
-                                break 'window;
-                            }
-                        }
-                    }
-
                     if let &mut Some(quote_str) = &mut quote {
                         if window.starts_with(&*br"\") {
                             skip = 1;
@@ -119,6 +111,12 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                             skip_by_str_length!(skip, quote_str);
                         }
                         continue 'window;
+                    } else {
+                        for single in &language.line_comment {
+                            if window.starts_with(single.as_bytes()) {
+                                break 'window;
+                            }
+                        }
                     }
 
                     for &(start, end) in &language.quotes  {
@@ -131,7 +129,8 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 }
             }
 
-            let starts_with_comment = language.multi_line.iter().chain(&language.nested_comments)
+            let starts_with_comment = language.multi_line.iter()
+                .chain(&language.nested_comments)
                 .any(|&(start, _)| line.starts_with(start));
 
             if no_stack && !starts_with_comment {
@@ -177,11 +176,8 @@ impl Languages {
     /// # }
     /// ```
     #[cfg(feature = "cbor")]
-    pub fn from_cbor(cbor: &[u8]) -> serde_cbor::Result<Self>
-    {
-        let map = try!(serde_cbor::from_slice(cbor.into()));
-
-        Ok(Self::from_previous(map))
+    pub fn from_cbor(cbor: &[u8]) -> serde_cbor::Result<Self> {
+        Ok(Self::from_previous(serde_cbor::from_slice(cbor.into())?))
     }
 
     #[cfg(not(feature = "cbor"))]
@@ -214,11 +210,8 @@ impl Languages {
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
     #[cfg(feature = "json")]
-    pub fn from_json(json: &[u8]) -> serde_json::Result<Self>
-    {
-        let map = try!(serde_json::from_slice(json.into()));
-
-        Ok(Self::from_previous(map))
+    pub fn from_json(json: &[u8]) -> serde_json::Result<Self> {
+        Ok(Self::from_previous(serde_json::from_slice(json.into())?))
     }
 
     #[cfg(not(feature = "json"))]
@@ -251,11 +244,8 @@ impl Languages {
     /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
     /// ```
     #[cfg(feature = "yaml")]
-    pub fn from_yaml(yaml: &[u8]) -> serde_yaml::Result<Self>
-    {
-        let map = try!(serde_yaml::from_slice(yaml.into()));
-
-        Ok(Self::from_previous(map))
+    pub fn from_yaml(yaml: &[u8]) -> serde_yaml::Result<Self> {
+        Ok(Self::from_previous(serde_yaml::from_slice(yaml.into())?))
     }
 
     #[cfg(not(feature = "yaml"))]
@@ -396,13 +386,13 @@ impl Languages {
     }
 
     #[cfg(feature = "toml-io")]
-    pub fn to_toml(self) -> String {
-        toml::encode_str(&self.remove_empty())
+    pub fn to_toml(self) -> Result<String, toml::ser::Error> {
+        toml::to_string(&self.remove_empty())
     }
 
     #[cfg(not(feature = "toml-io"))]
-    pub fn to_toml(&self) -> String {
-        String::new()
+    pub fn to_toml(&self) -> Result<String, ()> {
+        Err(())
     }
 
     /// Converts `Languages` to YAML.
