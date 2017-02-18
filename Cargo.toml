@@ -16,8 +16,8 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/Aaronepower/tokei.git"
-version = "5.0.7"
-keywords = ["utility", "cli", "cloc", "lines", "tokei", "statistics"]
+version = "6.0.0"
+keywords = ["utility", "cli", "cloc", "lines", "statistics"]
 categories = ["command-line-utilities", "development-tools", "visualization"]
 
 [badges]
