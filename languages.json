@@ -1256,6 +1256,14 @@
                 "urp"
             ]
         },
+        "VHDL":{
+            "single":[
+                "--"
+            ],
+            "extensions":[
+                "vhd"
+            ]
+        },
         "VimScript":{
             "name":"Vim Script",
             "single":[
