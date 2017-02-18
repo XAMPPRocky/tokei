@@ -1,3 +1,25 @@
+# 6.0.0
+
+- Reworked internals
+- Now uses serde_derive(_and thusly requires rust v1.15_)
+- Now has better file based testing
+
+**Added languages:**
+- @tuncer Added Ur/Web
+- @svisser Added PureScript
+- @tjodden Add some common extensions for HTML, C++ and Makefile
+- @xd009642 Added VHDL
+
+# 5.0.0
+
+- Optimised internals
+
+**Added languages:**
+- @GungnirInd Added GDScript
+- @tuncer Differentiate between sh and Bash, Added Cogent, F\*, F#
+- @pthariensflame Added Agda
+
+
 # 4.5.0
 
 - Added Regex based hueristics so more expensive multi line handling isn't used
