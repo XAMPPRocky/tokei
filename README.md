@@ -254,6 +254,7 @@ with the following information. If you're unsure have a look at
 ```
 ActionScript
 Ada
+Agda
 ASP
 ASP.NET
 Assembly
@@ -266,6 +267,7 @@ C#
 C Shell
 Clojure
 CoffeeScript
+Cogent
 ColdFusion
 ColdFusion CFScript
 Coq
@@ -279,8 +281,11 @@ Elixir
 Elm
 Erlang
 Forth
+F*
+F#
 FORTRAN Legacy
 FORTRAN Modern
+GDScript
 GLSL
 Go
 Handlebars
@@ -316,6 +321,7 @@ PHP
 Polly
 Prolog
 Protocol Buffers
+PureScript
 Python
 QCL
 R
@@ -335,6 +341,7 @@ Plain Text
 TOML
 TypeScript
 Unreal Script
+Ur/Web
 VHDL
 Vim Script
 Wolfram
