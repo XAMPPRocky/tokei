@@ -177,6 +177,23 @@
                 "clj"
             ]
         },
+        "CMake": {
+            "single":[
+                "#"
+            ],
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ]
+            ],
+            "extensions":[
+                "cmake"
+            ],
+            "filenames":[
+                "cmakelists.txt"
+            ]
+        },
         "CoffeeScript":{
             "single":[
                 "#"
