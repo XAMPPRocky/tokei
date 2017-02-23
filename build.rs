@@ -78,7 +78,6 @@ fn generate_tests(out_dir: &OsStr) {
             let mut contents = String::new();
             File::open("{1}").unwrap().read_to_string(&mut contents).unwrap();
 
-            println!("{{}} {{:?}}", name, language);
             assert_eq!(get_digit!(LINES, contents), language.lines);
             println!("{{}} LINES MATCH", name);
             assert_eq!(get_digit!(CODE, contents), language.code);
