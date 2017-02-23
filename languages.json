@@ -332,6 +332,28 @@
                 "dtsi"
             ]
         },
+        "Dockerfile":{
+            "single":[
+                "#"
+            ],
+            "extensions":[
+                "dockerfile",
+                "dockerignore"
+            ],
+            "filenames":[
+                "dockerfile"
+            ],
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ]
+        },
         "Elixir":{
             "single":[
                 "#"
@@ -810,6 +832,9 @@
                 "makefile",
                 "mak",
                 "mk"
+            ],
+            "filenames":[
+                "makefile"
             ]
         },
         "Markdown":{
@@ -1024,6 +1049,33 @@
                 "r"
             ]
         },
+        "Rakefile":{
+            "single":[
+                "#"
+            ],
+            "multi":[
+                [
+                    "=begin",
+                    "=end"
+                ]
+            ],
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "filenames":[
+                "rakefile"
+            ],
+            "extensions":[
+                "rake"
+            ]
+        },
         "Razor":{
             "multi":[
                 [
@@ -1060,8 +1112,7 @@
                 ]
             ],
             "extensions":[
-                "rb",
-                "rake"
+                "rb"
             ]
         },
         "RubyHtml":{
