@@ -124,6 +124,25 @@
                 "bash"
             ]
         },
+        "Fish":{
+            "base":"hash",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "env":[
+                "fish"
+            ],
+            "extensions":[
+                "fish"
+            ]
+        },
         "Batch":{
             "single":[
                 "REM",
