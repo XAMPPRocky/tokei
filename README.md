@@ -269,6 +269,7 @@ CSS
 D
 Dart
 Device Tree
+Dockerfile
 Elixir
 Elm
 Erlang
@@ -317,6 +318,7 @@ PureScript
 Python
 QCL
 R
+Rakefile
 Razor
 ReStructuredText
 Ruby
