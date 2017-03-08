@@ -34,7 +34,7 @@ fn main() {
         (version: crate_version!())
         (author: "Aaron P. <theaaronepower@gmail.com> + Contributors")
         (about: crate_description!())
-        (@arg exclude: -e --exclude +takes_value "Ignore all files & directories containing the word.")
+        (@arg exclude: -e --exclude +takes_value ... "Ignore all files & directories containing the word.")
         (@arg file_input: -i --input +takes_value "Gives statistics from a previous tokei run. Can be given a file path, or \"stdin\" to read from stdin.")
         (@arg files: -f --files "Will print out statistics on individual files.")
         (@arg input: conflicts_with[languages] ... "The input file(s)/directory(ies) to be counted.")
