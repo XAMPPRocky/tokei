@@ -41,6 +41,7 @@ $ tokei
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Badges](#badges)
+- [Plugins](#plugins)
 - [Supported Languages](#supported-languages)
 - [Changelog](CHANGELOG.md)
 - [Common Issues](#common-issues)
@@ -239,6 +240,11 @@ Example show total lines:
 ```
 [![](https://tokei.rs/b1/github/Aaronepower/tokei?category=lines)](https://github.com/Aaronepower/tokei).
 ```
+
+## Plugins
+Thanks to contributors tokei is now available as a plugin for some text editors.
+
+- [Vim](https://github.com/vmchale/tokei-vim) by [vmchale](https://github.com/vmchale/)
 
 ## Supported Languages
 
