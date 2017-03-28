@@ -838,6 +838,11 @@
                 "markdown"
             ]
         },
+        "ModuleDef": {
+            "name": "Module-Definition",
+            "extensions": ["def"],
+            "single": [";"]
+        },
         "Mustache":{
             "multi":[[
                 "{{!",
