@@ -67,7 +67,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
         'line: for line in lines {
             stats.lines += 1;
             let no_stack = stack.is_empty();
-            if line.trim().is_empty() {
+            if line.chars().all(char::is_whitespace) {
                 stats.blanks += 1;
                 continue;
             }
@@ -75,7 +75,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
-            let line = if is_fortran { line } else { line.trim_left() };
+            let line = if !is_fortran { line.trim_left() } else { line };
             for single in &language.line_comment {
                 if line.starts_with(single) {
                     stats.comments += 1;
