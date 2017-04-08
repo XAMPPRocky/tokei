@@ -111,18 +111,18 @@ Note that filenames will *override* extensions, so with the following
 configuration:
 
 ```json
-"Toml":{
-    "extensions": [
-        "toml"
+"Text":{
+    "extensions":[
+        "txt"
     ]
 },
-"Cargo":{
+"CMake":{
     "filenames": [
-        "cargo.toml"
+        "cmakelists.txt"
     ]
 }
 
-A file named `Cargo.toml` will be detected as a Cargo file, not a TOML file.
+A file named `CMakeLists.txt` will be detected as a CMake file, not a text file.
 
 ```
 

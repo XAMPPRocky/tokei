@@ -99,8 +99,6 @@ impl LanguageType {
             None
         }
     }
-
-
 }
 
 impl Languages {

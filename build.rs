@@ -70,8 +70,10 @@ fn generate_tests(out_dir: &OsStr) {
             let mut languages = Languages::new();
             languages.get_statistics(vec!["{1}"], Vec::new());
 
-            let languages = languages.into_iter().collect::<Vec<_>>();
-            assert_eq!(languages.len(), 1, "wrong number of languages found");
+            if languages.len() != 1 {{
+                panic!("wrong languages detected: expected just {0}, found {{:?}}",
+                       languages.into_iter().collect::<Vec<_>>());
+            }}
 
             let (name, language) = languages.into_iter().next().unwrap();
 
