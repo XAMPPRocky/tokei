@@ -1211,6 +1211,32 @@
                 "scala"
             ]
         },
+        "Scons":{
+            "base":"hash",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ],
+                [
+                    "\\\"\\\"\\\"",
+                    "\\\"\\\"\\\""
+                ],
+                [
+                    "'''",
+                    "'''"
+                ]
+            ],
+            "filenames":[
+                "sconstruct",
+                "sconscript"
+            ]
+        },
+
         "Sml":{
             "name":"Standard ML (SML)",
             "base":"func",

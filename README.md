@@ -258,6 +258,7 @@ C Header
 C#
 C Shell
 Clojure
+CMake
 CoffeeScript
 Cogent
 ColdFusion
@@ -326,6 +327,7 @@ Ruby HTML
 Rust
 Sass
 Scala
+Scons
 Standard ML
 SQL
 Swift

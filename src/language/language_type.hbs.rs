@@ -85,10 +85,12 @@ impl LanguageType {
         if let Some(extension) = extension {
             match &*extension {
                 {{~#each languages}}
-                    {{~#each this.extensions}}
-                        "{{~this}}" {{~#unless @last}} | {{~/unless}}
-                    {{~/each}}
-                        => Some({{~@key}}),
+                    {{~#if this.extensions}}
+                        {{~#each this.extensions}}
+                            "{{~this}}" {{~#unless @last}} | {{~/unless}}
+                        {{~/each}}
+                            => Some({{~@key}}),
+                    {{~/if}}
                 {{~/each}}
                 extension => {
                     warn!("Unknown extension: {}", extension);
