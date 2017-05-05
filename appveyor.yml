@@ -22,7 +22,24 @@ environment:
     - TARGET: x86_64-pc-windows-msvc
 
     # Testing other channels
+    # Beta channel
+    - TARGET: i686-pc-windows-gnu
+      RUST_VERSION: beta
     - TARGET: x86_64-pc-windows-gnu
+      RUST_VERSION: beta
+
+    - TARGET: i686-pc-windows-msvc
+      RUST_VERSION: beta
+    - TARGET: x86_64-pc-windows-msvc
+      RUST_VERSION: beta
+
+    # Nightly channel
+    - TARGET: i686-pc-windows-gnu
+      RUST_VERSION: nightly
+    - TARGET: x86_64-pc-windows-gnu
+      RUST_VERSION: nightly
+
+    - TARGET: i686-pc-windows-msvc
       RUST_VERSION: nightly
     - TARGET: x86_64-pc-windows-msvc
       RUST_VERSION: nightly
@@ -30,7 +47,6 @@ environment:
 matrix:
   allow_failures:
     - RUST_VERSION: nightly
-    - RUST_VERSION: beta
 
 install:
   - ps: >-

@@ -50,14 +50,74 @@ matrix:
     - env: TARGET=s390x-unknown-linux-gnu DISABLE_TESTS=1
 
     # Testing other channels
+    # Beta channel
+    - env: TARGET=i686-apple-darwin
+      os: osx
+      rust: beta
+    - env: TARGET=i686-unknown-linux-gnu
+      os: linux
+      rust: beta
+      addons:
+        apt:
+          packages: *i686_unknown_linux_gnu
+    - env: TARGET=i686-unknown-linux-musl
+      os: linux
+      rust: beta
+      dist: trusty
+      sudo: required
+      addons:
+        apt:
+          packages: *musl_packages
+    - env: TARGET=x86_64-apple-darwin
+      os: osx
+      rust: beta
     - env: TARGET=x86_64-unknown-linux-gnu
+      os: linux
+      rust: beta
+    - env: TARGET=x86_64-unknown-linux-musl
+      os: linux
+      rust: beta
+      dist: trusty
+      sudo: required
+      addons:
+        apt:
+          packages: *musl_packages
+    # Nightly channel
+    - env: TARGET=i686-apple-darwin
+      os: osx
       rust: nightly
+    - env: TARGET=i686-unknown-linux-gnu
+      os: linux
+      rust: nightly
+      addons:
+        apt:
+          packages: *i686_unknown_linux_gnu
+    - env: TARGET=i686-unknown-linux-musl
+      os: linux
+      rust: nightly
+      dist: trusty
+      sudo: required
+      addons:
+        apt:
+          packages: *musl_packages
     - env: TARGET=x86_64-apple-darwin
       os: osx
       rust: nightly
+    - env: TARGET=x86_64-unknown-linux-gnu
+      os: linux
+      rust: nightly
+    - env: TARGET=x86_64-unknown-linux-musl
+      os: linux
+      rust: nightly
+      dist: trusty
+      sudo: required
+      addons:
+        apt:
+          packages: *musl_packages
+
+
   allow_failures:
     - rust: nightly
-    - rust: beta
 
 before_install: set -e
 
