@@ -30,6 +30,7 @@ environment:
 matrix:
   allow_failures:
     - RUST_VERSION: nightly
+    - RUST_VERSION: beta
 
 install:
   - ps: >-
