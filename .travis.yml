@@ -1,154 +1,167 @@
+# Based on the "trust" template v0.1.1
+# https://github.com/japaric/trust/tree/v0.1.1
+
+dist: trusty
 language: rust
-cache: cargo
+services: docker
+sudo: required
+
+# TODO Rust builds on stable by default, this can be
+# overridden on a case by case basis down below.
 
 env:
   global:
-    - PROJECT_NAME=tokei
+    - CRATE_NAME=tokei
     - MAKE_DEB=yes
     - DEB_MAINTAINER="Aaron Power <theaaronepower@gmail.com>"
     - DEB_DESCRIPTION="A utility that allows you to count code, quickly."
 
-# AFAICT There are a few ways to set up the build jobs. This one is not the
-# DRYest but I feel is the easiest to reason about.
-# TODO Feel free to remove the channels/targets you don't need
-# NOTE Make *sure* you don't remove a reference (&foo) if you are going to dereference it (*foo)
 matrix:
+  # TODO These are all the build jobs. Adjust as necessary. Comment out what you
+  # don't need
   include:
-    # Stable channel
-    - os: osx
-      rust: stable
-      env: TARGET=i686-apple-darwin
-    - os: linux
-      rust: stable
-      env: TARGET=i686-unknown-linux-gnu
-      addons:
-        apt:
-          packages: &i686_unknown_linux_gnu
-            # Cross compiler and cross compiled C libraries
-            - gcc-multilib
-    - os: linux
-      rust: stable
-      env: TARGET=i686-unknown-linux-musl
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: &musl_packages
-          - musl
-          - musl-dev
-          - musl-tools
-    - os: osx
-      rust: stable
-      env: TARGET=x86_64-apple-darwin
-    - os: linux
-      rust: stable
-      env: TARGET=x86_64-unknown-linux-gnu
-    - os: linux
-      rust: stable
-      env: TARGET=x86_64-unknown-linux-musl
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: *musl_packages
+    # Linux
+    - env: TARGET=i686-unknown-linux-gnu
+    - env: TARGET=i686-unknown-linux-musl
+    - env: TARGET=x86_64-unknown-linux-gnu
+    - env: TARGET=x86_64-unknown-linux-musl
+
+    # OSX
+    - env: TARGET=i686-apple-darwin
+      os: osx
+    - env: TARGET=x86_64-apple-darwin
+      os: osx
+
+    # *BSD
+    - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
+    - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
+    - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
+
+    # Other architectures
+    - env: TARGET=aarch64-unknown-linux-gnu
+    - env: TARGET=armv7-unknown-linux-gnueabihf
+    - env: TARGET=mips-unknown-linux-gnu
+    - env: TARGET=mips64-unknown-linux-gnuabi64
+    - env: TARGET=mips64el-unknown-linux-gnuabi64
+    - env: TARGET=mipsel-unknown-linux-gnu
+    - env: TARGET=powerpc-unknown-linux-gnu
+    - env: TARGET=powerpc64-unknown-linux-gnu
+    - env: TARGET=powerpc64le-unknown-linux-gnu
+    - env: TARGET=s390x-unknown-linux-gnu DISABLE_TESTS=1
+
+    # Testing other channels
     # Beta channel
-    - os: osx
+    - env: TARGET=i686-apple-darwin
+      os: osx
       rust: beta
-      env: TARGET=i686-apple-darwin
-    - os: linux
+    - env: TARGET=i686-unknown-linux-gnu
+      os: linux
       rust: beta
-      env: TARGET=i686-unknown-linux-gnu
       addons:
         apt:
           packages: *i686_unknown_linux_gnu
-    - os: linux
+    - env: TARGET=i686-unknown-linux-musl
+      os: linux
       rust: beta
-      env: TARGET=i686-unknown-linux-musl
       dist: trusty
       sudo: required
       addons:
         apt:
           packages: *musl_packages
-    - os: osx
+    - env: TARGET=x86_64-apple-darwin
+      os: osx
       rust: beta
-      env: TARGET=x86_64-apple-darwin
-    - os: linux
+    - env: TARGET=x86_64-unknown-linux-gnu
+      os: linux
       rust: beta
-      env: TARGET=x86_64-unknown-linux-gnu
-    - os: linux
+    - env: TARGET=x86_64-unknown-linux-musl
+      os: linux
       rust: beta
-      env: TARGET=x86_64-unknown-linux-musl
       dist: trusty
       sudo: required
       addons:
         apt:
           packages: *musl_packages
     # Nightly channel
-    - os: osx
+    - env: TARGET=i686-apple-darwin
+      os: osx
       rust: nightly
-      env: TARGET=i686-apple-darwin
-    - os: linux
+    - env: TARGET=i686-unknown-linux-gnu
+      os: linux
       rust: nightly
-      env: TARGET=i686-unknown-linux-gnu
       addons:
         apt:
           packages: *i686_unknown_linux_gnu
-    - os: linux
+    - env: TARGET=i686-unknown-linux-musl
+      os: linux
       rust: nightly
-      env: TARGET=i686-unknown-linux-musl
       dist: trusty
       sudo: required
       addons:
         apt:
           packages: *musl_packages
-    - os: osx
+    - env: TARGET=x86_64-apple-darwin
+      os: osx
       rust: nightly
-      env: TARGET=x86_64-apple-darwin
-    - os: linux
+    - env: TARGET=x86_64-unknown-linux-gnu
+      os: linux
       rust: nightly
-      env: TARGET=x86_64-unknown-linux-gnu
-    - os: linux
+    - env: TARGET=x86_64-unknown-linux-musl
+      os: linux
       rust: nightly
-      env: TARGET=x86_64-unknown-linux-musl
       dist: trusty
       sudo: required
       addons:
         apt:
           packages: *musl_packages
+
+
   allow_failures:
-      - rust: nightly
-before_install:
-  - export PATH="$PATH:$HOME/.cargo/bin"
+    - rust: nightly
+
+before_install: set -e
 
 install:
-  - bash ci/install.sh
+  - sh ci/install.sh
+  - source ~/.cargo/env || true
 
 script:
   - bash ci/script.sh
 
+after_script: set +e
+
 before_deploy:
-  - bash ci/before_deploy.sh
+  - sh ci/before_deploy.sh
 
 deploy:
-  provider: releases
+  # TODO update `api_key.secure`
+  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
+  # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
+  # - Paste the output down here
   api_key:
     secure: JAWZDa7izxqh/013aqxwSxhu4wndJfvQWngA/DMutC5J5ZTUEmA0UJG+VGCVcMVZOBu/IUy6tRmz3IgEqgW74FLc4UuBRH3RdInp+dpjUc2yTuUltOuT+skn5LGQXi+m8VeIxRS0PXCsN5twpOfSi0uuKu+UzMN9ZOX9wEy1svRlAUJdcT37LfvlS/lnxHoF+WuakZfFsP0QCrgI7uBY83X+wT6YAixiywzadKMqXDSNlJ7m0t9pJ1FsR0BgnoYiTI/L/3P3FDJCDzShujlU9P3xLvirV4/HB9NPG+IhuhTSCpBE8UIzCourAi6AgG3wdQGiR9S9QdwEuF3Y5Ya5l2tkJpqrk8FkBMVkH57m9iGV0j4mHDOvaRzMiPyYeuTTPKgbSWAvLOGouVRDP0SrZGjjcCvKSN4LVgO83uLjsg2XtdFoA89s/pNLsY2e07trT6jVm12P9uKdLWqkHdLJdGG4448aL8cIXntlCIHujpSmSikGtlGZZB6cvfkZQn/ZLhBxiGyk8n2V5hpqFml/tk6QDxyY04gSd1t/9aebOZmAGFYP0aufJpQe1GW13PQSdIQL6MZPtsk88OgP6EqUOSBCIAWuBd0cLds1SE+TELPyAPHWx5Z/y+mUEx4NoxRWWzNbQxOaMfXtLhE+xp7gdJYH7QtldagYz79UX/8wYbo=
   file_glob: true
-  file: ${PROJECT_NAME}-${TRAVIS_TAG}-${TARGET}.*
-  # don't delete the artifacts from previous phases
-  skip_cleanup: true
-  # deploy when a new tag is pushed
+  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
   on:
+    # TODO Here you can pick which targets will generate binary releases
+    # In this example, there are some targets that are tested using the stable
+    # and nightly channels. This condition makes sure there is only one release
+    # for such targets and that's generated using the stable channel
     condition: $TRAVIS_RUST_VERSION = stable
     tags: true
+  provider: releases
+  skip_cleanup: true
+
+cache: cargo
+before_cache:
+  # Travis can't cache files that are not readable by "others"
+  - chmod -R a+r $HOME/.cargo
 
 branches:
   only:
-    # Pushes and PR to the master branch
-    - master
-    # IMPORTANT Ruby regex to match tags. Required, or travis won't trigger deploys when a new tag
-    # is pushed. This regex matches semantic versions like v1.2.3-rc4+2016.02.22
+    # release tags
     - /^v\d+\.\d+\.\d+.*$/
+    - master
 
 notifications:
   email:
