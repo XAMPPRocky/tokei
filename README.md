@@ -11,21 +11,7 @@ Tokei is a program that displays statistics about your code. Tokei will show num
 ## Example Output
 This is tokei running on it's own directory
 
-```
-$ tokei
--------------------------------------------------------------------------------
- Language            Files        Lines         Code     Comments       Blanks
--------------------------------------------------------------------------------
- BASH                    4          224          161           23           40
- JSON                    1         1263         1263            0            0
- Markdown                4          707          707            0            0
- Rust                   17         2367         1626          463          278
- TOML                    1           80           66            0           14
- YAML                    2          120           95           19            6
--------------------------------------------------------------------------------
- Total                  29         4761         3918          505          338
--------------------------------------------------------------------------------
-```
+[![asciicast](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o.png)](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o)
 
 ## [Documentation](https://docs.rs/tokei)
 
