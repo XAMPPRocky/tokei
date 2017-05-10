@@ -177,6 +177,23 @@
                 "clj"
             ]
         },
+        "CMake": {
+            "single":[
+                "#"
+            ],
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ]
+            ],
+            "extensions":[
+                "cmake"
+            ],
+            "filenames":[
+                "cmakelists.txt"
+            ]
+        },
         "CoffeeScript":{
             "single":[
                 "#"
@@ -349,6 +366,28 @@
             "extensions":[
                 "dts",
                 "dtsi"
+            ]
+        },
+        "Dockerfile":{
+            "single":[
+                "#"
+            ],
+            "extensions":[
+                "dockerfile",
+                "dockerignore"
+            ],
+            "filenames":[
+                "dockerfile"
+            ],
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
             ]
         },
         "Elixir":{
@@ -829,6 +868,9 @@
                 "makefile",
                 "mak",
                 "mk"
+            ],
+            "filenames":[
+                "makefile"
             ]
         },
         "Markdown":{
@@ -1048,6 +1090,33 @@
                 "r"
             ]
         },
+        "Rakefile":{
+            "single":[
+                "#"
+            ],
+            "multi":[
+                [
+                    "=begin",
+                    "=end"
+                ]
+            ],
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "filenames":[
+                "rakefile"
+            ],
+            "extensions":[
+                "rake"
+            ]
+        },
         "Razor":{
             "multi":[
                 [
@@ -1084,8 +1153,7 @@
                 ]
             ],
             "extensions":[
-                "rb",
-                "rake"
+                "rb"
             ]
         },
         "RubyHtml":{

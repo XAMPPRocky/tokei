@@ -62,26 +62,30 @@ fn generate_tests(out_dir: &OsStr) {
         let path = path.unwrap();
         let path = path.path();
 
-        let name = path.file_stem().unwrap().to_str().unwrap();
+        let name = path.file_stem().unwrap().to_str().unwrap().to_lowercase();
 
         string.push_str(&format!(r#"
         #[test]
         fn {0}() {{
             let mut languages = Languages::new();
             languages.get_statistics(vec!["{1}"], Vec::new());
+
+            let languages = languages.into_iter().collect::<Vec<_>>();
+            assert_eq!(languages.len(), 1, "wrong number of languages found");
+
+            let (name, language) = languages.into_iter().next().unwrap();
+
             let mut contents = String::new();
             File::open("{1}").unwrap().read_to_string(&mut contents).unwrap();
 
-            for (name, language) in languages {{
-                assert_eq!(get_digit!(LINES, contents), language.lines);
-                println!("{{}} LINES MATCH", name);
-                assert_eq!(get_digit!(CODE, contents), language.code);
-                println!("{{}} CODE MATCH", name);
-                assert_eq!(get_digit!(COMMENTS, contents), language.comments);
-                println!("{{}} COMMENTS MATCH", name);
-                assert_eq!(get_digit!(BLANKS, contents), language.blanks);
-                println!("{{}} BLANKS MATCH", name);
-            }}
+            assert_eq!(get_digit!(LINES, contents), language.lines);
+            println!("{{}} LINES MATCH", name);
+            assert_eq!(get_digit!(CODE, contents), language.code);
+            println!("{{}} CODE MATCH", name);
+            assert_eq!(get_digit!(COMMENTS, contents), language.comments);
+            println!("{{}} COMMENTS MATCH", name);
+            assert_eq!(get_digit!(BLANKS, contents), language.blanks);
+            println!("{{}} BLANKS MATCH", name);
         }}
         "#, name, path.display()));
     }

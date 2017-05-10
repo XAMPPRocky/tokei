@@ -12,7 +12,6 @@ use ignore::overrides::OverrideBuilder;
 use ignore::WalkState::*;
 
 use language::{Language, Languages, LanguageType};
-use language::LanguageType::*;
 pub use language::get_filetype_from_shebang;
 
 pub fn get_all_files(paths: Vec<&str>,
@@ -53,12 +52,7 @@ pub fn get_all_files(paths: Vec<&str>,
 
             let entry = entry.path();
 
-            if entry.to_string_lossy().contains("Makefile") {
-                tx.send((Makefile, entry.to_owned())).unwrap();
-                return Continue;
-            }
-
-            if let Some(language) = LanguageType::from_extension(entry) {
+            if let Some(language) = LanguageType::from_path(entry) {
                 if let Ok(metadata) = entry.metadata() {
                     if metadata.is_file() {
                         tx.send((language, entry.to_owned())).unwrap();
@@ -82,19 +76,20 @@ pub fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
     match path.extension() {
         Some(extension_os) => {
             Some(extension_os.to_string_lossy().to_lowercase())
-        }
-        None => {
-            match get_filetype_from_shebang(path) {
-                // Using String::from here because all file extensions from
-                // get_filetype_from_shebang are guaranteed to be lowercase.
-                Some(extension) => Some(String::from(extension)),
-                None => None,
-            }
-        }
+        },
+        None => None
     }
-
 }
 
+pub fn get_filename<P: AsRef<Path>>(path: P) -> Option<String> {
+    let path = path.as_ref();
+    match path.file_name() {
+        Some(filename_os) => {
+            Some(filename_os.to_string_lossy().to_lowercase())
+        },
+        None => None
+    }
+}
 
 #[cfg(test)]
 mod test {
