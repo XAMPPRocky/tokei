@@ -1280,7 +1280,14 @@
                 "urp"
             ]
         },
-        "VHDL":{
+        "Vala":{
+            "base":"c",
+            "extensions":[
+                "vala"
+            ]
+        },
+        "Vhdl":{
+            "name":"VHDL",
             "single":[
                 "--"
             ],
