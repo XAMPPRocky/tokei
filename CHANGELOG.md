@@ -1,3 +1,12 @@
+# 6.0.1
+
+- Multiple exclude flags now allowed.
+
+**Added Languages:**
+- @seiks Added Fish Shell
+- @Aaronepower Added Module-Definition
+- @tbu- Added Vala
+
 # 6.0.0
 
 - Reworked internals
