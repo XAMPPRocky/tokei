@@ -53,22 +53,44 @@ impl LanguageType {
         ]
     }
 
-    /// Get language from it's file extension.
+    /// Get language from a file path. May open and read the file.
     ///
     /// ```no_run
     /// # use tokei::*;
-    /// let rust = LanguageType::from_extension("./main.rs");
+    /// let rust = LanguageType::from_path("./main.rs");
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
-    pub fn from_extension<P: AsRef<Path>>(entry: P) -> Option<Self> {
-        if let Some(extension) = fs::get_extension(entry) {
+    pub fn from_path<P: AsRef<Path>>(entry: P) -> Option<Self> {
+        let filename = fs::get_filename(&entry);
+
+        if let Some(filename) = filename {
+            match &*filename {
+                {{~#each languages}}
+                    {{~#if this.filenames}}
+                        {{~#each this.filenames}}
+                            "{{~this}}" {{~#unless @last}} | {{~/unless}}
+                        {{~/each}}
+                            => return Some({{~@key}}),
+                    {{~/if}}
+                {{~/each}}
+
+                _ => ()
+            }
+        } 
+
+        let extension = fs::get_extension(&entry)
+            .or_else(|| get_filetype_from_shebang(&entry).map(String::from));
+
+        if let Some(extension) = extension {
             match &*extension {
                 {{~#each languages}}
-                    {{~#each this.extensions}}
-                        "{{~this}}" {{~#unless @last}} | {{~/unless}}
-                    {{~/each}}
-                        => Some({{~@key}}),
+                    {{~#if this.extensions}}
+                        {{~#each this.extensions}}
+                            "{{~this}}" {{~#unless @last}} | {{~/unless}}
+                        {{~/each}}
+                            => Some({{~@key}}),
+                    {{~/if}}
                 {{~/each}}
                 extension => {
                     warn!("Unknown extension: {}", extension);

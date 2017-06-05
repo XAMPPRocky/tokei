@@ -89,6 +89,43 @@ syntax.
   - Does it only contain single line comments? Or only multi-line comments?
   - Is just C style comments? `/* */, //`
 
+Some languages have a single, standard filename, like Makefile or Dockerfile.
+These can be defined with the `filenames` property:
+
+```json
+"Makefile":{
+    "filenames":[
+        "makefile"
+    ],
+    "extensions":[
+        "makefile",
+        "mak",
+        "mk"
+    ]
+}
+```
+
+Filenames should be all-lowercase, whether or not the filename typically has capital letters included.
+
+Note that filenames will *override* extensions, so with the following
+configuration:
+
+```json
+"Text":{
+    "extensions":[
+        "txt"
+    ]
+},
+"CMake":{
+    "filenames": [
+        "cmakelists.txt"
+    ]
+}
+
+A file named `CMakeLists.txt` will be detected as a CMake file, not a text file.
+
+```
+
 # Bug Reports
 Please include the error message, and a minimum working example including the file, or file structure.
 

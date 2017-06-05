@@ -258,6 +258,7 @@ C Header
 C#
 C Shell
 Clojure
+CMake
 CoffeeScript
 Cogent
 ColdFusion
@@ -269,6 +270,7 @@ CSS
 D
 Dart
 Device Tree
+Dockerfile
 Elixir
 Elm
 Erlang
@@ -317,6 +319,7 @@ PureScript
 Python
 QCL
 R
+Rakefile
 Razor
 ReStructuredText
 Ruby
@@ -324,6 +327,7 @@ Ruby HTML
 Rust
 Sass
 Scala
+Scons
 Standard ML
 SQL
 Swift

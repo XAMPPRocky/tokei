@@ -1,0 +1,10 @@
+# 10 lines 4 code 2 comments 4 blanks
+
+# this is a rakefile
+
+task default: %w[test]
+
+task :test do # not counted
+  ruby "test/unittest.rb"
+end
+

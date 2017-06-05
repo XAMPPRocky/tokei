@@ -1,0 +1,10 @@
+#!python
+# 10 lines 3 code 3 comments 4 blanks
+
+# this is a comment
+
+Program('cpp.cpp') # this is a line-ending comment
+
+env = Environment(CCFLAGS='-O3')
+env.Append(CCFLAGS='-O3')
+
