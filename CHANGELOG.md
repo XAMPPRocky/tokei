@@ -1,3 +1,10 @@
+# 6.0.2
+
+- Now can recognise file languages based on their filename.
+
+**Added Languages:**
+- @kazimuth CMake, Dockerfile, Rakefile, Scons
+
 # 6.0.1
 
 - Multiple exclude flags now allowed.
