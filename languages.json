@@ -1415,6 +1415,13 @@
                 "wl"
             ]
         },
+        "Xaml":{
+            "name":"XAML",
+            "base":"html",
+            "extensions":[
+                "xaml"
+            ]
+        },
         "Xml":{
             "name":"XML",
             "base":"html",
