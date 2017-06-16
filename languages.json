@@ -1345,7 +1345,8 @@
                 ]
             ],
             "extensions":[
-                "ts"
+                "ts",
+                "tsx"
             ]
         },
         "UnrealScript":{
