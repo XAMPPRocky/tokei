@@ -162,6 +162,22 @@
                 "pgc"
             ]
         },
+        "Ceylon":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "\\\"\\\"\\\"",
+                    "\\\"\\\"\\\""
+                ]
+            ],
+            "extensions":[
+                "ceylon"
+            ]
+        },
         "CHeader":{
             "name":"C Header",
             "base":"c",
