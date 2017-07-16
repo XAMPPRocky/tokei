@@ -330,6 +330,22 @@
                 "css"
             ]
         },
+        "Cassius":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "extensions":[
+                "cassius"
+            ]
+        },
         "D":{
             "base":"c",
             "quotes":[
@@ -627,6 +643,22 @@
                 "htm"
             ]
         },
+        "Hamlet":{
+            "base":"html",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "extensions":[
+                "hamlet"
+            ]
+        },
         "Hex":{
             "name":"HEX",
             "base":"blank",
@@ -876,6 +908,20 @@
             ],
             "extensions":[
                 "lua"
+            ]
+        },
+        "Madlang":{
+            "extensions":[
+                "mad"
+            ],
+            "single":[
+                "#"
+            ],
+            "multi":[
+                [
+                    "{#",
+                    "#}"
+                ]
             ]
         },
         "Makefile":{
