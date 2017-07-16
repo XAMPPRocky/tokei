@@ -400,6 +400,11 @@
                 "dtsi"
             ]
         },
+        "Dhall":{
+            "extensions":[
+                "dhall"
+            ]
+        },
         "Dockerfile":{
             "single":[
                 "#"
@@ -810,6 +815,26 @@
                 "jl"
             ]
         },
+        "Julius":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ],
+                [
+                    "`",
+                    "`"
+                ]
+            ],
+            "extensions":[
+                "julius"
+            ]
+        },
         "Kotlin":{
             "base":"c",
             "nested":true,
@@ -910,6 +935,22 @@
                 "lua"
             ]
         },
+        "Lucius":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "extensions":[
+                "lucius"
+            ]
+        },
         "Madlang":{
             "extensions":[
                 "mad"
@@ -980,6 +1021,15 @@
             ],
             "extensions":[
                 "nim"
+            ]
+        },
+        "Nix":{
+            "base":"c",
+            "single":[
+                "#"
+            ],
+            "extensions":[
+                "nix"
             ]
         },
         "ObjectiveC":{
