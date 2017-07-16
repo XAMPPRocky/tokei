@@ -162,6 +162,30 @@
                 "pgc"
             ]
         },
+        "Cabal":{
+            "single":[
+                "--"
+            ],
+            "extensions":[
+                "cabal"
+            ]
+        },
+        "Cassius":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "extensions":[
+                "cassius"
+            ]
+        },
         "Ceylon":{
             "base":"c",
             "quotes":[
@@ -328,22 +352,6 @@
             ],
             "extensions":[
                 "css"
-            ]
-        },
-        "Cassius":{
-            "base":"c",
-            "quotes":[
-                [
-                    "\\\"",
-                    "\\\""
-                ],
-                [
-                    "'",
-                    "'"
-                ]
-            ],
-            "extensions":[
-                "cassius"
             ]
         },
         "D":{
