@@ -17,6 +17,11 @@
                 "pad"
             ]
         },
+        "Alex":{
+            "extensions":[
+                "x"
+            ]
+        },
         "Agda":{
             "base": "haskell",
             "extensions":[
@@ -406,11 +411,6 @@
                 "dtsi"
             ]
         },
-        "Dhall":{
-            "extensions":[
-                "dhall"
-            ]
-        },
         "Dockerfile":{
             "single":[
                 "#"
@@ -602,6 +602,12 @@
             "base":"c",
             "extensions":[
                 "go"
+            ]
+        },
+        "Happy":{
+            "extensions":[
+                "y",
+                "ly"
             ]
         },
         "Handlebars":{
