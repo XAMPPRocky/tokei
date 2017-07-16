@@ -17,6 +17,11 @@
                 "pad"
             ]
         },
+        "Alex":{
+            "extensions":[
+                "x"
+            ]
+        },
         "Agda":{
             "base": "haskell",
             "extensions":[
@@ -160,6 +165,28 @@
                 "c",
                 "ec",
                 "pgc"
+            ]
+        },
+        "Cabal":{
+            "base":"haskell",
+            "extensions":[
+                "cabal"
+            ]
+        },
+        "Cassius":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "extensions":[
+                "cassius"
             ]
         },
         "Ceylon":{
@@ -577,6 +604,12 @@
                 "go"
             ]
         },
+        "Happy":{
+            "extensions":[
+                "y",
+                "ly"
+            ]
+        },
         "Handlebars":{
             "multi":[
                 [
@@ -625,6 +658,22 @@
             "extensions":[
                 "html",
                 "htm"
+            ]
+        },
+        "Hamlet":{
+            "base":"html",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "extensions":[
+                "hamlet"
             ]
         },
         "Hex":{
@@ -778,6 +827,26 @@
                 "jl"
             ]
         },
+        "Julius":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ],
+                [
+                    "`",
+                    "`"
+                ]
+            ],
+            "extensions":[
+                "julius"
+            ]
+        },
         "Kotlin":{
             "base":"c",
             "nested":true,
@@ -878,6 +947,36 @@
                 "lua"
             ]
         },
+        "Lucius":{
+            "base":"c",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "extensions":[
+                "lucius"
+            ]
+        },
+        "Madlang":{
+            "extensions":[
+                "mad"
+            ],
+            "single":[
+                "#"
+            ],
+            "multi":[
+                [
+                    "{#",
+                    "#}"
+                ]
+            ]
+        },
         "Makefile":{
             "base":"hash",
             "extensions":[
@@ -934,6 +1033,15 @@
             ],
             "extensions":[
                 "nim"
+            ]
+        },
+        "Nix":{
+            "base":"c",
+            "single":[
+                "#"
+            ],
+            "extensions":[
+                "nix"
             ]
         },
         "ObjectiveC":{
