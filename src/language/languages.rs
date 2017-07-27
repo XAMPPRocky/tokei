@@ -1,15 +1,16 @@
 // Copyright (c) 2015 Aaron Power
 // Use of this source code is governed by the APACHE2.0/MIT licence that can be
 // found in the LICENCE-{APACHE/MIT} file.
+#![allow(unused_variables)]
 
 use std::borrow::Cow;
 use std::collections::{btree_map, BTreeMap};
 use std::fs::File;
 use std::io::Read;
 use std::iter::IntoIterator;
-use std::mem;
 use std::ops::{AddAssign, Deref, DerefMut};
 use std::sync::{mpsc, Mutex};
+use std::{cmp, mem};
 
 use encoding;
 use encoding::all::UTF_8;
@@ -24,7 +25,7 @@ use rayon::prelude::*;
 use stats::Stats;
 use super::LanguageType::*;
 use super::{Language, LanguageType};
-use utils::{fs, multi_line};
+use utils::fs;
 
 fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
@@ -34,13 +35,30 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
     let has_multi_line = !language.multi_line.is_empty() ||
                          !language.nested_comments.is_empty();
     let is_blank = language.is_blank();
+    let window_size = language.multi_line.iter()
+        .chain(language.nested_comments.iter())
+        .map(|&(a, b)| cmp::max(a.len(), b.len()))
+        .max()
+        .unwrap_or_else(|| {
+            language.line_comment.iter()
+                .map(|x| x.len())
+                .max()
+                .unwrap_or_else(|| {
+                    language.quotes.iter()
+                        .map(|&(a, b)| cmp::max(a.len(), b.len()))
+                        .max()
+                        .unwrap_or(usize::max_value())
+                })
+        });
+
+    let nested_is_empty = language.nested_comments.is_empty();
 
     let files = mem::replace(&mut language.files, Vec::new());
 
     files.into_par_iter().for_each(|file| {
-        let mut stack = Vec::new();
+        let mut stack: Vec<&'static str> = Vec::new();
         let mut contents = Vec::new();
-        let mut quote = None;
+        let mut quote: Option<&'static str> = None;
 
         rs_ret_error!(rs_ret_error!(File::open(&file)).read_to_end(&mut contents));
 
@@ -59,12 +77,20 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             return;
         }
 
+        /*
         let should_handle_multi_line = has_multi_line && match &language.regex {
             &Some(ref regex) => regex.is_match(&text),
             &None => false,
         };
+        */
 
         'line: for line in lines {
+            let window_size = if window_size > line.len() {
+                line.len()
+            } else {
+                window_size
+            };
+
             stats.lines += 1;
             let no_stack = stack.is_empty();
             if line.chars().all(char::is_whitespace) {
@@ -83,48 +109,76 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 }
             }
 
-            if should_handle_multi_line {
-                multi_line::handle_multi_line(
-                    line,
-                    &language,
-                    &mut stack,
-                    &mut quote
-                );
-            } else if language.line_comment.len() != 0 {
-                let mut skip: u8 = 0;
-                let window_size = language.line_comment.iter()
-                    .map(|a| a.len())
-                    .max()
-                    .unwrap();
+            let mut skip: u8 = 0;
+            let windows = line.as_bytes().windows(window_size);
 
-                'window: for window in line.as_bytes().windows(window_size) {
-                    while skip != 0 {
-                        skip -= 1;
-                        continue 'window;
+            let windows = if let (0, Some(0)) = windows.size_hint() {
+                line.as_bytes().windows(line.len())
+            } else {
+                windows
+            };
+
+            'window: for window in windows {
+                while skip != 0 {
+                    skip -= 1;
+                    continue 'window;
+                }
+
+                if let Some(quote_str) = quote {
+                    if window.starts_with(br"\") {
+                        skip = 1;
+                    } else if window.starts_with(quote_str.as_bytes()) {
+                        quote = None;
+                        skip_by_str_length!(skip, quote_str);
+                    }
+                    continue;
+                }
+
+
+                let mut end = false;
+                if let Some(last) = stack.last() {
+                    if window.starts_with(last.as_bytes()) {
+                        end = true;
+                    }
+                }
+
+                if end {
+                    let last = stack.pop().unwrap();
+                    skip_by_str_length!(skip, last);
+                    continue;
+                }
+
+                if stack.is_empty() {
+                    for comment in &language.line_comment {
+                        if window.starts_with(comment.as_bytes()) {
+                            break 'window;
+                        }
                     }
 
-                    if let &mut Some(quote_str) = &mut quote {
-                        if window.starts_with(&*br"\") {
-                            skip = 1;
-                        } else if window.starts_with(quote_str.as_bytes()) {
-                            quote = None;
-                            skip_by_str_length!(skip, quote_str);
-                        }
-                        continue 'window;
-                    } else {
-                        for single in &language.line_comment {
-                            if window.starts_with(single.as_bytes()) {
-                                break 'window;
-                            }
-                        }
-                    }
-
-                    for &(start, end) in &language.quotes  {
+                    for &(start, end) in &language.quotes {
                         if window.starts_with(start.as_bytes()) {
                             quote = Some(end);
                             skip_by_str_length!(skip, start);
                             continue 'window;
                         }
+                    }
+                }
+
+                for &(start, end) in &language.nested_comments {
+                    if window.starts_with(start.as_bytes()) {
+                        stack.push(end);
+                        skip_by_str_length!(skip, start);
+                        continue 'window;
+                    }
+                }
+
+                for &(start, end) in &language.multi_line {
+                    if window.starts_with(start.as_bytes()) {
+                        if (language.nested && nested_is_empty) || stack.len() == 0 {
+                            stack.push(end);
+                        }
+                        skip_by_str_length!(skip, start);
+                        continue 'window;
                     }
                 }
             }
@@ -139,6 +193,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 stats.comments += 1;
             }
         }
+
         rs_ret_error!(rs_ret_error!(synced_tx.lock()).send(stats));
     });
 

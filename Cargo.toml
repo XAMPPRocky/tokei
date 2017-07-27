@@ -29,23 +29,20 @@ panic="abort"
 lto=true
 
 [build-dependencies]
-serde_json = "0.9"
-ignore = "0.1"
-
-[build-dependencies.handlebars]
-features = ["serde_type"]
-version = "0.25"
+serde_json = "1"
+ignore = "0.2"
+handlebars = "0.27"
 
 [dependencies]
 encoding = "0.2"
 errln = "0.1"
-ignore = "0.1"
+ignore = "0.2"
 lazy_static = "0.2"
 log = "0.3"
 maplit = "0.1"
-rayon = "0.6"
+rayon = "0.7"
 regex = "0.2"
-clap = "2.20"
+clap = "2.24"
 
 [dependencies.env_logger]
 features = []
@@ -57,27 +54,27 @@ optional = true
 
 [dependencies.serde]
 optional = true
-version = "0.9"
+version = "1"
 
 [dependencies.serde_derive]
 optional = true
-version = "0.9"
+version = "1"
 
 [dependencies.serde_cbor]
 optional = true
-version = "0.5"
+version = "0.6"
 
 [dependencies.serde_json]
 optional = true
-version = "0.9"
+version = "1"
 
 [dependencies.serde_yaml]
 optional = true
-version = "0.6"
+version = "0.7"
 
 [dependencies.toml]
 optional = true
-version = "0.3"
+version = "0.4"
 
 [dev-dependencies]
 tempdir = "0.3"

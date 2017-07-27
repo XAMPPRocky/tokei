@@ -35,7 +35,7 @@ pub fn get_all_files(paths: Vec<&str>,
             rs_error!(overrides.add(&format!("!{}", ignored)));
         }
 
-        walker.overrides(overrides.build().expect("Excludes were in invalid"));
+        walker.overrides(overrides.build().expect("Excludes provided were invalid"));
     }
 
     walker.build_parallel().run(move|| {
@@ -99,7 +99,6 @@ mod test {
     use language::languages::Languages;
     use language::LanguageType;
     use self::tempdir::TempDir;
-
 
     #[test]
     fn walker_directory_as_file() {

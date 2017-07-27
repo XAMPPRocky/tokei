@@ -57,8 +57,6 @@ extern crate log;
 extern crate encoding;
 extern crate ignore;
 
-#[macro_use]
-extern crate maplit;
 extern crate rayon;
 extern crate regex;
 

@@ -4,8 +4,8 @@
 
 #[macro_use] extern crate clap;
 #[macro_use] extern crate errln;
-#[macro_use] extern crate log;
 extern crate env_logger;
+extern crate log;
 extern crate tokei;
 
 mod input;
