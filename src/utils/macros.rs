@@ -59,7 +59,7 @@ macro_rules! opt_ret_warn {
             Some(result) => result,
             None => {
                 warn!($message);
-                return;
+                return None;
             },
         }
     }
@@ -72,7 +72,7 @@ macro_rules! rs_ret_warn {
             Err(error) => {
                 use std::error::Error;
                 warn!("{}", error.description());
-                return;
+                return None;
             },
         }
     }
@@ -84,7 +84,7 @@ macro_rules! opt_ret_error {
             Some(result) => result,
             None => {
                 error!($message);
-                return;
+                return None;
             },
         }
     }
@@ -97,18 +97,8 @@ macro_rules! rs_ret_error {
             Err(error) => {
                 use std::error::Error;
                 error!("{}", error.description());
-                return;
+                return None;
             },
-        }
-    }
-}
-
-macro_rules! skip_by_str_length {
-    ($skip:ident, $quote_str:ident) => {
-        let length = $quote_str.len();
-
-        if length > 1 {
-            $skip = length as u8;
         }
     }
 }

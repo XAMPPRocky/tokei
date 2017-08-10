@@ -8,9 +8,8 @@ use std::collections::{btree_map, BTreeMap};
 use std::fs::File;
 use std::io::Read;
 use std::iter::IntoIterator;
+use std::mem;
 use std::ops::{AddAssign, Deref, DerefMut};
-use std::sync::{mpsc, Mutex};
-use std::{cmp, mem};
 
 use encoding;
 use encoding::all::UTF_8;
@@ -29,33 +28,14 @@ use utils::fs;
 
 fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
-    let is_fortran = name == &FortranModern || name == &FortranLegacy;
-    let (tx, rx) = mpsc::channel();
-    let synced_tx = Mutex::new(tx);
+    let files = mem::replace(&mut language.files, Vec::new());
     let has_multi_line = !language.multi_line.is_empty() ||
                          !language.nested_comments.is_empty();
     let is_blank = language.is_blank();
-    let window_size = language.multi_line.iter()
-        .chain(language.nested_comments.iter())
-        .map(|&(a, b)| cmp::max(a.len(), b.len()))
-        .max()
-        .unwrap_or_else(|| {
-            language.line_comment.iter()
-                .map(|x| x.len())
-                .max()
-                .unwrap_or_else(|| {
-                    language.quotes.iter()
-                        .map(|&(a, b)| cmp::max(a.len(), b.len()))
-                        .max()
-                        .unwrap_or(usize::max_value())
-                })
-        });
-
+    let is_fortran = name == &FortranModern || name == &FortranLegacy;
     let nested_is_empty = language.nested_comments.is_empty();
 
-    let files = mem::replace(&mut language.files, Vec::new());
-
-    files.into_par_iter().for_each(|file| {
+    let stats: Vec<_> = files.into_par_iter().filter_map(|file| {
         let mut stack: Vec<&'static str> = Vec::new();
         let mut contents = Vec::new();
         let mut quote: Option<&'static str> = None;
@@ -69,27 +49,15 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
         let lines = text.lines();
         let mut stats = Stats::new(file);
+
         if is_blank {
             let count = lines.count();
             stats.lines += count;
             stats.code += count;
-            rs_ret_error!(rs_ret_error!(synced_tx.lock()).send(stats));
-            return;
+            return Some(stats);
         }
 
-        /*
-        let should_handle_multi_line = has_multi_line && match &language.regex {
-            &Some(ref regex) => regex.is_match(&text),
-            &None => false,
-        };
-        */
-
         'line: for line in lines {
-            let window_size = if window_size > line.len() {
-                line.len()
-            } else {
-                window_size
-            };
 
             stats.lines += 1;
             let no_stack = stack.is_empty();
@@ -109,42 +77,32 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 }
             }
 
-            let mut skip: u8 = 0;
-            let windows = line.as_bytes().windows(window_size);
+            let mut skip = 0;
 
-            let windows = if let (0, Some(0)) = windows.size_hint() {
-                line.as_bytes().windows(line.len())
-            } else {
-                windows
-            };
-
-            'window: for window in windows {
+            'window: for i in 0..line.len() {
                 while skip != 0 {
                     skip -= 1;
                     continue 'window;
                 }
+
+                let line = line.as_bytes();
+                let window = &line[i..];
 
                 if let Some(quote_str) = quote {
                     if window.starts_with(br"\") {
                         skip = 1;
                     } else if window.starts_with(quote_str.as_bytes()) {
                         quote = None;
-                        skip_by_str_length!(skip, quote_str);
+                        skip = quote_str.len();
                     }
                     continue;
                 }
 
-
-                let mut end = false;
-                if let Some(last) = stack.last() {
-                    if window.starts_with(last.as_bytes()) {
-                        end = true;
-                    }
-                }
-
-                if end {
+                if let Some(true) = stack.last()
+                    .and_then(|l| Some(window.starts_with(l.as_bytes())))
+                {
                     let last = stack.pop().unwrap();
-                    skip_by_str_length!(skip, last);
+                    skip = last.len();
                     continue;
                 }
 
@@ -158,7 +116,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                     for &(start, end) in &language.quotes {
                         if window.starts_with(start.as_bytes()) {
                             quote = Some(end);
-                            skip_by_str_length!(skip, start);
+                            skip = start.len();
                             continue 'window;
                         }
                     }
@@ -167,17 +125,20 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 for &(start, end) in &language.nested_comments {
                     if window.starts_with(start.as_bytes()) {
                         stack.push(end);
-                        skip_by_str_length!(skip, start);
+                        skip = start.len();
                         continue 'window;
                     }
                 }
 
                 for &(start, end) in &language.multi_line {
                     if window.starts_with(start.as_bytes()) {
-                        if (language.nested && nested_is_empty) || stack.len() == 0 {
+                        if (language.nested && nested_is_empty) ||
+                            stack.len() == 0
+                        {
                             stack.push(end);
                         }
-                        skip_by_str_length!(skip, start);
+
+                        skip = start.len();
                         continue 'window;
                     }
                 }
@@ -194,11 +155,10 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             }
         }
 
-        rs_ret_error!(rs_ret_error!(synced_tx.lock()).send(stats));
-    });
+        Some(stats)
+    }).collect();
 
-    drop(synced_tx);
-    for stat in rx {
+    for stat in stats {
         **language += stat;
     }
 }

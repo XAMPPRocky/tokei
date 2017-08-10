@@ -1,6 +1,6 @@
-extern crate serde_json;
-extern crate ignore;
 extern crate handlebars;
+extern crate ignore;
+extern crate serde_json;
 
 use std::env;
 use std::fs::File;
@@ -17,21 +17,24 @@ fn main() {
 }
 
 fn generate_languages(out_dir: &OsStr) {
-    let mut handlebars = Handlebars::new();
+    let handlebars = {
+        let mut h = Handlebars::new();
+        h.register_escape_fn(handlebars::no_escape);
+        h
+    };
 
-    handlebars.register_escape_fn(handlebars::no_escape);
+    let json: Value =  {
+        let json = File::open(&"languages.json").expect("Cant open json");
+        serde_json::from_reader(json).expect("Can't parse json")
+    };
 
-    let data: Value = serde_json::from_reader(
-        File::open(&"languages.json").expect("Can't open JSON")
-    ).expect("Can't parse JSON");
-
-    let out = Path::new(&out_dir).join("language_type.rs");
+    let output = Path::new(&out_dir).join("language_type.rs");
     let mut source_template = File::open(&"src/language/language_type.hbs.rs")
         .expect("Can't find Template");
-    let mut output_file = File::create(&out).expect("Can't create output");
+    let mut output_file = File::create(&output).expect("Can't create output");
 
     if let Err(err) = handlebars.template_renderw2(&mut source_template,
-                                                   &data,
+                                                   &json,
                                                    &mut output_file)
     {
         panic!("Failed to generate languages! ERROR: {:?}", err);

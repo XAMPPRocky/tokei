@@ -8,7 +8,7 @@ use std::path::Path;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-use utils::fs;
+use utils::fs as fsutils;
 use self::LanguageType::*;
 use Languages;
 use Language;
@@ -62,9 +62,8 @@ impl LanguageType {
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
     pub fn from_path<P: AsRef<Path>>(entry: P) -> Option<Self> {
-        let filename = fs::get_filename(&entry);
 
-        if let Some(filename) = filename {
+        if let Some(filename) = fsutils::get_filename(&entry) {
             match &*filename {
                 {{~#each languages}}
                     {{~#if this.filenames}}
@@ -74,12 +73,11 @@ impl LanguageType {
                             => return Some({{~@key}}),
                     {{~/if}}
                 {{~/each}}
-
                 _ => ()
             }
-        } 
+        }
 
-        let extension = fs::get_extension(&entry)
+        let extension = fsutils::get_extension(&entry)
             .or_else(|| get_filetype_from_shebang(&entry).map(String::from));
 
         if let Some(extension) = extension {
@@ -111,16 +109,16 @@ impl Languages {
                 {{~#if this.base}}
                     Language::new_{{this.base}}()
                 {{else}}
-                    {{~#if this.single}}
-                        {{~#if this.multi}}
+                    {{~#if this.line_comment}}
+                        {{~#if this.multi_line}}
                             Language::new(
                                 vec![
-                                {{~#each this.single}}
+                                {{~#each this.line_comment}}
                                     "{{this}}",
                                 {{~/each}}
                                 ],
                                 vec![
-                                {{~#each this.multi}}
+                                {{~#each this.multi_line}}
                                     (
                                     {{~#each this}}
                                         "{{this}}",
@@ -131,14 +129,14 @@ impl Languages {
                             )
                         {{else}}
                             Language::new_single(vec![
-                                {{~#each this.single}}
+                                {{~#each this.line_comment}}
                                     "{{~this}}",
                                 {{~/each}}
                             ])
                         {{~/if}}
                     {{else}}
                         Language::new_multi(vec![
-                            {{~#each this.multi}}
+                            {{~#each this.multi_line}}
                                 (
                                 {{~#each this}}
                                     "{{~this}}",

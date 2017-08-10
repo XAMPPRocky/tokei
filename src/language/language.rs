@@ -1,12 +1,9 @@
-use std::borrow::Cow;
+use std::mem;
 use std::ops::AddAssign;
 use std::path::PathBuf;
-use std::mem;
 
-use regex::{self, Regex};
-
-use sort::Sort;
 use sort::Sort::*;
+use sort::Sort;
 use stats::Stats;
 
 /// Struct representing a single Language.
@@ -43,29 +40,7 @@ pub struct Language {
     /// A list of quotes by default it is `""`.
     #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
     pub quotes: Vec<(&'static str, &'static str)>,
-    #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
-    pub regex: Option<Cow<'static, Regex>>
 }
-
-
-fn generate_regex(multi_line: &[(&'static str, &'static str)]) -> Cow<'static, Regex> {
-    let mut raw_regex = String::new();
-    for &(start, _) in multi_line {
-        raw_regex.push_str(&regex::escape(start));
-        raw_regex.push_str("|");
-    }
-    let _ = raw_regex.pop();
-    Cow::Owned(Regex::new(&raw_regex).unwrap())
-}
-
-fn get_c_regex() -> &'static Regex {
-    lazy_static! {
-        static ref C_REGEX: Regex = Regex::new(r"/\*").unwrap();
-    }
-
-    &*C_REGEX
-}
-
 
 impl Language {
     /// Constructs a new  empty Language with the comments provided.
@@ -80,7 +55,6 @@ impl Language {
     {
         Language {
             line_comment: line_comment,
-            regex: Some(generate_regex(&multi_line)),
             multi_line: multi_line,
             quotes: vec![("\"", "\"")],
             ..Self::default()
@@ -116,7 +90,6 @@ impl Language {
             line_comment: vec!["//"],
             multi_line: vec![("/*", "*/")],
             quotes: vec![("\"", "\"")],
-            regex: Some(Cow::Borrowed(get_c_regex())),
             ..Self::default()
         }
     }
@@ -133,13 +106,9 @@ impl Language {
     /// assert_eq!(ocaml.multi_line, coq.multi_line);
     /// ```
     pub fn new_func() -> Self {
-        lazy_static! {
-            static ref FUNC_REGEX: Regex = Regex::new(r"\(\*").unwrap();
-        }
         Language {
             multi_line: vec![("(*", "*)")],
             quotes: vec![("\"", "\"")],
-            regex: Some(Cow::Borrowed(&*FUNC_REGEX)),
             ..Self::default()
         }
     }
@@ -156,13 +125,9 @@ impl Language {
     /// assert_eq!(xml.multi_line, html.multi_line);
     /// ```
     pub fn new_html() -> Self {
-        lazy_static! {
-            static ref HTML_REGEX: Regex = Regex::new(r"<!--").unwrap();
-        }
         Language {
             multi_line: vec![("<!--", "-->")],
             quotes: vec![("\"", "\"")],
-            regex: Some(Cow::Borrowed(&*HTML_REGEX)),
             ..Self::default()
         }
     }
@@ -194,12 +159,7 @@ impl Language {
     /// assert_eq!(haskell.multi_line, haskell.multi_line);
     /// ```
     pub fn new_haskell() -> Self {
-        lazy_static! {
-            static ref HASKELL_REGEX: Regex = Regex::new(r"\{-").unwrap();
-        }
-
         Language {
-            regex: Some(Cow::Borrowed(&*HASKELL_REGEX)),
             line_comment: vec!["--"],
             multi_line: vec![("{-", "-}")],
             nested: true,
@@ -216,7 +176,6 @@ impl Language {
     /// ```
     pub fn new_multi(multi_line: Vec<(&'static str, &'static str)>) -> Self {
         Language {
-            regex: Some(generate_regex(&multi_line)),
             multi_line: multi_line,
             quotes: vec![("\"", "\"")],
             ..Self::default()
@@ -239,7 +198,6 @@ impl Language {
             line_comment: vec!["%"],
             multi_line: vec![("/*", "*/")],
             quotes: vec![("\"", "\"")],
-            regex: Some(Cow::Borrowed(get_c_regex())),
             ..Self::default()
         }
     }
@@ -407,7 +365,6 @@ impl Default for Language {
             nested: false,
             nested_comments: Vec::new(),
             quotes: Vec::new(),
-            regex: None,
         }
     }
 }

@@ -51,14 +51,10 @@
 //! ```
 
 #[macro_use]
-extern crate lazy_static;
-#[macro_use]
 extern crate log;
 extern crate encoding;
 extern crate ignore;
-
 extern crate rayon;
-extern crate regex;
 
 #[cfg(feature = "io")]
 #[macro_use]
