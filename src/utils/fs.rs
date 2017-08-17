@@ -12,6 +12,7 @@ use ignore::overrides::OverrideBuilder;
 use ignore::WalkState::*;
 
 use language::{Language, Languages, LanguageType};
+// This is just a re-export from the auto generated file.
 pub use language::get_filetype_from_shebang;
 
 pub fn get_all_files(paths: Vec<&str>,
@@ -52,9 +53,9 @@ pub fn get_all_files(paths: Vec<&str>,
 
             let entry = entry.path();
 
-            if let Some(language) = LanguageType::from_path(entry) {
-                if let Ok(metadata) = entry.metadata() {
-                    if metadata.is_file() {
+            if let Ok(metadata) = entry.metadata() {
+                if metadata.is_file() {
+                    if let Some(language) = LanguageType::from_path(entry) {
                         tx.send((language, entry.to_owned())).unwrap();
                     }
                 }
