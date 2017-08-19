@@ -262,6 +262,19 @@
                 "ipp"
             ]
         },
+        "Crystal":{
+            "line_comment":[
+                "#"
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "cr"
+            ]
+        },
+
         "CSharp":{
             "name":"C#",
             "base":"c",
