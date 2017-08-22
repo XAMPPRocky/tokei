@@ -1,3 +1,16 @@
+# 6.1.0
+
+- Fixed inaccuracies relating to the end comment being smaller than start
+  comment.
+
+**Added languages**
+
+- @mattico Added Xaml
+- @weakish Added Ceylon
+- @theduke Added tsx extension to typescript
+- @vmchale Added Hamlet, Cassius, Lucius, Cabal, Nix, Happy, Alex, and Madlang
+- @notramo Added Crystal
+
 # 6.0.2
 
 - Now can recognise file languages based on their filename.
@@ -40,9 +53,9 @@
 
 - Added Regex based hueristics so more expensive multi line handling isn't used
   if there are no multi line comments in the file.
-- Now uses the `ignore` crate for getting files. Which now also makes 
+- Now uses the `ignore` crate for getting files. Which now also makes
   determining language from path/file parallelised
-- File counting used to only be parallelised per language, now it is also 
+- File counting used to only be parallelised per language, now it is also
   parallelised per file per language.
 - Updated homepage, and documentation links
 - @rmbreak Tokei will now not add directories with `foo.bar` like syntax
@@ -128,45 +141,45 @@
 ### Tokei's code count
 ```
 -------------------------------------------------------------------------------
- Language            Files        Lines         Code     Comments       Blanks 
+ Language            Files        Lines         Code     Comments       Blanks
 -------------------------------------------------------------------------------
- Rust                   13         2413         1596          601          216 
+ Rust                   13         2413         1596          601          216
 -------------------------------------------------------------------------------
- |ib\language\languages.rs          693          420          197           76 
- |anguage\language_type.rs          500          386          102           12 
- .\src\main.rs                      314          256           17           41 
- |lib\language\language.rs          356          166          166           24 
- .\src\lib\utils\fs.rs              129          107            9           13 
- |\lib\utils\multi_line.rs          149           89           39           21 
- .\src\lib\utils\macros.rs           59           50            3            6 
- .\src\lib\stats.rs                  63           45           12            6 
- .\src\lib\lib.rs                    76           25           47            4 
- .\src\lib\build.rs                  31           23            0            8 
- .\src\lib\sort.rs                   28           19            6            3 
- .\src\lib\language\mod.rs           11            6            3            2 
- .\src\lib\utils\mod.rs               4            4            0            0 
+ |ib\language\languages.rs          693          420          197           76
+ |anguage\language_type.rs          500          386          102           12
+ .\src\main.rs                      314          256           17           41
+ |lib\language\language.rs          356          166          166           24
+ .\src\lib\utils\fs.rs              129          107            9           13
+ |\lib\utils\multi_line.rs          149           89           39           21
+ .\src\lib\utils\macros.rs           59           50            3            6
+ .\src\lib\stats.rs                  63           45           12            6
+ .\src\lib\lib.rs                    76           25           47            4
+ .\src\lib\build.rs                  31           23            0            8
+ .\src\lib\sort.rs                   28           19            6            3
+ .\src\lib\language\mod.rs           11            6            3            2
+ .\src\lib\utils\mod.rs               4            4            0            0
 -------------------------------------------------------------------------------
- Markdown                4          492          492            0            0 
+ Markdown                4          492          492            0            0
 -------------------------------------------------------------------------------
- .\README.md                        252          252            0            0 
- .\CHANGELOG.md                     202          202            0            0 
- .\CONTRIBUTING.md                   25           25            0            0 
- .\CONTRIBUTORS.md                   13           13            0            0 
+ .\README.md                        252          252            0            0
+ .\CHANGELOG.md                     202          202            0            0
+ .\CONTRIBUTING.md                   25           25            0            0
+ .\CONTRIBUTORS.md                   13           13            0            0
 -------------------------------------------------------------------------------
- YAML                    2           70           67            3            0 
+ YAML                    2           70           67            3            0
 -------------------------------------------------------------------------------
- .\cli.yml                           53           50            3            0 
- .\.travis.yml                       17           17            0            0 
+ .\cli.yml                           53           50            3            0
+ .\.travis.yml                       17           17            0            0
 -------------------------------------------------------------------------------
- TOML                    1           80           65            0           15 
+ TOML                    1           80           65            0           15
 -------------------------------------------------------------------------------
- .\Cargo.toml                        80           65            0           15 
+ .\Cargo.toml                        80           65            0           15
 -------------------------------------------------------------------------------
- Autoconf                1            9            7            1            1 
+ Autoconf                1            9            7            1            1
 -------------------------------------------------------------------------------
- .\src\lib\lib.rs.in                  9            7            1            1 
+ .\src\lib\lib.rs.in                  9            7            1            1
 -------------------------------------------------------------------------------
- Total                  21         3064         2227          605          232 
+ Total                  21         3064         2227          605          232
 -------------------------------------------------------------------------------
 ```
 
