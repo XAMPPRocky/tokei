@@ -70,14 +70,12 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
             let line = if !is_fortran { line.trim_left() } else { line };
-            for single in &language.line_comment {
-                if line.starts_with(single) {
-                    stats.comments += 1;
-                    continue 'line;
-                }
-            }
-
             let mut skip = 0;
+            macro_rules! skip {
+                ($skip:expr) => {{
+                    skip = $skip - 1;
+                }}
+            }
 
             'window: for i in 0..line.len() {
                 while skip != 0 {
@@ -87,13 +85,14 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
                 let line = line.as_bytes();
                 let window = &line[i..];
+                println!("{:?}", String::from_utf8_lossy(window));
 
                 if let Some(quote_str) = quote {
                     if window.starts_with(br"\") {
                         skip = 1;
                     } else if window.starts_with(quote_str.as_bytes()) {
                         quote = None;
-                        skip = quote_str.len();
+                        skip!(quote_str.len());
                     }
                     continue;
                 }
@@ -102,7 +101,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                     .and_then(|l| Some(window.starts_with(l.as_bytes())))
                 {
                     let last = stack.pop().unwrap();
-                    skip = last.len();
+                    skip!(last.len());
                     continue;
                 }
 
@@ -116,7 +115,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                     for &(start, end) in &language.quotes {
                         if window.starts_with(start.as_bytes()) {
                             quote = Some(end);
-                            skip = start.len();
+                            skip!(start.len());
                             continue 'window;
                         }
                     }
@@ -125,7 +124,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 for &(start, end) in &language.nested_comments {
                     if window.starts_with(start.as_bytes()) {
                         stack.push(end);
-                        skip = start.len();
+                        skip!(start.len());
                         continue 'window;
                     }
                 }
@@ -138,15 +137,17 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                             stack.push(end);
                         }
 
-                        skip = start.len();
+                        skip!(start.len());
                         continue 'window;
                     }
                 }
             }
 
             let starts_with_comment = language.multi_line.iter()
-                .chain(&language.nested_comments)
-                .any(|&(start, _)| line.starts_with(start));
+                .map(|&(s, _)| s)
+                .chain(language.line_comment.iter().map(|s| *s))
+                .chain(language.nested_comments.iter().map(|&(s, _)| s))
+                .any(|comment| line.starts_with(comment));
 
             if no_stack && !starts_with_comment {
                 stats.code += 1;

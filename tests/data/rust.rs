@@ -1,5 +1,6 @@
-// 38 lines 32 code 1 comments 5 blanks
+// 39 lines 32 code 2 comments 5 blanks
 
+/* /**/ */
 fn main() {
     let start = "/*";
     loop {
