@@ -85,7 +85,6 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
                 let line = line.as_bytes();
                 let window = &line[i..];
-                println!("{:?}", String::from_utf8_lossy(window));
 
                 if let Some(quote_str) = quote {
                     if window.starts_with(br"\") {
