@@ -4,6 +4,7 @@ set -ex
 
 # TODO This is the "test phase", tweak it as you see fit
 main() {
+    rustup self update
     cross build --target $TARGET
     cross build --target $TARGET --release
 
