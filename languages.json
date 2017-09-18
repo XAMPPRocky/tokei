@@ -921,6 +921,17 @@
                 "qcl"
             ]
         },
+        "Qml":{
+            "name":"QML",
+            "base": "c",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "qml"
+            ]
+        },
         "R":{
             "base":"hash",
             "extensions":[
