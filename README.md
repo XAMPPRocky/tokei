@@ -247,17 +247,23 @@ with the following information. If you're unsure have a look at
 ```
 ActionScript
 Ada
+Alex
 Agda
 ASP
 ASP.NET
 Assembly
 Autoconf
+SH
 BASH
+FISH
 Batch
 C
 C Header
 C#
 C Shell
+Cabal
+Cassius
+Ceylon
 Clojure
 CMake
 CoffeeScript
@@ -268,6 +274,7 @@ Coq
 C++
 C++ Header
 CSS
+Crystal
 D
 Dart
 Device Tree
@@ -283,10 +290,12 @@ FORTRAN Modern
 GDScript
 GLSL
 Go
+Happy
 Handlebars
 Haskell
 HEX
 HTML
+Hamlet
 Idris
 Intel HEX
 Isabelle
@@ -296,16 +305,21 @@ JavaScript
 JSON
 JSX
 Julia
+Julius
 Kotlin
 Lean
 LESS
 LD Script
 LISP
 Lua
+Lucius
+Madlang
 Makefile
 Markdown
+ModuleDef
 Mustache
 Nim
+Nix
 OCaml
 Objective C
 Objective C++
@@ -340,9 +354,11 @@ TOML
 TypeScript
 Unreal Script
 Ur/Web
+Vala
 VHDL
 Vim Script
 Wolfram
+Xaml
 XML
 YAML
 Zsh
