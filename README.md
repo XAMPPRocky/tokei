@@ -319,6 +319,7 @@ Protocol Buffers
 PureScript
 Python
 QCL
+QML
 R
 Rakefile
 Razor
