@@ -178,6 +178,14 @@
                 "clj"
             ]
         },
+        "ClojureScript":{
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "cljs"
+            ]
+        },
         "CMake": {
             "line_comment":[
                 "#"
