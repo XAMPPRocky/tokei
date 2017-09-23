@@ -328,6 +328,7 @@ Pascal
 Perl
 PHP
 Polly
+Processing
 Prolog
 Protocol Buffers
 PureScript

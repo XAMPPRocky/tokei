@@ -888,6 +888,12 @@
                 "polly"
             ]
         },
+        "Processing":{
+            "base":"c",
+            "extensions":[
+                "pde"
+            ]
+        },
         "Prolog":{
             "base":"pro",
             "extensions":[
