@@ -16,7 +16,7 @@ use std::borrow::Cow;
 use env_logger::LogBuilder;
 use log::LogLevelFilter;
 
-use tokei::{Languages, Language, LanguageType};
+use tokei::{Languages, Language, LanguageType, LanguageStatisticsOpts};
 use tokei::Sort::*;
 
 const BLANKS: &'static str = "blanks";
@@ -42,7 +42,9 @@ fn main() {
         (@arg output: -o --output possible_values(&["cbor", "json", "toml", "yaml"]) +takes_value "Outputs Tokei in a specific format.")
         (@arg verbose: -v --verbose ... "Set verbose output level: 1: for unknown extensions")
         (@arg sort: -s --sort possible_values(&["files", "lines", "blanks", "code", "comments"]) +takes_value "Sort languages based on column")
+        (@arg ("type"): -t --("type") +takes_value +multiple number_of_values(1) "Only process files matching <type>, with <type> being a value from the supported languages")
     ).get_matches();
+
     let files_option = matches.is_present(FILES);
     let input_option = matches.value_of("file_input");
     let output_option = matches.value_of("output");
@@ -55,6 +57,13 @@ fn main() {
             ignored_directories.extend(user_ignored);
         }
         ignored_directories
+    };
+    let limited_types = {
+        let mut limited_types: Vec<&str> = Vec::new();
+        if let Some(user_limited) = matches.values_of("type") {
+            limited_types.extend(user_limited);
+        }
+        limited_types
     };
 
     let mut builder = LogBuilder::new();
@@ -85,7 +94,12 @@ fn main() {
         add_input(input, &mut languages);
     }
 
-    languages.get_statistics(paths, ignored_directories);
+    languages.get_statistics_with_opts(
+        LanguageStatisticsOpts::new()
+            .with_paths(paths)
+            .with_ignored_dirs(ignored_directories)
+            .with_types(limited_types),
+    );
 
     if let Some(format) = output_option {
         match_output(format, languages);
@@ -124,34 +138,19 @@ fn main() {
             LINES => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
             _ => unreachable!(),
         }
+	}
 
-        for (name, language) in languages {
-            if !language.is_empty() {
-                if !files_option {
-                    print_language(&language, name);
-                } else {
-                    print_language(&language, name);
-                    println!("{}", ROW);
-                    for file in &language.stats {
-                        println!("{}", file);
-                    }
-                    println!("{}", ROW);
-                }
-            }
-        }
-    } else  {
-        for (name, language) in languages.iter().filter(isnt_empty) {
-            if files_option {
-                print_language(language, name);
-                println!("{}", ROW);
+    for (name, language) in languages.iter().filter(isnt_empty) {
+        if files_option {
+            print_language(language, name);
+            println!("{}", ROW);
 
-                for stat in &language.stats {
-                    println!("{}", stat);
-                }
-                println!("{}", ROW);
-            } else  {
-                print_language(language, name);
+            for stat in &language.stats {
+                println!("{}", stat);
             }
+            println!("{}", ROW);
+        } else  {
+            print_language(language, name);
         }
     }
 

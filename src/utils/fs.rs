@@ -7,39 +7,19 @@ use std::path::Path;
 use std::sync::mpsc;
 use std::error::Error;
 
-use ignore::WalkBuilder;
-use ignore::overrides::OverrideBuilder;
+use ignore::WalkParallel;
 use ignore::WalkState::*;
 
 use language::{Language, Languages, LanguageType};
 // This is just a re-export from the auto generated file.
 pub use language::get_filetype_from_shebang;
 
-pub fn get_all_files(paths: Vec<&str>,
-                     ignored_directories: Vec<&str>,
+pub fn get_all_files(walker: WalkParallel,
                      languages: &mut BTreeMap<LanguageType, Language>)
 {
     let (tx, rx) = mpsc::channel();
 
-    let mut paths = paths.iter();
-
-    let mut walker = WalkBuilder::new(paths.next().unwrap());
-
-    for path in paths {
-        walker.add(path);
-    }
-
-    if !ignored_directories.is_empty() {
-        let mut overrides = OverrideBuilder::new(".");
-
-        for ignored in ignored_directories {
-            rs_error!(overrides.add(&format!("!{}", ignored)));
-        }
-
-        walker.overrides(overrides.build().expect("Excludes provided were invalid"));
-    }
-
-    walker.build_parallel().run(move|| {
+    walker.run(move|| {
         let tx = tx.clone();
         Box::new(move|entry| {
 
@@ -89,27 +69,5 @@ pub fn get_filename<P: AsRef<Path>>(path: P) -> Option<String> {
             Some(filename_os.to_string_lossy().to_lowercase())
         },
         None => None
-    }
-}
-
-#[cfg(test)]
-mod test {
-    extern crate tempdir;
-    use super::*;
-    use std::fs::create_dir;
-    use language::languages::Languages;
-    use language::LanguageType;
-    use self::tempdir::TempDir;
-
-    #[test]
-    fn walker_directory_as_file() {
-        let tmp_dir = TempDir::new("test").expect("Couldn't create temp dir");
-        let path_name = tmp_dir.path().join("directory.rs");
-        create_dir(&path_name).expect("Couldn't create directory.rs within temp");
-
-        let mut l = Languages::new();
-        get_all_files(vec![tmp_dir.into_path().to_str().unwrap()], vec![], &mut l);
-
-        assert!(l.get(&LanguageType::Rust).is_none());
     }
 }
