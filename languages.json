@@ -282,7 +282,18 @@
                 "cr"
             ]
         },
-
+        "Vb":{
+            "name":"Visual Basic",
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
+            "line_comment":[
+                "'"
+            ],
+            "extensions":[
+                "vb"
+            ]
+        },
         "CSharp":{
             "name":"C#",
             "base":"c",
