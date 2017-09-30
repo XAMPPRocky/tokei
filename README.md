@@ -254,6 +254,7 @@ ASP.NET
 Assembly
 Autoconf
 SH
+AutoHotKey
 BASH
 FISH
 Batch

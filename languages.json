@@ -77,6 +77,17 @@
                 "in"
             ]
         },
+        "AutoHotKey":{
+            "line_comment":[
+                ";"
+            ],
+            "multi_line":[
+                ["/*", "*/"]
+            ],
+            "extensions":[
+                "ahk"
+            ]
+        },
         "Sh":{
             "name":"Shell",
             "base":"hash",
