@@ -8,12 +8,17 @@ use std::collections::{btree_map, BTreeMap};
 use std::fs::File;
 use std::io::Read;
 use std::iter::IntoIterator;
+use std::error::Error;
 use std::mem;
 use std::ops::{AddAssign, Deref, DerefMut};
 
 use encoding;
 use encoding::all::UTF_8;
 use encoding::DecoderTrap::Replace;
+
+use ignore::{WalkBuilder, WalkParallel};
+use ignore::overrides::OverrideBuilder;
+use ignore::types::TypesBuilder;
 
 #[cfg(feature = "cbor")] use serde_cbor;
 #[cfg(feature = "json")] use serde_json;
@@ -23,7 +28,7 @@ use rayon::prelude::*;
 
 use stats::Stats;
 use super::LanguageType::*;
-use super::{Language, LanguageType};
+use super::{Language, LanguageType, DEFAULT_TYPES};
 use utils::fs;
 
 fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
@@ -163,6 +168,91 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
     }
 }
 
+/// Extended options to control the the paths, file types, and whatnot that language statistics
+/// will be gathered on.
+#[derive(Default)]
+pub struct LanguageStatisticsOpts<'a> {
+    paths: Vec<&'a str>,
+    ignored_dirs: Vec<&'a str>,
+    types: Vec<&'a str>,
+}
+
+impl<'a> LanguageStatisticsOpts<'a> {
+    /// Returns a new set of `LanguageStatisticsOpts` that will gather statistics for everything
+    /// under the current directory.
+    pub fn new() -> Self {
+        LanguageStatisticsOpts {
+            paths: vec!["."],
+            ignored_dirs: vec![],
+            types: vec![],
+        }
+    }
+
+    /// Limits the options to only search on the given paths.
+    pub fn with_paths(mut self, paths: Vec<&'a str>) -> Self {
+        self.paths = paths; self
+    }
+    /// Adds directories to skip to the options.
+    pub fn with_ignored_dirs(mut self, ignored_dirs: Vec<&'a str>) -> Self {
+        self.ignored_dirs = ignored_dirs; self
+    }
+    /// Limits the options to only run on files with the given extensions.
+    pub fn with_types(mut self, types: Vec<&'a str>) -> Self {
+        self.types = types; self
+    }
+}
+
+impl<'a> Into<WalkParallel> for LanguageStatisticsOpts<'a> {
+    fn into(self) -> WalkParallel {
+        let LanguageStatisticsOpts {
+            paths,
+            ignored_dirs,
+            types,
+        } = self;
+        let mut paths = paths.iter();
+        let mut wb = WalkBuilder::new(paths.next().unwrap());
+
+        for path in paths {
+            wb.add(path);
+        }
+
+        if !ignored_dirs.is_empty() {
+            let mut overrides = OverrideBuilder::new(".");
+
+            for ignored in ignored_dirs {
+                rs_error!(overrides.add(&format!("!{}", ignored)));
+            }
+
+            wb.overrides(overrides.build().expect("Excludes provided were invalid"));
+        }
+
+        if !types.is_empty() {
+            let mut tb = TypesBuilder::new();
+
+            // We can stop double-iterating here (which is worst case O(n^2)) if DEFAULT_TYPES is
+            // changed to a hash map. Ideally, there will not be many types, so we hopefully do
+            // not trigger that pathological case.
+            for ty in types {
+                for &(name, key, exts) in DEFAULT_TYPES {
+                    if ty == name {
+                        for ext in exts {
+                            tb.add(key, ext).expect("DEFAULT_TYPES generated incorrectly");
+                        }
+                        tb.select(key);
+                    }
+                }
+            }
+
+            match tb.build() {
+                Ok(types) => { wb.types(types); }
+                Err(e) => { error!("{}", e.description()); }
+            }
+        }
+
+        wb.build_parallel()
+    }
+}
+
 /// A collection of existing languages([_List of Languages_]
 /// (https://github.com/Aaronepower/tokei#supported-languages))
 pub struct Languages {
@@ -295,7 +385,26 @@ impl Languages {
     /// languages.get_statistics(vec!["."], vec![".git", "target"]);
     /// ```
     pub fn get_statistics(&mut self, paths: Vec<&str>, ignored: Vec<&str>) {
-        fs::get_all_files(paths.into(), ignored.into(), &mut self.inner);
+        self.get_statistics_with_opts(LanguageStatisticsOpts {
+            paths: paths,
+            ignored_dirs: ignored,
+            ..Default::default()
+        })
+    }
+
+    /// Like `get_statistics`, but with extended options from `LanguageStatisticsOpts`.
+    ///
+    /// ```no_run
+    /// # use tokei::*;
+    /// let mut languages = Languages::new();
+    /// languages.get_statistics_with_opts(
+    ///     LanguageStatisticsOpts::new()
+    ///         .with_paths(vec!["."])
+    ///         .with_types(vec!["rust"])
+    /// );
+    /// ```
+    pub fn get_statistics_with_opts(&mut self, stat_builder: LanguageStatisticsOpts) {
+        fs::get_all_files(stat_builder.into(), &mut self.inner);
         self.inner.par_iter_mut().for_each(count_files);
     }
 

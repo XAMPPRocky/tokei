@@ -13,6 +13,17 @@ use self::LanguageType::*;
 use Languages;
 use Language;
 
+/// Contains a mapping of name, JSON-name, and extensions that that name can satisy. The purpose is
+/// to map type restrictions (e.g., Ur/Web) to a value that can be used in `ignore`'s
+/// `TypeBuilder`, as well as all the extensions for that builder.
+///
+/// This value is not guaranteed to remain stable and the type may change.
+pub const DEFAULT_TYPES: &'static [(&'static str, &'static str, &'static [&'static str])] = &[
+    {{~#each languages}}
+    ({{#if this.name}}"{{~name}}"{{else}}"{{~@key}}"{{~/if}}, "{{~@key}}", &[{{~#each this.extensions}}"*.{{~this}}"{{~#unless @last}}, {{~/unless}}{{~/each}}]),
+    {{/each}}
+];
+
 
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]

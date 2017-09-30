@@ -77,6 +77,6 @@ mod language;
 mod stats;
 mod sort;
 
-pub use language::{LanguageType, Languages, Language};
+pub use language::{LanguageType, Languages, Language, LanguageStatisticsOpts, DEFAULT_TYPES};
 pub use stats::Stats;
 pub use sort::Sort;
