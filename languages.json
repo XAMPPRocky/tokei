@@ -1082,6 +1082,13 @@
                 "sql"
             ]
         },
+        "Svg":{
+            "name":"SVG",
+            "base":"html",
+            "extensions":[
+                "svg"
+            ]
+        },
         "Swift":{
             "base":"c",
             "nested":true,
