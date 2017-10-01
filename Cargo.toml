@@ -35,7 +35,7 @@ handlebars = "0.27"
 lazy_static = "0.2"
 
 [dependencies]
-encoding = "0.2"
+encoding_rs = "0.7"
 ignore = "0.2"
 log = "0.3"
 rayon = "0.7"

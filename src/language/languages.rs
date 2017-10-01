@@ -3,17 +3,13 @@
 // found in the LICENCE-{APACHE/MIT} file.
 #![allow(unused_variables)]
 
-use std::borrow::Cow;
 use std::collections::{btree_map, BTreeMap};
 use std::fs::File;
-use std::io::Read;
+use std::io::{BufReader, BufRead};
 use std::iter::IntoIterator;
 use std::mem;
 use std::ops::{AddAssign, Deref, DerefMut};
 
-use encoding;
-use encoding::all::UTF_8;
-use encoding::DecoderTrap::Replace;
 
 #[cfg(feature = "cbor")] use serde_cbor;
 #[cfg(feature = "json")] use serde_json;
@@ -24,6 +20,7 @@ use rayon::prelude::*;
 use stats::Stats;
 use super::LanguageType::*;
 use super::{Language, LanguageType};
+use super::decoder::DecodeReader;
 use utils::fs;
 
 fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
@@ -37,27 +34,35 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
     let stats: Vec<_> = files.into_par_iter().filter_map(|file| {
         let mut stack: Vec<&'static str> = Vec::new();
-        let mut contents = Vec::new();
         let mut quote: Option<&'static str> = None;
 
-        rs_ret_error!(rs_ret_error!(File::open(&file)).read_to_end(&mut contents));
+        let f = rs_ret_error!(File::open(&file));
+        let decoder = rs_ret_error!(DecodeReader::new(f, vec![0; 4<<10]));
+        let mut bufreader = BufReader::with_capacity(4<<10, decoder);
 
-        let text = match encoding::decode(&contents, Replace, UTF_8) {
-            (Ok(string), _) => Cow::Owned(string),
-            (Err(cow), _) => cow,
-        };
-
-        let lines = text.lines();
         let mut stats = Stats::new(file);
 
+		let mut line_buf = String::new();
+
         if is_blank {
-            let count = lines.count();
-            stats.lines += count;
-            stats.code += count;
-            return Some(stats);
+            loop {
+                line_buf.clear();
+                if 0 == rs_ret_error!(bufreader.read_line(&mut line_buf)) {
+                    return Some(stats);
+                }
+                stats.lines += 1;
+                stats.code += 1;
+            }
         }
 
-        'line: for line in lines {
+        loop {
+            line_buf.clear();
+
+            if 0 == rs_ret_error!(bufreader.read_line(&mut line_buf)) {
+                break;
+            }
+
+            let line = &*line_buf;
 
             stats.lines += 1;
             let no_stack = stack.is_empty();
