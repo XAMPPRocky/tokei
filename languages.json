@@ -282,7 +282,7 @@
                 "cr"
             ]
         },
-        "Vb":{
+        "VisualBasic":{
             "name":"Visual Basic",
             "quotes":[
                 ["\\\"", "\\\""]
@@ -1218,7 +1218,7 @@
                 "xml"
             ]
         },
-        "MSBuild":{
+        "MsBuild":{
             "name":"MSBuild",
             "base":"html",
             "extensions":[
