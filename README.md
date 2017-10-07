@@ -347,6 +347,7 @@ Scala
 Scons
 Standard ML
 SQL
+SVG
 Swift
 TCL
 TeX
