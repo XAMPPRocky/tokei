@@ -1,0 +1,37 @@
+;; 37 lines 23 code 2 comments 12 blanks
+
+set escape_start "$"
+set escape_end "$"
+set mode "srecode-template-mode"
+set priority "70"
+
+set comment_start  ";;"
+set comment_end    ""
+set comment_prefix ";;"
+
+set SEPARATOR "----"
+
+set DOLLAR "$"
+
+context file
+
+prompt MAJORMODE "Major Mode for templates: " read srecode-read-major-mode-name
+prompt START "Escape Start Characters: " default "{{"
+prompt END "Escape End Characters: " default "}}"
+
+template empty :file :user :time :srt
+"Insert a skeleton for a template file."
+----
+$>:filecomment$
+
+set mode "$?MAJORMODE$"
+set escape_start "$?START$"
+set escape_end "$?END$"
+
+context file
+
+$^$
+
+
+;; end
+----

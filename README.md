@@ -282,6 +282,8 @@ Device Tree
 Dockerfile
 Elixir
 Elm
+Emacs Development Environment
+Emacs Lisp
 Erlang
 Forth
 F*
@@ -324,6 +326,7 @@ Nix
 OCaml
 Objective C
 Objective C++
+Org mode
 Oz
 Pascal
 Perl
@@ -345,6 +348,7 @@ Rust
 Sass
 Scala
 Scons
+SRecode Template
 Standard ML
 SQL
 SVG

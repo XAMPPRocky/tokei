@@ -371,6 +371,15 @@
                 ["'", "'"]
             ]
         },
+        "Elisp":{
+            "name":"Emacs Lisp",
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "el"
+            ]
+        },
         "Elixir":{
             "line_comment":[
                 "#"
@@ -390,6 +399,15 @@
             "base":"haskell",
             "extensions":[
                 "elm"
+            ]
+        },
+        "EmacsDevEnv":{
+            "name":"Emacs Dev Env",
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "ede"
             ]
         },
         "Erlang":{
@@ -724,7 +742,6 @@
             ],
             "nested":true,
             "extensions":[
-                "el",
                 "lisp",
                 "lsp"
             ]
@@ -838,6 +855,14 @@
             "extensions":[
                 "ml",
                 "mli"
+            ]
+        },
+        "Org":{
+            "line_comment":[
+                "# "
+            ],
+            "extensions":[
+                "org"
             ]
         },
         "Oz":{
@@ -1080,6 +1105,15 @@
             ],
             "extensions":[
                 "sql"
+            ]
+        },
+        "SRecode":{
+            "name": "SRecode Template",
+            "line_comment":[
+                ";;"
+            ],
+            "extensions":[
+                "srt"
             ]
         },
         "Svg":{

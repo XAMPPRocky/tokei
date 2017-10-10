@@ -1,0 +1,16 @@
+;; 16 lines 6 code 7 comments 3 blanks
+
+;; This is an EDE Project file
+
+;; Object ede-proj-project
+;; EDE project file.
+(ede-proj-project "ede-proj-project"
+  :name "my-proj"
+  :version "1.0.0"
+  :file "Project.ede"
+  :targets (list
+))
+
+;; Local Variables:
+;; mode: emacs-lisp
+;; End:
