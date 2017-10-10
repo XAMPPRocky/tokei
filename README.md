@@ -331,6 +331,7 @@ PHP
 Polly
 Prolog
 Protocol Buffers
+PSL Assertions
 PureScript
 Python
 QCL
@@ -346,9 +347,12 @@ Sass
 Scala
 Scons
 Standard ML
+Specman e
+SPICE Netlists
 SQL
 SVG
 Swift
+SystemVerilog
 TCL
 TeX
 Plain Text
@@ -357,6 +361,8 @@ TypeScript
 Unreal Script
 Ur/Web
 Vala
+Verilog
+Verilog argument files
 VHDL
 Vim Script
 Wolfram
