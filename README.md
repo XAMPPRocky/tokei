@@ -81,6 +81,12 @@ $ dnf copr enable phnxrbrn/tokei
 $ dnf install tokei
 ```
 
+#### Nix/NixOS
+```shell
+# using unstable nixpkgs channel
+$ nix-env -i tokei
+```
+
 ### Manual
 You can download prebuilt binaries in the
 [releases section](https://github.com/Aaronepower/tokei/releases), or create
