@@ -1231,6 +1231,17 @@
                 "xml"
             ]
         },
+        "Xtend":{
+            "base":"c",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"],
+                ["'''", "'''"]
+            ],
+            "extensions":[
+                "xtend"
+            ]
+        },
         "Yaml":{
             "name":"YAML",
             "base":"hash",
