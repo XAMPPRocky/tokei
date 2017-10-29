@@ -16,7 +16,7 @@ class Foo {
     
     def bar() {
         println('string type 1')
-        println("string type 2...")
+        println("string type 2")
         println('''string type 3''')
     }
     
