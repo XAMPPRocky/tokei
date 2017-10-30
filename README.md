@@ -81,6 +81,12 @@ $ dnf copr enable phnxrbrn/tokei
 $ dnf install tokei
 ```
 
+#### Nix/NixOS
+```shell
+# using unstable nixpkgs channel
+$ nix-env -i tokei
+```
+
 ### Manual
 You can download prebuilt binaries in the
 [releases section](https://github.com/Aaronepower/tokei/releases), or create
@@ -254,6 +260,7 @@ ASP.NET
 Assembly
 Autoconf
 SH
+AutoHotKey
 BASH
 FISH
 Batch
@@ -281,6 +288,8 @@ Device Tree
 Dockerfile
 Elixir
 Elm
+Emacs Development Environment
+Emacs Lisp
 Erlang
 Forth
 F*
@@ -323,11 +332,13 @@ Nix
 OCaml
 Objective C
 Objective C++
+Org mode
 Oz
 Pascal
 Perl
 PHP
 Polly
+Processing
 Prolog
 Protocol Buffers
 PureScript
@@ -344,8 +355,10 @@ Rust
 Sass
 Scala
 Scons
+SRecode Template
 Standard ML
 SQL
+SVG
 Swift
 TCL
 TeX
@@ -360,6 +373,7 @@ Vim Script
 Wolfram
 Xaml
 XML
+Xtend
 YAML
 Zsh
 ```

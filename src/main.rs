@@ -3,7 +3,6 @@
 // found in the LICENCE-{APACHE, MIT} file.
 
 #[macro_use] extern crate clap;
-#[macro_use] extern crate errln;
 extern crate env_logger;
 extern crate log;
 extern crate tokei;

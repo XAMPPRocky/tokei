@@ -36,7 +36,6 @@ lazy_static = "0.2"
 
 [dependencies]
 encoding = "0.2"
-errln = "0.1"
 ignore = "0.2"
 log = "0.3"
 rayon = "0.7"

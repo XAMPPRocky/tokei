@@ -73,7 +73,7 @@ mod io {
         let hex = match Vec::from_hex(contents) {
             Ok(hex) => hex,
             Err(err) => {
-                errln!("{}", err.description());
+                eprintln!("{}", err.description());
                 process::exit(1)
             }
         };
@@ -167,12 +167,12 @@ mod io {
 ";
 
     pub fn add_input(input: &str, map: &mut Languages) -> ! {
-        errln!("{}", OUTPUT_ERROR);
+        eprintln!("{}", OUTPUT_ERROR);
         process::exit(1);
     }
 
     pub fn match_output(format: &str, languages: Languages) -> ! {
-        errln!("{}", OUTPUT_ERROR);
+        eprintln!("{}", OUTPUT_ERROR);
         process::exit(1);
     }
 }

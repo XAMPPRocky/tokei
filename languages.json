@@ -77,6 +77,17 @@
                 "in"
             ]
         },
+        "AutoHotKey":{
+            "line_comment":[
+                ";"
+            ],
+            "multi_line":[
+                ["/*", "*/"]
+            ],
+            "extensions":[
+                "ahk"
+            ]
+        },
         "Sh":{
             "name":"Shell",
             "base":"hash",
@@ -371,6 +382,15 @@
                 ["'", "'"]
             ]
         },
+        "Elisp":{
+            "name":"Emacs Lisp",
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "el"
+            ]
+        },
         "Elixir":{
             "line_comment":[
                 "#"
@@ -390,6 +410,15 @@
             "base":"haskell",
             "extensions":[
                 "elm"
+            ]
+        },
+        "EmacsDevEnv":{
+            "name":"Emacs Dev Env",
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "ede"
             ]
         },
         "Erlang":{
@@ -724,7 +753,6 @@
             ],
             "nested":true,
             "extensions":[
-                "el",
                 "lisp",
                 "lsp"
             ]
@@ -840,6 +868,14 @@
                 "mli"
             ]
         },
+        "Org":{
+            "line_comment":[
+                "# "
+            ],
+            "extensions":[
+                "org"
+            ]
+        },
         "Oz":{
             "base":"pro",
             "extensions":[
@@ -897,6 +933,12 @@
             "base":"html",
             "extensions":[
                 "polly"
+            ]
+        },
+        "Processing":{
+            "base":"c",
+            "extensions":[
+                "pde"
             ]
         },
         "Prolog":{
@@ -1082,6 +1124,22 @@
                 "sql"
             ]
         },
+        "SRecode":{
+            "name": "SRecode Template",
+            "line_comment":[
+                ";;"
+            ],
+            "extensions":[
+                "srt"
+            ]
+        },
+        "Svg":{
+            "name":"SVG",
+            "base":"html",
+            "extensions":[
+                "svg"
+            ]
+        },
         "Swift":{
             "base":"c",
             "nested":true,
@@ -1227,6 +1285,17 @@
                 "fsproj",
                 "props",
                 "targets"
+
+        "Xtend":{
+            "base":"c",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"],
+                ["'''", "'''"]
+            ],
+            "extensions":[
+                "xtend"
+
             ]
         },
         "Yaml":{
