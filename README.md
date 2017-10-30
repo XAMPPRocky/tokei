@@ -369,6 +369,7 @@ Vim Script
 Wolfram
 Xaml
 XML
+Xtend
 YAML
 Zsh
 ```
