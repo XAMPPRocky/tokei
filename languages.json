@@ -1285,7 +1285,8 @@
                 "fsproj",
                 "props",
                 "targets"
-
+            ]
+        },
         "Xtend":{
             "base":"c",
             "quotes":[
