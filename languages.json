@@ -293,7 +293,18 @@
                 "cr"
             ]
         },
-
+        "VisualBasic":{
+            "name":"Visual Basic",
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
+            "line_comment":[
+                "'"
+            ],
+            "extensions":[
+                "vb"
+            ]
+        },
         "CSharp":{
             "name":"C#",
             "base":"c",
@@ -1265,6 +1276,17 @@
                 "xml"
             ]
         },
+        "MsBuild":{
+            "name":"MSBuild",
+            "base":"html",
+            "extensions":[
+                "csproj",
+                "vbproj",
+                "fsproj",
+                "props",
+                "targets"
+            ]
+        },
         "Xtend":{
             "base":"c",
             "quotes":[
@@ -1274,6 +1296,7 @@
             ],
             "extensions":[
                 "xtend"
+
             ]
         },
         "Yaml":{
