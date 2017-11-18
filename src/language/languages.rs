@@ -339,7 +339,6 @@ impl Languages {
     /// extern crate tokei;
     /// # use tokei::*;
     /// extern crate hex;
-    /// use hex::ToHex;
     ///
     /// # fn main () {
     /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e747\
@@ -350,7 +349,7 @@ impl Languages {
     /// let mut languages = Languages::new();
     /// languages.get_statistics(vec!["build.rs"], vec![]);
     ///
-    /// assert_eq!(cbor, &languages.to_cbor().unwrap().to_hex());
+    /// assert_eq!(cbor, hex::encode(&languages.to_cbor().unwrap()));
     /// # }
     /// ```
     #[cfg(feature = "cbor")]

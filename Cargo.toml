@@ -47,7 +47,7 @@ features = []
 version = "0.4"
 
 [dependencies.hex]
-version = "0.2"
+version = "0.3"
 optional = true
 
 [dependencies.serde]
