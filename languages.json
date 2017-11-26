@@ -28,6 +28,12 @@
                 "agda"
             ]
         },
+        "AgdaLib":{
+            "name":"Agda Library",
+            "extensions":[
+                "agda-lib"
+            ]
+        },
         "Assembly":{
             "line_comment":[
                 ";"
@@ -66,6 +72,17 @@
                 "master",
                 "sitemap",
                 "webinfo"
+            ]
+        },
+        "ATS":{
+            "name":"ATS",
+            "base":"c",
+            "extensions":[
+                "ats",
+                "dats",
+                "cats",
+                "hats",
+                "sats"
             ]
         },
         "Autoconf":{
@@ -140,6 +157,11 @@
                 "cmd"
             ]
         },
+        "Brainfuck":{
+            "extensions":[
+                "bf"
+            ]
+        },
         "C":{
             "base":"c",
             "extensions":[
@@ -152,6 +174,14 @@
             "base":"haskell",
             "extensions":[
                 "cabal"
+            ]
+        },
+        "CabalProject":{
+            "name":"Cabal Project",
+            "base":"haskell",
+            "filenames":[
+                "cabal.project",
+                "cabal.project.local"
             ]
         },
         "Cassius":{
@@ -366,6 +396,12 @@
                 "dtsi"
             ]
         },
+        "Dhall":{
+            "base":"haskell",
+            "extensions":[
+                "dhall"
+            ]
+        },
         "Dockerfile":{
             "line_comment":[
                 "#"
@@ -508,6 +544,13 @@
                 "fsscript"
             ]
         },
+        "Futhark":{
+            "name":"Futhark",
+            "base":"haskell",
+            "extensions":[
+                "fut"
+            ]
+        },
         "GdScript":{
             "name":"GDScript",
             "base":"hash",
@@ -561,7 +604,9 @@
         "Haskell":{
             "base": "haskell",
             "extensions":[
-                "hs"
+                "hs",
+                "hs-boot",
+                "hsig"
             ]
         },
         "Html":{
@@ -605,11 +650,38 @@
             ],
             "nested":true
         },
+        "Ipkg":{
+            "base":"haskell",
+            "name":"Idris Package",
+            "extensions":[
+                "ipkg"
+            ]
+        },
         "IntelHex":{
             "name":"Intel HEX",
             "base":"blank",
             "extensions":[
                 "ihex"
+            ]
+        },
+        "Ion":{
+            "name":"Ion shell",
+            "base":"hash",
+            "quotes":[
+                [
+                    "\\\"",
+                    "\\\""
+                ],
+                [
+                    "'",
+                    "'"
+                ]
+            ],
+            "env":[
+                "ion"
+            ],
+            "extensions":[
+                "ion"
             ]
         },
         "Isabelle":{
@@ -698,6 +770,13 @@
             ],
             "extensions":[
                 "julius"
+            ]
+        },
+        "Justfile":{
+            "base":"hash",
+            "filenames":[
+                "justfile",
+                "Justfile"
             ]
         },
         "Kotlin":{
@@ -1101,7 +1180,12 @@
                 "sconscript"
             ]
         },
-
+        "Sixten":{
+            "base":"haskell",
+            "extensions":[
+                "vix"
+            ]
+        },
         "Sml":{
             "name":"Standard ML (SML)",
             "base":"func",
