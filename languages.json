@@ -948,6 +948,13 @@
                 "pro"
             ]
         },
+        "PSL":{
+            "name":"PSL Assertion",
+            "base":"c",
+            "extensions":[
+                "psl"
+            ]
+        },
         "Protobuf":{
             "name":"Protocol Buffers",
             "line_comment":[
@@ -1101,12 +1108,33 @@
                 "sconscript"
             ]
         },
-
         "Sml":{
             "name":"Standard ML (SML)",
             "base":"func",
             "extensions":[
                 "sml"
+            ]
+        },
+        "SpecmanE":{
+            "name":"Specman e",
+            "line_comment":[
+                "--",
+                "//"
+            ],
+            "multi_line":[
+              ["'>", "<'"]
+            ],
+            "extensions":[
+                "e"
+            ]
+        },
+        "Spice":{
+            "name":"Spice Netlist",
+            "line_comment":[
+                "*"
+            ],
+            "extensions":[
+                "ckt"
             ]
         },
         "Sql":{
@@ -1145,6 +1173,13 @@
             "nested":true,
             "extensions":[
                 "swift"
+            ]
+        },
+        "SystemVerilog":{
+            "base":"c",
+            "extensions":[
+                "sv",
+                "svh"
             ]
         },
         "Tcl":{
@@ -1231,6 +1266,20 @@
             "base":"c",
             "extensions":[
                 "vala"
+            ]
+        },
+        "Verilog":{
+            "base":"c",
+            "extensions":[
+                "vg",
+                "vh"
+            ]
+        },
+        "VerilogArgsFile":{
+            "name":"Verilog Args File",
+            "extensions":[
+                "irunargs",
+                "xrunargs"
             ]
         },
         "Vhdl":{
