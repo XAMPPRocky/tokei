@@ -2,6 +2,8 @@
 // Use of this source code is governed by the MIT/APACHE2.0 license that can be
 // found in the LICENCE-{APACHE - MIT} file.
 
+mod decoder;
+
 pub mod language;
 pub mod languages;
 pub mod language_type;

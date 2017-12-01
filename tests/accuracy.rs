@@ -1,7 +1,6 @@
 #[macro_use] extern crate lazy_static;
 extern crate regex;
 extern crate tokei;
-extern crate ignore;
 
 use std::io::Read;
 use std::fs::File;
