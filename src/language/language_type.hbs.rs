@@ -247,7 +247,7 @@ pub fn get_filetype_from_shebang<P>(file: P) -> Option<&'static str>
                                     |
                                 {{~/unless}}
                             {{~/each}}
-                                => Some("{{this.extensions[0]}}"),
+                                => Some("{{this.extensions.[0]}}"),
                         {{~/if}}
                     {{~/each}}
                     env => {
