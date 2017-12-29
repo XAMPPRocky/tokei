@@ -61,6 +61,9 @@ This is tokei running on it's own directory
 - Tokei is available on **Mac**, **Linux**, and **Windows**. See [installation
   instructions](#installation) for how to get Tokei on your platform.
 
+- Tokei is also a **library** allowing you to easily integrate it with other
+  projects.
+
 ## Installation
 
 ### Automatic
