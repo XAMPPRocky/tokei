@@ -65,7 +65,7 @@ mod io {
     }
 
     #[cfg(feature = "cbor")]
-    pub fn from_cbor(contents: &String) -> serde_cbor::Result<LanguageMap> {
+    pub fn from_cbor(contents: &String) -> serde_cbor::error::Result<LanguageMap> {
         use self::hex::FromHex;
         use std::error::Error;
         use std::process;
