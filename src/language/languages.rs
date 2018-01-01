@@ -191,7 +191,7 @@ impl Languages {
     /// # }
     /// ```
     #[cfg(feature = "cbor")]
-    pub fn from_cbor(cbor: &[u8]) -> serde_cbor::Result<Self> {
+    pub fn from_cbor(cbor: &[u8]) -> serde_cbor::error::Result<Self> {
         Ok(Self::from_previous(serde_cbor::from_slice(cbor.into())?))
     }
 
@@ -353,7 +353,7 @@ impl Languages {
     /// # }
     /// ```
     #[cfg(feature = "cbor")]
-    pub fn to_cbor(self) -> Result<Vec<u8>, serde_cbor::Error> {
+    pub fn to_cbor(self) -> Result<Vec<u8>, serde_cbor::error::Error> {
         serde_cbor::to_vec(&self.remove_empty())
     }
 
