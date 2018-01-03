@@ -816,6 +816,19 @@
             "extensions": ["def"],
             "line_comment": [";"]
         },
+        "Meson":{
+            "line_comment":[
+                "#"
+            ],
+            "quotes":[
+                ["'", "'"],
+                ["'''", "'''"]
+            ],
+            "filenames":[
+                "meson.build",
+                "meson_options.txt"
+            ]
+        },
         "Mustache":{
             "multi_line":[
               ["{{!", "}}"]
