@@ -37,7 +37,7 @@ lazy_static = "1"
 [dependencies]
 encoding = "0.2"
 ignore = "0.3"
-log = "0.3"
+log = "0.4"
 rayon = "0.9"
 regex = "0.2"
 clap = "2.24"
@@ -84,5 +84,5 @@ cbor = ["io", "hex", "serde_cbor"]
 default = []
 io = ["serde_derive", "serde"]
 json = ["io", "serde_json"]
-toml-io = ["io", "toml/serde"]
+toml-io = ["io", "toml"]
 yaml = ["io", "serde_yaml"]
