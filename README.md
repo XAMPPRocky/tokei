@@ -44,8 +44,8 @@ This is tokei running on it's own directory
 
 | Repository   | Real time |
 |--------------|-----------|
-| DragonFlyBSD | 1.20s     |
-| Rust         | 0.50s     |
+| DragonFlyBSD | 1.50s     |
+| Rust         | 0.28s     |
 | CPython      | 0.18s     |
 
 - Tokei is **accurate**, Tokei correctly handles multi line comments,
