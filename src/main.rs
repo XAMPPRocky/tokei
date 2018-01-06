@@ -12,8 +12,8 @@ use input::*;
 
 use std::borrow::Cow;
 
-use env_logger::LogBuilder;
-use log::LogLevelFilter;
+use env_logger::Builder;
+use log::LevelFilter;
 
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort::*;
@@ -56,15 +56,15 @@ fn main() {
         ignored_directories
     };
 
-    let mut builder = LogBuilder::new();
+    let mut builder = Builder::new();
 
     let filter_level = match verbose_option {
-        1 => LogLevelFilter::Warn,
-        _ => LogLevelFilter::Error,
+        1 => LevelFilter::Warn,
+        _ => LevelFilter::Error,
     };
 
     builder.filter(None, filter_level);
-    builder.init().expect("Couldn't create ENV Logger");
+    builder.init();
 
     let mut languages = Languages::new();
 

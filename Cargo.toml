@@ -44,7 +44,7 @@ clap = "2.24"
 
 [dependencies.env_logger]
 features = []
-version = "0.4"
+version = "0.5.0-rc.1"
 
 [dependencies.hex]
 version = "0.3"
