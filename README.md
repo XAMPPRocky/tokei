@@ -34,7 +34,7 @@ This is tokei running on it's own directory
 - [Changelog](CHANGELOG.md)
 - [Common Issues](#common-issues)
 - [Canonical Source](#canonical-source)
-- [Copyright](#copyright)
+- [Copyright and License](#copyright-and-license)
 
 ## Features
 
