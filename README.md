@@ -79,10 +79,9 @@ $ pacman -S tokei
 $ cargo install tokei
 ```
 
-#### Fedora 64 bit
+#### Fedora
 ```shell
-$ dnf copr enable phnxrbrn/tokei
-$ dnf install tokei
+$ sudo dnf install tokei
 ```
 
 #### Nix/NixOS
