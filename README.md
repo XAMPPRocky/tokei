@@ -25,6 +25,7 @@ This is tokei running on it's own directory
         - [Arch Linux](#arch-linux)
         - [Cargo](#cargo)
         - [Fedora](#fedora)
+        - [FreeBSD](#freebsd)
     - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
@@ -83,6 +84,11 @@ $ cargo install tokei
 ```shell
 $ dnf copr enable phnxrbrn/tokei
 $ dnf install tokei
+```
+
+#### FreeBSD
+```shell
+$ pkg install tokei
 ```
 
 #### Nix/NixOS
