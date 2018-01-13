@@ -18,13 +18,13 @@ use log::LevelFilter;
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort::*;
 
-const BLANKS: &'static str = "blanks";
-const CODE: &'static str = "code";
-const COMMENTS: &'static str = "comments";
-const FILES: &'static str = "files";
-const LINES: &'static str = "lines";
-const ROW: &'static str = "----------------------------------------------------\
-          ---------------------------";
+const BLANKS: &str = "blanks";
+const CODE: &str = "code";
+const COMMENTS: &str = "comments";
+const FILES: &str = "files";
+const LINES: &str = "lines";
+const ROW: &str = "------------------------------------------------------------\
+                   -------------------";
 
 fn main() {
     // Get options at the beginning, so the program doesn't have to make any
@@ -84,10 +84,10 @@ fn main() {
         add_input(input, &mut languages);
     }
 
-    languages.get_statistics(paths, ignored_directories);
+    languages.get_statistics(&paths, ignored_directories);
 
     if let Some(format) = output_option {
-        match_output(format, languages);
+        match_output(format, &languages);
     }
 
     println!("{}", ROW);
@@ -127,9 +127,9 @@ fn main() {
         for (name, language) in languages {
             if !language.is_empty() {
                 if !files_option {
-                    print_language(&language, name);
+                    print_language(language, name);
                 } else {
-                    print_language(&language, name);
+                    print_language(language, name);
                     println!("{}", ROW);
                     for file in &language.stats {
                         println!("{}", file);

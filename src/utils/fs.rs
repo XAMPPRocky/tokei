@@ -15,7 +15,7 @@ use language::{Language, Languages, LanguageType};
 // This is just a re-export from the auto generated file.
 pub use language::get_filetype_from_shebang;
 
-pub fn get_all_files(paths: Vec<&str>,
+pub fn get_all_files(paths: &[&str],
                      ignored_directories: Vec<&str>,
                      languages: &mut BTreeMap<LanguageType, Language>)
 {
@@ -67,7 +67,7 @@ pub fn get_all_files(paths: Vec<&str>,
 
     for (language_type, pathbuf) in rx {
         languages.entry(language_type)
-                 .or_insert(Languages::generate_language(language_type))
+                 .or_insert_with(|| Languages::generate_language(language_type))
                  .files.push(pathbuf);
     }
 }

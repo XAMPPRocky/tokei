@@ -146,7 +146,7 @@ mod io {
     use std::process;
     use tokei::Languages;
 
-    const OUTPUT_ERROR: &'static str = "
+    const OUTPUT_ERROR: &str = "\
     This version of tokei was compiled without any serialization formats, to
     enable serialization, reinstall tokei with the features flag.
 
@@ -166,12 +166,12 @@ mod io {
         cargo install tokei --features cbor
 ";
 
-    pub fn add_input(input: &str, map: &mut Languages) -> ! {
+    pub fn add_input(_input: &str, _map: &mut Languages) -> ! {
         eprintln!("{}", OUTPUT_ERROR);
         process::exit(1);
     }
 
-    pub fn match_output(format: &str, languages: Languages) -> ! {
+    pub fn match_output(_format: &str, _languages: &Languages) -> ! {
         eprintln!("{}", OUTPUT_ERROR);
         process::exit(1);
     }

@@ -57,10 +57,9 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             return Some(stats);
         }
 
-        'line: for line in lines {
+        for line in lines {
 
             stats.lines += 1;
-            let no_stack = stack.is_empty();
             if line.chars().all(char::is_whitespace) {
                 stats.blanks += 1;
                 continue;
@@ -78,9 +77,9 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             }
 
             'window: for i in 0..line.len() {
-                while skip != 0 {
+                if skip != 0 {
                     skip -= 1;
-                    continue 'window;
+                    continue;
                 }
 
                 let line = line.as_bytes();
@@ -131,7 +130,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 for &(start, end) in &language.multi_line {
                     if window.starts_with(start.as_bytes()) {
                         if (language.nested && nested_is_empty) ||
-                            stack.len() == 0
+                            stack.is_empty()
                         {
                             stack.push(end);
                         }
@@ -148,7 +147,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 .chain(language.nested_comments.iter().map(|&(s, _)| s))
                 .any(|comment| line.starts_with(comment));
 
-            if no_stack && !starts_with_comment {
+            if stack.is_empty() && !starts_with_comment {
                 stats.code += 1;
             } else {
                 stats.comments += 1;
@@ -163,8 +162,8 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
     }
 }
 
-/// A collection of existing languages([_List of Languages_]
-/// (https://github.com/Aaronepower/tokei#supported-languages))
+/// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
+#[derive(Default)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
 }
@@ -294,8 +293,8 @@ impl Languages {
     /// let mut languages = Languages::new();
     /// languages.get_statistics(vec!["."], vec![".git", "target"]);
     /// ```
-    pub fn get_statistics(&mut self, paths: Vec<&str>, ignored: Vec<&str>) {
-        fs::get_all_files(paths.into(), ignored.into(), &mut self.inner);
+    pub fn get_statistics(&mut self, paths: &[&str], ignored: Vec<&str>) {
+        fs::get_all_files(paths, ignored, &mut self.inner);
         self.inner.par_iter_mut().for_each(count_files);
     }
 
@@ -306,7 +305,7 @@ impl Languages {
     /// let languages = Languages::new();
     /// ```
     pub fn new() -> Self {
-        Languages { inner: BTreeMap::new() }
+        Languages::default()
     }
 
     /// Creates a new map that only contains non empty languages.
