@@ -39,7 +39,10 @@ fn main() {
         (@arg input: conflicts_with[languages] ... "The input file(s)/directory(ies) to be counted.")
         (@arg languages: -l --languages conflicts_with[input] "Prints out supported languages and their extensions.")
         (@arg output: -o --output possible_values(&["cbor", "json", "toml", "yaml"]) +takes_value "Outputs Tokei in a specific format.")
-        (@arg verbose: -v --verbose ... "Set verbose output level: 1: for unknown extensions")
+        (@arg verbose: -v --verbose ... "Set log output level:
+         1: to show unknown file extensions,
+         2: reserved for future debugging,
+         3: enable file level trace. Not recommended on multiple files")
         (@arg sort: -s --sort possible_values(&["files", "lines", "blanks", "code", "comments"]) +takes_value "Sort languages based on column")
     ).get_matches();
     let files_option = matches.is_present(FILES);
@@ -60,6 +63,8 @@ fn main() {
 
     let filter_level = match verbose_option {
         1 => LevelFilter::Warn,
+        2 => LevelFilter::Debug,
+        3 => LevelFilter::Trace,
         _ => LevelFilter::Error,
     };
 

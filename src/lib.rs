@@ -29,7 +29,7 @@
 //!
 //! fn main() {
 //!     // The paths to search. Accepts absolute, relative, and glob paths.
-//!     let paths = vec!["**/*.rs"];
+//!     let paths = &["**/*.rs"];
 //!     // Exclude any path that contains any of these strings.
 //!     let excluded = vec!["target", ".git"];
 //!

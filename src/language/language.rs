@@ -25,21 +25,21 @@ pub struct Language {
     pub lines: usize,
     /// A collection of single line comments in the language. ie. `//` in Rust.
     #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
-    pub line_comment: Vec<&'static str>,
+    pub line_comment: &'static [&'static str],
     /// A collection of tuples representing the start and end of multi line
     /// comments. ie. `/* comment */` in Rust.
     #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
-    pub multi_line: Vec<(&'static str, &'static str)>,
+    pub multi_line: &'static [(&'static str, &'static str)],
     /// Whether the language supports nested multi line comments or not.
     #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
     pub nested: bool,
     /// A list of specific nested comments if this is empty all `multi_line`
     /// comments count.
     #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
-    pub nested_comments: Vec<(&'static str, &'static str)>,
+    pub nested_comments: &'static [(&'static str, &'static str)],
     /// A list of quotes by default it is `""`.
     #[cfg_attr(feature = "io", serde(skip_deserializing, skip_serializing))]
-    pub quotes: Vec<(&'static str, &'static str)>,
+    pub quotes: &'static [(&'static str, &'static str)],
 }
 
 impl Language {
@@ -47,16 +47,16 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let mut rust = Language::new(vec!["//"], vec![("/*", "*/")]);
+    /// let mut rust = Language::new(&["//"], &[("/*", "*/")]);
     /// ```
-    pub fn new(line_comment: Vec<&'static str>,
-               multi_line: Vec<(&'static str, &'static str)>)
+    pub fn new(line_comment: &'static [&'static str],
+               multi_line: &'static [(&'static str, &'static str)])
         -> Self
     {
         Language {
             line_comment: line_comment,
             multi_line: multi_line,
-            quotes: vec![("\"", "\"")],
+            quotes: &[("\"", "\"")],
             ..Self::default()
         }
     }
@@ -66,9 +66,9 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
+    /// let empty_array: &'static [&'static str] = &[];
     /// let json = Language::new_blank();
-    /// let blank_vec: Vec<&str> = vec![];
-    /// assert_eq!(json.line_comment, blank_vec);
+    /// assert_eq!(json.line_comment, empty_array);
     /// ```
     pub fn new_blank() -> Self {
         Self::default()
@@ -79,7 +79,7 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let rust = Language::new(vec!["//"], vec![("/*", "*/")]);
+    /// let rust = Language::new(&["//"], &[("/*", "*/")]);
     /// let c = Language::new_c();
     ///
     /// assert_eq!(rust.line_comment, c.line_comment);
@@ -87,9 +87,9 @@ impl Language {
     /// ```
     pub fn new_c() -> Self {
         Language {
-            line_comment: vec!["//"],
-            multi_line: vec![("/*", "*/")],
-            quotes: vec![("\"", "\"")],
+            line_comment: &["//"],
+            multi_line: &[("/*", "*/")],
+            quotes: &[("\"", "\"")],
             ..Self::default()
         }
     }
@@ -99,7 +99,7 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let ocaml = Language::new_multi(vec![("(*", "*)")]);
+    /// let ocaml = Language::new_multi(&[("(*", "*)")]);
     /// let coq = Language::new_func();
     ///
     /// assert_eq!(ocaml.line_comment, coq.line_comment);
@@ -107,8 +107,8 @@ impl Language {
     /// ```
     pub fn new_func() -> Self {
         Language {
-            multi_line: vec![("(*", "*)")],
-            quotes: vec![("\"", "\"")],
+            multi_line: &[("(*", "*)")],
+            quotes: &[("\"", "\"")],
             ..Self::default()
         }
     }
@@ -118,7 +118,7 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let xml = Language::new_multi(vec![("<!--", "-->")]);
+    /// let xml = Language::new_multi(&[("<!--", "-->")]);
     /// let html = Language::new_html();
     ///
     /// assert_eq!(xml.line_comment, html.line_comment);
@@ -126,8 +126,8 @@ impl Language {
     /// ```
     pub fn new_html() -> Self {
         Language {
-            multi_line: vec![("<!--", "-->")],
-            quotes: vec![("\"", "\"")],
+            multi_line: &[("<!--", "-->")],
+            quotes: &[("\"", "\"")],
             ..Self::default()
         }
     }
@@ -137,14 +137,14 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let bash = Language::new_single(vec!["#"]);
+    /// let bash = Language::new_single(&["#"]);
     /// let yaml = Language::new_hash();
     ///
     /// assert_eq!(bash.line_comment, yaml.line_comment);
     /// assert_eq!(bash.multi_line, yaml.multi_line);
     /// ```
     pub fn new_hash() -> Self {
-        Self::new_single(vec!["#"])
+        Self::new_single(&["#"])
     }
 
     /// Convience constructor for creating a language that has the same
@@ -152,7 +152,7 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let haskell = Language::new(vec!["--"], vec![("{-", "-}")]).nested();
+    /// let haskell = Language::new(&["--"], &[("{-", "-}")]).nested();
     /// let idris = Language::new_haskell();
     ///
     /// assert_eq!(haskell.line_comment, haskell.line_comment);
@@ -160,8 +160,8 @@ impl Language {
     /// ```
     pub fn new_haskell() -> Self {
         Language {
-            line_comment: vec!["--"],
-            multi_line: vec![("{-", "-}")],
+            line_comment: &["--"],
+            multi_line: &[("{-", "-}")],
             nested: true,
             ..Self::default()
         }
@@ -172,12 +172,12 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let mustache = Language::new_multi(vec![("{{!", "}}")]);
+    /// let mustache = Language::new_multi(&[("{{!", "}}")]);
     /// ```
-    pub fn new_multi(multi_line: Vec<(&'static str, &'static str)>) -> Self {
+    pub fn new_multi(multi_line: &'static [(&'static str, &'static str)]) -> Self {
         Language {
             multi_line: multi_line,
-            quotes: vec![("\"", "\"")],
+            quotes: &[("\"", "\"")],
             ..Self::default()
         }
     }
@@ -187,7 +187,7 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let prolog = Language::new(vec!["%"], vec![("/*", "*/")]);
+    /// let prolog = Language::new(&["%"], &[("/*", "*/")]);
     /// let oz = Language::new_pro();
     ///
     /// assert_eq!(prolog.line_comment, oz.line_comment);
@@ -195,9 +195,9 @@ impl Language {
     /// ```
     pub fn new_pro() -> Self {
         Language {
-            line_comment: vec!["%"],
-            multi_line: vec![("/*", "*/")],
-            quotes: vec![("\"", "\"")],
+            line_comment: &["%"],
+            multi_line: &[("/*", "*/")],
+            quotes: &[("\"", "\"")],
             ..Self::default()
         }
     }
@@ -207,12 +207,12 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let haskell = Language::new_single(vec!["--"]);
+    /// let haskell = Language::new_single(&["--"]);
     /// ```
-    pub fn new_single(line_comment: Vec<&'static str>) -> Self {
+    pub fn new_single(line_comment: &'static [&'static str]) -> Self {
         Language {
             line_comment: line_comment,
-            quotes: vec![("\"", "\"")],
+            quotes: &[("\"", "\"")],
             ..Self::default()
         }
     }
@@ -249,7 +249,7 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let mut rust = Language::new(vec!["//"], vec![("/*", "*/")]).nested();
+    /// let mut rust = Language::new(&["//"], &[("/*", "*/")]).nested();
     /// assert!(rust.nested);
     /// ```
     pub fn nested(mut self) -> Self {
@@ -263,13 +263,13 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let mut d = Language::new(vec!["//"], vec![("/*", "*/")])
-    ///                         .nested_comments(vec![("/+", "+/")]);
+    /// let mut d = Language::new(&["//"], &[("/*", "*/")])
+    ///                         .nested_comments(&[("/+", "+/")]);
     /// assert!(d.nested);
-    /// assert_eq!(d.nested_comments, vec![("/+", "+/")]);
+    /// assert_eq!(d.nested_comments, &[("/+", "+/")]);
     /// ```
     pub fn nested_comments(mut self,
-                           nested_comments: Vec<(&'static str, &'static str)>)
+                           nested_comments: &'static [(&'static str, &'static str)])
         -> Self
     {
         self.nested = true;
@@ -283,12 +283,12 @@ impl Language {
     ///
     /// ```
     /// # use tokei::*;
-    /// let mut javascript = Language::new(vec!["//"], vec![("/*", "*/")])
-    ///                         .set_quotes(vec![("\"", "\""), ("'", "'")]);
+    /// let mut javascript = Language::new(&["//"], &[("/*", "*/")])
+    ///                         .set_quotes(&[("\"", "\""), ("'", "'")]);
     /// assert!(!javascript.quotes.is_empty());
     /// ```
     pub fn set_quotes(mut self,
-                      quotes: Vec<(&'static str, &'static str)>)
+                      quotes: &'static [(&'static str, &'static str)])
         -> Self
     {
         self.quotes = quotes;
@@ -360,11 +360,11 @@ impl Default for Language {
             files: Vec::new(),
             stats: Vec::new(),
             lines: 0,
-            line_comment: Vec::new(),
-            multi_line: Vec::new(),
+            line_comment: &[],
+            multi_line: &[],
             nested: false,
-            nested_comments: Vec::new(),
-            quotes: Vec::new(),
+            nested_comments: &[],
+            quotes: &[],
         }
     }
 }

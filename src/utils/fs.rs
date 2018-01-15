@@ -108,7 +108,7 @@ mod test {
         create_dir(&path_name).expect("Couldn't create directory.rs within temp");
 
         let mut l = Languages::new();
-        get_all_files(vec![tmp_dir.into_path().to_str().unwrap()], vec![], &mut l);
+        get_all_files(&[tmp_dir.into_path().to_str().unwrap()], vec![], &mut l);
 
         assert!(l.get(&LanguageType::Rust).is_none());
     }

@@ -112,12 +112,12 @@ impl Languages {
                     {{~#if this.line_comment}}
                         {{~#if this.multi_line}}
                             Language::new(
-                                vec![
+                                &[
                                 {{~#each this.line_comment}}
                                     "{{this}}",
                                 {{~/each}}
                                 ],
-                                vec![
+                                &[
                                 {{~#each this.multi_line}}
                                     (
                                     {{~#each this}}
@@ -128,14 +128,14 @@ impl Languages {
                                 ]
                             )
                         {{else}}
-                            Language::new_single(vec![
+                            Language::new_single(&[
                                 {{~#each this.line_comment}}
                                     "{{~this}}",
                                 {{~/each}}
                             ])
                         {{~/if}}
                     {{else}}
-                        Language::new_multi(vec![
+                        Language::new_multi(&[
                             {{~#each this.multi_line}}
                                 (
                                 {{~#each this}}
@@ -150,7 +150,7 @@ impl Languages {
                     .nested()
                 {{~/if}}
                 {{~#if this.nested_comments}}
-                    .nested_comments(vec![
+                    .nested_comments(&[
                         {{~#each this.nested_comments}}
                             (
                             {{~#each this}}
@@ -161,7 +161,7 @@ impl Languages {
                     ])
                 {{~/if}}
                 {{~#if this.quotes}}
-                    .set_quotes(vec![
+                    .set_quotes(&[
                         {{~#each this.quotes}}
                             (
                             {{~#each this}}

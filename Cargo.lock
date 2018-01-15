@@ -536,7 +536,7 @@ dependencies = [
 
 [[package]]
 name = "tokei"
-version = "6.1.3"
+version = "7.0.0"
 dependencies = [
  "clap 2.29.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "encoding 0.2.33 (registry+https://github.com/rust-lang/crates.io-index)",

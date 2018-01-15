@@ -14,12 +14,13 @@ use std::ops::{AddAssign, Deref, DerefMut};
 use encoding;
 use encoding::all::UTF_8;
 use encoding::DecoderTrap::Replace;
+use log::Level::Trace;
+use rayon::prelude::*;
 
 #[cfg(feature = "cbor")] use serde_cbor;
 #[cfg(feature = "json")] use serde_json;
 #[cfg(feature = "yaml")] use serde_yaml;
 #[cfg(feature = "toml")] use toml;
-use rayon::prelude::*;
 
 use stats::Stats;
 use super::LanguageType::*;
@@ -62,13 +63,16 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             stats.lines += 1;
             if line.chars().all(char::is_whitespace) {
                 stats.blanks += 1;
+                trace!("Blank line. So far: {}", stats.blanks);
                 continue;
             }
 
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
-            let line = if !is_fortran { line.trim_left() } else { line };
+            let line = if !is_fortran { line.trim() } else { line };
+            let mut ended_with_comments = false;
+            let mut had_code = stack.is_empty();
             let mut skip = 0;
             macro_rules! skip {
                 ($skip:expr) => {{
@@ -82,6 +86,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                     continue;
                 }
 
+                ended_with_comments = false;
                 let line = line.as_bytes();
                 let window = &line[i..];
 
@@ -90,6 +95,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                         skip = 1;
                     } else if window.starts_with(quote_str.as_bytes()) {
                         quote = None;
+                        trace!(r#"End of "{}"."#, quote_str);
                         skip!(quote_str.len());
                     }
                     continue;
@@ -99,39 +105,51 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                     .and_then(|l| Some(window.starts_with(l.as_bytes())))
                 {
                     let last = stack.pop().unwrap();
+                    ended_with_comments = true;
+
+                    if log_enabled!(Trace) && stack.is_empty() {
+                        trace!(r#"End of "{}"."#, last);
+                    } else {
+                        trace!(r#"End of "{}". Still in comments."#, last);
+                    }
+
                     skip!(last.len());
                     continue;
                 }
 
                 if stack.is_empty() {
-                    for comment in &language.line_comment {
+                    for comment in language.line_comment {
                         if window.starts_with(comment.as_bytes()) {
+                            trace!(r#"Start of "{}"."#, comment);
                             break 'window;
                         }
                     }
 
-                    for &(start, end) in &language.quotes {
+                    for &(start, end) in language.quotes {
                         if window.starts_with(start.as_bytes()) {
                             quote = Some(end);
+                            trace!(r#"Start of "{}"."#, start);
                             skip!(start.len());
                             continue 'window;
                         }
                     }
                 }
 
-                for &(start, end) in &language.nested_comments {
+                for &(start, end) in language.nested_comments {
                     if window.starts_with(start.as_bytes()) {
                         stack.push(end);
+                        trace!(r#"Start of "{}"."#, start);
                         skip!(start.len());
                         continue 'window;
                     }
                 }
 
-                for &(start, end) in &language.multi_line {
+                for &(start, end) in language.multi_line {
                     if window.starts_with(start.as_bytes()) {
                         if (language.nested && nested_is_empty) ||
                             stack.is_empty()
                         {
+                            trace!(r#"Start of nested "{}"."#, start);
                             stack.push(end);
                         }
 
@@ -147,10 +165,17 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 .chain(language.nested_comments.iter().map(|&(s, _)| s))
                 .any(|comment| line.starts_with(comment));
 
-            if stack.is_empty() && !starts_with_comment {
-                stats.code += 1;
-            } else {
+            trace!("{}", line);
+
+            if ((!stack.is_empty() || ended_with_comments) && !had_code) ||
+                starts_with_comment
+            {
                 stats.comments += 1;
+                trace!("Determined to be comment. So far: {} lines", stats.comments);
+                trace!("Did it have code?: {}", had_code);
+            } else {
+                stats.code += 1;
+                trace!("Determined to be code. So far: {} lines", stats.code);
             }
         }
 
@@ -291,7 +316,7 @@ impl Languages {
     /// ```no_run
     /// # use tokei::*;
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(vec!["."], vec![".git", "target"]);
+    /// languages.get_statistics(&["."], vec![".git", "target"]);
     /// ```
     pub fn get_statistics(&mut self, paths: &[&str], ignored: Vec<&str>) {
         fs::get_all_files(paths, ignored, &mut self.inner);
@@ -315,7 +340,7 @@ impl Languages {
     /// use std::collections::BTreeMap;
     ///
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(vec!["doesnt/exist"], vec![".git"]);
+    /// languages.get_statistics(&["doesnt/exist"], vec![".git"]);
     ///
     /// let empty_map = languages.remove_empty();
     ///
@@ -346,7 +371,7 @@ impl Languages {
     ///     96e6573116b746f74616c5f66696c657301";
     ///
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(vec!["build.rs"], vec![]);
+    /// languages.get_statistics(&["build.rs"], vec![]);
     ///
     /// assert_eq!(cbor, hex::encode(&languages.to_cbor().unwrap()));
     /// # }
@@ -384,7 +409,7 @@ impl Languages {
     ///     }
     /// }"#;
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(vec!["build.rs"], vec![]);
+    /// languages.get_statistics(&["build.rs"], vec![]);
     ///
     /// assert_eq!(json, languages.to_json().unwrap());
     /// ```
@@ -428,7 +453,7 @@ impl Languages {
     ///         "lines": 17
     ///         "name": ".\\build.rs"#;
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(vec!["build.rs"], vec![]);
+    /// languages.get_statistics(&["build.rs"], vec![]);
     ///
     /// assert_eq!(yaml, languages.to_yaml().unwrap());
     #[cfg(feature = "yaml")]
