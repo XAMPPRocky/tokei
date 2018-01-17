@@ -92,7 +92,7 @@ fn main() {
     languages.get_statistics(&paths, ignored_directories);
 
     if let Some(format) = output_option {
-        match_output(format, &languages);
+        match_output(format, languages);
     }
 
     println!("{}", ROW);
