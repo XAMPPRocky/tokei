@@ -171,7 +171,8 @@ mod io {
         process::exit(1);
     }
 
-    pub fn match_output(_format: &str, _languages: &Languages) -> ! {
+    #[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
+    pub fn match_output(_format: &str, _languages: Languages) -> ! {
         eprintln!("{}", OUTPUT_ERROR);
         process::exit(1);
     }
