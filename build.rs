@@ -23,7 +23,7 @@ fn generate_languages(out_dir: &OsStr) {
         h
     };
 
-    let json: Value =  {
+    let json: Value = {
         let json = File::open(&"languages.json").expect("Cant open json");
         serde_json::from_reader(json).expect("Can't parse json")
     };
@@ -33,9 +33,9 @@ fn generate_languages(out_dir: &OsStr) {
         .expect("Can't find Template");
     let mut output_file = File::create(&output).expect("Can't create output");
 
-    if let Err(err) = handlebars.template_renderw2(&mut source_template,
-                                                   &json,
-                                                   &mut output_file)
+    if let Err(err) = handlebars.render_template_source_to_write(&mut source_template,
+                                                                 &json,
+                                                                 &mut output_file)
     {
         panic!("Failed to generate languages! ERROR: {:?}", err);
     }
