@@ -168,7 +168,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
             trace!("{}", line);
 
             if ((!stack.is_empty() || ended_with_comments) && !had_code) ||
-                starts_with_comment
+                (starts_with_comment && quote.is_none())
             {
                 stats.comments += 1;
                 trace!("Determined to be comment. So far: {} lines", stats.comments);

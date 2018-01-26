@@ -23,10 +23,30 @@ fn generate_languages(out_dir: &OsStr) {
         h
     };
 
-    let json: Value = {
+    let mut json: Value = {
         let json = File::open(&"languages.json").expect("Cant open json");
         serde_json::from_reader(json).expect("Can't parse json")
     };
+
+    for (key, ref mut item) in json.get_mut("languages")
+                                   .unwrap()
+                                   .as_object_mut()
+                                   .unwrap()
+                                   .iter_mut()
+    {
+        macro_rules! sort_prop {
+            ($prop:expr) => {{
+                if let Some(ref mut prop) = item.get_mut($prop) {
+                    prop.as_array_mut()
+                        .unwrap()
+                        .sort_unstable_by(compare_json_str_len)
+                }
+            }}
+        }
+
+        sort_prop!("quotes");
+        sort_prop!("multi_line");
+    }
 
     let output = Path::new(&out_dir).join("language_type.rs");
     let mut source_template = File::open(&"src/language/language_type.hbs.rs")
@@ -39,6 +59,16 @@ fn generate_languages(out_dir: &OsStr) {
     {
         panic!("Failed to generate languages! ERROR: {:?}", err);
     }
+}
+
+fn compare_json_str_len(a: &Value, b: &Value) -> ::std::cmp::Ordering {
+    let a = a.as_array().expect("a as array");
+    let b = b.as_array().expect("b as array");
+
+    let max_a_size = a.iter().map(|e| e.as_str().unwrap().len()).max().unwrap();
+    let max_b_size = b.iter().map(|e| e.as_str().unwrap().len()).max().unwrap();
+
+    max_b_size.cmp(&max_a_size)
 }
 
 fn generate_tests(out_dir: &OsStr) {
