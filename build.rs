@@ -28,7 +28,7 @@ fn generate_languages(out_dir: &OsStr) {
         serde_json::from_reader(json).expect("Can't parse json")
     };
 
-    for (key, ref mut item) in json.get_mut("languages")
+    for (_key, ref mut item) in json.get_mut("languages")
                                    .unwrap()
                                    .as_object_mut()
                                    .unwrap()
