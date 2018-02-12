@@ -30,13 +30,13 @@ lto=true
 
 [build-dependencies]
 serde_json = "1"
-ignore = "0.3"
+ignore = "0.4"
 handlebars = "0.31"
 lazy_static = "1"
 
 [dependencies]
 encoding = "0.2"
-ignore = "0.3"
+ignore = "0.4"
 log = "0.4"
 rayon = "0.9"
 regex = "0.2"
