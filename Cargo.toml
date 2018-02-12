@@ -31,7 +31,7 @@ lto=true
 [build-dependencies]
 serde_json = "1"
 ignore = "0.3"
-handlebars = "0.30"
+handlebars = "0.31"
 lazy_static = "1"
 
 [dependencies]
