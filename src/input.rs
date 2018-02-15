@@ -1,4 +1,3 @@
-use std::io;
 use std::str::FromStr;
 use std::error::Error;
 use std::collections::BTreeMap;
@@ -10,10 +9,16 @@ type LanguageMap = BTreeMap<LanguageType, Language>;
 
 macro_rules! supported_formats {
     ($(
-        ($name:ident, $feature:expr, $variant:ident) =>
-            |$parse_param:ident| $parse_kode:block,
-            |$print_param:ident| $print_kode:block,
+        ($name:ident, $feature:expr, $variant:ident [$($krate:ident),+]) =>
+            $parse_kode:expr,
+            $print_kode:expr,
     )+) => (
+        $( // for each format
+            $( // for each required krate
+                #[cfg(feature = $feature)] extern crate $krate;
+            )+
+        )+
+
         /// Supported serialization formats.
         ///
         /// To enable all formats compile with the `all` feature.
@@ -61,15 +66,12 @@ macro_rules! supported_formats {
                 }
 
                 $(
-                    #[cfg(feature = $feature)]
-                    fn $name($parse_param: &str) -> Result<LanguageMap, Box<Error>> {
-                        Ok({ $parse_kode })
-                    }
-
                     // attributes are not yet allowed on `if` expressions
                     #[cfg(feature = $feature)]
                     {
-                        if let Ok(result) = $name(input) {
+                        let parse = &{ $parse_kode };
+
+                        if let Ok(result) = parse(input) {
                             return Some(result)
                         }
                     }
@@ -83,12 +85,8 @@ macro_rules! supported_formats {
                 match *self {
                     $(
                         #[cfg(feature = $feature)] Format::$variant => {
-                            #[cfg(feature = $feature)]
-                            fn print($print_param: Languages) -> Result<String, Box<Error>> {
-                                Ok({ $print_kode })
-                            }
-
-                            print(_languages)
+                            let print= &{ $print_kode };
+                            Ok(print(&_languages)?)
                         }
                     ),+
                 }
@@ -130,50 +128,25 @@ If you want to enable all supported serialization formats, you can use the 'all'
 
 // The ordering of these determines the attempted order when parsing.
 supported_formats!(
-    (cbor, "cbor", Cbor) =>
+    (cbor, "cbor", Cbor [serde_cbor, hex]) =>
         |input| {
-            extern crate serde_cbor;
-            extern crate hex;
+            hex::FromHex::from_hex(input)
+                .map_err(|e: hex::FromHexError| <Box<Error>>::from(e))
+                .and_then(|hex: Vec<_>| Ok(serde_cbor::from_slice(&hex)?))
+        },
+        |languages| serde_cbor::to_vec(&languages).map(hex::encode),
 
-            let hex: Vec<u8> = hex::FromHex::from_hex(input)?;
-            serde_cbor::from_slice(&hex)?
-        },
-        |languages| {
-            extern crate hex;
-            extern crate serde_cbor;
-            let cbor = serde_cbor::to_vec(&languages)?;
-            hex::encode(cbor)
-         },
+    (json, "json", Json [serde_json]) =>
+        serde_json::from_str,
+        serde_json::to_string,
 
-    (json, "json", Json) =>
-        |input| {
-            extern crate serde_json;
-            serde_json::from_str(&input)?
-        },
-        |languages| {
-            extern crate serde_json;
-            serde_json::to_string(&languages)?
-        },
+    (yaml, "yaml", Yaml [serde_yaml]) =>
+        serde_yaml::from_str,
+        serde_yaml::to_string,
 
-    (yaml, "yaml", Yaml) =>
-        |input| {
-            extern crate serde_yaml;
-            serde_yaml::from_str(&input)?
-        },
-        |languages| {
-            extern crate serde_yaml;
-            serde_yaml::to_string(&languages)?
-        },
-
-    (toml, "toml-io", Toml) =>
-        |input| {
-            extern crate toml;
-            toml::from_str(&input)?
-        },
-        |languages| {
-            extern crate toml;
-            toml::to_string(&languages)?
-        },
+    (toml, "toml-io", Toml [toml]) =>
+        toml::from_str,
+        toml::to_string,
 );
 
 pub fn add_input(input: &str, languages: &mut Languages) -> bool {
