@@ -17,10 +17,7 @@ use encoding::DecoderTrap::Replace;
 use log::Level::Trace;
 use rayon::prelude::*;
 
-#[cfg(feature = "cbor")] use serde_cbor;
-#[cfg(feature = "json")] use serde_json;
-#[cfg(feature = "yaml")] use serde_yaml;
-#[cfg(feature = "toml")] use toml;
+#[cfg(feature = "io")] use serde;
 
 use stats::Stats;
 use super::LanguageType::*;
@@ -193,105 +190,26 @@ pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
 }
 
+#[cfg(feature = "io")]
+impl serde::Serialize for Languages {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where S: serde::Serializer {
+        let map = self.remove_empty();
+        map.serialize(serializer)
+    }
+}
+
+#[cfg(feature = "io")]
+impl<'de> serde::Deserialize<'de> for Languages {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where D: serde::Deserializer<'de> {
+        let map = <_>::deserialize(deserializer)?;
+
+        Ok(Self::from_previous(map))
+    }
+}
 
 impl Languages {
-    /// Creates a `Languages` struct from cbor.
-    ///
-    /// ```no_run
-    /// extern crate tokei;
-    /// use tokei::*;
-    /// extern crate hex;
-    /// # fn main () {
-    /// use hex::FromHex;
-    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e747\
-    ///     30065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300\
-    ///     656c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c6\
-    ///     96e6573116b746f74616c5f66696c657301";
-    ///
-    /// let hex = Vec::from_hex(cbor).unwrap();
-    ///
-    /// let mut languages = Languages::from_cbor(&hex).unwrap();
-    /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
-    /// # }
-    /// ```
-    #[cfg(feature = "cbor")]
-    pub fn from_cbor(cbor: &[u8]) -> serde_cbor::error::Result<Self> {
-        Ok(Self::from_previous(serde_cbor::from_slice(cbor.into())?))
-    }
-
-    #[cfg(not(feature = "cbor"))]
-    pub fn from_cbor(_: &[u8]) -> Result<Self, ()> {
-        Err(())
-    }
-
-    /// Creates a `Languages` struct from json.
-    ///
-    /// ```
-    /// use tokei::*;
-    /// let json = r#"{
-    ///     "Rust": {
-    ///         "blanks": 5,
-    ///         "code": 12,
-    ///         "comments": 0,
-    ///         "stats": [
-    ///             {
-    ///                 "blanks": 5,
-    ///                 "code": 12,
-    ///                 "comments": 0,
-    ///                 "lines": 17,
-    ///                 "name": ".\\src\\lib\\build.rs"
-    ///             }
-    ///         ],
-    ///         "lines": 17
-    ///     }
-    /// }"#;
-    /// let mut languages = Languages::from_json(json.as_bytes()).unwrap();
-    /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
-    /// ```
-    #[cfg(feature = "json")]
-    pub fn from_json(json: &[u8]) -> serde_json::Result<Self> {
-        Ok(Self::from_previous(serde_json::from_slice(json.into())?))
-    }
-
-    #[cfg(not(feature = "json"))]
-    pub fn from_json(_: &[u8]) -> Result<Self, ()> {
-        Err(())
-    }
-
-    /// Creates a `Languages` struct from json.
-    ///
-    /// ```no_run
-    /// # use tokei::*;
-    /// let yaml = r#"\
-    /// ---
-    /// Rust:
-    ///   blanks: 5
-    ///   code: 12
-    ///   comments: 0
-    ///   lines: 17
-    ///   stats:
-    ///     -
-    ///       blanks: 5
-    ///       code: 12
-    ///       comments: 0
-    ///       lines: 17
-    ///       name: .\src\lib\build.rs
-    /// "#;
-    ///
-    /// let mut languages = Languages::from_yaml(yaml.as_bytes()).unwrap();
-    ///
-    /// assert_eq!(12, languages.get_mut(&LanguageType::Rust).unwrap().code);
-    /// ```
-    #[cfg(feature = "yaml")]
-    pub fn from_yaml(yaml: &[u8]) -> serde_yaml::Result<Self> {
-        Ok(Self::from_previous(serde_yaml::from_slice(yaml.into())?))
-    }
-
-    #[cfg(not(feature = "yaml"))]
-    pub fn from_yaml(_: &[u8]) -> Result<Self, ()> {
-        Err(())
-    }
-
     #[cfg(feature = "io")]
     fn from_previous(map: BTreeMap<LanguageType, Language>) -> Self {
         use std::collections::btree_map::Entry::*;
@@ -346,124 +264,15 @@ impl Languages {
     ///
     /// assert_eq!(empty_map.len(), 0);
     /// ```
-    pub fn remove_empty(self) -> BTreeMap<LanguageType, Language> {
+    fn remove_empty(&self) -> BTreeMap<&LanguageType, &Language> {
         let mut map = BTreeMap::new();
 
-        for (name, language) in self.inner {
+        for (name, language) in &self.inner {
             if !language.is_empty() {
                 map.insert(name, language);
             }
         }
         map
-    }
-
-    /// Converts `Languages` to CBOR.
-    ///
-    /// ```no_run
-    /// extern crate tokei;
-    /// # use tokei::*;
-    /// extern crate hex;
-    ///
-    /// # fn main () {
-    /// let cbor = "a16452757374a666626c616e6b730564636f64650c68636f6d6d656e747\
-    ///     30065737461747381a566626c616e6b730564636f64650c68636f6d6d656e747300\
-    ///     656c696e657311646e616d65722e5c7372635c6c69625c6275696c642e7273656c6\
-    ///     96e6573116b746f74616c5f66696c657301";
-    ///
-    /// let mut languages = Languages::new();
-    /// languages.get_statistics(&["build.rs"], vec![]);
-    ///
-    /// assert_eq!(cbor, hex::encode(&languages.to_cbor().unwrap()));
-    /// # }
-    /// ```
-    #[cfg(feature = "cbor")]
-    pub fn to_cbor(self) -> Result<Vec<u8>, serde_cbor::error::Error> {
-        serde_cbor::to_vec(&self.remove_empty())
-    }
-
-    #[cfg(not(feature = "cbor"))]
-    pub fn to_cbor(&self) -> Result<Vec<u8>, ()> {
-        Err(())
-    }
-
-    /// Converts `Languages` to JSON.
-    ///
-    /// ```no_run
-    /// # use tokei::*;
-    ///
-    /// let json = r#"{
-    ///     "Rust": {
-    ///         "blanks": 5,
-    ///         "code": 12,
-    ///         "comments": 0,
-    ///         "stats": [
-    ///             {
-    ///                 "blanks": 5,
-    ///                 "code": 12,
-    ///                 "comments": 0,
-    ///                 "lines": 17,
-    ///                 "name": ".\\build.rs"
-    ///             }
-    ///         ],
-    ///         "lines": 17
-    ///     }
-    /// }"#;
-    /// let mut languages = Languages::new();
-    /// languages.get_statistics(&["build.rs"], vec![]);
-    ///
-    /// assert_eq!(json, languages.to_json().unwrap());
-    /// ```
-    #[cfg(feature = "json")]
-    pub fn to_json(self) -> Result<String, serde_json::Error> {
-        serde_json::to_string(&self.remove_empty())
-    }
-
-    #[cfg(not(feature = "json"))]
-    pub fn to_json(&self) -> Result<String, ()> {
-        Err(())
-    }
-
-    #[cfg(feature = "toml-io")]
-    pub fn to_toml(self) -> Result<String, toml::ser::Error> {
-        toml::to_string(&self.remove_empty())
-    }
-
-    #[cfg(not(feature = "toml-io"))]
-    pub fn to_toml(&self) -> Result<String, ()> {
-        Err(())
-    }
-
-    /// Converts `Languages` to YAML.
-    ///
-    /// ```no_run
-    /// use tokei::*;
-    ///
-    /// let yaml = r#"
-    ///     ---
-    ///     "Rust":
-    ///     "blanks": 5
-    ///     "code": 12
-    ///     "comments": 0
-    ///     "lines": 17
-    ///     "stats":
-    ///         -
-    ///         "blanks": 5
-    ///         "code": 12
-    ///         "comments": 0
-    ///         "lines": 17
-    ///         "name": ".\\build.rs"#;
-    /// let mut languages = Languages::new();
-    /// languages.get_statistics(&["build.rs"], vec![]);
-    ///
-    /// assert_eq!(yaml, languages.to_yaml().unwrap());
-    #[cfg(feature = "yaml")]
-    pub fn to_yaml(self) -> Result<String, serde_yaml::Error> {
-        serde_yaml::to_string(&self.remove_empty())
-    }
-
-    #[cfg(not(feature = "yaml"))]
-    pub fn to_yaml(&self) -> Result<String, ()> {
-        Err(())
     }
 }
 

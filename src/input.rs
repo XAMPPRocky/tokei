@@ -1,3 +1,4 @@
+use std::io;
 use std::str::FromStr;
 use std::error::Error;
 use std::collections::BTreeMap;
@@ -132,8 +133,8 @@ supported_formats!(
         },
         |languages| {
             extern crate hex;
-
-            let cbor = languages.to_cbor()?;
+            extern crate serde_cbor;
+            let cbor = serde_cbor::to_vec(&languages)?;
             hex::encode(cbor)
          },
 
@@ -143,7 +144,8 @@ supported_formats!(
             serde_json::from_str(&input)?
         },
         |languages| {
-            languages.to_json()?
+            extern crate serde_json;
+            serde_json::to_string(&languages)?
         },
 
     (yaml, "yaml", Yaml) =>
@@ -152,16 +154,18 @@ supported_formats!(
             serde_yaml::from_str(&input)?
         },
         |languages| {
-            languages.to_yaml()?
+            extern crate serde_yaml;
+            serde_yaml::to_string(&languages)?
         },
 
     (toml, "toml-io", Toml) =>
         |input| {
             extern crate toml;
-            toml::from_str(&input)
+            toml::from_str(&input)?
         },
         |languages| {
-            languages.to_toml()?
+            extern crate toml;
+            toml::to_string(&languages)?
         },
 );
 
