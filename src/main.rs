@@ -26,7 +26,8 @@ fn crate_version() -> String {
         return crate_version!().into()
     }
 
-    format!("{} compiled with serialization support: {}", crate_version!(), Format::supported().join(", "))
+    format!("{} compiled with serialization support: {}",
+        crate_version!(), Format::supported().join(", "))
 }
 
 fn setup_logger(verbose_option: u64) {
@@ -93,18 +94,36 @@ fn main() {
         (version: &*crate_version())
         (author: "Aaron P. <theaaronepower@gmail.com> + Contributors")
         (about: crate_description!())
-        (@arg exclude: -e --exclude +takes_value +multiple number_of_values(1) "Ignore all files & directories containing the word.")
-        (@arg file_input: -i --input +takes_value "Gives statistics from a previous tokei run. Can be given a file path, or \"stdin\" to read from stdin.")
-        (@arg files: -f --files "Will print out statistics on individual files.")
-        (@arg input: conflicts_with[languages] ... "The input file(s)/directory(ies) to be counted.")
-        (@arg languages: -l --languages conflicts_with[input] "Prints out supported languages and their extensions.")
-        (@arg output: -o --output possible_values(/* `all` is used so we can fail later with a better error */Format::all()) +takes_value
-            "Outputs Tokei in a specific format. Compile with additional features for more format support.")
-        (@arg verbose: -v --verbose ... "Set log output level:
+        (@arg exclude: -e --exclude
+            +takes_value
+            +multiple number_of_values(1)
+            "Ignore all files & directories containing the word.")
+        (@arg file_input: -i --input
+            +takes_value
+            "Gives statistics from a previous tokei run. Can be given a file path, \
+            or \"stdin\" to read from stdin.")
+        (@arg files: -f --files
+            "Will print out statistics on individual files.")
+        (@arg input:
+            conflicts_with[languages] ...
+            "The input file(s)/directory(ies) to be counted.")
+        (@arg languages: -l --languages
+            conflicts_with[input]
+            "Prints out supported languages and their extensions.")
+        (@arg output: -o --output
+            possible_values(/* `all` is used so to fail later with a better error */Format::all())
+            +takes_value
+            "Outputs Tokei in a specific format. Compile with additional features for more \
+            format support.")
+        (@arg verbose: -v --verbose ...
+        "Set log output level:
          1: to show unknown file extensions,
          2: reserved for future debugging,
          3: enable file level trace. Not recommended on multiple files")
-        (@arg sort: -s --sort possible_values(&["files", "lines", "blanks", "code", "comments"]) +takes_value "Sort languages based on column")
+        (@arg sort: -s --sort
+            possible_values(&["files", "lines", "blanks", "code", "comments"])
+            +takes_value
+            "Sort languages based on column")
     ).get_matches();
     let files_option = matches.is_present(FILES);
     let input_option = matches.value_of("file_input");
