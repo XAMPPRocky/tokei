@@ -165,10 +165,9 @@ supported_formats!(
         },
 );
 
-pub fn add_input(input: &str, languages: &mut Languages) {
+pub fn add_input(input: &str, languages: &mut Languages) -> bool {
     use std::fs::File;
     use std::io::Read;
-    use std::process;
 
     let map = match File::open(input) {
         Ok(mut file) => {
@@ -196,31 +195,9 @@ pub fn add_input(input: &str, languages: &mut Languages) {
 
     if let Some(map) = map {
         *languages += map;
+        true
     } else {
-        eprintln!("Error:\n Failed to parse input file: {}", input);
-
-        let not_supported = self::Format::not_supported();
-        if !not_supported.is_empty() {
-            eprintln!("
-This version of tokei was compiled without serialization support for the following formats:
-
-    {not_supported}
-
-You may want to install any comma separated combination of {all:?}:
-
-    cargo install tokei --features {all:?}
-
-Or use the 'all' feature:
-
-    cargo install tokei --features all
-    \n",
-                not_supported = not_supported.join(", "),
-                // no space after comma to ease copypaste
-                all = self::Format::all().join(",")
-            );
-        }
-
-        process::exit(1);
+        false
     }
 }
 

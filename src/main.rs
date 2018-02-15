@@ -12,6 +12,7 @@ use input::*;
 
 use std::borrow::Cow;
 use std::str::FromStr;
+use std::process;
 
 use env_logger::Builder;
 use log::LevelFilter;
@@ -34,6 +35,31 @@ fn crate_version() -> String {
     }
 
     format!("{} compiled with serialization support: {}", crate_version!(), Format::supported().join(", "))
+}
+
+fn print_input_parse_failure(input_filename: &str) {
+    eprintln!("Error:\n Failed to parse input file: {}", input_filename);
+
+    let not_supported = input::Format::not_supported();
+    if !not_supported.is_empty() {
+        eprintln!("
+This version of tokei was compiled without serialization support for the following formats:
+
+    {not_supported}
+
+You may want to install any comma separated combination of {all:?}:
+
+    cargo install tokei --features {all:?}
+
+Or use the 'all' feature:
+
+    cargo install tokei --features all
+    \n",
+            not_supported = not_supported.join(", "),
+            // no space after comma to ease copypaste
+            all = self::Format::all().join(",")
+        );
+    }
 }
 
 fn main() {
@@ -105,14 +131,17 @@ fn main() {
     };
 
     if let Some(input) = input_option {
-        add_input(input, &mut languages);
+        if !add_input(input, &mut languages) {
+            print_input_parse_failure(input);
+            process::exit(1);
+        }
     }
 
     languages.get_statistics(&paths, ignored_directories);
 
     if let Some(format) = output_format {
         print!("{}", format.print(languages).unwrap());
-        std::process::exit(0);
+        process::exit(0);
     }
 
     println!("{}", ROW);
