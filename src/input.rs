@@ -127,16 +127,7 @@ supported_formats!(
             extern crate serde_cbor;
             extern crate hex;
 
-            use std::error::Error;
-            use std::process;
-
-            let hex: Vec<u8> = match hex::FromHex::from_hex(input) {
-                Ok(hex) => hex,
-                Err(err) => {
-                    eprintln!("{}", err.description());
-                    process::exit(1)
-                }
-            };
+            let hex: Vec<u8> = hex::FromHex::from_hex(input)?;
             serde_cbor::from_slice(&hex)?
         },
         |languages| {
