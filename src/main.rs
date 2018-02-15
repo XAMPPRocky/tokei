@@ -66,7 +66,7 @@ Or use the 'all' feature:
     \n",
             not_supported = not_supported.join(", "),
             // no space after comma to ease copypaste
-            all = self::Format::all().join(",")
+            all = self::Format::all_feature_names().join(",")
         );
     }
 }

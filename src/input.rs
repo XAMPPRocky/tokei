@@ -41,6 +41,12 @@ macro_rules! supported_formats {
                 ]
             }
 
+            pub fn all_feature_names() -> &'static [&'static str] {
+                &[
+                    $( $feature ),+
+                ]
+            }
+
             pub fn not_supported() -> &'static [&'static str] {
                 &[
                     $(
@@ -105,12 +111,13 @@ macro_rules! supported_formats {
 any '{format}' serialization support, to enable serialization, \
 reinstall tokei with the features flag.
 
-    cargo install tokei --features {format}
+    cargo install tokei --features {feature}
 
 If you want to enable all supported serialization formats, you can use the 'all' feature.
 
     cargo install tokei --features all\n",
-                                format = stringify!($name))
+                                format = stringify!($name),
+                                feature = $feature)
                             );
                         }
                     ),+
