@@ -1,5 +1,3 @@
-pub use self::io::*;
-
 use std::str::FromStr;
 use std::error::Error;
 use std::collections::BTreeMap;
@@ -179,76 +177,65 @@ supported_formats!(
         },
 );
 
-#[cfg(feature = "io")]
-mod io {
-    use tokei::Languages;
-
-    pub fn add_input(input: &str, languages: &mut Languages) {
-        use std::fs::File;
-        use std::io::Read;
-
-        let map = match File::open(input) {
-            Ok(mut file) => {
-                let contents = {
-                    let mut contents = String::new();
-                    file.read_to_string(&mut contents)
-                        .expect("Couldn't read file");
-                    contents
-                };
-
-                convert_input(contents)
-            }
-            Err(_) => {
-                if input == "stdin" {
-                    let mut stdin = ::std::io::stdin();
-                    let mut buffer = String::new();
-
-                    let _ = stdin.read_to_string(&mut buffer);
-                    convert_input(buffer)
-                } else {
-                    convert_input(String::from(input))
-                }
-            }
-        };
-
-        if let Some(map) = map {
-            *languages += map;
-        }
-    }
-
-    fn convert_input(contents: String) -> Option<super::LanguageMap> {
-        super::Format::parse(&contents)
-    }
-}
-
-#[cfg(not(feature = "io"))]
-mod io {
+pub fn add_input(input: &str, languages: &mut Languages) {
+    use std::fs::File;
+    use std::io::Read;
     use std::process;
-    use tokei::Languages;
 
-    const OUTPUT_ERROR: &str = "\
-    This version of tokei was compiled without any serialization formats, to
-    enable serialization, reinstall tokei with the features flag.
+    let map = match File::open(input) {
+        Ok(mut file) => {
+            let contents = {
+                let mut contents = String::new();
+                file.read_to_string(&mut contents)
+                    .expect("Couldn't read file");
+                contents
+            };
 
-        ALL:
-        cargo install tokei --features all
+            convert_input(contents)
+        }
+        Err(_) => {
+            if input == "stdin" {
+                let mut stdin = ::std::io::stdin();
+                let mut buffer = String::new();
 
-        JSON:
-        cargo install tokei --features json
+                let _ = stdin.read_to_string(&mut buffer);
+                convert_input(buffer)
+            } else {
+                convert_input(String::from(input))
+            }
+        }
+    };
 
-        CBOR:
-        cargo install tokei --features cbor
+    if let Some(map) = map {
+        *languages += map;
+    } else {
+        eprintln!("Error:\n Failed to parse input file: {}", input);
 
-        YAML:
-        cargo install tokei --features yaml
+        let not_supported = self::Format::not_supported();
+        if !not_supported.is_empty() {
+            eprintln!("
+This version of tokei was compiled without serialization support for the following formats:
 
-        CBOR:
-        cargo install tokei --features cbor
-";
+    {not_supported}
 
-    pub fn add_input(_input: &str, _map: &mut Languages) -> ! {
-        eprintln!("{}", OUTPUT_ERROR);
+You may want to install any comma separated combination of {all:?}:
+
+    cargo install tokei --features {all:?}
+
+Or use the 'all' feature:
+
+    cargo install tokei --features all
+    \n",
+                not_supported = not_supported.join(", "),
+                // no space after comma to ease copypaste
+                all = self::Format::all().join(",")
+            );
+        }
+
         process::exit(1);
     }
 }
 
+fn convert_input(contents: String) -> Option<LanguageMap> {
+    self::Format::parse(&contents)
+}
