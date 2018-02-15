@@ -131,13 +131,10 @@ supported_formats!(
             serde_cbor::from_slice(&hex)?
         },
         |languages| {
-            let cbor: Vec<u8> = languages.to_cbor()?;
+            extern crate hex;
 
-            let mut s = String::new();
-            for byte in cbor {
-                s.push_str(&format!("{:02x}", byte))
-            }
-            s
+            let cbor = languages.to_cbor()?;
+            hex::encode(cbor)
          },
 
     (json, "json", Json) =>
