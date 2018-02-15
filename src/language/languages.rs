@@ -264,7 +264,7 @@ impl Languages {
     ///
     /// assert_eq!(empty_map.len(), 0);
     /// ```
-    fn remove_empty(&self) -> BTreeMap<&LanguageType, &Language> {
+    pub fn remove_empty(&self) -> BTreeMap<&LanguageType, &Language> {
         let mut map = BTreeMap::new();
 
         for (name, language) in &self.inner {
