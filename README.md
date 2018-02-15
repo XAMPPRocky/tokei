@@ -26,6 +26,8 @@ This is tokei running on it's own directory
         - [Cargo](#cargo)
         - [Fedora](#fedora)
         - [FreeBSD](#freebsd)
+        - [Homebrew](#homebrew)
+        - [Nix/NixOS](#nix/nixos)
     - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
@@ -88,6 +90,11 @@ $ sudo dnf install tokei
 #### FreeBSD
 ```shell
 $ pkg install tokei
+```
+
+#### Homebrew
+```shell
+$ brew install tokei
 ```
 
 #### Nix/NixOS
