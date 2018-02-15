@@ -11,12 +11,14 @@ mod input;
 use input::*;
 
 use std::borrow::Cow;
+use std::str::FromStr;
 
 use env_logger::Builder;
 use log::LevelFilter;
 
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort::*;
+use input::Format;
 
 const BLANKS: &str = "blanks";
 const CODE: &str = "code";
@@ -26,11 +28,20 @@ const LINES: &str = "lines";
 const ROW: &str = "------------------------------------------------------------\
                    -------------------";
 
+fn crate_version() -> String {
+    if Format::supported().is_empty() {
+        return crate_version!().into()
+    }
+
+    format!("{} compiled with serialization support: {}", crate_version!(), Format::supported().join(", "))
+}
+
 fn main() {
     // Get options at the beginning, so the program doesn't have to make any
     // extra calls to get the information, and there isn't any magic strings.
+
     let matches = clap_app!(tokei =>
-        (version: crate_version!())
+        (version: &*crate_version())
         (author: "Aaron P. <theaaronepower@gmail.com> + Contributors")
         (about: crate_description!())
         (@arg exclude: -e --exclude +takes_value +multiple number_of_values(1) "Ignore all files & directories containing the word.")
@@ -38,7 +49,8 @@ fn main() {
         (@arg files: -f --files "Will print out statistics on individual files.")
         (@arg input: conflicts_with[languages] ... "The input file(s)/directory(ies) to be counted.")
         (@arg languages: -l --languages conflicts_with[input] "Prints out supported languages and their extensions.")
-        (@arg output: -o --output possible_values(&["cbor", "json", "toml", "yaml"]) +takes_value "Outputs Tokei in a specific format.")
+        (@arg output: -o --output possible_values(/* `all` is used so we can fail later with a better error */Format::all()) +takes_value
+            "Outputs Tokei in a specific format. Compile with additional features for more format support.")
         (@arg verbose: -v --verbose ... "Set log output level:
          1: to show unknown file extensions,
          2: reserved for future debugging,
@@ -58,6 +70,13 @@ fn main() {
         }
         ignored_directories
     };
+
+    let output_format = output_option.map(|s| {
+        Format::from_str(s).unwrap_or_else(|e| {
+            eprintln!("Error:\n{}", e);
+            std::process::exit(1);
+        })
+    });
 
     let mut builder = Builder::new();
 
@@ -91,8 +110,9 @@ fn main() {
 
     languages.get_statistics(&paths, ignored_directories);
 
-    if let Some(format) = output_option {
-        match_output(format, languages);
+    if let Some(format) = output_format {
+        print!("{}", format.print(languages).unwrap());
+        std::process::exit(0);
     }
 
     println!("{}", ROW);
