@@ -38,7 +38,7 @@ lazy_static = "1"
 encoding = "0.2"
 ignore = "0.4"
 log = "0.4"
-rayon = "0.9"
+rayon = "1.0"
 regex = "0.2"
 clap = "2.24"
 
