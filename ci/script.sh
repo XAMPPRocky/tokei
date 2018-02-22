@@ -6,6 +6,7 @@ set -ex
 main() {
     rustup self update
     cross build --target $TARGET
+    cross build --target $TARGET --features=all
     cross build --target $TARGET --release
 
     if [ ! -z $DISABLE_TESTS ]; then
@@ -13,9 +14,11 @@ main() {
     fi
 
     cross test --target $TARGET
+    cross test --target $TARGET --features=all
     cross test --target $TARGET --release
 
     cross run --target $TARGET
+    cross run --target $TARGET --features=all
     cross run --target $TARGET --release
 }
 
