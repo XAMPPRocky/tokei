@@ -43,7 +43,7 @@ pub struct Language {
 }
 
 impl Language {
-    /// Constructs a new  empty Language with the comments provided.
+    /// Constructs a new empty Language with the comments provided.
     ///
     /// ```
     /// # use tokei::*;
@@ -61,7 +61,7 @@ impl Language {
         }
     }
 
-    /// Convience constructor for creating a language that has no commenting
+    /// Convenience constructor for creating a language that has no commenting
     /// syntax.
     ///
     /// ```
@@ -74,7 +74,7 @@ impl Language {
         Self::default()
     }
 
-    /// Convience constructor for creating a language that has the same
+    /// Convenience constructor for creating a language that has the same
     /// commenting syntax as C like languages.
     ///
     /// ```
@@ -94,7 +94,7 @@ impl Language {
         }
     }
 
-    /// Convience constructor for creating a language that has the same
+    /// Convenience constructor for creating a language that has the same
     /// commenting syntax as ML like languages.
     ///
     /// ```
@@ -113,7 +113,7 @@ impl Language {
         }
     }
 
-    /// Convience constructor for creating a language that has the same
+    /// Convenience constructor for creating a language that has the same
     /// commenting syntax as HTML like languages.
     ///
     /// ```
@@ -132,7 +132,7 @@ impl Language {
         }
     }
 
-    /// Convience constructor for creating a language that has the same
+    /// Convenience constructor for creating a language that has the same
     /// commenting syntax as Bash.
     ///
     /// ```
@@ -147,7 +147,7 @@ impl Language {
         Self::new_single(&["#"])
     }
 
-    /// Convience constructor for creating a language that has the same
+    /// Convenience constructor for creating a language that has the same
     /// commenting syntax as Haskell.
     ///
     /// ```
@@ -155,8 +155,8 @@ impl Language {
     /// let haskell = Language::new(&["--"], &[("{-", "-}")]).nested();
     /// let idris = Language::new_haskell();
     ///
-    /// assert_eq!(haskell.line_comment, haskell.line_comment);
-    /// assert_eq!(haskell.multi_line, haskell.multi_line);
+    /// assert_eq!(haskell.line_comment, idris.line_comment);
+    /// assert_eq!(haskell.multi_line, idris.multi_line);
     /// ```
     pub fn new_haskell() -> Self {
         Language {
@@ -167,7 +167,7 @@ impl Language {
         }
     }
 
-    /// Convience constructor for creating a language that only has multi line
+    /// Convenience constructor for creating a language that only has multi line
     /// comments.
     ///
     /// ```
@@ -182,7 +182,7 @@ impl Language {
         }
     }
 
-    /// Convience constructor for creating a language that has the same
+    /// Convenience constructor for creating a language that has the same
     /// commenting syntax as Prolog.
     ///
     /// ```
@@ -202,7 +202,7 @@ impl Language {
         }
     }
 
-    /// Convience constructor for creating a language that only has single line
+    /// Convenience constructor for creating a language that only has single line
     /// comments.
     ///
     /// ```
