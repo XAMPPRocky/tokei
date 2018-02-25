@@ -11,7 +11,7 @@
 Tokei is a program that displays statistics about your code. Tokei will show number of files, total lines within those files and code, comments, and blanks grouped by language.
 
 ## Example Output
-This is tokei running on it's own directory
+This is tokei running on its own directory
 
 [![asciicast](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o.png)](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o)
 
