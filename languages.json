@@ -1329,6 +1329,18 @@
                 "vim"
             ]
         },
+        "Vue":{
+            "name":"Vue",
+            "base":"html",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"],
+                ["`", "`"]
+            ],
+            "extensions":[
+                "vue"
+            ]
+        },
         "Wolfram":{
             "base":"func",
             "extensions":[
