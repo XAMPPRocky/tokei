@@ -1,180 +1,190 @@
-pub use self::io::*;
+use std::str::FromStr;
+use std::error::Error;
+use std::collections::BTreeMap;
 
-#[cfg(feature = "io")]
-mod io {
-    #[cfg(feature = "cbor")] extern crate serde_cbor;
-    #[cfg(feature = "json")] extern crate serde_json;
-    #[cfg(feature = "yaml")] extern crate serde_yaml;
-    #[cfg(feature = "toml-io")] extern crate toml;
-    #[cfg(feature = "cbor")] extern crate hex;
+use tokei::Languages;
+use tokei::{LanguageType, Language};
 
-    use std::collections::BTreeMap;
-    use tokei::Languages;
-    use tokei::{LanguageType, Language};
+type LanguageMap = BTreeMap<LanguageType, Language>;
 
-    type LanguageMap = BTreeMap<LanguageType, Language>;
+macro_rules! supported_formats {
+    ($(
+        ($name:ident, $feature:expr, $variant:ident [$($krate:ident),+]) =>
+            $parse_kode:expr,
+            $print_kode:expr,
+    )+) => (
+        $( // for each format
+            $( // for each required krate
+                #[cfg(feature = $feature)] extern crate $krate;
+            )+
+        )+
 
-    pub fn add_input(input: &str, languages: &mut Languages) {
-        use std::fs::File;
-        use std::io::Read;
+        /// Supported serialization formats.
+        ///
+        /// To enable all formats compile with the `all` feature.
+        #[derive(Debug)]
+        pub enum Format {
+            $(
+                #[cfg(feature = $feature)] $variant
+            ),+
 
-        let map = match File::open(input) {
-            Ok(mut file) => {
-                let contents = {
-                    let mut contents = String::new();
-                    file.read_to_string(&mut contents)
-                        .expect("Couldn't read file");
-                    contents
-                };
+            // TODO: Allow adding format at runtime when used as a lib?
+        }
 
-                convert_input(contents)
+        impl Format {
+            pub fn supported() -> &'static [&'static str] {
+                &[
+                    $(
+                        #[cfg(feature = $feature)] stringify!($name)
+                    ),+
+                ]
             }
-            Err(_) => {
-                if input == "stdin" {
-                    let mut stdin = ::std::io::stdin();
-                    let mut buffer = String::new();
 
-                    let _ = stdin.read_to_string(&mut buffer);
-                    convert_input(buffer)
-                } else {
-                    convert_input(String::from(input))
+            pub fn all() -> &'static [&'static str] {
+                &[
+                    $( stringify!($name) ),+
+                ]
+            }
+
+            pub fn all_feature_names() -> &'static [&'static str] {
+                &[
+                    $( $feature ),+
+                ]
+            }
+
+            pub fn not_supported() -> &'static [&'static str] {
+                &[
+                    $(
+                        #[cfg(not(feature = $feature))] stringify!($name)
+                    ),+
+                ]
+            }
+
+            pub fn parse(input: &str) -> Option<LanguageMap> {
+                if input.is_empty() {
+                    return None
+                }
+
+                $(
+                    // attributes are not yet allowed on `if` expressions
+                    #[cfg(feature = $feature)]
+                    {
+                        let parse = &{ $parse_kode };
+
+                        if let Ok(result) = parse(input) {
+                            return Some(result)
+                        }
+                    }
+                )+
+
+                // Didn't match any of the compiled serialization formats
+                None
+            }
+
+            pub fn print(&self, _languages: Languages) -> Result<String, Box<Error>> {
+                match *self {
+                    $(
+                        #[cfg(feature = $feature)] Format::$variant => {
+                            let print= &{ $print_kode };
+                            Ok(print(&_languages)?)
+                        }
+                    ),+
                 }
             }
-        };
-
-        if let Some(map) = map {
-            *languages += map;
         }
 
-    }
+        impl FromStr for Format {
+            type Err = String;
 
-    fn convert_input(contents: String) -> Option<LanguageMap> {
-        if contents.is_empty() {
-            None
-        } else if let Ok(result) = from_cbor(&contents) {
-            Some(result)
-        } else if let Ok(result) = from_json(&contents) {
-            Some(result)
-        } else if let Ok(result) = from_yaml(&contents) {
-            Some(result)
-        } else if let Ok(result) = from_toml(&contents) {
-            Some(result)
-        } else {
-            None
-        }
-    }
+            fn from_str(format: &str) -> Result<Self, Self::Err> {
+                match format {
+                    $(
+                        stringify!($name) => {
+                            #[cfg(feature = $feature)]
+                            return Ok(Format::$variant);
 
-    #[cfg(feature = "cbor")]
-    pub fn from_cbor(contents: &String) -> serde_cbor::error::Result<LanguageMap> {
-        use self::hex::FromHex;
-        use std::error::Error;
-        use std::process;
+                            #[cfg(not(feature = $feature))]
+                            return Err(format!(
+"This version of tokei was compiled without \
+any '{format}' serialization support, to enable serialization, \
+reinstall tokei with the features flag.
 
-        let hex = match Vec::from_hex(contents) {
-            Ok(hex) => hex,
-            Err(err) => {
-                eprintln!("{}", err.description());
-                process::exit(1)
-            }
-        };
-        serde_cbor::from_slice(&hex)
-    }
+    cargo install tokei --features {feature}
 
-    #[cfg(not(feature = "cbor"))]
-    pub fn from_cbor(_: &String) -> Result<LanguageMap, ()> {
-        Err(())
-    }
+If you want to enable all supported serialization formats, you can use the 'all' feature.
 
-    #[cfg(feature = "json")]
-    pub fn from_json(contents: &String) -> serde_json::Result<LanguageMap> {
-        serde_json::from_str(&contents)
-    }
-
-    #[cfg(not(feature = "json"))]
-    pub fn from_json(_: &String) -> Result<LanguageMap, ()> {
-        Err(())
-    }
-
-    #[cfg(feature = "toml-io")]
-    pub fn from_toml(contents: &String) -> Result<LanguageMap, toml::de::Error>
-    {
-        toml::from_str(&contents)
-    }
-
-    #[cfg(not(feature = "toml-io"))]
-    pub fn from_toml(_: &String) -> Result<LanguageMap, ()> {
-        Err(())
-    }
-
-    #[cfg(feature = "yaml")]
-    pub fn from_yaml(contents: &String) -> serde_yaml::Result<LanguageMap> {
-        serde_yaml::from_str(&contents)
-    }
-
-    #[cfg(not(feature = "yaml"))]
-    pub fn from_yaml(_: &String) -> Result<LanguageMap, ()> {
-        Err(())
-    }
-
-    pub fn match_output(format: &str, languages: Languages) -> ! {
-        match format {
-            "cbor" => {
-                let cbor: Vec<u8> = languages.to_cbor()
-                    .expect("Couldn't convert to CBOR");
-
-                for byte in cbor {
-                    print!("{:02x}", byte);
+    cargo install tokei --features all\n",
+                                format = stringify!($name),
+                                feature = $feature)
+                            );
+                        }
+                    ),+
+                    format => Err(format!("{:?} is not a supported serialization format", format)),
                 }
             }
-            "json" => print!("{}", languages.to_json()
-                             .expect("Couldn't convert to JSON")),
-            "toml" => print!("{}", languages.to_toml()
-                             .expect("Couldn't convert to TOML")),
-            "yaml" => print!("{}", languages.to_yaml()
-                             .expect("Couldn't convert to YAML")),
-            _ => unreachable!(),
         }
-        ::std::process::exit(0)
-    }
-
+    )
 }
 
+// The ordering of these determines the attempted order when parsing.
+supported_formats!(
+    (cbor, "cbor", Cbor [serde_cbor, hex]) =>
+        |input| {
+            hex::FromHex::from_hex(input)
+                .map_err(|e: hex::FromHexError| <Box<Error>>::from(e))
+                .and_then(|hex: Vec<_>| Ok(serde_cbor::from_slice(&hex)?))
+        },
+        |languages| serde_cbor::to_vec(&languages).map(hex::encode),
 
-#[cfg(not(feature = "io"))]
-#[allow(unused_variables)]
-mod io {
-    use std::process;
-    use tokei::Languages;
+    (json, "json", Json [serde_json]) =>
+        serde_json::from_str,
+        serde_json::to_string,
 
-    const OUTPUT_ERROR: &str = "\
-    This version of tokei was compiled without any serialization formats, to
-    enable serialization, reinstall tokei with the features flag.
+    (yaml, "yaml", Yaml [serde_yaml]) =>
+        serde_yaml::from_str,
+        serde_yaml::to_string,
 
-        ALL:
-        cargo install tokei --features all
+    (toml, "toml-io", Toml [toml]) =>
+        toml::from_str,
+        toml::to_string,
+);
 
-        JSON:
-        cargo install tokei --features json
+pub fn add_input(input: &str, languages: &mut Languages) -> bool {
+    use std::fs::File;
+    use std::io::Read;
 
-        CBOR:
-        cargo install tokei --features cbor
+    let map = match File::open(input) {
+        Ok(mut file) => {
+            let contents = {
+                let mut contents = String::new();
+                file.read_to_string(&mut contents)
+                    .expect("Couldn't read file");
+                contents
+            };
 
-        YAML:
-        cargo install tokei --features yaml
+            convert_input(contents)
+        }
+        Err(_) => {
+            if input == "stdin" {
+                let mut stdin = ::std::io::stdin();
+                let mut buffer = String::new();
 
-        CBOR:
-        cargo install tokei --features cbor
-";
+                let _ = stdin.read_to_string(&mut buffer);
+                convert_input(buffer)
+            } else {
+                convert_input(String::from(input))
+            }
+        }
+    };
 
-    pub fn add_input(_input: &str, _map: &mut Languages) -> ! {
-        eprintln!("{}", OUTPUT_ERROR);
-        process::exit(1);
-    }
-
-    #[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
-    pub fn match_output(_format: &str, _languages: Languages) -> ! {
-        eprintln!("{}", OUTPUT_ERROR);
-        process::exit(1);
+    if let Some(map) = map {
+        *languages += map;
+        true
+    } else {
+        false
     }
 }
 
+fn convert_input(contents: String) -> Option<LanguageMap> {
+    self::Format::parse(&contents)
+}

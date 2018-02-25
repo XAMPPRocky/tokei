@@ -62,14 +62,6 @@ extern crate serde_derive;
 
 #[cfg(feature = "io")]
 extern crate serde;
-#[cfg(feature = "cbor")]
-extern crate serde_cbor;
-#[cfg(feature = "json")]
-extern crate serde_json;
-#[cfg(feature = "yaml")]
-extern crate serde_yaml;
-#[cfg(feature = "toml-io")]
-extern crate toml;
 
 #[macro_use]
 mod utils;
