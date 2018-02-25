@@ -744,7 +744,6 @@
             ]
         },
         "Lisp":{
-            "name":"LISP",
             "line_comment":[
                 ";"
             ],
@@ -1106,6 +1105,19 @@
             "extensions":[
                 "sc",
                 "scala"
+            ]
+        },
+        "Scheme":{
+            "line_comment":[
+                ";"
+            ],
+            "multi_line":[
+                ["#|", "|#"]
+            ],
+            "nested":true,
+            "extensions":[
+                "scm",
+                "ss"
             ]
         },
         "Scons":{
