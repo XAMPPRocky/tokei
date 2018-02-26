@@ -318,6 +318,7 @@ Go
 Happy
 Handlebars
 Haskell
+Haxe
 HEX
 HTML
 Hamlet
