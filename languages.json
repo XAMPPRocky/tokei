@@ -1,6 +1,7 @@
 {
     "languages":{
-        "ABAP":{
+        "Abap":{
+            "name":"ABAP",
             "line_comment":[
                 "*",
                 "\\\""
@@ -220,7 +221,8 @@
                 "cmakelists.txt"
             ]
         },
-        "COBOL": {
+        "Cobol": {
+            "name":"COBOL",
             "line_comment":[
                 "*"
             ],
