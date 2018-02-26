@@ -586,6 +586,16 @@
                 "hamlet"
             ]
         },
+        "Haxe":{
+            "base":"c",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "hx"
+            ]
+        },
         "Hex":{
             "name":"HEX",
             "base":"blank",
