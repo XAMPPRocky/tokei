@@ -1,5 +1,14 @@
 {
     "languages":{
+        "ABAP":{
+            "line_comment":[
+                "*",
+                "\\\""
+            ],
+            "extensions":[
+                "abap"
+            ]
+        },
         "ActionScript":{
             "base":"c",
             "extensions":[
@@ -209,6 +218,18 @@
             ],
             "filenames":[
                 "cmakelists.txt"
+            ]
+        },
+        "COBOL": {
+            "line_comment":[
+                "*"
+            ],
+            "extensions":[
+                "cob",
+                "cbl",
+                "ccp",
+                "cobol",
+                "cpy"
             ]
         },
         "CoffeeScript":{
@@ -536,6 +557,15 @@
             "base":"c",
             "extensions":[
                 "go"
+            ]
+        },
+        "Groovy":{
+            "base":"c",
+            "extensions":[
+                "groovy",
+                "grt",
+                "gtpl",
+                "gvy"
             ]
         },
         "Happy":{

@@ -267,6 +267,7 @@ with the following information. If you're unsure have a look at
 - The string literal syntax
 
 ```
+ABAP
 ActionScript
 Ada
 Alex
@@ -289,6 +290,7 @@ Cassius
 Ceylon
 Clojure
 CMake
+COBOL
 CoffeeScript
 Cogent
 ColdFusion
@@ -315,6 +317,7 @@ FORTRAN Modern
 GDScript
 GLSL
 Go
+Groovy
 Happy
 Handlebars
 Haskell
