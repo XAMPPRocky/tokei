@@ -1439,6 +1439,18 @@
                 "yml"
             ]
         },
+        "Zig":{
+            "line_comment":[
+                "//"
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["\\\\", "\n"]
+            ],
+            "extensions":[
+                "zig"
+            ]
+        },
         "Zsh":{
             "base":"hash",
             "quotes":[
