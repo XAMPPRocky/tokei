@@ -346,6 +346,7 @@ Madlang
 Makefile
 Markdown
 Meson
+Mint
 ModuleDef
 Mustache
 Nim

@@ -870,6 +870,12 @@
                 "meson_options.txt"
             ]
         },
+        "Mint":{
+            "base":"blank",
+            "extensions":[
+                "mint"
+            ]
+        },
         "Mustache":{
             "multi_line":[
               ["{{!", "}}"]
