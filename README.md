@@ -13,7 +13,7 @@ Tokei is a program that displays statistics about your code. Tokei will show num
 ## Example Output
 This is tokei running on its own directory
 
-[![asciicast](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o.png)](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o)
+[![asciicast](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o.png)](https://asciinema.org/a/d14m9g1d2cyo7wvrxh0z4ck6o?autoplay=1)
 
 ## [Documentation](https://docs.rs/tokei)
 
