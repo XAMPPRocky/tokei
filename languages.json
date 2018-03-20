@@ -755,6 +755,19 @@
                 "julius"
             ]
         },
+        "KakouneScript":{
+            "name":"Kakoune script",
+            "line_comment":[
+                "#"
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "kak"
+              ]
+        },
         "Kotlin":{
             "base":"c",
             "nested":true,
