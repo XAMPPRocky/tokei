@@ -203,28 +203,32 @@ $ tokei ./foo --input ./stats.json
 ## Options
 
 ```
-Tokei 4.5.3
-Aaron P. <theaaronepower@gmail.com>
-Count Code, Quickly.
+tokei 7.0.1
+Aaron P. <theaaronepower@gmail.com> + Contributors
+A utility that allows you to count code, quickly.
 
 USAGE:
-    Tokei [FLAGS] [OPTIONS] <input>...
+    tokei [FLAGS] [OPTIONS] [--] [input]...
 
 FLAGS:
     -f, --files        Will print out statistics on individual files.
     -h, --help         Prints help information
     -l, --languages    Prints out supported languages and their extensions.
     -V, --version      Prints version information
-    -v, --verbose      Set verbose output level: 1: for unknown extensions
+    -v, --verbose      Set log output level:
+                                1: to show unknown file extensions,
+                                2: reserved for future debugging,
+                                3: enable file level trace. Not recommended on multiple files
 
 OPTIONS:
-    -e, --exclude <exclude>     Ignore all files & directories containing the word.
-    -i, --input <file_input>    Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to read from stdin.
-    -o, --output <output>       Outputs Tokei in a specific format. [values: cbor, json, toml, yaml]
-    -s, --sort <sort>           Will sort based on column [values: files, lines, blanks, code, comments]
+    -e, --exclude <exclude>...    Ignore all files & directories containing the word.
+    -i, --input <file_input>      Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to
+                                  read from stdin.
+    -o, --output <output>         Outputs Tokei in a specific format. [values: cbor, json, toml, yaml]
+    -s, --sort <sort>             Sort languages based on column [values: files, lines, blanks, code, comments]
 
 ARGS:
-    <input>...    The input file(s)/directory(ies)
+    <input>...    The input file(s)/directory(ies) to be counted.
 ```
 
 ## Badges
