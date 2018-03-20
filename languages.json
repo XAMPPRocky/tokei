@@ -126,6 +126,19 @@
                 "bash"
             ]
         },
+        "Elvish":{
+            "base":"hash",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "env":[
+                "elvish"
+            ],
+            "extensions":[
+                "elv"
+            ]
+        },
         "Fish":{
             "base":"hash",
             "quotes":[
