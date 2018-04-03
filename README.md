@@ -45,11 +45,12 @@ This is tokei running on its own directory
   repositories, with a  hot cache(_times are in seconds and measured using
   `/usr/bin/time` on macOS Sierra, with 2.7 GHz Intel Core i7, results will vary_).
 
-| Repository   | Real time |
-|--------------|-----------|
-| DragonFlyBSD | 1.50s     |
-| Rust         | 0.28s     |
-| CPython      | 0.18s     |
+| Repository     | Real time |
+|----------------|-----------|
+| UnrealEngine 4 | 3.90s     |
+| DragonFlyBSD   | 1.50s     |
+| Rust           | 0.28s     |
+| CPython        | 0.18s     |
 
 - Tokei is **accurate**, Tokei correctly handles multi line comments,
   nested comments, and not counting comments that are in strings. Providing an
