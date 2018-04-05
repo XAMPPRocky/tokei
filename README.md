@@ -100,7 +100,6 @@ $ brew install tokei
 
 #### Nix/NixOS
 ```shell
-# using unstable nixpkgs channel
 $ nix-env -i tokei
 ```
 
