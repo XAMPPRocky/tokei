@@ -34,7 +34,7 @@ properties of a language in `languages.json`, through examples.
 
 Above is the JavaScript's definition. The first thing that needs to be defined
 is the key, the keys format should be same as 
-[Rust's enum style](https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md#general-naming-conventions).
+[Rust's enum style].
 As this key will be used in an enum for identifying the language. For a lot of 
 language's this also works for showing the language when we print to the screen. 
 However there are some languages whose names don't work with the enum style.
@@ -71,7 +71,7 @@ both `#` and `//` as comments.
 For defining comments that also have a ending syntax, there is the `multi_line`
 property.
 
-```
+```rust
 let x = /* There is a reason
     for this comment I swear */
     10;
@@ -80,17 +80,31 @@ let x = /* There is a reason
 A lot of languages have the same commenting syntax usually inheriting from the 
 authors previous language or preferred language. In order to avoid code reuse
 tokei's languages have a `base` property which says to use a common comment
-syntax. 
+syntax. e.g.
 
-* Name of the language
-* Any file extensions associated with the language
-* The comment syntax
-  - Does it have multiple single line comment symbols?
-  - Does it only contain single line comments? Or only multi-line comments?
-  - Is just C style comments? `/* */, //`
+```json
+"ActionScript":{
+    "base":"c",
+    "extensions":[
+        "as"
+    ]
+}
+```
 
-Some languages have a single, standard filename, like Makefile or Dockerfile.
-These can be defined with the `filenames` property:
+#### Bases
+
+- `blank` A language with no comments.
+- `c` Single: `//`, Multi line: `/* */`, Quotes: `" "`
+- `func` Multi line: `(* *)`, Quotes: `" "`
+- `html` Multi line: `<!-- -->`, Quotes: `" "`
+- `hash` Single: `#`
+- `haskell` Single: `--`, Multi line: `{- -}`, Nested: `true`
+- `pro` Single: `%`, Multi line: `/* */`, Quotes: `" "`
+
+
+Some languages have a single, standard filename with no extension
+like `Makefile` or `Dockerfile`. These can be defined with the
+`filenames` property:
 
 ```json
 "Makefile":{
@@ -105,10 +119,12 @@ These can be defined with the `filenames` property:
 }
 ```
 
-Filenames should be all-lowercase, whether or not the filename typically has capital letters included.
+Filenames should be all-lowercase, whether or not the filename
+typically has capital letters included.
 
-Note that filenames will *override* extensions, so with the following
-configuration:
+Note that filenames will **override** extensions with the
+following definition a file named `CMakeLists.txt` will be
+detected as a `CMake` file, not a `Text` file.
 
 ```json
 "Text":{
@@ -121,13 +137,60 @@ configuration:
         "cmakelists.txt"
     ]
 }
+```
 
-A file named `CMakeLists.txt` will be detected as a CMake file, not a text file.
+# Tests
+A test file is required with language additions.The file should
+contain every variant comments and quotes, as well as a comment
+at the top of the file containing the manually verified lines,
+code, comments, blanks e.g.
+`// 39 lines 32 code 2 comments 5 blanks`. A good example of a
+test file is [`tests/data/rust.rs`].
 
+```rust
+// 39 lines 32 code 2 comments 5 blanks
+
+/* /**/ */
+fn main() {
+    let start = "/*";
+    loop {
+        if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
+            break;
+        }
+    }
+}
+
+fn foo() {
+    let this_ends = "a \"test/*.";
+    call1();
+    call2();
+    let this_does_not = /* a /* nested */ comment " */
+        "*/another /*test
+            call3();
+            */";
+}
+
+fn foobar() {
+    let does_not_start = // "
+        "until here,
+        test/*
+        test"; // a quote: "
+    let also_doesnt_start = /* " */
+        "until here,
+        test,*/
+        test"; // another quote: "
+}
+
+fn foo() {
+    let a = 4; // /*
+    let b = 5;
+    let c = 6; // */
+}
 ```
 
 # Bug Reports
-Please include the error message, and a minimum working example including the file, or file structure.
+Please include the error message, and a minimum working example
+including the file, or file structure.
 
 ```
 This file crashes the program.
@@ -136,3 +199,6 @@ This file crashes the program.
 \`\`\`
 \`\`\`
 ```
+
+[Rust's enum style]: (https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md#general-naming-conventions)
+[`tests/data/rust.rs`]: https://github.com/Aaronepower/tokei/blob/master/tests/data/rust.rs
