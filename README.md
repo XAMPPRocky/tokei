@@ -43,7 +43,8 @@ This is tokei running on its own directory
 
 - Tokei is **very fast**, below are the Tokei's times on a select few large
   repositories, with a  hot cache(_times are in seconds and measured using
-  `/usr/bin/time` on macOS Sierra, with 2.7 GHz Intel Core i7, results will vary_).
+  [`hyperfine`](https://github.com/sharkdp/hyperfine) on macOS Sierra,
+  with 2.7 GHz Intel Core i7, results will vary_).
 
 | Repository     | Real time |
 |----------------|-----------|
@@ -56,7 +57,7 @@ This is tokei running on its own directory
   nested comments, and not counting comments that are in strings. Providing an
   accurate code statistics.
 
-- Tokei has huge range of languages, supporting over **100** languages, and
+- Tokei has huge range of languages, supporting over **130** languages, and
   their various extensions.
 
 - Tokei can output in multiple formats(**CBOR**, **JSON**, **TOML**, **YAML**)
