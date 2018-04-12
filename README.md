@@ -151,8 +151,8 @@ $ tokei ./foo, ./bar, ./baz
 ```
 
 #### Excluding folders
-Tokei will respect all `.gitignore` and `.ignore` files, and you can optionally
-the `--exclude` option to exclude any addtional files. The `--exclude` flag has
+Tokei will respect all `.gitignore` and `.ignore` files, and you can use
+the `--exclude` option to exclude any additional files. The `--exclude` flag has
 the same semantics as `.gitignore`.
 
 ```shell
@@ -169,7 +169,7 @@ tokei can also sort by any of the columns.
 $ tokei ./foo --sort code
 ```
 
-#### Outputing file statistics
+#### Outputting file statistics
 By default tokei only outputs the total of the languages, and using `--files`
 flag tokei can also output individual file statistics.
 
@@ -193,7 +193,7 @@ $ tokei ./foo --output json
 ```
 
 #### Reading in stored formats
-Tokei can also take in the outputted formats added the previous results to it's
+Tokei can also take in the outputted formats added in the previous results to it's
 current run. Tokei can take either a path to a file, the format passed in as a
 value to the option, or from stdin.
 
