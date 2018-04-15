@@ -182,6 +182,26 @@ Tokei normally outputs into a nice human readable format designed for terminals.
 There is also using the `--output` option various other formats that are more
 useful for bringing the data into another program.
 
+**Note:** This version of tokei was compiled without any serialization formats, to enable serialization, reinstall
+tokei with the features flag.
+
+```shell
+  ALL:
+  cargo install tokei --features all
+
+  JSON:
+  cargo install tokei --features json
+
+  CBOR:
+  cargo install tokei --features cbor
+
+  YAML:
+  cargo install tokei --features yaml
+
+  CBOR:
+  cargo install tokei --features cbor
+```
+
 **Currently supported formats**
 - JSON `--output json`
 - YAML `--output yaml`
