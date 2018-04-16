@@ -6,9 +6,6 @@ language: rust
 services: docker
 sudo: required
 
-# TODO Rust builds on stable by default, this can be
-# overridden on a case by case basis down below.
-
 env:
   global:
     - CRATE_NAME=tokei
@@ -17,12 +14,40 @@ env:
     - DEB_DESCRIPTION="A utility that allows you to count code, quickly."
 
 matrix:
-  # TODO These are all the build jobs. Adjust as necessary. Comment out what you
-  # don't need
   include:
+    # Android
+    - env: TARGET=aarch64-linux-android DISABLE_TESTS=1
+    - env: TARGET=arm-linux-androideabi DISABLE_TESTS=1
+    - env: TARGET=armv7-linux-androideabi DISABLE_TESTS=1
+    - env: TARGET=i686-linux-android DISABLE_TESTS=1
+    - env: TARGET=x86_64-linux-android DISABLE_TESTS=1
+
+    # iOS
+    - env: TARGET=aarch64-apple-ios DISABLE_TESTS=1
+      os: osx
+    - env: TARGET=armv7-apple-ios DISABLE_TESTS=1
+      os: osx
+    - env: TARGET=armv7s-apple-ios DISABLE_TESTS=1
+      os: osx
+    - env: TARGET=i386-apple-ios DISABLE_TESTS=1
+      os: osx
+    - env: TARGET=x86_64-apple-ios DISABLE_TESTS=1
+      os: osx
+
     # Linux
+    - env: TARGET=aarch64-unknown-linux-gnu
+    - env: TARGET=arm-unknown-linux-gnueabi
+    - env: TARGET=armv7-unknown-linux-gnueabihf
     - env: TARGET=i686-unknown-linux-gnu
     - env: TARGET=i686-unknown-linux-musl
+    - env: TARGET=mips-unknown-linux-gnu
+    - env: TARGET=mips64-unknown-linux-gnuabi64
+    - env: TARGET=mips64el-unknown-linux-gnuabi64
+    - env: TARGET=mipsel-unknown-linux-gnu
+    - env: TARGET=powerpc-unknown-linux-gnu
+    - env: TARGET=powerpc64-unknown-linux-gnu
+    - env: TARGET=powerpc64le-unknown-linux-gnu
+    - env: TARGET=s390x-unknown-linux-gnu DISABLE_TESTS=1
     - env: TARGET=x86_64-unknown-linux-gnu
     - env: TARGET=x86_64-unknown-linux-musl
 
@@ -37,89 +62,22 @@ matrix:
     - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
     - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
 
-    # Other architectures
-    - env: TARGET=aarch64-unknown-linux-gnu
-    - env: TARGET=armv7-unknown-linux-gnueabihf
-    - env: TARGET=mips-unknown-linux-gnu
-    - env: TARGET=mips64-unknown-linux-gnuabi64
-    - env: TARGET=mips64el-unknown-linux-gnuabi64
-    - env: TARGET=mipsel-unknown-linux-gnu
-    - env: TARGET=powerpc-unknown-linux-gnu
-    - env: TARGET=powerpc64-unknown-linux-gnu
-    - env: TARGET=powerpc64le-unknown-linux-gnu
-    - env: TARGET=s390x-unknown-linux-gnu DISABLE_TESTS=1
+    # Windows
+    - env: TARGET=x86_64-pc-windows-gnu
 
     # Testing other channels
-    # Beta channel
-    - env: TARGET=i686-apple-darwin
-      os: osx
-      rust: beta
-    - env: TARGET=i686-unknown-linux-gnu
-      os: linux
-      rust: beta
-      addons:
-        apt:
-          packages: *i686_unknown_linux_gnu
-    - env: TARGET=i686-unknown-linux-musl
-      os: linux
-      rust: beta
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: *musl_packages
-    - env: TARGET=x86_64-apple-darwin
-      os: osx
-      rust: beta
     - env: TARGET=x86_64-unknown-linux-gnu
-      os: linux
-      rust: beta
-    - env: TARGET=x86_64-unknown-linux-musl
-      os: linux
-      rust: beta
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: *musl_packages
-    # Nightly channel
-    - env: TARGET=i686-apple-darwin
-      os: osx
       rust: nightly
-    - env: TARGET=i686-unknown-linux-gnu
-      os: linux
-      rust: nightly
-      addons:
-        apt:
-          packages: *i686_unknown_linux_gnu
-    - env: TARGET=i686-unknown-linux-musl
-      os: linux
-      rust: nightly
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: *musl_packages
     - env: TARGET=x86_64-apple-darwin
       os: osx
       rust: nightly
-    - env: TARGET=x86_64-unknown-linux-gnu
-      os: linux
-      rust: nightly
-    - env: TARGET=x86_64-unknown-linux-musl
-      os: linux
-      rust: nightly
-      dist: trusty
-      sudo: required
-      addons:
-        apt:
-          packages: *musl_packages
-
 
   allow_failures:
     - rust: nightly
 
-before_install: set -e
+before_install:
+  - set -e
+  - rustup self update
 
 install:
   - sh ci/install.sh
@@ -134,19 +92,11 @@ before_deploy:
   - sh ci/before_deploy.sh
 
 deploy:
-  # TODO update `api_key.secure`
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-  # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
-  # - Paste the output down here
   api_key:
     secure: JAWZDa7izxqh/013aqxwSxhu4wndJfvQWngA/DMutC5J5ZTUEmA0UJG+VGCVcMVZOBu/IUy6tRmz3IgEqgW74FLc4UuBRH3RdInp+dpjUc2yTuUltOuT+skn5LGQXi+m8VeIxRS0PXCsN5twpOfSi0uuKu+UzMN9ZOX9wEy1svRlAUJdcT37LfvlS/lnxHoF+WuakZfFsP0QCrgI7uBY83X+wT6YAixiywzadKMqXDSNlJ7m0t9pJ1FsR0BgnoYiTI/L/3P3FDJCDzShujlU9P3xLvirV4/HB9NPG+IhuhTSCpBE8UIzCourAi6AgG3wdQGiR9S9QdwEuF3Y5Ya5l2tkJpqrk8FkBMVkH57m9iGV0j4mHDOvaRzMiPyYeuTTPKgbSWAvLOGouVRDP0SrZGjjcCvKSN4LVgO83uLjsg2XtdFoA89s/pNLsY2e07trT6jVm12P9uKdLWqkHdLJdGG4448aL8cIXntlCIHujpSmSikGtlGZZB6cvfkZQn/ZLhBxiGyk8n2V5hpqFml/tk6QDxyY04gSd1t/9aebOZmAGFYP0aufJpQe1GW13PQSdIQL6MZPtsk88OgP6EqUOSBCIAWuBd0cLds1SE+TELPyAPHWx5Z/y+mUEx4NoxRWWzNbQxOaMfXtLhE+xp7gdJYH7QtldagYz79UX/8wYbo=
   file_glob: true
   file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
   on:
-    # TODO Here you can pick which targets will generate binary releases
-    # In this example, there are some targets that are tested using the stable
-    # and nightly channels. This condition makes sure there is only one release
-    # for such targets and that's generated using the stable channel
     condition: $TRAVIS_RUST_VERSION = stable
     tags: true
   provider: releases
