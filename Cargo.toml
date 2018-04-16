@@ -39,7 +39,6 @@ encoding = "0.2"
 ignore = "0.4"
 log = "0.4"
 rayon = "1"
-regex = "0.2"
 clap = "2.24"
 
 [dependencies.env_logger]
@@ -77,6 +76,7 @@ version = "0.4"
 [dev-dependencies]
 tempdir = "0.3"
 lazy_static = "1"
+regex = "0.2"
 
 [features]
 all = ["json", "cbor", "toml-io", "yaml"]
