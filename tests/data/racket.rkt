@@ -1,4 +1,4 @@
-;;; 40 lines 14 code 15 comments 11 blanks
+;;; 40 lines 15 code 14 comments 11 blanks
 #lang racket ; defines the language we are using
 
 ;;; Comments
@@ -12,8 +12,8 @@
     |#
 |#
 
-;; S-expression comments discard the following expression,
-;; useful to comment expressions when debugging
+;; S-expression comments discard the following expression
+;; since this is syntax-aware, tokei counts this as code
 #; (this expression is discarded)
 
 ;; Constant
