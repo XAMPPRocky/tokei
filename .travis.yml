@@ -15,25 +15,6 @@ env:
 
 matrix:
   include:
-    # Android
-    - env: TARGET=aarch64-linux-android DISABLE_TESTS=1
-    - env: TARGET=arm-linux-androideabi DISABLE_TESTS=1
-    - env: TARGET=armv7-linux-androideabi DISABLE_TESTS=1
-    - env: TARGET=i686-linux-android DISABLE_TESTS=1
-    - env: TARGET=x86_64-linux-android DISABLE_TESTS=1
-
-    # iOS
-    - env: TARGET=aarch64-apple-ios DISABLE_TESTS=1
-      os: osx
-    - env: TARGET=armv7-apple-ios DISABLE_TESTS=1
-      os: osx
-    - env: TARGET=armv7s-apple-ios DISABLE_TESTS=1
-      os: osx
-    - env: TARGET=i386-apple-ios DISABLE_TESTS=1
-      os: osx
-    - env: TARGET=x86_64-apple-ios DISABLE_TESTS=1
-      os: osx
-
     # Linux
     - env: TARGET=aarch64-unknown-linux-gnu
     - env: TARGET=arm-unknown-linux-gnueabi
