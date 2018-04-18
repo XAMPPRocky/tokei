@@ -1,7 +1,6 @@
 // Copyright (c) 2015 Aaron Power
 // Use of this source code is governed by the APACHE2.0/MIT licence that can be
 // found in the LICENCE-{APACHE/MIT} file.
-#![allow(unused_variables)]
 
 use std::borrow::Cow;
 use std::collections::{btree_map, BTreeMap};
@@ -27,8 +26,6 @@ use utils::fs;
 fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
     let files = mem::replace(&mut language.files, Vec::new());
-    let has_multi_line = !language.multi_line.is_empty() ||
-                         !language.nested_comments.is_empty();
     let is_blank = language.is_blank();
     let is_fortran = name == &FortranModern || name == &FortranLegacy;
     let nested_is_empty = language.nested_comments.is_empty();

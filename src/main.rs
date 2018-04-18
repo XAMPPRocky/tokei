@@ -23,11 +23,14 @@ const ROW: &str = "------------------------------------------------------------\
 
 fn crate_version() -> String {
     if Format::supported().is_empty() {
-        return crate_version!().into()
+        format!("{} compiled without serialization formats.", crate_version!())
+    } else {
+        format!(
+            "{} compiled with serialization support: {}",
+            crate_version!(),
+            Format::supported().join(", ")
+        )
     }
-
-    format!("{} compiled with serialization support: {}",
-        crate_version!(), Format::supported().join(", "))
 }
 
 fn setup_logger(verbose_option: u64) {
