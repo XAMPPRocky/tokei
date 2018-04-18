@@ -1092,6 +1092,18 @@
                 "r"
             ]
         },
+        "Racket":{
+            "line_comment":[
+                ";"
+            ],
+            "multi_line":[
+                ["#|", "|#"]
+            ],
+            "nested":true,
+            "extensions":[
+                "rkt"
+            ]
+        },
         "Rakefile":{
             "line_comment":[
                 "#"
