@@ -951,7 +951,9 @@
             "base":"func",
             "extensions":[
                 "ml",
-                "mli"
+                "mli",
+                "re",
+                "rei"
             ]
         },
         "Org":{
