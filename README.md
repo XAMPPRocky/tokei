@@ -394,6 +394,7 @@ Python
 QCL
 QML
 R
+Racket
 Rakefile
 Razor
 ReStructuredText
