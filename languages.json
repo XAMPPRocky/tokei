@@ -1450,6 +1450,13 @@
                 "xml"
             ]
         },
+	"XSL":{
+            "name":"XSL",
+            "base":"html",
+            "extensions":[
+                "xsl"
+            ]
+        },
         "MsBuild":{
             "name":"MSBuild",
             "base":"html",
