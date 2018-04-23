@@ -1,3 +1,34 @@
+# 7.0.2
+- Updated dependencies.
+- Changed how compilied serialization formats are handled.
+- Fixed minor parser inaccuracies.
+- Tokei should now recognise more python files from their shebang.
+
+**Added languages**
+- @ignatenko Added Meson
+- @sprang Added Scheme
+- @fengcms Added Vue
+- @mark.knol Added Haxe
+- @rleungx Added ABAP, COBOL, and Groovy
+- @tiehuis Added Zig
+- @murielsilveira Added Mint
+- @notramo Added Elvish Shell and Kakoune
+- @aatxe Added Racket
+- @kamilchm Added ReasonML
+- @cyplp Added XSL
+
+
+# 7.0.1
+- Updated dependencies
+
+# 7.0.0
+
+- Fixed parsing corner cases
+- Changed storage of comments and quotes from `Vec` to static slices.
+- Added tracing for debugging single files. Not recommended for use on
+  multiple file
+- Updated `log`
+
 # 6.1.0
 
 - Fixed inaccuracies relating to the end comment being smaller than start
