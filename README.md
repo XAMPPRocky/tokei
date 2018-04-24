@@ -347,6 +347,7 @@ Happy
 Handlebars
 Haskell
 Haxe
+HCL
 HEX
 HTML
 Hamlet
