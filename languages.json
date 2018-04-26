@@ -220,6 +220,14 @@
                 "cljs"
             ]
         },
+        "ClojureC":{
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "cljc"
+            ]
+        },
         "CMake": {
             "line_comment":[
                 "#"
