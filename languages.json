@@ -609,6 +609,23 @@
                 "hs"
             ]
         },
+        "Hcl":{
+            "name":"HCL",
+            "line_comment":[
+                "#",
+                "//"
+            ],
+            "multi_line":[
+                ["/*", "*/"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
+            "extensions":[
+                "tf",
+                "tfvars"
+            ]
+        },
         "Html":{
             "name":"HTML",
             "base":"html",
