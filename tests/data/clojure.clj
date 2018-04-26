@@ -1,4 +1,4 @@
-; 19 lines 13 code 2 comments 4 blank
+; 19 lines 13 code 3 comments 3 blanks
 
 (ns clojure)
 
