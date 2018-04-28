@@ -220,6 +220,14 @@
                 "cljs"
             ]
         },
+        "ClojureC":{
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "cljc"
+            ]
+        },
         "CMake": {
             "line_comment":[
                 "#"
@@ -607,6 +615,23 @@
             "base": "haskell",
             "extensions":[
                 "hs"
+            ]
+        },
+        "Hcl":{
+            "name":"HCL",
+            "line_comment":[
+                "#",
+                "//"
+            ],
+            "multi_line":[
+                ["/*", "*/"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
+            "extensions":[
+                "tf",
+                "tfvars"
             ]
         },
         "Html":{
