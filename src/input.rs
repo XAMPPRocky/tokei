@@ -148,21 +148,15 @@ supported_formats!(
         toml::from_str,
         toml::to_string,
     (csv, "csv-io", Csv [csv]) =>
-        serde_yaml::from_str,
+        csv_from_str,
         csv_to_string,
 );
 
-
-
-// #[cfg(feature = "csv-io")]
-// pub fn csv_parse(data: & str) -> Result<Languages, Box<Error>>{
-//     let mut rdr = csv::ReaderBuilder::new()
-//         .delimiter(b',')
-//         .from_reader(data.as_bytes());
-
-//     return rdr.records().next().unwrap();
-    
-// }
+#[cfg(feature = "csv-io")]
+pub fn csv_from_str(data: & str) -> Result<LanguageMap, Box<Error>>{
+    // not sure about the purpose of this...
+    return Ok(LanguageMap::new());    
+ }
 
 
 #[cfg(feature = "csv-io")]
