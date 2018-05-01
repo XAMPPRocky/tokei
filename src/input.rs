@@ -167,8 +167,13 @@ supported_formats!(
 
 #[cfg(feature = "csv-io")]
 pub fn csv_to_string(languages: & Languages) -> Result<String, String>{
-    use std::io;
-    let mut wtr = csv::Writer::from_writer(io::stdout());
+    use std::io::Cursor;
+    use std::io::Read;
+    
+    let cursor = Cursor::new(vec![]);
+    let mut wtr = csv::Writer::from_writer(cursor);
+
+    // headers
     wtr.write_record(&["language", "files", "blank", "comment", "code"]);
     for (name, language) in languages {
         wtr.serialize((name,
@@ -176,9 +181,22 @@ pub fn csv_to_string(languages: & Languages) -> Result<String, String>{
                        language.blanks,
                        language.comments,
                        language.code));
+    
+        wtr.flush();
     }
-    wtr.flush();
-    return Ok("\n".to_string());
+    
+    match wtr.into_inner() {
+        Ok(mut lines) => {
+            let mut result = String::new();
+            lines.set_position(0);
+            lines.read_to_string(&mut result);
+            return Ok(result);
+        },
+        Err(e) => {
+            println!("{:?}", e);
+            return Err("Nope".to_string()); // TODO
+        },
+    }
 }
 
     
