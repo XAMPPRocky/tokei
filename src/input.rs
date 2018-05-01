@@ -167,21 +167,20 @@ supported_formats!(
 
 #[cfg(feature = "csv-io")]
 pub fn csv_to_string(languages: & Languages) -> Result<String, String>{
-    
-    let mut tmp: Vec<String> = Vec::new();
-    tmp.push("files,language,blank,comment,code".to_string());
+    use std::io;
+    let mut wtr = csv::Writer::from_writer(io::stdout());
+    wtr.write_record(&["language", "files", "blank", "comment", "code"]);
     for (name, language) in languages {
-        let row = vec![language.stats.len().to_string(),
-                       name.to_string(),
-                       language.blanks.to_string(),
-                       language.comments.to_string(),
-                       language.code.to_string()];
-        tmp.push(row.join(","));
+        wtr.serialize((name,
+                       language.stats.len(),
+                       language.blanks,
+                       language.comments,
+                       language.code));
     }
-    tmp.push("".to_string());
-    
-    return Ok(tmp.join("\n").to_string());
+    wtr.flush();
+    return Ok("\n".to_string());
 }
+
     
 
 pub fn add_input(input: &str, languages: &mut Languages) -> bool {
