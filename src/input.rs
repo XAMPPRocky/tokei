@@ -199,8 +199,6 @@ pub fn csv_to_string(languages: & Languages) -> Result<String, String>{
     }
 }
 
-    
-
 pub fn add_input(input: &str, languages: &mut Languages) -> bool {
     use std::fs::File;
     use std::io::Read;
