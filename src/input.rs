@@ -179,12 +179,11 @@ pub fn csv_to_string(languages: & Languages) -> Result<String, String>{
         Ok(lines) => {
             match String::from_utf8(lines){
                 Ok(data) => { return Ok(data); },
-                Err(_) => { return Err("Nope".to_string()); }, // TODO
+                Err(e) => { return Err(e.to_string()); },
             }
         },
         Err(e) => {
-            println!("{:?}", e);
-            return Err("Nope".to_string()); // TODO
+            return Err(e.to_string());
         },
     }
 }
