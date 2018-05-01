@@ -75,7 +75,7 @@ version = "0.4"
 
 [dependencies.csv]
 optional = true
-csv = "1.0.0-beta.5"
+version = "1.0.0-beta.5"
 
 [dev-dependencies]
 tempdir = "0.3"
