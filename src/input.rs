@@ -174,22 +174,22 @@ pub fn csv_to_string(languages: & Languages) -> Result<String, String>{
     let mut wtr = csv::Writer::from_writer(cursor);
 
     // headers
-    wtr.write_record(&["language", "files", "blank", "comment", "code"]);
+    let _ = wtr.write_record(&["language", "files", "blank", "comment", "code"]);
     for (name, language) in languages {
-        wtr.serialize((name,
+        let _ = wtr.serialize((name,
                        language.stats.len(),
                        language.blanks,
                        language.comments,
                        language.code));
-    
-        wtr.flush();
     }
+    
+    let _ = wtr.flush();
     
     match wtr.into_inner() {
         Ok(mut lines) => {
             let mut result = String::new();
             lines.set_position(0);
-            lines.read_to_string(&mut result);
+            let _ = lines.read_to_string(&mut result);
             return Ok(result);
         },
         Err(e) => {
