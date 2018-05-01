@@ -153,7 +153,7 @@ supported_formats!(
 );
 
 #[cfg(feature = "csv-io")]
-pub fn csv_from_str(data: & str) -> Result<LanguageMap, Box<Error>>{
+pub fn csv_from_str(_data: & str) -> Result<LanguageMap, Box<Error>>{
     // not sure about the purpose of this...
     return Ok(LanguageMap::new());    
  }
