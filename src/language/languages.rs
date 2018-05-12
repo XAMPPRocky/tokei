@@ -30,7 +30,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
     let nested_is_empty = language.nested_comments.is_empty();
 
     let stats: Vec<_> = files.into_par_iter().filter_map(|file| {
-        let mut stack: Vec<&'static str> = Vec::new();
+        let mut stack: Vec<&'static str> = Vec::with_capacity(1);
         let mut quote: Option<&'static str> = None;
 
         let contents = rs_ret_error!(fs::read(&file));
