@@ -3,8 +3,7 @@ extern crate regex;
 extern crate tokei;
 extern crate ignore;
 
-use std::io::Read;
-use std::fs::File;
+use std::fs;
 
 use regex::Regex;
 use tokei::Languages;

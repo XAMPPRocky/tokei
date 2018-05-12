@@ -4,8 +4,7 @@
 
 use std::borrow::Cow;
 use std::collections::{btree_map, BTreeMap};
-use std::fs::File;
-use std::io::Read;
+use std::fs;
 use std::iter::IntoIterator;
 use std::mem;
 use std::ops::{AddAssign, Deref, DerefMut};
@@ -21,7 +20,7 @@ use rayon::prelude::*;
 use stats::Stats;
 use super::LanguageType::*;
 use super::{Language, LanguageType};
-use utils::fs;
+use utils;
 
 fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
@@ -32,10 +31,9 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
 
     let stats: Vec<_> = files.into_par_iter().filter_map(|file| {
         let mut stack: Vec<&'static str> = Vec::new();
-        let mut contents = Vec::new();
         let mut quote: Option<&'static str> = None;
 
-        rs_ret_error!(rs_ret_error!(File::open(&file)).read_to_end(&mut contents));
+        let contents = rs_ret_error!(fs::read(&file));
 
         let text = match encoding::decode(&contents, Replace, UTF_8) {
             (Ok(string), _) => Cow::Owned(string),
@@ -234,7 +232,7 @@ impl Languages {
     /// languages.get_statistics(&["."], vec![".git", "target"]);
     /// ```
     pub fn get_statistics(&mut self, paths: &[&str], ignored: Vec<&str>) {
-        fs::get_all_files(paths, ignored, &mut self.inner);
+        utils::fs::get_all_files(paths, ignored, &mut self.inner);
         self.inner.par_iter_mut().for_each(count_files);
     }
 
