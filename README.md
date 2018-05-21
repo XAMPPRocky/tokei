@@ -334,6 +334,7 @@ Elm
 Emacs Development Environment
 Emacs Lisp
 Erlang
+FEN
 Forth
 F*
 F#
