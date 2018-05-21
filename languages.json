@@ -474,6 +474,13 @@
                 "hrl"
             ]
         },
+        "FEN":{
+            "name":"FEN",
+            "base":"blank",
+            "extensions":[
+                "fen"
+            ]
+        },
         "Fstar":{
             "name":"F*",
             "base":"func",
