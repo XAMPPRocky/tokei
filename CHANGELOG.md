@@ -1,3 +1,12 @@
+# 7.0.3
+
+Made various optimisations, up to 65% faster in some cases.
+
+**Added languages**
+- @DenialAdams Added Forsyth-Edwards-Notation (FEN)
+- @DjebbZ Added ClojureC
+- @grimm26 Added HCL/Terraform
+
 # 7.0.2
 - Updated dependencies.
 - Changed how compilied serialization formats are handled.
