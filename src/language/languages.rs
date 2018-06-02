@@ -72,6 +72,28 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
                 }}
             }
 
+            if quote.is_none() && stack.is_empty() {
+
+                let mut iter = language.quotes.iter()
+                                          .chain(language.multi_line)
+                                          .chain(language.nested_comments);
+
+                if !iter.any(|(s, _)| line.contains(s)) {
+                    trace!(r#"Determined to be skippable"#);
+                    if language.line_comment.iter()
+                                            .any(|s| line.starts_with(s))
+                    {
+                        stats.comments += 1;
+                        trace!("Determined to be comment. So far: {} lines", stats.comments);
+                    } else {
+                        stats.code += 1;
+                        trace!("Determined to be code. So far: {} lines", stats.code);
+                    }
+                    trace!("{}", line);
+                    continue;
+                }
+            }
+
             'window: for i in 0..line.len() {
                 if skip != 0 {
                     skip -= 1;
@@ -178,6 +200,7 @@ fn count_files((name, ref mut language): (&LanguageType, &mut Language)) {
         **language += stat;
     }
 }
+
 
 /// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
 #[derive(Default)]
