@@ -1418,6 +1418,15 @@
                 "vala"
             ]
         },
+        "VBScript":{
+            "name":"VBScript",
+            "line_comment":[
+                "'"
+            ],
+            "extensions":[
+                "vbs" 
+            ]
+        },
         "Verilog":{
             "base":"c",
             "extensions":[
