@@ -1418,6 +1418,17 @@
                 "vala"
             ]
         },
+        "VB6":{
+            "name":"VB6",
+            "line_comment":[
+                "'"
+            ],
+            "extensions":[
+                "frm",
+                "bas",
+                "cls" 
+            ]
+        },
         "Verilog":{
             "base":"c",
             "extensions":[
