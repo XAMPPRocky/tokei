@@ -147,7 +147,46 @@ supported_formats!(
     (toml, "toml-io", Toml [toml]) =>
         toml::from_str,
         toml::to_string,
+    (csv, "csv-io", Csv [csv]) =>
+        csv_from_str,
+        csv_to_string,
 );
+
+#[cfg(feature = "csv-io")]
+pub fn csv_from_str(_data: & str) -> Result<LanguageMap, Box<Error>>{
+    // not sure about the purpose of this...
+    return Ok(LanguageMap::new());    
+ }
+
+
+#[cfg(feature = "csv-io")]
+pub fn csv_to_string(languages: & Languages) -> Result<String, String>{
+    let mut wtr = csv::Writer::from_writer(vec![]);
+
+    // headers
+    let _ = wtr.write_record(&["language", "files", "blank", "comment", "code"]);
+    for (name, language) in languages {
+        let _ = wtr.serialize((name,
+                       language.stats.len(),
+                       language.blanks,
+                       language.comments,
+                       language.code));
+    }
+    
+    let _ = wtr.flush();
+    
+    match wtr.into_inner() {
+        Ok(lines) => {
+            match String::from_utf8(lines){
+                Ok(data) => { return Ok(data); },
+                Err(e) => { return Err(e.to_string()); },
+            }
+        },
+        Err(e) => {
+            return Err(e.to_string());
+        },
+    }
+}
 
 pub fn add_input(input: &str, languages: &mut Languages) -> bool {
     use std::fs::File;
