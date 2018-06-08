@@ -126,6 +126,18 @@
                 "bash"
             ]
         },
+        "BrightScript":{
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
+            "line_comment":[
+                "'",
+                "REM"
+            ],
+            "extensions":[
+                "brs"
+            ]
+        },
         "Elvish":{
             "base":"hash",
             "quotes":[
