@@ -1441,6 +1441,16 @@
                 "cls" 
             ]
         },
+        "VBScript":{
+            "name":"VBScript",
+            "line_comment":[
+                "'",
+                "REM"
+            ],
+            "extensions":[
+                "vbs"
+            ]
+        },
         "Verilog":{
             "base":"c",
             "extensions":[
