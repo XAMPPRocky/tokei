@@ -126,6 +126,18 @@
                 "bash"
             ]
         },
+        "BrightScript":{
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
+            "line_comment":[
+                "'",
+                "REM"
+            ],
+            "extensions":[
+                "brs"
+            ]
+        },
         "Elvish":{
             "base":"hash",
             "quotes":[
@@ -1418,13 +1430,25 @@
                 "vala"
             ]
         },
-        "VBScript":{
-            "name":"VBScript",
+        "VB6":{
+            "name":"VB6",
             "line_comment":[
                 "'"
             ],
             "extensions":[
-                "vbs" 
+                "frm",
+                "bas",
+                "cls" 
+            ]
+        },
+        "VBScript":{
+            "name":"VBScript",
+            "line_comment":[
+                "'",
+                "REM"
+            ],
+            "extensions":[
+                "vbs"
             ]
         },
         "Verilog":{

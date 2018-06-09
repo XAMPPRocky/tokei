@@ -428,6 +428,7 @@ TypeScript
 Unreal Script
 Ur/Web
 Vala
+VB6
 VBScript
 Verilog
 Verilog argument files
