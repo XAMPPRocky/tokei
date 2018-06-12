@@ -1524,7 +1524,8 @@
             "name":"XSL",
             "base":"html",
             "extensions":[
-                "xsl"
+                "xsl",
+                "xslt"
             ]
         },
         "MsBuild":{
