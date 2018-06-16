@@ -68,7 +68,7 @@ This is tokei running on its own directory
   nested comments, and not counting comments that are in strings. Providing an
   accurate code statistics.
 
-- Tokei has huge range of languages, supporting over **130** languages, and
+- Tokei has huge range of languages, supporting over **150** languages, and
   their various extensions.
 
 - Tokei can output in multiple formats(**CBOR**, **JSON**, **TOML**, **YAML**)
