@@ -422,6 +422,19 @@
                 "dtsi"
             ]
         },
+        "DreamMaker":{
+            "name":"Dream Maker",
+            "base":"c",
+            "nested":true,
+            "extensions":[
+                "dm",
+                "dme"
+            ],
+            "quotes":[
+                ["{\\\"", "\\\"}"],
+                ["'", "'"]
+            ]
+        },
         "Dockerfile":{
             "line_comment":[
                 "#"
