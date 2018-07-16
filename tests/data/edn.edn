@@ -1,0 +1,11 @@
+; 11 lines 6 code 2 comments 3 blanks
+
+; Just some random data
+
+ {:a [
+      1]
+
+  :b 1 ; this doesn't count as a comment
+  :c {1 1
+      2 2}
+  :d [1 2 3]}

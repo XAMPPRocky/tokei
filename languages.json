@@ -451,6 +451,14 @@
                 ["'", "'"]
             ]
         },
+        "Edn":{
+            "line_comment":[
+                ";"
+            ],
+            "extensions":[
+                "edn"
+            ]
+        },
         "Elisp":{
             "name":"Emacs Lisp",
             "line_comment":[
