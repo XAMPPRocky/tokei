@@ -1088,6 +1088,22 @@
                 "polly"
             ]
         },
+        "PowerShell":{
+            "line_comment":[
+                "#"
+            ],
+            "multi_line":[
+                ["<#", "#>"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "ps1",
+                "psm1"
+            ]
+        },
         "Processing":{
             "base":"c",
             "extensions":[
