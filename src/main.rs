@@ -4,6 +4,7 @@
 
 #[macro_use] extern crate clap;
 extern crate env_logger;
+extern crate libc;
 extern crate log;
 extern crate tokei;
 
@@ -18,8 +19,6 @@ use tokei::Sort;
 use input::Format;
 
 const FILES: &str = "files";
-const ROW: &str = "------------------------------------------------------------\
-                   -------------------";
 
 fn crate_version() -> String {
     if Format::supported().is_empty() {
@@ -176,16 +175,19 @@ fn main() {
         process::exit(0);
     }
 
-    println!("{}", ROW);
-    println!(" {:<12} {:>12} {:>12} {:>12} {:>12} {:>12}",
+    let columns = terminal_columns();
+    let row = "-".repeat(columns);
+
+    println!("{}", row);
+    println!(" {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
                 "Language",
                 "Files",
                 "Lines",
                 "Code",
                 "Comments",
-                "Blanks");
-    println!("{}", ROW);
-
+                "Blanks",
+                columns - 67);
+    println!("{}", row);
     if let Some(sort_category) = sort_category {
         for (_, ref mut language) in &mut languages {
             language.sort_by(sort_category)
@@ -201,35 +203,37 @@ fn main() {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
         }
 
-        print_results(languages.into_iter(), files_option)
+        print_results(&row, languages.into_iter(), files_option)
     } else  {
-        print_results(languages.iter(), files_option)
+        print_results(&row, languages.iter(), files_option)
     }
 
     // If we're listing files there's already a trailing row so we don't want an extra one.
     if !files_option {
-        println!("{}", ROW);
+        println!("{}", row);
     }
     let mut total = Language::new_blank();
     for (_, language) in languages {
         total += language;
     }
 
-    print_language(&total, "Total");
-    println!("{}", ROW);
+    print_language(columns - 61, &total, "Total");
+    println!("{}", row);
 }
 
-fn print_results<'a, I>(languages: I, list_files: bool)
+fn print_results<'a, I>(row: &str, languages: I, list_files: bool)
 where I: std::iter::Iterator<Item = (&'a LanguageType, &'a Language)> {
+    let path_len = row.len() - 54;
+    let lang_section_len = row.len() - 61;
     for (name, language) in languages.filter(isnt_empty) {
-        print_language(language, name.name());
+        print_language(lang_section_len, language, name.name());
 
         if list_files {
-            println!("{}", ROW);
+            println!("{}", row);
             for stat in &language.stats {
-                println!("{}", stat);
+                println!("{:1$}", stat, path_len);
             }
-            println!("{}", ROW);
+            println!("{}", row);
         }
     }
 }
@@ -238,12 +242,25 @@ fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
     !language.is_empty()
 }
 
-fn print_language(language: &Language, name: &str) {
-    println!(" {: <18} {: >6} {:>12} {:>12} {:>12} {:>12}",
+fn print_language(lang_section_len: usize, language: &Language, name: &str) {
+    println!(" {:<6$} {:>6} {:>12} {:>12} {:>12} {:>12}",
              name,
              language.stats.len(),
              language.lines,
              language.code,
              language.comments,
-             language.blanks)
+             language.blanks,
+             lang_section_len)
+}
+
+#[cfg(target_family = "windows")]
+fn terminal_columns() -> usize {
+    79
+}
+
+#[cfg(target_family = "unix")]
+fn terminal_columns() -> usize {
+    let mut winsize = libc::winsize { ws_row: 0, ws_col: 0, ws_xpixel: 0, ws_ypixel: 0};
+    unsafe { libc::ioctl(libc::STDIN_FILENO, libc::TIOCGWINSZ, &mut winsize) };
+    winsize.ws_col as usize
 }

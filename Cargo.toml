@@ -40,6 +40,7 @@ ignore = "0.4"
 log = "0.4"
 rayon = "1"
 clap = "2.24"
+libc = "0.2.43"
 
 [dependencies.env_logger]
 features = []
