@@ -175,7 +175,7 @@ fn main() {
         process::exit(0);
     }
 
-    let columns = terminal_columns();
+    let columns = terminal_columns().max(79);
     let row = "-".repeat(columns);
 
     println!("{}", row);
