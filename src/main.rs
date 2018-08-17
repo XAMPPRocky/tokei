@@ -20,6 +20,7 @@ use tokei::Sort;
 use input::Format;
 
 const FILES: &str = "files";
+const FALLBACK_ROW_LEN: usize = 79;
 const NO_LANG_ROW_LEN: usize = 61;
 const NO_LANG_ROW_LEN_NO_SPACES: usize = 54;
 
@@ -178,7 +179,7 @@ fn main() {
         process::exit(0);
     }
 
-    let columns = terminal_columns().max(79);
+    let columns = terminal_columns().max(FALLBACK_ROW_LEN);
     let row = "-".repeat(columns);
 
     println!("{}", row);
@@ -272,7 +273,7 @@ fn terminal_columns() -> usize {
         dwMaximumWindowSize: COORD { X: 0, Y: 0 },
     };
     if unsafe { GetConsoleScreenBufferInfo(GetStdHandle(STD_OUT_HANDLE), &mut buffer_info) } == 0 {
-        79
+        FALLBACK_ROW_LEN
     } else {
         (buffer_info.srWindow.Right - buffer_info.srWindow.Left + 1) as usize
     }
@@ -282,7 +283,7 @@ fn terminal_columns() -> usize {
 fn terminal_columns() -> usize {
     let mut winsize = libc::winsize { ws_row: 0, ws_col: 0, ws_xpixel: 0, ws_ypixel: 0 };
     if unsafe { libc::ioctl(libc::STDIN_FILENO, libc::TIOCGWINSZ, &mut winsize) } != 0 {
-        79
+        FALLBACK_ROW_LEN
     } else {
         winsize.ws_col as usize
     }
