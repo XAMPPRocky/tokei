@@ -4,10 +4,9 @@
 
 #[macro_use] extern crate clap;
 extern crate env_logger;
-extern crate libc;
 extern crate log;
+extern crate term_size;
 extern crate tokei;
-extern crate winapi;
 
 mod input;
 use input::*;
@@ -21,6 +20,7 @@ use input::Format;
 
 const FILES: &str = "files";
 const FALLBACK_ROW_LEN: usize = 79;
+const NO_LANG_HEADER_ROW_LEN: usize = 67;
 const NO_LANG_ROW_LEN: usize = 61;
 const NO_LANG_ROW_LEN_NO_SPACES: usize = 54;
 
@@ -179,7 +179,10 @@ fn main() {
         process::exit(0);
     }
 
-    let columns = terminal_columns().max(FALLBACK_ROW_LEN);
+    let columns = match term_size::dimensions() {
+        Some((columns, _)) => columns.max(FALLBACK_ROW_LEN),
+        None => FALLBACK_ROW_LEN,
+    };
     let row = "-".repeat(columns);
 
     println!("{}", row);
@@ -190,7 +193,7 @@ fn main() {
                 "Code",
                 "Comments",
                 "Blanks",
-                columns - 67);
+                columns - NO_LANG_HEADER_ROW_LEN);
     println!("{}", row);
     if let Some(sort_category) = sort_category {
         for (_, ref mut language) in &mut languages {
@@ -255,36 +258,4 @@ fn print_language(lang_section_len: usize, language: &Language, name: &str) {
              language.comments,
              language.blanks,
              len = lang_section_len)
-}
-
-#[cfg(target_family = "windows")]
-fn terminal_columns() -> usize {
-    use winapi::um::{
-        processenv::GetStdHandle,
-        wincon::{COORD, CONSOLE_SCREEN_BUFFER_INFO, SMALL_RECT, GetConsoleScreenBufferInfo}
-    };
-    const STD_OUT_HANDLE: u32 = -11i32 as u32;
-
-    let mut buffer_info = CONSOLE_SCREEN_BUFFER_INFO {
-        dwSize: COORD { X: 0, Y: 0 },
-        dwCursorPosition: COORD { X: 0, Y: 0 },
-        wAttributes: 0,
-        srWindow: SMALL_RECT { Left: 0, Top: 0, Right: 0, Bottom: 0 },
-        dwMaximumWindowSize: COORD { X: 0, Y: 0 },
-    };
-    if unsafe { GetConsoleScreenBufferInfo(GetStdHandle(STD_OUT_HANDLE), &mut buffer_info) } == 0 {
-        FALLBACK_ROW_LEN
-    } else {
-        (buffer_info.srWindow.Right - buffer_info.srWindow.Left + 1) as usize
-    }
-}
-
-#[cfg(target_family = "unix")]
-fn terminal_columns() -> usize {
-    let mut winsize = libc::winsize { ws_row: 0, ws_col: 0, ws_xpixel: 0, ws_ypixel: 0 };
-    if unsafe { libc::ioctl(libc::STDIN_FILENO, libc::TIOCGWINSZ, &mut winsize) } != 0 {
-        FALLBACK_ROW_LEN
-    } else {
-        winsize.ws_col as usize
-    }
 }

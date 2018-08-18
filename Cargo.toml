@@ -40,7 +40,7 @@ ignore = "0.4"
 log = "0.4"
 rayon = "1"
 clap = "2.24"
-libc = "0.2.43"
+term_size = "0.3.1"
 
 [dependencies.env_logger]
 features = []
@@ -73,10 +73,6 @@ version = "0.7"
 [dependencies.toml]
 optional = true
 version = "0.4"
-
-[dependencies.winapi]
-features = ["wincon", "processenv"]
-version = "0.3.5"
 
 [dev-dependencies]
 tempdir = "0.3"
