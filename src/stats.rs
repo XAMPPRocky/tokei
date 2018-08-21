@@ -79,6 +79,7 @@ impl fmt::Display for Stats {
             display_stats!(f, self, name, max_len)
         } else {
             let mut formatted = String::from("|");
+            // Add 1 to the index to account for the '|' we add to the output string
             let from = find_char_boundary(&name, name_length + 1 - max_len);
             formatted.push_str(&name[from..]);
             display_stats!(f, self, formatted, max_len)
