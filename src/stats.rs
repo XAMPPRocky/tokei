@@ -1,9 +1,10 @@
 use std::fmt;
-use std::path::PathBuf;
+
+use ignore::DirEntry;
 
 /// A struct representing the statistics of a file.
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, )]
 pub struct Stats {
     /// Number of blank lines within the file.
     pub blanks: usize,
@@ -15,33 +16,18 @@ pub struct Stats {
     /// Total number of lines within the file.
     pub lines: usize,
     /// File name.
-    pub name: PathBuf,
+    pub name: DirEntry,
 }
 
 impl Stats {
-    /// Create a new `Stats` from a file path.
-    ///
-    /// ```
-    /// use std::path::PathBuf;
-    /// use tokei::Stats;
-    ///
-    /// let path = PathBuf::from("src/main.rs");
-    ///
-    /// let stats = Stats::new(path);
-    /// ```
-    pub fn new(name: PathBuf) -> Self {
-        Stats { name: name, ..Self::default() }
-    }
-}
-
-impl Default for Stats {
-    fn default() -> Self {
+    /// Create a new `Stats` from a `ignore::DirEntry`.
+    pub fn new(name: DirEntry) -> Self {
         Stats {
-            name: PathBuf::new(),
-            lines: usize::default(),
-            code: usize::default(),
-            comments: usize::default(),
-            blanks: usize::default(),
+            blanks: 0,
+            code: 0,
+            comments: 0,
+            lines: 0,
+            name,
         }
     }
 }
@@ -70,7 +56,7 @@ macro_rules! display_stats {
 
 impl fmt::Display for Stats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let name = self.name.to_string_lossy();
+        let name = self.name.path().to_string_lossy();
         let name_length = name.len();
 
         let max_len = f.width().unwrap_or(25);

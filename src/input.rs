@@ -162,7 +162,7 @@ pub fn add_input(input: &str, languages: &mut Languages) -> bool {
                 contents
             };
 
-            convert_input(contents)
+            convert_input(&contents)
         }
         Err(_) => {
             if input == "stdin" {
@@ -170,9 +170,9 @@ pub fn add_input(input: &str, languages: &mut Languages) -> bool {
                 let mut buffer = String::new();
 
                 let _ = stdin.read_to_string(&mut buffer);
-                convert_input(buffer)
+                convert_input(&buffer)
             } else {
-                convert_input(String::from(input))
+                convert_input(input)
             }
         }
     };
@@ -185,6 +185,6 @@ pub fn add_input(input: &str, languages: &mut Languages) -> bool {
     }
 }
 
-fn convert_input(contents: String) -> Option<LanguageMap> {
+fn convert_input(contents: &str) -> Option<LanguageMap> {
     self::Format::parse(&contents)
 }

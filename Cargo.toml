@@ -1,45 +1,36 @@
 [package]
 authors = ["Aaronepower <theaaronepower@gmail.com>"]
 build = "build.rs"
+categories = ["command-line-utilities", "development-tools", "visualization"]
 description = "A utility that allows you to count code, quickly."
 homepage = "https://tokei.rs"
-include = [
-    "Cargo.lock",
-    "Cargo.toml",
-    "LICENCE-APACHE",
-    "LICENCE-MIT",
-    "build.rs",
-    "languages.json",
-    "src/**/*"
-]
+include = ["Cargo.lock", "Cargo.toml", "LICENCE-APACHE", "LICENCE-MIT", "build.rs", "languages.json", "src/**/*"]
+keywords = ["utility", "cli", "cloc", "lines", "statistics"]
 license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/Aaronepower/tokei.git"
 version = "7.0.3"
-keywords = ["utility", "cli", "cloc", "lines", "statistics"]
-categories = ["command-line-utilities", "development-tools", "visualization"]
 
 [badges]
-travis-ci = { repository = "Aaronepower/tokei" }
-appveyor = { repository = "Aaronepower/tokei" }
+[badges.appveyor]
+repository = "Aaronepower/tokei"
 
-[profile.release]
-panic="abort"
-lto=true
+[badges.travis-ci]
+repository = "Aaronepower/tokei"
 
 [build-dependencies]
-serde_json = "1"
-ignore = "0.4"
 handlebars = "1"
+ignore = "0.4"
 lazy_static = "1"
+serde_json = "1"
 
 [dependencies]
-encoding = "0.2"
+clap = "2"
+encoding_rs_io = "0.1"
 ignore = "0.4"
 log = "0.4"
 rayon = "1"
-clap = "2.24"
 term_size = "0.3.1"
 
 [dependencies.env_logger]
@@ -47,20 +38,20 @@ features = []
 version = "0.5.0"
 
 [dependencies.hex]
-version = "0.3"
 optional = true
+version = "0.3"
 
 [dependencies.serde]
 optional = true
 version = "1"
 
+[dependencies.serde_cbor]
+optional = true
+version = "0.9"
+
 [dependencies.serde_derive]
 optional = true
 version = "1"
-
-[dependencies.serde_cbor]
-optional = true
-version = "0.8"
 
 [dependencies.serde_json]
 optional = true
@@ -68,16 +59,16 @@ version = "1"
 
 [dependencies.serde_yaml]
 optional = true
-version = "0.7"
+version = "0.8"
 
 [dependencies.toml]
 optional = true
 version = "0.4"
 
 [dev-dependencies]
-tempdir = "0.3"
 lazy_static = "1"
 regex = "1.0"
+tempdir = "0.3"
 
 [features]
 all = ["json", "cbor", "toml-io", "yaml"]
@@ -87,3 +78,7 @@ io = ["serde_derive", "serde"]
 json = ["io", "serde_json"]
 toml-io = ["io", "toml"]
 yaml = ["io", "serde_yaml"]
+
+[profile.release]
+lto = true
+panic = "abort"

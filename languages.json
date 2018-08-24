@@ -220,6 +220,9 @@
             "line_comment":[
                 ";"
             ],
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
             "extensions":[
                 "clj"
             ]
@@ -228,6 +231,9 @@
             "line_comment":[
                 ";"
             ],
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
             "extensions":[
                 "cljs"
             ]
@@ -235,6 +241,9 @@
         "ClojureC":{
             "line_comment":[
                 ";"
+            ],
+            "quotes":[
+                ["\\\"", "\\\""]
             ],
             "extensions":[
                 "cljc"
@@ -509,7 +518,7 @@
         },
         "FEN":{
             "name":"FEN",
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "fen"
             ]
@@ -584,6 +593,9 @@
             ],
             "multi_line":[
                 ["(*", "*)"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""]
             ],
             "extensions":[
                 "fs",
@@ -708,7 +720,7 @@
         },
         "Hex":{
             "name":"HEX",
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "hex"
             ]
@@ -727,7 +739,7 @@
         },
         "IntelHex":{
             "name":"Intel HEX",
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "ihex"
             ]
@@ -776,7 +788,7 @@
         },
         "Json":{
             "name":"JSON",
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "json"
             ]
@@ -937,7 +949,7 @@
             ]
         },
         "Markdown":{
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "md",
                 "markdown"
@@ -962,7 +974,7 @@
             ]
         },
         "Mint":{
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "mint"
             ]
@@ -1242,7 +1254,7 @@
             ]
         },
         "ReStructuredText":{
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "rst"
             ]
@@ -1388,7 +1400,7 @@
         },
         "Text":{
             "name":"Plain Text",
-            "base":"blank",
+            "blank": true,
             "extensions":[
                 "text",
                 "txt"

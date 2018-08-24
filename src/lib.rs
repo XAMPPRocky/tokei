@@ -37,7 +37,7 @@
 //!     let mut languages = Languages::new();
 //!
 //!     // Get statistics
-//!     languages.get_statistics(paths, excluded);
+//!     languages.get_statistics(paths, excluded, None);
 //!
 //!     // Remove empty languages
 //!     let language_map = languages.remove_empty();
@@ -52,7 +52,7 @@
 
 #[macro_use]
 extern crate log;
-extern crate encoding;
+extern crate encoding_rs_io;
 extern crate ignore;
 extern crate rayon;
 

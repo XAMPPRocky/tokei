@@ -3,26 +3,29 @@
 // found in the LICENCE-{APACHE/MIT} file.
 
 use std::collections::BTreeMap;
+use std::error::Error;
 use std::path::Path;
 use std::sync::mpsc;
-use std::error::Error;
 
 use ignore::WalkBuilder;
 use ignore::overrides::OverrideBuilder;
 use ignore::WalkState::*;
 
-use language::{Language, Languages, LanguageType};
+use rayon::prelude::*;
+
 // This is just a re-export from the auto generated file.
 pub use language::get_filetype_from_shebang;
+use language::{Language, LanguageType};
 
 pub fn get_all_files(paths: &[&str],
                      ignored_directories: Vec<&str>,
-                     languages: &mut BTreeMap<LanguageType, Language>)
+                     languages: &mut BTreeMap<LanguageType, Language>,
+                     types: Option<Vec<LanguageType>>)
 {
+    let types = ::std::sync::Arc::new(types);
     let (tx, rx) = mpsc::channel();
 
     let mut paths = paths.iter();
-
     let mut walker = WalkBuilder::new(paths.next().unwrap());
 
     for path in paths {
@@ -41,7 +44,7 @@ pub fn get_all_files(paths: &[&str],
 
     walker.build_parallel().run(move|| {
         let tx = tx.clone();
-        Box::new(move|entry| {
+        Box::new(move |entry| {
 
             let entry = match entry {
                 Ok(entry) => entry,
@@ -51,13 +54,9 @@ pub fn get_all_files(paths: &[&str],
                 }
             };
 
-            let entry = entry.path();
-
-            if let Ok(metadata) = entry.metadata() {
+            if let Ok(metadata) = entry.path().metadata() {
                 if metadata.is_file() {
-                    if let Some(language) = LanguageType::from_path(entry) {
-                        tx.send((language, entry.to_owned())).unwrap();
-                    }
+                    tx.send(entry).unwrap();
                 }
             }
 
@@ -65,15 +64,34 @@ pub fn get_all_files(paths: &[&str],
         })
     });
 
-    for (language_type, pathbuf) in rx {
+    let types: Option<&[LanguageType]> = types.as_ref().as_ref().map(|v| &**v);
+
+    let iter: Vec<_> = rx.into_iter()
+        .collect::<Vec<_>>()
+        .into_par_iter()
+        .filter_map(|entry| {
+            if let Some(language) = LanguageType::from_path(entry.path()) {
+                if (types.is_some() &&
+                    types.map(|t| t.contains(&language)).unwrap()) ||
+                    types.is_none()
+                {
+                    return language.parse(entry)
+                        .ok()
+                        .and_then(|s| Some((language, s)))
+                }
+            }
+
+            None
+    }).collect();
+
+    for (language_type, stats) in iter {
         languages.entry(language_type)
-                 .or_insert_with(|| Languages::generate_language(language_type))
-                 .files.push(pathbuf);
+            .or_insert_with(|| Language::new())
+            .add_stat(stats);
     }
 }
 
-pub fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
-    let path = path.as_ref();
+pub(crate) fn get_extension(path: &Path) -> Option<String> {
     match path.extension() {
         Some(extension_os) => {
             Some(extension_os.to_string_lossy().to_lowercase())
@@ -82,8 +100,7 @@ pub fn get_extension<P: AsRef<Path>>(path: P) -> Option<String> {
     }
 }
 
-pub fn get_filename<P: AsRef<Path>>(path: P) -> Option<String> {
-    let path = path.as_ref();
+pub(crate) fn get_filename(path: &Path) -> Option<String> {
     match path.file_name() {
         Some(filename_os) => {
             Some(filename_os.to_string_lossy().to_lowercase())
@@ -108,7 +125,7 @@ mod test {
         create_dir(&path_name).expect("Couldn't create directory.rs within temp");
 
         let mut l = Languages::new();
-        get_all_files(&[tmp_dir.into_path().to_str().unwrap()], vec![], &mut l);
+        get_all_files(&[tmp_dir.into_path().to_str().unwrap()], vec![], &mut l, None);
 
         assert!(l.get(&LanguageType::Rust).is_none());
     }
