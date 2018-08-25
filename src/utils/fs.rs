@@ -53,8 +53,8 @@ pub fn get_all_files(paths: &[&str],
                 }
             };
 
-            if let Ok(metadata) = entry.path().metadata() {
-                if metadata.is_file() {
+            if let Some(file_type) = entry.file_type() {
+                if file_type.is_file() {
                     tx.send(entry).unwrap();
                 }
             }
