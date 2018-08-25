@@ -4,3 +4,4 @@ src/test
 .commit_message
 *.bk
 *.rustfmt
+.DS_Store
