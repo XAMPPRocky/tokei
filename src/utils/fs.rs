@@ -22,7 +22,6 @@ pub fn get_all_files(paths: &[&str],
                      languages: &mut BTreeMap<LanguageType, Language>,
                      types: Option<Vec<LanguageType>>)
 {
-    let types = ::std::sync::Arc::new(types);
     let (tx, rx) = mpsc::channel();
 
     let mut paths = paths.iter();
@@ -64,7 +63,7 @@ pub fn get_all_files(paths: &[&str],
         })
     });
 
-    let types: Option<&[LanguageType]> = types.as_ref().as_ref().map(|v| &**v);
+    let types: Option<&[LanguageType]> = types.as_ref().map(|v| &**v);
 
     let iter: Vec<_> = rx.into_iter()
         .collect::<Vec<_>>()

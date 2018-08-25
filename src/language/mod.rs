@@ -27,10 +27,10 @@ pub struct Language {
     pub code: usize,
     /// Number of comments(both single, and multi-line)
     pub comments: usize,
-    /// A collection of statistics based on the files provide from `files`
-    pub stats: Vec<Stats>,
     /// Number of total lines.
     pub lines: usize,
+    /// A collection of statistics based on the files provide from `files`
+    pub stats: Vec<Stats>,
 }
 
 impl Language {
@@ -51,15 +51,20 @@ impl Language {
 
     /// Totals up all the statistics currently in the language.
     pub fn total(&mut self) {
-        let (blanks, code, comments, lines) = self.stats.par_iter()
-            .map(|s| (s.blanks, s.code, s.comments, s.lines))
-            .reduce(|| (0, 0, 0, 0),
-                    |a, s| (a.0 + s.0, a.1 + s.1, a.2 + s.2, a.3 + s.3));
+        let mut blanks = 0;
+        let mut code = 0;
+        let mut comments = 0;
+
+        for stat in &self.stats {
+            blanks += stat.blanks;
+            code += stat.code;
+            comments += stat.comments;
+        }
 
         self.blanks = blanks;
         self.code = code;
         self.comments = comments;
-        self.lines = lines;
+        self.lines = blanks + code + comments;
     }
 
     /// Checks if the language is empty. Empty meaning it doesn't have any

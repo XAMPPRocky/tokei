@@ -4,7 +4,7 @@ use ignore::DirEntry;
 
 /// A struct representing the statistics of a file.
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
-#[derive(Clone, Debug, )]
+#[derive(Clone, Debug)]
 pub struct Stats {
     /// Number of blank lines within the file.
     pub blanks: usize,

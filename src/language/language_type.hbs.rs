@@ -16,6 +16,13 @@ use utils::fs as fsutils;
 use self::LanguageType::*;
 use stats::Stats;
 
+struct Comments {
+    allows_nested: bool,
+    line_comments: &'static [&'static str],
+    multi_line_comments: &'static [(&'static str, &'static str)],
+    nested_comments: &'static [(&'static str, &'static str)],
+    quotes: &'static [(&'static str, &'static str)],
+}
 
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -387,14 +394,17 @@ impl LanguageType {
     /// line comments or quotes. Returns `bool` indicating whether it was
     /// successful or not.
     #[inline]
-    pub(crate) fn parse_basic(self, line: &str, stats: &mut Stats) -> bool {
-        let mut iter = self.quotes().iter()
-            .chain(self.multi_line_comments())
-            .chain(self.nested_comments());
+    fn parse_basic(comments: &Comments, line: &str, stats: &mut Stats)
+        -> bool
+    {
+
+        let mut iter = comments.quotes.iter()
+            .chain(comments.multi_line_comments)
+            .chain(comments.nested_comments);
 
         if !iter.any(|(s, _)| line.contains(s)) {
             trace!("Determined to be skippable");
-            if self.line_comments().iter().any(|s| line.starts_with(s)) {
+            if comments.line_comments.iter().any(|s| line.starts_with(s)) {
                 stats.comments += 1;
                 trace!("Determined to be comment. So far: {} lines", stats.comments);
             } else {
@@ -417,6 +427,13 @@ impl LanguageType {
     {
         let mut stack: Vec<&'static str> = Vec::with_capacity(1);
         let mut quote: Option<&'static str> = None;
+        let comments = Comments {
+            allows_nested: self.allows_nested(),
+            line_comments: self.line_comments(),
+            multi_line_comments: self.multi_line_comments(),
+            nested_comments: self.nested_comments(),
+            quotes: self.quotes(),
+        };
 
         for line in lines {
 
@@ -441,7 +458,7 @@ impl LanguageType {
 
             if quote.is_none() &&
                stack.is_empty() &&
-               self.parse_basic(line, &mut stats)
+               Self::parse_basic(&comments, line, &mut stats)
             {
                 continue;
             }
@@ -485,14 +502,14 @@ impl LanguageType {
 
 
                 if stack.is_empty() {
-                    for comment in self.line_comments() {
+                    for comment in comments.line_comments {
                         if window.starts_with(comment.as_bytes()) {
                             trace!(r#"Start of "{}"."#, comment);
                             break 'window;
                         }
                     }
 
-                    for &(start, end) in self.quotes() {
+                    for &(start, end) in comments.quotes {
                         if window.starts_with(start.as_bytes()) {
                             quote = Some(end);
                             trace!(r#"Start of "{}"."#, start);
@@ -502,7 +519,7 @@ impl LanguageType {
                     }
                 }
 
-                for &(start, end) in self.nested_comments() {
+                for &(start, end) in comments.nested_comments {
                     if window.starts_with(start.as_bytes()) {
                         stack.push(end);
                         trace!(r#"Start of "{}"."#, start);
@@ -511,10 +528,10 @@ impl LanguageType {
                     }
                 }
 
-                for &(start, end) in self.multi_line_comments() {
+                for &(start, end) in comments.multi_line_comments {
                     if window.starts_with(start.as_bytes()) {
-                        if self.allows_nested() || stack.is_empty() {
-                            if log_enabled!(Trace) && self.allows_nested() {
+                        if comments.allows_nested || stack.is_empty() {
+                            if log_enabled!(Trace) && comments.allows_nested {
                                 trace!(r#"Start of nested "{}"."#, start);
                             } else {
                                 trace!(r#"Start of "{}"."#, start);
@@ -529,10 +546,10 @@ impl LanguageType {
                 }
             }
 
-            let starts_with_comment = self.multi_line_comments().iter()
+            let starts_with_comment = comments.multi_line_comments.iter()
                 .map(|&(s, _)| s)
-                .chain(self.line_comments().iter().map(|s| *s))
-                .chain(self.nested_comments().iter().map(|&(s, _)| s))
+                .chain(comments.line_comments.iter().map(|s| *s))
+                .chain(comments.nested_comments.iter().map(|&(s, _)| s))
                 .any(|comment| line.starts_with(comment));
 
             trace!("{}", line);
