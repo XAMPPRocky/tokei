@@ -1,6 +1,8 @@
 # 8.0.0
 * A language's comments, and quotes are now available through the `LanguageType`
   enum.
+* You can filter by language using the `-t/--type` option. e.g. `tokei -t "Rust,C"`
+  will print only Rust and C files.
 * Tokei now understands terminal width and will expand to fit it. (Thanks
   to @Veykril)
 * Added [comparison](./COMPARISON.md) document to compare Tokei to other
