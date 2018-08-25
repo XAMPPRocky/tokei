@@ -6,9 +6,9 @@ set -e
 echo 'Tokei Benchmarking Tool'
 
 if [ $FULL = true ]; then
-    REQUIRED='tokei, cloc, loc, hyperfine, and scc'
+    REQUIRED='cloc, tokei, loc, hyperfine, and scc'
 else
-    REQUIRED='tokei'
+    REQUIRED='tokei, and hyperfine'
 fi
 
 echo "The use of this tool requires $REQUIRED to be installed and available in your PATH variable."
@@ -21,19 +21,20 @@ hyperfine --version
 echo "old tokei: $(tokei --version)"
 
 if [ $FULL = true ]; then
-    echo "cloc: $(cloc --version)"
+    scc --version
     loc --version
+    echo "cloc: $(cloc --version)"
 fi
 
 cargo build --release
 
 if [ $FULL = true ]; then
-    hyperfine -w 5 "target/release/tokei $input"\
-                "tokei $input"\
-                "cloc --skip-uniqueness $input"\
-                "loc $input"
+    hyperfine -w 5 "target/release/tokei $input" \
+                "tokei $input" \
+                "scc $input" \
+                "loc $input" \
+                "cloc $input"
 else
     hyperfine -w 5 "target/release/tokei $input"\
-                "tokei $input"\
-
+                "tokei $input"
 fi
