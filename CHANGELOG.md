@@ -1,3 +1,18 @@
+# 8.0.0
+* A language's comments, and quotes are now available through the `LanguageType`
+  enum.
+* Tokei now understands terminal width and will expand to fit it. (Thanks
+  to @Veykril)
+* Added [comparison](./COMPARISON.md) document to compare Tokei to other
+  code counters.
+* Updated dependencies
+
+**Added languages**
+- @BrandonBoone VB6, VBScript, XSLT
+- @ialpert BrightScript
+- @PJB3005 Dream Maker
+- @schmee edn
+
 # 7.0.3
 
 Made various optimisations, up to 65% faster in some cases.

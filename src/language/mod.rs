@@ -8,8 +8,6 @@ pub mod language_type;
 use std::mem;
 use std::ops::AddAssign;
 
-use rayon::prelude::*;
-
 pub use self::languages::Languages;
 pub use self::language_type::*;
 

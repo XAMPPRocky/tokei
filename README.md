@@ -41,28 +41,8 @@ This is tokei running on its own directory
 
 ## Features
 
-- Tokei is **very fast**, below are the Tokei's times on a select few large
-  repositories, with a  hot cache(_times are in seconds and measured using
-  [`hyperfine`](https://github.com/sharkdp/hyperfine) on macOS Sierra,
-  with 2.7 GHz Intel Core i7, results will vary_).
-
-| Repository     | Files  | Lines      | Real time |
-|----------------|--------|------------|-----------|
-| UnrealEngine 4 | 77,150 | 23,346,363 | 2.55s     |
-| DragonFlyBSD   | 27,506 | 14,543,104 | 1.26s     |
-| Rust           | 11,159 |    984,945 | 0.22s     |
-| CPython        |  3,550 |  1,682,647 | 0.16s     |
-
-#### Commit hashes used in tests
-
-**UnrealEngine 4** 08ee319f80ef47dbf0988e14b546b65214838ec4
-
-**DragonFlyBSD** b3209e88d6ec0b2ca930d8b6878f781183a9894e
-
-**Rust** 1b3d737716a4ae40709da627fc3e726ce539e405
-
-**CPython** 00818c8ffd657f9ec727e366bfffd9c2135fa5ab
-
+- Tokei is **very fast**, check out our [comparison](./COMPARISON.md) document
+  to see how Tokei's speed compares to others.
 
 - Tokei is **accurate**, Tokei correctly handles multi line comments,
   nested comments, and not counting comments that are in strings. Providing an
