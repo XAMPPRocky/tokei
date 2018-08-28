@@ -11,6 +11,7 @@ use std::str::FromStr;
 
 use encoding_rs_io::DecodeReaderBytes;
 use log::Level::Trace;
+use ignore::DirEntry;
 
 use utils::fs as fsutils;
 use self::LanguageType::*;
@@ -206,6 +207,12 @@ impl LanguageType {
         ]
     }
 
+    /// Returns the single line comments of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Rust;
+    /// assert_eq!(lang.line_comments(), &["//"]);
+    /// ```
     pub fn line_comments(self) -> &'static [&'static str] {
         match self {
             {{#each languages}}
@@ -227,6 +234,12 @@ impl LanguageType {
         }
     }
 
+    /// Returns the single line comments of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Rust;
+    /// assert_eq!(lang.multi_line_comments(), &[("/*", "*/")]);
+    /// ```
     pub fn multi_line_comments(self) -> &'static [(&'static str, &'static str)]
     {
         match self {
@@ -253,6 +266,13 @@ impl LanguageType {
         }
     }
 
+
+    /// Returns whether the language allows nested multi line comments.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Rust;
+    /// assert!(lang.allows_nested());
+    /// ```
     pub fn allows_nested(self) -> bool {
         match self {
             {{#each languages}}
@@ -274,6 +294,13 @@ impl LanguageType {
         }
     }
 
+    /// Returns what nested comments the language has. (Currently only Go has
+    /// any of this type.)
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Go;
+    /// assert_eq!(lang.nested_comments(), &[("/+", "+/")]);
+    /// ```
     pub fn nested_comments(self) -> &'static [(&'static str, &'static str)]
     {
         match self {
@@ -289,6 +316,12 @@ impl LanguageType {
         }
     }
 
+    /// Returns the quotes of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Rust;
+    /// assert_eq!(lang.quotes(), &[("\"", "\"")]);
+    /// ```
     pub fn quotes(self) -> &'static [(&'static str, &'static str)] {
         match self {
             {{#each languages}}
@@ -364,8 +397,9 @@ impl LanguageType {
         }
     }
 
-    /// Parses a given file using the `LanguageType`.
-    pub fn parse(self, entry: ::ignore::DirEntry) -> io::Result<Stats> {
+    /// Parses a given `DirEntry` using the `LanguageType`. Returning `Stats`
+    /// on success.
+    pub fn parse(self, entry: DirEntry) -> io::Result<Stats> {
         let text = {
             let f = File::open(entry.path())?;
             let mut s = String::new();
@@ -374,6 +408,14 @@ impl LanguageType {
             reader.read_to_string(&mut s)?;
             s
         };
+
+        self.parse_from_str(entry, text)
+    }
+
+    /// Parses the text provided. Returning `Stats` on success.
+    pub fn parse_from_str(self, entry: DirEntry, text: &str)
+        -> io::Result<Stats>
+    {
 
         let lines = text.lines();
         let mut stats = Stats::new(entry);
