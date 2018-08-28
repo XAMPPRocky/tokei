@@ -294,11 +294,11 @@ impl LanguageType {
         }
     }
 
-    /// Returns what nested comments the language has. (Currently only Go has
+    /// Returns what nested comments the language has. (Currently only D has
     /// any of this type.)
     /// ```
     /// use tokei::LanguageType;
-    /// let lang = LanguageType::Go;
+    /// let lang = LanguageType::D;
     /// assert_eq!(lang.nested_comments(), &[("/+", "+/")]);
     /// ```
     pub fn nested_comments(self) -> &'static [(&'static str, &'static str)]
@@ -320,7 +320,7 @@ impl LanguageType {
     /// ```
     /// use tokei::LanguageType;
     /// let lang = LanguageType::Rust;
-    /// assert_eq!(lang.quotes(), &[("\"", "\"")]);
+    /// assert_eq!(lang.quotes(), &[("r#\"", "\"#"), ("#\"", "\"#"), ("\"", "\"")]);
     /// ```
     pub fn quotes(self) -> &'static [(&'static str, &'static str)] {
         match self {
@@ -409,7 +409,7 @@ impl LanguageType {
             s
         };
 
-        self.parse_from_str(entry, text)
+        self.parse_from_str(entry, &text)
     }
 
     /// Parses the text provided. Returning `Stats` on success.
@@ -418,7 +418,7 @@ impl LanguageType {
     {
 
         let lines = text.lines();
-        let mut stats = Stats::new(entry);
+        let mut stats = Stats::new(entry.path().to_owned());
 
         let stats = if self.is_blank() {
             let count = lines.count();

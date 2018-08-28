@@ -76,9 +76,9 @@ impl Language {
     /// ```
     pub fn is_empty(&self) -> bool {
         self.code == 0 &&
-            self.comments == 0 &&
-            self.blanks == 0 &&
-            self.lines == 0
+        self.comments == 0 &&
+        self.blanks == 0 &&
+        self.lines == 0
     }
 
     /// Sorts each of the `Stats` structs contained in the language based
@@ -89,7 +89,7 @@ impl Language {
             Blanks => self.stats.sort_by(|a, b| b.blanks.cmp(&a.blanks)),
             Comments => self.stats.sort_by(|a, b| b.comments.cmp(&a.comments)),
             Code => self.stats.sort_by(|a, b| b.code.cmp(&a.code)),
-            Files => self.stats.sort_by(|a, b| a.name.path().cmp(&b.name.path())),
+            Files => self.stats.sort_by(|a, b| a.name.cmp(&b.name)),
             Lines => self.stats.sort_by(|a, b| b.lines.cmp(&a.lines)),
         }
     }

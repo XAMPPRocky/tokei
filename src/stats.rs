@@ -1,6 +1,5 @@
 use std::fmt;
-
-use ignore::DirEntry;
+use std::path::PathBuf;
 
 /// A struct representing the statistics of a file.
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
@@ -16,12 +15,12 @@ pub struct Stats {
     /// Total number of lines within the file.
     pub lines: usize,
     /// File name.
-    pub name: DirEntry,
+    pub name: PathBuf,
 }
 
 impl Stats {
     /// Create a new `Stats` from a `ignore::DirEntry`.
-    pub fn new(name: DirEntry) -> Self {
+    pub fn new(name: PathBuf) -> Self {
         Stats {
             blanks: 0,
             code: 0,
@@ -56,7 +55,7 @@ macro_rules! display_stats {
 
 impl fmt::Display for Stats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let name = self.name.path().to_string_lossy();
+        let name = self.name.to_string_lossy();
         let name_length = name.len();
 
         let max_len = f.width().unwrap_or(25);
