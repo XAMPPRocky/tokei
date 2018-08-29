@@ -24,6 +24,7 @@ This is tokei running on its own directory
     - [Automatic](#automatic)
         - [Arch Linux](#arch-linux)
         - [Cargo](#cargo)
+        - [Conda](#conda)
         - [Fedora](#fedora)
         - [FreeBSD](#freebsd)
         - [Homebrew](#homebrew)
@@ -73,6 +74,11 @@ $ pacman -S tokei
 #### Cargo
 ```shell
 $ cargo install tokei
+```
+
+#### Conda
+```shell
+$ conda install -c conda-forge tokei
 ```
 
 #### Fedora
