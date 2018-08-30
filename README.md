@@ -260,7 +260,7 @@ Tokei has support for badges. For example
 Tokei's URL scheme is as follows.
 
 ```
-https://tokei.rs/{host: values: github|gitlab}/{Repo Owner eg: Aaronepower}/{Repo name eg: tokei}
+https://tokei.rs/b1/{host: values: github|gitlab}/{Repo Owner eg: Aaronepower}/{Repo name eg: tokei}
 ```
 
 By default the badge will show the repo's LoC(_Lines of Code_), you can also
