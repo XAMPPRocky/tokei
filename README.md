@@ -1,5 +1,4 @@
 # Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
-
 [![Linux build status](https://img.shields.io/travis/Aaronepower/tokei.svg?branch=master)](https://travis-ci.org/Aaronepower/tokei)
 [![Windows build status](https://ci.appveyor.com/api/projects/status/github/Aaronepower/tokei?svg=true)](https://ci.appveyor.com/project/Aaronepower/tokei)
 [![](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
@@ -9,6 +8,9 @@
 [![Donate using Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/Aaronepower/donate)
 
 Tokei is a program that displays statistics about your code. Tokei will show number of files, total lines within those files and code, comments, and blanks grouped by language.
+
+### Translations
+- [中文](https://github.com/chinanf-boy/tokei-zh#支持的语言)
 
 ## Example Output
 This is tokei running on its own directory
