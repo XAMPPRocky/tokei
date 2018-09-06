@@ -881,6 +881,20 @@
                 ["'", "'"]
             ]
         },
+        "Liquid": {
+            "name":"Liquid",
+            "base":"html",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "liquid"
+            ],
+            "multi_line":[
+                ["{% comment %}", "{% endcomment %}"]
+            ]
+        },
         "LinkerScript":{
             "name":"LD Script",
             "base":"c",
@@ -1471,7 +1485,7 @@
             "extensions":[
                 "frm",
                 "bas",
-                "cls" 
+                "cls"
             ]
         },
         "VBScript":{
