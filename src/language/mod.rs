@@ -106,3 +106,12 @@ impl AddAssign for Language {
     }
 }
 
+impl<'a> AddAssign<&'a Self> for Language {
+    fn add_assign(&mut self, rhs: &Self) {
+        self.lines += rhs.lines;
+        self.comments += rhs.comments;
+        self.blanks += rhs.blanks;
+        self.code += rhs.code;
+        self.stats.extend(rhs.stats.clone());
+    }
+}

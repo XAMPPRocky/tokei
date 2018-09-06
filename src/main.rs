@@ -110,6 +110,8 @@ fn main() -> Result<(), Box<Error>> {
             or \"stdin\" to read from stdin.")
         (@arg files: -f --files
             "Will print out statistics on individual files.")
+        (@arg percent: -p --percent
+            "Will print out regular statistics with percentages related to the rest of the project.")
         (@arg input:
             conflicts_with[languages] ...
             "The input file(s)/directory(ies) to be counted.")
@@ -149,6 +151,7 @@ fn main() -> Result<(), Box<Error>> {
         }
         ignored_directories
     };
+    let percent_option = matches.is_present("percent");
 
     // Sorting category should be restricted by clap but parse before we do work just in case.
     let sort_category = sort_option.map(parse_or_exit::<Sort>);
@@ -185,6 +188,11 @@ fn main() -> Result<(), Box<Error>> {
     });
 
     languages.get_statistics(&paths, ignored_directories, types);
+    let mut total = Language::new();
+
+    for (_, language) in &languages {
+        total += language;
+    }
 
     if let Some(format) = output_format {
         print!("{}", format.print(languages).unwrap());
@@ -226,9 +234,9 @@ fn main() -> Result<(), Box<Error>> {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
         }
 
-        print_results(&mut stdout, &row, languages.into_iter(), files_option)?
+        print_results(&mut stdout, &row, languages.into_iter(), &total, files_option, percent_option)?
     } else  {
-        print_results(&mut stdout, &row, languages.iter(), files_option)?
+        print_results(&mut stdout, &row, languages.iter(), &total, files_option, percent_option)?
     }
 
     // If we're listing files there's already a trailing row so we don't want an extra one.
@@ -236,19 +244,13 @@ fn main() -> Result<(), Box<Error>> {
         writeln!(stdout, "{}", row)?;
     }
 
-    let mut total = Language::new();
-
-    for (_, language) in languages {
-        total += language;
-    }
-
-    print_language(&mut stdout, columns - NO_LANG_ROW_LEN, &total, "Total")?;
+    print_language(&mut stdout, columns - NO_LANG_ROW_LEN, &total, &total, "Total", percent_option)?;
     writeln!(stdout, "{}", row)?;
 
     Ok(())
 }
 
-fn print_results<'a, I, W>(sink: &mut W, row: &str, languages: I, list_files: bool)
+fn print_results<'a, I, W>(sink: &mut W, row: &str, languages: I, total: &Language, list_files: bool, show_percentage: bool)
     -> io::Result<()>
     where I: Iterator<Item = (&'a LanguageType, &'a Language)>,
           W: Write,
@@ -256,7 +258,7 @@ fn print_results<'a, I, W>(sink: &mut W, row: &str, languages: I, list_files: bo
     let path_len = row.len() - NO_LANG_ROW_LEN_NO_SPACES;
     let lang_section_len = row.len() - NO_LANG_ROW_LEN;
     for (name, language) in languages.filter(isnt_empty) {
-        print_language(sink, lang_section_len, language, name.name())?;
+        print_language(sink, lang_section_len, language, total, name.name(), show_percentage)?;
 
         if list_files {
             writeln!(sink, "{}", row)?;
@@ -277,17 +279,61 @@ fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
 fn print_language<W>(sink: &mut W,
                      lang_section_len: usize,
                      language: &Language,
-                     name: &str)
+                     total: &Language,
+                     name: &str,
+                     show_percentage: bool)
     -> io::Result<()>
     where W: Write,
 {
-    writeln!(sink,
-             " {:<len$} {:>6} {:>12} {:>12} {:>12} {:>12}",
-             name,
-             language.stats.len(),
-             language.lines,
-             language.code,
-             language.comments,
-             language.blanks,
-             len = lang_section_len)
+    if !show_percentage {
+       return writeln!(
+                 sink,
+                 " {:<len$} {:>6} {:>12} {:>12} {:>12} {:>12}",
+                 name,
+                 language.stats.len(),
+                 language.lines,
+                 language.code,
+                 language.comments,
+                 language.blanks,
+                 len = lang_section_len)
+    }
+
+    let percent_char_count = 5;
+    // don't show percentage for the total row because that would be pointless
+    if language.lines == total.lines {
+        // start the total number of fule just before the percentages, in line with the bar
+        writeln!(sink,
+                 " {:<len$} {:>7}{:<4} {:>12} {:>12} {:>12} {:>12}",
+                 name,
+                 language.stats.len(),
+                 "",
+                 language.lines,
+                 language.code,
+                 language.comments,
+                 language.blanks,
+                 len = lang_section_len - percent_char_count)
+    } else {
+        let percentage = get_percentage(language.lines, total.lines);
+        writeln!(sink,
+                 " {:<len$} {:>5}|{:<5} {:>12} {:>12} {:>12} {:>12}",
+                 name,
+                 language.stats.len(),
+                 percentage,
+                 language.lines,
+                 language.code,
+                 language.comments,
+                 language.blanks,
+                 len = lang_section_len - percent_char_count)
+    }
+}
+
+fn get_percentage(lines: usize, total_lines: usize) -> String {
+    let percentage = lines as f64 * 100_f64 / total_lines as f64;
+    if percentage > 10_f64 {
+        format!("{}%", percentage as usize)
+    } else if percentage > 1_f64 {
+        format!("{:.1}%", percentage)
+    } else {
+        format!("{:.2}%", percentage)
+    }
 }
