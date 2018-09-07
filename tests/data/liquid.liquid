@@ -1,0 +1,24 @@
+{% comment %} 24 lines 19 code 1 comments 4 blanks {% endcomment %}
+
+{% paginate collection.products by 20 %}
+
+<ul id="product-collection">
+    {% for product in collection.products %}
+    <li class="singleproduct clearfix">
+      <div class="small">
+        <div class="prodimage"><a href="{{product.url}}"><img src="{{ product.featured_image | product_img_url: 'small' }}" /></a></div>
+      </div>
+      <div class="description">
+        <h3><a href="{{product.url}}">{{product.title}}</a></h3>
+        <p>{{ product.description | strip_html | truncatewords: 35 }}</p>
+      <p class="money">{{ product.price_min | money }}{% if product.price_varies %} - {{ product.price_max | money }}{% endif %}</p>
+     </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<div id="pagination">
+  {{ paginate | default_pagination }}
+</div>
+
+{% endpaginate %}
