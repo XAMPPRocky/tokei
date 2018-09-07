@@ -41,7 +41,9 @@ matrix:
     # *BSD
     - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
     - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
-    - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
+    # Doesn't work at the moment. 2018-09-07
+    # error adding symbols: DSO missing from command line
+    # - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
 
     # Windows
     - env: TARGET=x86_64-pc-windows-gnu
