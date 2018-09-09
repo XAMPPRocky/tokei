@@ -26,7 +26,7 @@ struct Comments {
 }
 
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum LanguageType {
     {{~#each languages}}
         {{~@key}},
