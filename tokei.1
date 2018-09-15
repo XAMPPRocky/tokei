@@ -1,0 +1,91 @@
+.TH TOKEI "1" "2018-09-10"
+.SH NAME
+tokei \- Count code, quickly
+.SH DESCRIPTION
+Tokei is a program that displays statistics about your code.
+It shows the number of files, the total lines within those
+files and code, comments, and blanks grouped by language.
+.SH SYNOPSIS
+tokei [FLAGS] [OPTIONS] [\-\-] [input ...]
+.SH FLAGS
+.TP
+\fB\-f\fR, \fB\-\-files\fR
+Print statistics on individual files.
+.TP
+\fB\-h\fR, \fB\-\-help\fR
+Print help information
+.TP
+\fB\-l\fR, \fB\-\-languages\fR
+Print supported languages and their extensions.
+.TP
+\fB\-V\fR, \fB\-\-version\fR
+Print version information
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR [1|2|3]
+Set log output level:
+.br
+1 \(em Show unknown file extensions
+.br
+2 \(em Reserved for future debugging
+.br
+3 \(em Enable a file level trace.
+.B Not recommended
+on multiple files
+.SH OPTIONS
+.TP
+\fB\-e\fR, \fB\-\-exclude\fR [value ...]
+Ignore all files and directories containing the value.
+.TP
+\fB\-i\fR, \fB\-\-input\fR [value]
+Print statistics from a previous tokei run. Can be given a file path, or "stdin" to
+read from stdin.
+.TP
+\fB\-o\fR, \fB\-\-output\fR [value]
+Outputs stats in a specific format. Compile with additional features for more format
+support. Possible values include:
+.br
+\(em cbor
+.br
+\(em json
+.br
+\(em yaml
+.br
+\(em toml
+.br
+.TP
+\fB\-s\fR, \fB\-\-sort\fR [value]
+Sort languages on column. Values include:
+.br
+\(em files
+.br
+\(em lines
+.br
+\(em blanks
+.br
+\(em code
+.br
+\(em comments
+.TP
+\fB\-t\fR, \fB\-\-type\fR [lang],[lang],...
+Filters output by language type, seperated by a comma (e.g. \fB\-t\fR=Rust,Markdown).
+See options \fB\-l\fR, \fB\-\-languages\fR.
+.SH ARGS
+.TP
+[input ...]
+The input file(s)/directory(ies) to be counted.
+.SH "SEE ALSO"
+\fBcloc\fR(1)
+.SH BUGS
+Bugs and feature requests can be submitted at the upstream URL:
+.I https://github.com/Aaronepower/tokei
+.SH AUTHORS
+Tokei was written by Aaron Power \fI<theaaronepower@gmail.com>\fR
+and contributors \(em Copyright © 2015. A full list of contributors
+can be found upstream under
+.I CHANGELOG.md
+
+Tokei is dual-licenced under the MIT Licence and the Apache Licence (Version 2.0).
+Full versions of these licences can be found upstream under
+.I LICENCE-APACHE
+and
+.I LICENCE-MIT
