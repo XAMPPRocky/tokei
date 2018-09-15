@@ -625,7 +625,8 @@
                 "tese",
                 "geom",
                 "frag",
-                "comp"
+                "comp",
+                "glsl"
             ]
         },
         "Go":{
