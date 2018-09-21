@@ -9,93 +9,17 @@ extern crate term_size;
 extern crate tokei;
 
 mod input;
+mod cli_utils;
 use input::*;
+use cli_utils::*;
 
-use std::str::FromStr;
 use std::{error::Error, process, io::{self, Write}};
 
 use tokei::{Languages, Language, LanguageType};
 use tokei::Sort;
 use input::Format;
 
-const FILES: &str = "files";
-const FALLBACK_ROW_LEN: usize = 79;
-const NO_LANG_HEADER_ROW_LEN: usize = 67;
-const NO_LANG_ROW_LEN: usize = 61;
-const NO_LANG_ROW_LEN_NO_SPACES: usize = 54;
-
-fn crate_version() -> String {
-    if Format::supported().is_empty() {
-        format!("{} compiled without serialization formats.", crate_version!())
-    } else {
-        format!(
-            "{} compiled with serialization support: {}",
-            crate_version!(),
-            Format::supported().join(", ")
-        )
-    }
-}
-
-fn setup_logger(verbose_option: u64) {
-    use log::LevelFilter;
-
-    let mut builder = env_logger::Builder::new();
-
-    let filter_level = match verbose_option {
-        1 => LevelFilter::Warn,
-        2 => LevelFilter::Debug,
-        3 => LevelFilter::Trace,
-        _ => LevelFilter::Error,
-    };
-
-    builder.filter(None, filter_level);
-    builder.init();
-}
-
-fn print_input_parse_failure(input_filename: &str) {
-    eprintln!("Error:\n Failed to parse input file: {}", input_filename);
-
-    let not_supported = input::Format::not_supported();
-    if !not_supported.is_empty() {
-        eprintln!("
-This version of tokei was compiled without serialization support for the following formats:
-
-    {not_supported}
-
-You may want to install any comma separated combination of {all:?}:
-
-    cargo install tokei --features {all:?}
-
-Or use the 'all' feature:
-
-    cargo install tokei --features all
-    \n",
-            not_supported = not_supported.join(", "),
-            // no space after comma to ease copypaste
-            all = self::Format::all_feature_names().join(",")
-        );
-    }
-}
-
-fn print_supported_languages() {
-    for key in LanguageType::list() {
-        println!("{:<25}", key);
-    }
-}
-
-fn parse_or_exit<T>(s: &str) -> T
-where T: FromStr,
-      T::Err: std::fmt::Display {
-    T::from_str(s).unwrap_or_else(|e| {
-        eprintln!("Error:\n{}", e);
-        std::process::exit(1);
-    })
-}
-
 fn main() -> Result<(), Box<Error>> {
-    // Get options at the beginning, so the program doesn't have to make any
-    // extra calls to get the information, and there isn't any magic strings.
-
     let matches = clap_app!(tokei =>
         (version: &*crate_version())
         (author: "Aaron P. <theaaronepower@gmail.com> + Contributors")
@@ -136,7 +60,7 @@ fn main() -> Result<(), Box<Error>> {
             "Sort languages based on column")
     ).get_matches();
 
-    let files_option = matches.is_present(FILES);
+    let files_option = matches.is_present("files");
     let input_option = matches.value_of("file_input");
     let output_option = matches.value_of("output");
     let print_languages_option = matches.is_present("languages");
@@ -195,21 +119,13 @@ fn main() -> Result<(), Box<Error>> {
         Some((columns, _)) => columns.max(FALLBACK_ROW_LEN),
         None => FALLBACK_ROW_LEN,
     };
+
     let row = "-".repeat(columns);
 
     let stdout = io::stdout();
-    let mut stdout = stdout.lock();
+    let mut stdout = io::BufWriter::new(stdout.lock());
 
-    writeln!(stdout, "{}", row)?;
-    writeln!(stdout, " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
-                "Language",
-                "Files",
-                "Lines",
-                "Code",
-                "Comments",
-                "Blanks",
-                columns - NO_LANG_HEADER_ROW_LEN)?;
-    writeln!(stdout, "{}", row)?;
+    print_header(&mut stdout, &row, columns)?;
 
     if let Some(sort_category) = sort_category {
         for (_, ref mut language) in &mut languages {
@@ -242,52 +158,8 @@ fn main() -> Result<(), Box<Error>> {
         total += language;
     }
 
-    print_language(&mut stdout, columns - NO_LANG_ROW_LEN, &total, "Total")?;
+    print_language(&mut stdout, columns, &total, "Total")?;
     writeln!(stdout, "{}", row)?;
 
     Ok(())
-}
-
-fn print_results<'a, I, W>(sink: &mut W, row: &str, languages: I, list_files: bool)
-    -> io::Result<()>
-    where I: Iterator<Item = (&'a LanguageType, &'a Language)>,
-          W: Write,
-{
-    let path_len = row.len() - NO_LANG_ROW_LEN_NO_SPACES;
-    let lang_section_len = row.len() - NO_LANG_ROW_LEN;
-    for (name, language) in languages.filter(isnt_empty) {
-        print_language(sink, lang_section_len, language, name.name())?;
-
-        if list_files {
-            writeln!(sink, "{}", row)?;
-            for stat in &language.stats {
-                writeln!(sink, "{:1$}", stat, path_len)?;
-            }
-            writeln!(sink, "{}", row)?;
-        }
-    }
-
-    Ok(())
-}
-
-fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
-    !language.is_empty()
-}
-
-fn print_language<W>(sink: &mut W,
-                     lang_section_len: usize,
-                     language: &Language,
-                     name: &str)
-    -> io::Result<()>
-    where W: Write,
-{
-    writeln!(sink,
-             " {:<len$} {:>6} {:>12} {:>12} {:>12} {:>12}",
-             name,
-             language.stats.len(),
-             language.lines,
-             language.code,
-             language.comments,
-             language.blanks,
-             len = lang_section_len)
 }
