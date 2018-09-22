@@ -1,0 +1,16 @@
+{# 16 lines 14 code 1 comments 1 blanks #}
+
+<ul id="product-collection">
+  {% for product in products %}
+  <li class="singleproduct clearfix">
+    <div class="small">
+      <div class="prodimage"><a href="{{product.url}}"><img src="{{ product.featured_image | url }}" /></a></div>
+    </div>
+    <div class="description">
+      <h3><a href="{{product.url}}">{{- product.title -}}</a></h3>
+      <p>{{ product.description | capitalize }}</p>
+      <p class="money">{{ product.price_min | default('0') }}{% if product.price_varies %} - {{ product.price_max | number_format(2, '.', ',') }}{% endif %}</p>
+    </div>
+  </li>
+  {% endfor %}
+</ul>
