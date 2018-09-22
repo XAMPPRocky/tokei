@@ -1434,6 +1434,20 @@
                 "toml"
             ]
         },
+        "Twig": {
+            "name":"Twig",
+            "base":"html",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "twig"
+            ],
+            "multi_line":[
+                ["{#", "#}"]
+            ]
+        },
         "TypeScript":{
             "base":"c",
             "quotes":[
