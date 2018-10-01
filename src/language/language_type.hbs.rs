@@ -399,7 +399,7 @@ impl LanguageType {
 
     /// Parses a given `DirEntry` using the `LanguageType`. Returning `Stats`
     /// on success.
-    pub fn parse(self, entry: DirEntry) -> io::Result<Stats> {
+    pub fn parse(self, entry: &DirEntry) -> io::Result<Stats> {
         let text = {
             let f = File::open(entry.path())?;
             let mut s = String::new();
@@ -413,7 +413,7 @@ impl LanguageType {
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, entry: DirEntry, text: &str)
+    pub fn parse_from_str(self, entry: &DirEntry, text: &str)
         -> io::Result<Stats>
     {
 

@@ -29,6 +29,8 @@ pub struct Language {
     pub lines: usize,
     /// A collection of statistics based on the files provide from `files`
     pub stats: Vec<Stats>,
+    /// Whether this language had problems with file parsing
+    pub inaccurate: bool,
 }
 
 impl Language {
@@ -45,6 +47,12 @@ impl Language {
     /// Adds file stats to the Language.
     pub fn add_stat(&mut self, stat: Stats) {
         self.stats.push(stat);
+    }
+
+    /// Marks this language as possibly not reflecting correct stats.
+    #[inline]
+    pub fn mark_inaccurate(&mut self) {
+        self.inaccurate = true;
     }
 
     /// Totals up all the statistics currently in the language.
@@ -103,6 +111,9 @@ impl AddAssign for Language {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.stats.extend(mem::replace(&mut rhs.stats, Vec::new()));
+        if rhs.inaccurate {
+            self.inaccurate = rhs.inaccurate
+        };
     }
 }
 

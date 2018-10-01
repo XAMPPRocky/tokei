@@ -8,6 +8,7 @@ pub const FALLBACK_ROW_LEN: usize = 79;
 const NO_LANG_HEADER_ROW_LEN: usize = 67;
 const NO_LANG_ROW_LEN: usize = 61;
 const NO_LANG_ROW_LEN_NO_SPACES: usize = 54;
+const IDENT_INACCURATE: &str = "(!)";
 
 pub fn crate_version() -> String {
     if Format::supported().is_empty() {
@@ -100,7 +101,7 @@ pub fn print_results<'a, I, W>(sink: &mut W, row: &str, languages: I, list_files
           W: Write,
 {
     let path_len = row.len() - NO_LANG_ROW_LEN_NO_SPACES;
-    let lang_section_len = row.len() ;
+    let lang_section_len = row.len();
     for (name, language) in languages.filter(isnt_empty) {
         print_language(sink, lang_section_len, language, name.name())?;
 
@@ -127,14 +128,22 @@ pub fn print_language<W>(sink: &mut W,
     -> io::Result<()>
     where W: Write,
 {
+    if language.inaccurate {
+        write!(sink, " {} {:<len$}",
+               name, IDENT_INACCURATE,
+               len = lang_section_len - (NO_LANG_ROW_LEN + IDENT_INACCURATE.len() + 1))?;
+    } else {
+        write!(sink, " {:<len$} ", name, len = lang_section_len - NO_LANG_ROW_LEN)?;
+    }
     writeln!(sink,
-             " {:<len$} {:>6} {:>12} {:>12} {:>12} {:>12}",
-             name,
+             "{:>6} {:>12} {:>12} {:>12} {:>12}",
              language.stats.len(),
              language.lines,
              language.code,
              language.comments,
-             language.blanks,
-             len = lang_section_len - NO_LANG_ROW_LEN)
+             language.blanks)
 }
 
+pub fn print_inaccuracy_warning<W>(sink: &mut W) -> io::Result<()> where W: Write {
+    writeln!(sink, "Note: results can be inaccurate for languages marked with '{}'", IDENT_INACCURATE)
+}

@@ -125,6 +125,10 @@ fn main() -> Result<(), Box<Error>> {
     let stdout = io::stdout();
     let mut stdout = io::BufWriter::new(stdout.lock());
 
+    if languages.iter().any(|(_, lang)| lang.inaccurate) {
+        print_inaccuracy_warning(&mut stdout)?;
+    }
+
     print_header(&mut stdout, &row, columns)?;
 
     if let Some(sort_category) = sort_category {
