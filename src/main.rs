@@ -33,16 +33,16 @@ fn main() -> Result<(), Box<Error>> {
             "Gives statistics from a previous tokei run. Can be given a file path, \
             or \"stdin\" to read from stdin.")
         (@arg files: -f --files
-            "Will print out statistics on individual files.")
+            "Prints out statistics on individual files")
         (@arg input:
             conflicts_with[languages] ...
             "The input file(s)/directory(ies) to be counted.")
         (@arg types: -t --type
             +takes_value
-            "Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown")
+            "Filters output by language type, separated by a comma. e.g. -t=Rust,Markdown")
         (@arg languages: -l --languages
             conflicts_with[input]
-            "Prints out supported languages and their extensions.")
+            "Prints out supported languages and their extensions")
         (@arg output: -o --output
             // `all` is used so to fail later with a better error
             possible_values(Format::all())
@@ -51,9 +51,9 @@ fn main() -> Result<(), Box<Error>> {
             format support.")
         (@arg verbose: -v --verbose ...
         "Set log output level:
-         1: to show unknown file extensions,
-         2: reserved for future debugging,
-         3: enable file level trace. Not recommended on multiple files")
+         1: show unknown file extensions
+         2: reserved for future debugging
+         3: enable file level trace, not recommended on multiple files")
         (@arg sort: -s --sort
             possible_values(&["files", "lines", "blanks", "code", "comments"])
             +takes_value
