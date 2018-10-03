@@ -20,7 +20,7 @@ impl FromStr for Sort {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s {
+        Ok(match s.to_lowercase().as_ref() {
             "blanks" => Sort::Blanks,
             "comments" => Sort::Comments,
             "code" => Sort::Code,
