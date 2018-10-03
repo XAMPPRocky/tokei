@@ -49,11 +49,14 @@ fn main() -> Result<(), Box<Error>> {
             +takes_value
             "Outputs Tokei in a specific format. Compile with additional features for more \
             format support.")
-        (@arg verbose: -v --verbose ...
-        "Set log output level:
-         1: show unknown file extensions
-         2: reserved for future debugging
-         3: enable file level trace, not recommended on multiple files")
+        (@arg verbose: -v --verbose
+            possible_values(&["1", "2", "3"])
+            hide_possible_values(true)
+            +takes_value
+            "Set log output level:
+            1: show unknown file extensions
+            2: reserved for future debugging
+            3: enable file level trace, not recommended on multiple files")
         (@arg sort: -s --sort
             possible_values(&["files", "lines", "blanks", "code", "comments"])
             +takes_value
@@ -65,7 +68,11 @@ fn main() -> Result<(), Box<Error>> {
     let output_option = matches.value_of("output");
     let print_languages_option = matches.is_present("languages");
     let sort_option = matches.value_of("sort");
-    let verbose_option = matches.occurrences_of("verbose");
+    let verbose_option = if let Some(level) = matches.value_of("verbose") {
+        parse_or_exit::<u64>(level)
+    } else {
+        0
+    };
     let ignored_directories = {
         let mut ignored_directories: Vec<&str> = Vec::new();
         if let Some(user_ignored) = matches.values_of("exclude") {
