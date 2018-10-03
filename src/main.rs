@@ -56,6 +56,7 @@ fn main() -> Result<(), Box<Error>> {
          3: enable file level trace. Not recommended on multiple files")
         (@arg sort: -s --sort
             possible_values(&["files", "lines", "blanks", "code", "comments"])
+            case_insensitive(true)
             +takes_value
             "Sort languages based on column")
     ).get_matches();
