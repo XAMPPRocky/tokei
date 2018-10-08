@@ -4,26 +4,17 @@
 
 use std::borrow::Cow;
 use std::fmt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::io::{self, Read, BufRead, BufReader};
 use std::str::FromStr;
 
 use encoding_rs_io::DecodeReaderBytes;
 use log::Level::Trace;
-use ignore::DirEntry;
 
 use utils::fs as fsutils;
 use self::LanguageType::*;
 use stats::Stats;
-
-struct Comments {
-    allows_nested: bool,
-    line_comments: &'static [&'static str],
-    multi_line_comments: &'static [(&'static str, &'static str)],
-    nested_comments: &'static [(&'static str, &'static str)],
-    quotes: &'static [(&'static str, &'static str)],
-}
 
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
@@ -395,221 +386,6 @@ impl LanguageType {
         } else {
             None
         }
-    }
-
-    /// Parses a given `DirEntry` using the `LanguageType`. Returning `Stats`
-    /// on success.
-    pub fn parse(self, entry: DirEntry) -> io::Result<Stats> {
-        let text = {
-            let f = File::open(entry.path())?;
-            let mut s = String::new();
-            let mut reader = DecodeReaderBytes::new(f);
-
-            reader.read_to_string(&mut s)?;
-            s
-        };
-
-        self.parse_from_str(entry, &text)
-    }
-
-    /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, entry: DirEntry, text: &str)
-        -> io::Result<Stats>
-    {
-
-        let lines = text.lines();
-        let mut stats = Stats::new(entry.path().to_owned());
-
-        let stats = if self.is_blank() {
-            let count = lines.count();
-            stats.lines = count;
-            stats.code = count;
-            stats
-        } else {
-            self.parse_lines(lines, stats)
-        };
-
-        Ok(stats)
-    }
-
-    /// Attempts to parse the line as simply as possible if there are no multi
-    /// line comments or quotes. Returns `bool` indicating whether it was
-    /// successful or not.
-    #[inline]
-    fn parse_basic(comments: &Comments, line: &str, stats: &mut Stats)
-        -> bool
-    {
-
-        let mut iter = comments.quotes.iter()
-            .chain(comments.multi_line_comments)
-            .chain(comments.nested_comments);
-
-        if !iter.any(|(s, _)| line.contains(s)) {
-            trace!("Determined to be skippable");
-            if comments.line_comments.iter().any(|s| line.starts_with(s)) {
-                stats.comments += 1;
-                trace!("Determined to be comment. So far: {} lines", stats.comments);
-            } else {
-                stats.code += 1;
-                trace!("Determined to be code. So far: {} lines", stats.code);
-            }
-
-            trace!("{}", line);
-            true
-        } else {
-            false
-        }
-    }
-
-    #[inline]
-    fn parse_lines<'a>(self,
-                    lines: impl IntoIterator<Item=&'a str>,
-                    mut stats: Stats)
-        -> Stats
-    {
-        let mut stack: Vec<&'static str> = Vec::with_capacity(1);
-        let mut quote: Option<&'static str> = None;
-        let comments = Comments {
-            allows_nested: self.allows_nested(),
-            line_comments: self.line_comments(),
-            multi_line_comments: self.multi_line_comments(),
-            nested_comments: self.nested_comments(),
-            quotes: self.quotes(),
-        };
-
-        for line in lines {
-
-            if line.chars().all(char::is_whitespace) {
-                stats.blanks += 1;
-                trace!("Blank line. So far: {}", stats.blanks);
-                continue;
-            }
-
-            // FORTRAN has a rule where it only counts as a comment if it's the
-            // first character in the column, so removing starting whitespace
-            // could cause a miscount.
-            let line = if self.is_fortran() { line } else { line.trim() };
-            let mut ended_with_comments = false;
-            let mut had_code = stack.is_empty();
-            let mut skip = 0;
-            macro_rules! skip {
-                ($skip:expr) => { {
-                    skip = $skip - 1;
-                } }
-            }
-
-            if quote.is_none() &&
-               stack.is_empty() &&
-               Self::parse_basic(&comments, line, &mut stats)
-            {
-                continue;
-            }
-
-            'window: for i in 0..line.len() {
-                if skip != 0 {
-                    skip -= 1;
-                    continue;
-                }
-
-                ended_with_comments = false;
-                let line = line.as_bytes();
-                let window = &line[i..];
-
-                if let Some(quote_str) = quote {
-                    if window.starts_with(br"\") {
-                        skip = 1;
-                    } else if window.starts_with(quote_str.as_bytes()) {
-                        quote = None;
-                        trace!(r#"End of "{}"."#, quote_str);
-                        skip!(quote_str.len());
-                    }
-                    continue;
-                }
-
-                if let Some(true) = stack.last()
-                    .and_then(|l| Some(window.starts_with(l.as_bytes())))
-                    {
-                        let last = stack.pop().unwrap();
-                        ended_with_comments = true;
-
-                        if log_enabled!(Trace) && stack.is_empty() {
-                            trace!(r#"End of "{}"."#, last);
-                        } else {
-                            trace!(r#"End of "{}". Still in comments."#, last);
-                        }
-
-                        skip!(last.len());
-                        continue;
-                    }
-
-
-                if stack.is_empty() {
-                    for comment in comments.line_comments {
-                        if window.starts_with(comment.as_bytes()) {
-                            trace!(r#"Start of "{}"."#, comment);
-                            break 'window;
-                        }
-                    }
-
-                    for &(start, end) in comments.quotes {
-                        if window.starts_with(start.as_bytes()) {
-                            quote = Some(end);
-                            trace!(r#"Start of "{}"."#, start);
-                            skip!(start.len());
-                            continue 'window;
-                        }
-                    }
-                }
-
-                for &(start, end) in comments.nested_comments {
-                    if window.starts_with(start.as_bytes()) {
-                        stack.push(end);
-                        trace!(r#"Start of "{}"."#, start);
-                        skip!(start.len());
-                        continue 'window;
-                    }
-                }
-
-                for &(start, end) in comments.multi_line_comments {
-                    if window.starts_with(start.as_bytes()) {
-                        if comments.allows_nested || stack.is_empty() {
-                            if log_enabled!(Trace) && comments.allows_nested {
-                                trace!(r#"Start of nested "{}"."#, start);
-                            } else {
-                                trace!(r#"Start of "{}"."#, start);
-                            }
-
-                            stack.push(end);
-                        }
-
-                        skip!(start.len());
-                        continue 'window;
-                    }
-                }
-            }
-
-            let starts_with_comment = comments.multi_line_comments.iter()
-                .map(|&(s, _)| s)
-                .chain(comments.line_comments.iter().map(|s| *s))
-                .chain(comments.nested_comments.iter().map(|&(s, _)| s))
-                .any(|comment| line.starts_with(comment));
-
-            trace!("{}", line);
-
-            if ((!stack.is_empty() || ended_with_comments) && !had_code) ||
-                (starts_with_comment && quote.is_none())
-                {
-                    stats.comments += 1;
-                    trace!("Determined to be comment. So far: {} lines", stats.comments);
-                    trace!("Did it have code?: {}", had_code);
-                } else {
-                    stats.code += 1;
-                    trace!("Determined to be code. So far: {} lines", stats.code);
-                }
-        }
-
-        stats.lines = stats.blanks + stats.code + stats.comments;
-        stats
     }
 }
 

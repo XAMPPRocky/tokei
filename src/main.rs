@@ -123,8 +123,7 @@ fn main() -> Result<(), Box<Error>> {
 
     let row = "-".repeat(columns);
 
-    let stdout = io::stdout();
-    let mut stdout = io::BufWriter::new(stdout.lock());
+    let mut stdout = io::BufWriter::new(io::stdout());
 
     print_header(&mut stdout, &row, columns)?;
 

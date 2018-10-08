@@ -74,7 +74,7 @@ pub fn get_all_files(paths: &[&str],
                     types.map(|t| t.contains(&language)).unwrap()) ||
                     types.is_none()
                 {
-                    return language.parse(entry)
+                    return language.parse(entry.into_path())
                         .ok()
                         .and_then(|s| Some((language, s)))
                 }

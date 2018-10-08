@@ -1469,6 +1469,13 @@
                 "upkg"
             ]
         },
+        "UnrealDeveloperMarkdown":{
+            "name": "Unreal Markdown",
+            "blank": true,
+            "extensions":[
+                "udn"
+            ]
+        },
         "UrWeb":{
             "name":"Ur/Web",
             "base":"func",

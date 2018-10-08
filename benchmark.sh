@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
-[ "$1" = "--full" ] && FULL=true || FULL=false
+if [ "$1" = "--full" ]; then
+    FILE=$2
+    FULL=true
+    else
+    FILE=$1
+    FULL=false
+fi
 
 echo 'Tokei Benchmarking Tool'
 
@@ -15,7 +21,11 @@ echo "The use of this tool requires $REQUIRED to be installed and available in y
 
 echo 'Please enter the path you would like to benchmark:'
 
-read input
+if [ -z ${FILE+x} ]; then
+    read input
+else
+    input=$FILE
+fi
 
 hyperfine --version
 echo "old tokei: $(tokei --version)"
@@ -35,6 +45,6 @@ if [ $FULL = true ]; then
                 "loc $input" \
                 "cloc $input"
 else
-    hyperfine -w 5 "target/release/tokei $input"\
+    hyperfine -w 5 "target/release/tokei $input" \
                 "tokei $input"
 fi

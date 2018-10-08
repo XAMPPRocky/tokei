@@ -15,7 +15,7 @@ use utils;
 
 
 /// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
 }
