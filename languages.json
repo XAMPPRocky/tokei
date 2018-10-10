@@ -916,6 +916,13 @@
                 "lsp"
             ]
         },
+        "Logtalk":{
+            "base":"pro",
+            "extensions":[
+                "lgt",
+                "logtalk"
+            ]
+        },
         "Lua":{
             "line_comment":[
                 "--"
