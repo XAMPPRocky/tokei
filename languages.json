@@ -1108,6 +1108,22 @@
                 "pm6"
             ]
         },
+        "NotQuitePerl":{
+            "name": "Not Quite Perl",
+            "line_comment":[
+                "#"
+            ],
+            "multi_line":[
+                ["=begin", "=end"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "nqp"
+            ]
+        },
         "Php":{
             "name":"PHP",
             "line_comment":[
