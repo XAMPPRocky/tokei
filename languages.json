@@ -1092,6 +1092,22 @@
                 "pm"
             ]
         },
+        "Perl6":{
+            "line_comment":[
+                "#"
+            ],
+            "multi_line":[
+                ["=begin", "=end"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "pl6",
+                "pm6"
+            ]
+        },
         "Php":{
             "name":"PHP",
             "line_comment":[
