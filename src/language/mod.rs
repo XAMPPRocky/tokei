@@ -4,6 +4,7 @@
 
 pub mod languages;
 pub mod language_type;
+mod syntax;
 
 use std::mem;
 use std::ops::AddAssign;

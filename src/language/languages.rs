@@ -69,7 +69,7 @@ impl Languages {
     pub fn get_statistics(&mut self,
                           paths: &[&str],
                           ignored: Vec<&str>,
-                          types: Option<Vec<LanguageType>>)
+                          types: &Option<Vec<LanguageType>>)
     {
         utils::fs::get_all_files(paths, ignored, &mut self.inner, types);
 

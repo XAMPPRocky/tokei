@@ -2,20 +2,6 @@
 // Use of this source code is governed by the APACHE2.0/MIT licence that can be
 // found in the LICENCE-{APACHE/MIT} file.
 
-use std::borrow::Cow;
-use std::fmt;
-use std::path::{Path, PathBuf};
-use std::fs::File;
-use std::io::{self, Read, BufRead, BufReader};
-use std::str::FromStr;
-
-use encoding_rs_io::DecodeReaderBytes;
-use log::Level::Trace;
-
-use utils::fs as fsutils;
-use self::LanguageType::*;
-use stats::Stats;
-
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum LanguageType {

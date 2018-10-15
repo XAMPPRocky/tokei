@@ -1,41 +1,19 @@
+use std::borrow::Cow;
+use std::fmt;
+use std::path::{Path, PathBuf};
+use std::fs::File;
+use std::io::{self, Read, BufRead, BufReader};
+use std::str::FromStr;
+
+use encoding_rs_io::DecodeReaderBytes;
+
+use utils::fs as fsutils;
+use self::LanguageType::*;
+use stats::Stats;
+
+use super::syntax::SyntaxCounter;
+
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
-
-struct Syntax {
-    is_fortran: bool,
-    allows_nested: bool,
-    line_comments: &'static [&'static str],
-    multi_line_comments: &'static [(&'static str, &'static str)],
-    nested_comments: &'static [(&'static str, &'static str)],
-    quotes: &'static [(&'static str, &'static str)],
-}
-
-impl Syntax {
-    fn new(language: LanguageType) -> Self {
-        Self {
-            is_fortran: language.is_fortran(),
-            allows_nested: language.allows_nested(),
-            line_comments: language.line_comments(),
-            multi_line_comments: language.multi_line_comments(),
-            nested_comments: language.nested_comments(),
-            quotes: language.quotes(),
-        }
-    }
-
-    #[inline]
-    fn important_syntax(&self) -> impl Iterator<Item = &str> {
-        self.quotes.into_iter()
-            .map(|(s, _)| *s)
-            .chain(self.multi_line_comments.into_iter().map(|(s, _)| *s))
-            .chain(self.nested_comments.into_iter().map(|(s, _)| *s))
-    }
-
-    #[inline]
-    fn start_of_comments(&self) -> impl Iterator<Item = &&str> {
-        self.line_comments.into_iter()
-            .chain(self.multi_line_comments.into_iter().map(|(s, _)| s))
-            .chain(self.nested_comments.into_iter().map(|(s, _)| s))
-    }
-}
 
 impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
@@ -77,17 +55,31 @@ impl LanguageType {
     /// line comments or quotes. Returns `bool` indicating whether it was
     /// successful or not.
     #[inline]
-    fn parse_basic(syntax: &Syntax, line: &str, stats: &mut Stats) {
-        trace!("Determined to be skippable");
-        if syntax.line_comments.iter().any(|s| line.starts_with(s)) {
+    fn parse_basic(self, syntax: &SyntaxCounter, line: &str, stats: &mut Stats)
+        -> bool
+    {
+        if syntax.quote.is_some() ||
+           !syntax.stack.is_empty() ||
+           syntax.important_syntax().any(|s| line.contains(s))
+        {
+            return false;
+        }
+
+        if syntax.line_comments.into_iter()
+                               .any(|s| line.as_bytes()
+                                            .starts_with(s.as_bytes()))
+        {
             stats.comments += 1;
-            trace!("Determined to be comment. So far: {} lines", stats.comments);
+            trace!("Comment No.{}", stats.comments);
         } else {
             stats.code += 1;
-            trace!("Determined to be code. So far: {} lines", stats.code);
+            trace!("Code No.{}", stats.code);
         }
 
         trace!("{}", line);
+        trace!("^ Skippable.");
+
+        true
     }
 
     #[inline]
@@ -96,15 +88,13 @@ impl LanguageType {
                     mut stats: Stats)
         -> Stats
     {
-        let mut stack: Vec<&'static str> = Vec::with_capacity(1);
-        let mut quote: Option<&'static str> = None;
-        let syntax = Syntax::new(self);
+        let mut syntax = SyntaxCounter::new(self);
 
         for line in lines {
 
             if line.chars().all(char::is_whitespace) {
                 stats.blanks += 1;
-                trace!("Blank line. So far: {}", stats.blanks);
+                trace!("Blank No.{}", stats.blanks);
                 continue;
             }
 
@@ -113,7 +103,7 @@ impl LanguageType {
             // could cause a miscount.
             let line = if syntax.is_fortran { line } else { line.trim() };
             let mut ended_with_comments = false;
-            let mut no_previous_multi_line = stack.is_empty();
+            let mut had_multi_line = !syntax.stack.is_empty();
             let mut skip = 0;
             macro_rules! skip {
                 ($skip:expr) => {{
@@ -121,11 +111,7 @@ impl LanguageType {
                 }}
             }
 
-            if quote.is_none() &&
-               no_previous_multi_line &&
-               !syntax.important_syntax().any(|s| line.contains(s))
-            {
-                Self::parse_basic(&syntax, line, &mut stats);
+            if self.parse_basic(&syntax, line, &mut stats) {
                 continue;
             }
 
@@ -140,89 +126,42 @@ impl LanguageType {
                 let line = line.as_bytes();
                 let window = &line[i..];
 
-                if let Some(quote_str) = quote {
-                    if window.starts_with(br"\") {
-                        skip = 1;
-                    } else if window.starts_with(quote_str.as_bytes()) {
-                        quote = None;
-                        trace!(r#"End of "{}"."#, quote_str);
-                        skip!(quote_str.len());
-                    }
-                    continue;
-                }
+                let is_end_of_quote_or_multi_line =
+                    syntax.parse_end_of_quote(window)
+                    .or_else(|| syntax.parse_end_of_multi_line(window));
 
-                if stack.last().map_or(false, |l| window.starts_with(l.as_bytes())) {
-                    let last = stack.pop().unwrap();
+                if let Some(skip_amount) = is_end_of_quote_or_multi_line {
                     ended_with_comments = true;
-
-                    if log_enabled!(Trace) && stack.is_empty() {
-                        trace!(r#"End of "{}"."#, last);
-                    } else {
-                        trace!(r#"End of "{}". Still in comments."#, last);
-                    }
-
-                    skip!(last.len());
+                    skip!(skip_amount);
                     continue;
                 }
 
-                if stack.is_empty() {
-                    for comment in syntax.line_comments {
-                        if window.starts_with(comment.as_bytes()) {
-                            trace!(r#"Start of "{}"."#, comment);
-                            break 'window;
-                        }
-                    }
+                let is_quote_or_multi_line = syntax.parse_quote(window)
+                    .or_else(|| syntax.parse_multi_line_comment(window));
 
-                    for &(start, end) in syntax.quotes {
-                        if window.starts_with(start.as_bytes()) {
-                            quote = Some(end);
-                            trace!(r#"Start of "{}"."#, start);
-                            skip!(start.len());
-                            continue 'window;
-                        }
-                    }
+                if let Some(skip_amount) = is_quote_or_multi_line {
+                    skip!(skip_amount);
+                    continue;
                 }
 
-                for &(start, end) in syntax.nested_comments {
-                    if window.starts_with(start.as_bytes()) {
-                        stack.push(end);
-                        trace!(r#"Start of "{}"."#, start);
-                        skip!(start.len());
-                        continue 'window;
-                    }
+                if syntax.parse_line_comment(window) {
+                    break 'window;
                 }
 
-                for &(start, end) in syntax.multi_line_comments {
-                    if window.starts_with(start.as_bytes()) {
-                        if syntax.allows_nested || stack.is_empty() {
-                            stack.push(end);
-
-                            if log_enabled!(Trace) && syntax.allows_nested {
-                                trace!(r#"Start of nested "{}"."#, start);
-                            } else {
-                                trace!(r#"Start of "{}"."#, start);
-                            }
-
-                        }
-
-                        skip!(start.len());
-                        continue 'window;
-                    }
-                }
             }
 
             trace!("{}", line);
 
-            if ((!stack.is_empty() || ended_with_comments) && !no_previous_multi_line) ||
+            if ((!syntax.stack.is_empty() || ended_with_comments) && had_multi_line) ||
                 (syntax.start_of_comments().any(|comment| line.starts_with(comment)) &&
-                 quote.is_none())
+                 syntax.quote.is_none())
             {
                 stats.comments += 1;
-                trace!("Determined to be comment. So far: {} lines", stats.comments);
-                trace!("Did the previous line have a multi line?: {}", no_previous_multi_line);
+                trace!("Comment No.{}", stats.comments);
+                trace!("Was the Comment stack empty?: {}", !had_multi_line);
             } else {
                 stats.code += 1;
-                trace!("Determined to be code. So far: {} lines", stats.code);
+                trace!("Code No.{}", stats.code);
             }
         }
 

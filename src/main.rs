@@ -103,13 +103,13 @@ fn main() -> Result<(), Box<Error>> {
     }
 
     let types: Option<Vec<_>> = matches.value_of("types").map(|e| {
-        e.split(",")
+        e.split(',')
          .map(|t| t.parse::<LanguageType>())
          .filter_map(Result::ok)
          .collect()
     });
 
-    languages.get_statistics(&paths, ignored_directories, types);
+    languages.get_statistics(&paths, ignored_directories, &types);
 
     if let Some(format) = output_format {
         print!("{}", format.print(languages).unwrap());
