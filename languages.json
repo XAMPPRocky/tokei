@@ -1064,6 +1064,20 @@
                 "mm"
             ]
         },
+        "OBJ":{
+            "name":"Wavefront OBJ",
+            "base":"hash",
+            "extensions":[
+                "obj"
+            ]
+        },
+        "MTL":{
+            "name":"Wavefront MTL",
+            "base":"hash",
+            "extensions":[
+                "mtl"
+            ]
+        },
         "OCaml":{
             "base":"func",
             "extensions":[
