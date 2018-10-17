@@ -20,7 +20,7 @@ use language::{Language, LanguageType};
 pub fn get_all_files(paths: &[&str],
                      ignored_directories: Vec<&str>,
                      languages: &mut BTreeMap<LanguageType, Language>,
-                     types: &Option<Vec<LanguageType>>)
+                     types: Option<Vec<LanguageType>>)
 {
     let (tx, rx) = mpsc::channel();
 

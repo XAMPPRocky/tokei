@@ -109,7 +109,7 @@ fn main() -> Result<(), Box<Error>> {
          .collect()
     });
 
-    languages.get_statistics(&paths, ignored_directories, &types);
+    languages.get_statistics(&paths, ignored_directories, types);
 
     if let Some(format) = output_format {
         print!("{}", format.print(languages).unwrap());
