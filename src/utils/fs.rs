@@ -85,10 +85,10 @@ pub fn get_all_files(paths: &[&str],
                     types.map(|t| t.contains(&language)).unwrap()) ||
                     types.is_none()
                 {
-                    match language.parse(&entry) {
+                    match language.parse(entry.into_path()) {
                         Ok(s) => return Some((language, Some(s))),
-                        Err(e) => if e.kind() == PermissionDenied {
-                            error!("Permission denied for reading {}", entry.path().to_string_lossy());
+                        Err((e, path)) => if e.kind() == PermissionDenied {
+                            error!("Permission denied for reading {}", path.to_string_lossy());
                             return Some((language, None));
                         },
                     }

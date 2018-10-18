@@ -98,6 +98,12 @@
                 "ahk"
             ]
         },
+        "Automake":{
+            "base":"hash",
+            "extensions":[
+                "am"
+            ]
+        },
         "Sh":{
             "name":"Shell",
             "base":"hash",
@@ -301,7 +307,7 @@
         },
         "ColdFusion":{
             "multi_line":[
-              ["<!---", "--->"]
+                ["<!---", "--->"]
             ],
             "quotes":[
                 ["\\\"", "\\\""],
@@ -356,18 +362,6 @@
             ],
             "extensions":[
                 "cr"
-            ]
-        },
-        "VisualBasic":{
-            "name":"Visual Basic",
-            "quotes":[
-                ["\\\"", "\\\""]
-            ],
-            "line_comment":[
-                "'"
-            ],
-            "extensions":[
-                "vb"
             ]
         },
         "CSharp":{
@@ -458,6 +452,13 @@
             "quotes":[
                 ["\\\"", "\\\""],
                 ["'", "'"]
+            ]
+        },
+        "DotNetResource":{
+            "name": ".NET Resource",
+            "base": "html",
+            "extensions":[
+                "resx"
             ]
         },
         "Edn":{
@@ -687,6 +688,13 @@
                 "tfvars"
             ]
         },
+        "Hlsl":{
+            "name":"HLSL",
+            "base": "c",
+            "extensions":[
+                "hlsl"
+            ]
+        },
         "Html":{
             "name":"HTML",
             "base":"html",
@@ -737,6 +745,16 @@
                 "lidr"
             ],
             "nested":true
+        },
+        "Ini":{
+            "name":"INI",
+            "line_comment": [
+                ";",
+                "#"
+            ],
+            "extensions":[
+                "ini"
+            ]
         },
         "IntelHex":{
             "name":"Intel HEX",
@@ -844,7 +862,7 @@
             ],
             "extensions":[
                 "kak"
-              ]
+            ]
         },
         "Kotlin":{
             "base":"c",
@@ -914,6 +932,13 @@
             "extensions":[
                 "lisp",
                 "lsp"
+            ]
+        },
+        "Logtalk":{
+            "base":"pro",
+            "extensions":[
+                "lgt",
+                "logtalk"
             ]
         },
         "Lua":{
@@ -996,7 +1021,7 @@
         },
         "Mustache":{
             "multi_line":[
-              ["{{!", "}}"]
+                ["{{!", "}}"]
             ],
             "quotes":[
                 ["\\\"", "\\\""],
@@ -1090,6 +1115,38 @@
             "extensions":[
                 "pl",
                 "pm"
+            ]
+        },
+        "Perl6":{
+            "line_comment":[
+                "#"
+            ],
+            "multi_line":[
+                ["=begin", "=end"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "pl6",
+                "pm6"
+            ]
+        },
+        "NotQuitePerl":{
+            "name": "Not Quite Perl",
+            "line_comment":[
+                "#"
+            ],
+            "multi_line":[
+                ["=begin", "=end"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "nqp"
             ]
         },
         "Php":{
@@ -1263,9 +1320,9 @@
                 "rs"
             ],
             "quotes": [
-              ["\\\"", "\\\""],
-              ["r#\\\"", "\\\"#"],
-              ["#\\\"", "\\\"#"]
+                ["\\\"", "\\\""],
+                ["r#\\\"", "\\\"#"],
+                ["#\\\"", "\\\"#"]
             ]
         },
         "ReStructuredText":{
@@ -1332,7 +1389,7 @@
                 "//"
             ],
             "multi_line":[
-              ["'>", "<'"]
+                ["'>", "<'"]
             ],
             "extensions":[
                 "e"
@@ -1353,10 +1410,10 @@
                 "--"
             ],
             "multi_line":[
-              ["/*", "*/"]
+                ["/*", "*/"]
             ],
             "quotes":[
-              ["'", "'"]
+                ["'", "'"]
             ],
             "extensions":[
                 "sql"
@@ -1460,6 +1517,20 @@
                 "tsx"
             ]
         },
+        "UnrealPlugin":{
+            "name":"Unreal Plugin",
+            "base":"blank",
+            "extensions":[
+                "uplugin"
+            ]
+        },
+        "UnrealProject":{
+            "name":"Unreal Project",
+            "base":"blank",
+            "extensions":[
+                "uproject"
+            ]
+        },
         "UnrealScript":{
             "name":"Unreal Script",
             "base":"c",
@@ -1467,6 +1538,27 @@
                 "uc",
                 "uci",
                 "upkg"
+            ]
+        },
+        "UnrealShader":{
+            "name":"Unreal Shader",
+            "base":"c",
+            "extensions":[
+                "usf"
+            ]
+        },
+        "UnrealShaderHeader":{
+            "name":"Unreal Shader Header",
+            "base":"c",
+            "extensions":[
+                "ush"
+            ]
+        },
+        "UnrealDeveloperMarkdown":{
+            "name": "Unreal Markdown",
+            "blank": true,
+            "extensions":[
+                "udn"
             ]
         },
         "UrWeb":{
@@ -1536,6 +1628,33 @@
                 "vhd"
             ]
         },
+        "VisualBasic":{
+            "name":"Visual Basic",
+            "quotes":[
+                ["\\\"", "\\\""]
+            ],
+            "line_comment":[
+                "'"
+            ],
+            "extensions":[
+                "vb"
+            ]
+        },
+        "VisualStudioSolution":{
+            "name":"Visual Studio Solution",
+            "base":"blank",
+            "extensions":[
+                "sln"
+            ]
+        },
+        "VisualStudioProject":{
+            "name":"Visual Studio Project",
+            "base":"html",
+            "extensions":[
+                "vcproj",
+                "vcxproj"
+            ]
+        },
         "VimScript":{
             "name":"Vim Script",
             "line_comment":[
@@ -1575,6 +1694,19 @@
                 "xaml"
             ]
         },
+        "XcodeConfig":{
+            "name":"XCode Config",
+            "line_comment": [
+                "//"
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "xcconfig"
+            ]
+        },
         "Xml":{
             "name":"XML",
             "base":"html",
@@ -1582,7 +1714,7 @@
                 "xml"
             ]
         },
-	"XSL":{
+        "XSL":{
             "name":"XSL",
             "base":"html",
             "extensions":[

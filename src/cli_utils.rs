@@ -129,9 +129,9 @@ pub fn print_language<W>(sink: &mut W,
     where W: Write,
 {
     if language.inaccurate {
-        write!(sink, " {} {:<len$}",
+        write!(sink, " {} {:<len$} ",
                name, IDENT_INACCURATE,
-               len = lang_section_len - (NO_LANG_ROW_LEN + IDENT_INACCURATE.len() + 1))?;
+               len = lang_section_len - (NO_LANG_ROW_LEN + name.len() + 1))?;
     } else {
         write!(sink, " {:<len$} ", name, len = lang_section_len - NO_LANG_ROW_LEN)?;
     }

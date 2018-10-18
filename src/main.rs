@@ -56,6 +56,7 @@ fn main() -> Result<(), Box<Error>> {
          3: enable file level trace. Not recommended on multiple files")
         (@arg sort: -s --sort
             possible_values(&["files", "lines", "blanks", "code", "comments"])
+            case_insensitive(true)
             +takes_value
             "Sort languages based on column")
     ).get_matches();
@@ -102,7 +103,7 @@ fn main() -> Result<(), Box<Error>> {
     }
 
     let types: Option<Vec<_>> = matches.value_of("types").map(|e| {
-        e.split(",")
+        e.split(',')
          .map(|t| t.parse::<LanguageType>())
          .filter_map(Result::ok)
          .collect()
@@ -122,8 +123,7 @@ fn main() -> Result<(), Box<Error>> {
 
     let row = "-".repeat(columns);
 
-    let stdout = io::stdout();
-    let mut stdout = io::BufWriter::new(stdout.lock());
+    let mut stdout = io::BufWriter::new(io::stdout());
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
         print_inaccuracy_warning(&mut stdout)?;
