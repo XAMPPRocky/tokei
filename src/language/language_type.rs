@@ -18,7 +18,13 @@ include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
     /// on success.
-    pub fn parse(self, path: PathBuf) -> Result<Stats, (io::Error, PathBuf)> {
+    pub fn parse(self, path: PathBuf) -> io::Result<Stats> {
+        self.parse_with_accuracy(path).map_err(|e| e.0)
+    }
+
+    /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
+    /// on success and giving back ownership of PathBuf on error.
+    pub fn parse_with_accuracy(self, path: PathBuf) -> Result<Stats, (io::Error, PathBuf)> {
         let text = {
             let f = match File::open(&path) {
                 Ok(f) => f,
@@ -33,13 +39,18 @@ impl LanguageType {
             s
         };
 
-        Ok(self.parse_from_str(path, &text))
+        Ok(self.parse_from_str_with_accuracy(path, &text))
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, path: PathBuf, text: &str) -> Stats
+    pub fn parse_from_str(self, path: PathBuf, text: &str) -> io::Result<Stats>
     {
+        Ok(self.parse_from_str_with_accuracy(path, text))
+    }
 
+    /// Parses the text provided.
+    pub fn parse_from_str_with_accuracy(self, path: PathBuf, text: &str) -> Stats
+    {
         let lines = text.lines();
         let mut stats = Stats::new(path);
 

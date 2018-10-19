@@ -112,9 +112,7 @@ impl AddAssign for Language {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.stats.extend(mem::replace(&mut rhs.stats, Vec::new()));
-        if rhs.inaccurate {
-            self.inaccurate = rhs.inaccurate
-        };
+        self.inaccurate |= rhs.inaccurate
     }
 }
 
