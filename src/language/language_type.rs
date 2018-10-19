@@ -38,18 +38,11 @@ impl LanguageType {
             }
             s
         };
-
-        Ok(self.parse_from_str_with_accuracy(path, &text))
+        Ok(self.parse_from_str(path, &text).unwrap())
     }
 
     /// Parses the text provided. Returning `Stats` on success.
     pub fn parse_from_str(self, path: PathBuf, text: &str) -> io::Result<Stats>
-    {
-        Ok(self.parse_from_str_with_accuracy(path, text))
-    }
-
-    /// Parses the text provided.
-    pub fn parse_from_str_with_accuracy(self, path: PathBuf, text: &str) -> Stats
     {
         let lines = text.lines();
         let mut stats = Stats::new(path);
@@ -63,7 +56,7 @@ impl LanguageType {
             self.parse_lines(lines, stats)
         };
 
-        stats
+        Ok(stats)
     }
 
     /// Attempts to parse the line as simply as possible if there are no multi
