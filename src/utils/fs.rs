@@ -6,7 +6,6 @@ use std::collections::BTreeMap;
 use std::error::Error;
 use std::path::Path;
 use std::sync::mpsc;
-use std::io::ErrorKind::PermissionDenied;
 
 use ignore::WalkBuilder;
 use ignore::overrides::OverrideBuilder;
@@ -51,12 +50,8 @@ pub fn get_all_files(paths: &[&str],
                     use ignore::Error;
                     if let Error::WithDepth { err: ref error, .. } = error {
                         if let Error::WithPath { ref path, err: ref error } = **error {
-                            if let Error::Io(ref error) = **error {
-                                if error.kind() == PermissionDenied {
-                                    error!("Permission denied for reading {}", path.to_string_lossy());
-                                    return Continue;
-                                }
-                            }
+                            error!("{} reading {}", error.description(), path.display());
+                            return Continue;
                         }
                     }
                     error!("{}", error.description());
@@ -87,8 +82,8 @@ pub fn get_all_files(paths: &[&str],
                 {
                     match language.parse_with_accuracy(entry.into_path()) {
                         Ok(s) => return Some((language, Some(s))),
-                        Err((e, path)) => if e.kind() == PermissionDenied {
-                            error!("Permission denied for reading {}", path.to_string_lossy());
+                        Err((e, path)) => {
+                            error!("{} reading {}", e.description(), path.display());
                             return Some((language, None));
                         },
                     }
