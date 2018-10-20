@@ -37,40 +37,9 @@ pub fn setup_logger(verbose_option: u64) {
     builder.init();
 }
 
-pub fn print_input_parse_failure(input_filename: &str) {
-    eprintln!("Error:\n Failed to parse input file: {}", input_filename);
-
-    let not_supported = Format::not_supported();
-    if !not_supported.is_empty() {
-        eprintln!("
-This version of tokei was compiled without serialization support for the following formats:
-
-    {not_supported}
-
-You may want to install any comma separated combination of {all:?}:
-
-    cargo install tokei --features {all:?}
-
-Or use the 'all' feature:
-
-    cargo install tokei --features all
-    \n",
-            not_supported = not_supported.join(", "),
-            // no space after comma to ease copypaste
-            all = self::Format::all_feature_names().join(",")
-        );
-    }
-}
-
-pub fn print_supported_languages() {
-    for key in LanguageType::list() {
-        println!("{:<25}", key);
-    }
-}
-
 pub fn parse_or_exit<T>(s: &str) -> T
-    where T: FromStr,
-          T::Err: fmt::Display
+where T: FromStr,
+      T::Err: fmt::Display
 {
     T::from_str(s).unwrap_or_else(|e| {
         eprintln!("Error:\n{}", e);
