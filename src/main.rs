@@ -37,8 +37,19 @@ fn main() -> Result<(), Box<Error>> {
         }
     }
 
-    let types = ::std::mem::replace(&mut cli.types, None);
-    languages.get_statistics(&cli.input(), cli.ignored_directories(), types);
+    {
+        let types = ::std::mem::replace(&mut cli.types, None);
+        let input = cli.input();
+
+        for path in &input {
+            if ::std::fs::metadata(path).is_err() {
+                eprintln!("Error: '{}' not found.", path);
+                process::exit(1);
+            }
+        }
+
+        languages.get_statistics(&input, cli.ignored_directories(), types);
+    }
 
     if let Some(format) = cli.output {
         print!("{}", format.print(languages).unwrap());
@@ -71,7 +82,8 @@ fn main() -> Result<(), Box<Error>> {
         print_results(&mut stdout, &row, languages.iter(), cli.files)?
     }
 
-    // If we're listing files there's already a trailing row so we don't want an extra one.
+    // If we're listing files there's already a trailing row so we don't want an
+    // extra one.
     if !cli.files {
         writeln!(stdout, "{}", row)?;
     }
