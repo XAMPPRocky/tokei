@@ -61,22 +61,17 @@ version = "1"
 optional = true
 version = "0.8"
 
-[dependencies.toml]
-optional = true
-version = "0.4"
-
 [dev-dependencies]
 lazy_static = "1"
 regex = "1.0"
 tempdir = "0.3"
 
 [features]
-all = ["json", "cbor", "toml-io", "yaml"]
+all = ["json", "cbor", "yaml"]
 cbor = ["io", "hex", "serde_cbor"]
 default = []
 io = ["serde_derive", "serde"]
 json = ["io", "serde_json"]
-toml-io = ["io", "toml"]
 yaml = ["io", "serde_yaml"]
 
 [profile.release]

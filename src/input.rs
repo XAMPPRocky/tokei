@@ -143,10 +143,6 @@ supported_formats!(
     (yaml, "yaml", Yaml [serde_yaml]) =>
         serde_yaml::from_str,
         serde_yaml::to_string,
-
-    (toml, "toml-io", Toml [toml]) =>
-        toml::from_str,
-        toml::to_string,
 );
 
 pub fn add_input(input: &str, languages: &mut Languages) -> bool {
