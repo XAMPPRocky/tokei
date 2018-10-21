@@ -42,7 +42,8 @@ impl LanguageType {
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, path: PathBuf, text: &str) -> io::Result<Stats>
+    pub fn parse_from_str(self, path: PathBuf, text: &str)
+        -> io::Result<Stats>
     {
         let lines = text.lines();
         let mut stats = Stats::new(path);
