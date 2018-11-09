@@ -44,10 +44,16 @@ pub fn get_all_files(paths: &[&str],
     walker.build_parallel().run(move|| {
         let tx = tx.clone();
         Box::new(move |entry| {
-
             let entry = match entry {
                 Ok(entry) => entry,
                 Err(error) => {
+                    use ignore::Error;
+                    if let Error::WithDepth { err: ref error, .. } = error {
+                        if let Error::WithPath { ref path, err: ref error } = **error {
+                            error!("{} reading {}", error.description(), path.display());
+                            return Continue;
+                        }
+                    }
                     error!("{}", error.description());
                     return Continue;
                 }
@@ -74,9 +80,13 @@ pub fn get_all_files(paths: &[&str],
                     types.map(|t| t.contains(&language)).unwrap()) ||
                     types.is_none()
                 {
-                    return language.parse(entry.into_path())
-                        .ok()
-                        .and_then(|s| Some((language, s)))
+                    match language.parse(entry.into_path()) {
+                        Ok(s) => return Some((language, Some(s))),
+                        Err((e, path)) => {
+                            error!("{} reading {}", e.description(), path.display());
+                            return Some((language, None));
+                        },
+                    }
                 }
             }
 
@@ -84,9 +94,13 @@ pub fn get_all_files(paths: &[&str],
     }).collect();
 
     for (language_type, stats) in iter {
-        languages.entry(language_type)
-            .or_insert_with(Language::new)
-            .add_stat(stats);
+        let entry = languages.entry(language_type).or_insert_with(Language::new);
+
+        if let Some(stats) = stats {
+            entry.add_stat(stats);
+        } else {
+            entry.mark_inaccurate();
+        }
     }
 }
 

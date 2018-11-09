@@ -17,38 +17,38 @@ include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
 impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
-    /// on success.
-    pub fn parse(self, path: PathBuf) -> io::Result<Stats> {
+    /// on success and giving back ownership of PathBuf on error.
+    pub fn parse(self, path: PathBuf) -> Result<Stats, (io::Error, PathBuf)> {
         let text = {
-            let f = File::open(&path)?;
+            let f = match File::open(&path) {
+                Ok(f) => f,
+                Err(e) => return Err((e, path)),
+            };
             let mut s = String::new();
             let mut reader = DecodeReaderBytes::new(f);
 
-            reader.read_to_string(&mut s)?;
+            if let Err(e) = reader.read_to_string(&mut s) {
+                return Err((e, path));
+            }
             s
         };
-
-        self.parse_from_str(path, &text)
+        Ok(self.parse_from_str(path, &text))
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, path: PathBuf, text: &str)
-        -> io::Result<Stats>
+    pub fn parse_from_str(self, path: PathBuf, text: &str) -> Stats
     {
-
         let lines = text.lines();
         let mut stats = Stats::new(path);
 
-        let stats = if self.is_blank() {
+        if self.is_blank() {
             let count = lines.count();
             stats.lines = count;
             stats.code = count;
             stats
         } else {
             self.parse_lines(lines, stats)
-        };
-
-        Ok(stats)
+        }
     }
 
     /// Attempts to parse the line as simply as possible if there are no multi

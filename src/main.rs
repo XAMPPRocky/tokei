@@ -60,6 +60,10 @@ fn main() -> Result<(), Box<Error>> {
 
     let mut stdout = io::BufWriter::new(io::stdout());
 
+    if languages.iter().any(|(_, lang)| lang.inaccurate) {
+        print_inaccuracy_warning(&mut stdout)?;
+    }
+
     print_header(&mut stdout, &row, cli.columns)?;
 
     if let Some(sort_category) = cli.sort {
