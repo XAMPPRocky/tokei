@@ -84,7 +84,7 @@ pub fn get_all_file_accesses<'a, I: 'a, F>(
     types: Option<Vec<LanguageType>>,
 ) where
     I: IntoIterator<Item = F>,
-    F: FileAccess<'a>,
+    F: Send + FileAccess<'a>,
 {
     let types: Option<&[LanguageType]> = types.as_ref().map(|v| &**v);
 

@@ -53,7 +53,7 @@ impl<'a> FileAccess<'a> for &'a Path {
 /// It can be converted into a LanguageType (e.g. identify which language it belongs to).
 /// The name of the file is typically its path, but this might be logical in case it's part of an
 /// archive (tar, zip, ...).
-pub trait FileAccess<'a>: Copy + Send {
+pub trait FileAccess<'a>: Copy {
     /// Read the contents of the file into a string.
     fn read_to_string(self) -> io::Result<String>;
 

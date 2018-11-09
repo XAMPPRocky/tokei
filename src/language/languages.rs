@@ -98,7 +98,7 @@ impl Languages {
         types: Option<Vec<LanguageType>>
     )
         where I: IntoIterator<Item = F>,
-              F: FileAccess<'a>,
+              F: Send + FileAccess<'a>,
     {
         utils::fs::get_all_file_accesses(files, &mut self.inner, types);
         self.inner.par_iter_mut().for_each(|(_, l)| l.total());
