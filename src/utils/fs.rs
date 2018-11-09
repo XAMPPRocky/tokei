@@ -4,7 +4,6 @@
 
 use std::collections::BTreeMap;
 use std::error::Error;
-use std::path::Path;
 use std::sync::mpsc;
 
 use ignore::WalkBuilder;
@@ -16,7 +15,9 @@ use rayon::prelude::*;
 // This is just a re-export from the auto generated file.
 pub use language::get_filetype_from_shebang;
 use language::{Language, LanguageType};
+use file_access::FileAccess;
 
+/// Populate statistics from files.
 pub fn get_all_files(paths: &[&str],
                      ignored_directories: Vec<&str>,
                      languages: &mut BTreeMap<LanguageType, Language>,
@@ -69,21 +70,38 @@ pub fn get_all_files(paths: &[&str],
         })
     });
 
+    let files: Vec<_> = rx.into_iter().collect();
+    get_all_file_accesses(files.iter().map(|e| e.path()), languages, types)
+}
+
+/// Populate statistics from `FileAccess` objects.
+///
+/// This is a more general version of `get_all_files` which permits providing the collection of
+/// files to be analyzed from other places, like in-memory or from an archive.
+pub fn get_all_file_accesses<'a, I: 'a, F>(
+    paths: I,
+    languages: &mut BTreeMap<LanguageType, Language>,
+    types: Option<Vec<LanguageType>>,
+) where
+    I: IntoIterator<Item = F>,
+    F: FileAccess<'a>,
+{
     let types: Option<&[LanguageType]> = types.as_ref().map(|v| &**v);
 
-    let iter: Vec<_> = rx.into_iter()
+    let iter: Vec<_> = paths
+        .into_iter()
         .collect::<Vec<_>>()
         .into_par_iter()
-        .filter_map(|entry| {
-            if let Some(language) = LanguageType::from_path(entry.path()) {
+        .filter_map(|file_access| {
+            if let Some(language) = LanguageType::from_file_access(file_access) {
                 if (types.is_some() &&
                     types.map(|t| t.contains(&language)).unwrap()) ||
                     types.is_none()
                 {
-                    match language.parse(entry.into_path()) {
+                    match language.parse(file_access) {
                         Ok(s) => return Some((language, Some(s))),
-                        Err((e, path)) => {
-                            error!("{} reading {}", e.description(), path.display());
+                        Err(e) => {
+                            error!("{} reading {}", e.description(), file_access.name());
                             return Some((language, None));
                         },
                     }
@@ -91,7 +109,8 @@ pub fn get_all_files(paths: &[&str],
             }
 
             None
-    }).collect();
+        })
+        .collect();
 
     for (language_type, stats) in iter {
         let entry = languages.entry(language_type).or_insert_with(Language::new);
@@ -101,24 +120,6 @@ pub fn get_all_files(paths: &[&str],
         } else {
             entry.mark_inaccurate();
         }
-    }
-}
-
-pub(crate) fn get_extension(path: &Path) -> Option<String> {
-    match path.extension() {
-        Some(extension_os) => {
-            Some(extension_os.to_string_lossy().to_lowercase())
-        },
-        None => None
-    }
-}
-
-pub(crate) fn get_filename(path: &Path) -> Option<String> {
-    match path.file_name() {
-        Some(filename_os) => {
-            Some(filename_os.to_string_lossy().to_lowercase())
-        },
-        None => None
     }
 }
 

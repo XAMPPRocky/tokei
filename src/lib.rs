@@ -68,7 +68,9 @@ mod utils;
 mod language;
 mod stats;
 mod sort;
+mod file_access;
 
+pub use file_access::FileAccess;
 pub use language::{LanguageType, Languages, Language};
 pub use stats::Stats;
 pub use sort::Sort;

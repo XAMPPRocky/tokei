@@ -1,5 +1,4 @@
 use std::fmt;
-use std::path::PathBuf;
 
 /// A struct representing the statistics of a file.
 #[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
@@ -15,12 +14,12 @@ pub struct Stats {
     /// Total number of lines within the file.
     pub lines: usize,
     /// File name.
-    pub name: PathBuf,
+    pub name: String,
 }
 
 impl Stats {
     /// Create a new `Stats` from a `ignore::DirEntry`.
-    pub fn new(name: PathBuf) -> Self {
+    pub fn new(name: String) -> Self {
         Stats {
             blanks: 0,
             code: 0,
@@ -55,18 +54,17 @@ macro_rules! display_stats {
 
 impl fmt::Display for Stats {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let name = self.name.to_string_lossy();
-        let name_length = name.len();
+        let name_length = self.name.len();
 
         let max_len = f.width().unwrap_or(25);
 
         if name_length <= max_len {
-            display_stats!(f, self, name, max_len)
+            display_stats!(f, self, self.name, max_len)
         } else {
             let mut formatted = String::from("|");
             // Add 1 to the index to account for the '|' we add to the output string
-            let from = find_char_boundary(&name, name_length + 1 - max_len);
-            formatted.push_str(&name[from..]);
+            let from = find_char_boundary(&self.name, name_length + 1 - max_len);
+            formatted.push_str(&self.name[from..]);
             display_stats!(f, self, formatted, max_len)
         }
     }

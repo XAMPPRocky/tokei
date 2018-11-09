@@ -324,6 +324,10 @@ impl LanguageType {
         }
     }
 
+    pub fn from_path<P: AsRef<Path>>(entry: P) -> Option<Self> {
+        Self::from_file_access(entry.as_ref())
+    }
+
     /// Get language from a file path. May open and read the file.
     ///
     /// ```no_run
@@ -332,10 +336,8 @@ impl LanguageType {
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
-    pub fn from_path<P: AsRef<Path>>(entry: P) -> Option<Self> {
-        let entry = entry.as_ref();
-
-        if let Some(filename) = fsutils::get_filename(&entry) {
+    pub fn from_file_access<'a, F: FileAccess<'a>>(entry: F) -> Option<Self> {
+        if let Some(filename) = entry.file_name() {
             match &*filename {
                 {{~#each languages}}
                     {{~#if this.filenames}}
@@ -349,10 +351,10 @@ impl LanguageType {
             }
         }
 
-        let extension = fsutils::get_extension(&entry);
+        let extension = entry.extension();
         let filetype = extension.as_ref()
             .map(|s| &**s)
-            .or_else(|| get_filetype_from_shebang(&entry));
+            .or_else(|| get_filetype_from_shebang(entry));
 
         if let Some(extension) = filetype {
             match extension {
@@ -415,16 +417,13 @@ impl<'a> From<&'a LanguageType> for Cow<'a, LanguageType> {
 
 
 /// This is for getting the file type from the first line of a file
-pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
+pub fn get_filetype_from_shebang<'a, F>(file: F) -> Option<&'static str>
+    where F: FileAccess<'a>
 {
-    let file = match File::open(file) {
-        Ok(file) => file,
+    let line = match file.read_first_line() {
+        Ok(line) => line,
         _ => return None,
     };
-
-    let mut buf = BufReader::new(file);
-    let mut line = String::new();
-    let _ = buf.read_line(&mut line);
 
     let mut words = line.split_whitespace();
     match words.next() {

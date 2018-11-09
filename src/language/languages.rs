@@ -12,7 +12,7 @@ use rayon::prelude::*;
 
 use super::{Language, LanguageType};
 use utils;
-
+use FileAccess;
 
 /// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
 #[derive(Debug, Default)]
@@ -73,6 +73,34 @@ impl Languages {
     {
         utils::fs::get_all_files(paths, ignored, &mut self.inner, types);
 
+        self.inner.par_iter_mut().for_each(|(_, l)| l.total());
+    }
+
+    /// Get statistics from a collection of objects.
+    ///
+    /// In its simplest form, it permits analyzing specific files,
+    /// But this can also be used to collect statistics about non-filesystem objects, like files
+    /// from an archive by providing a custom implementation of `FileAccess`.
+    ///
+    /// ```no_run
+    /// # use tokei::*;
+    /// # use std::path::Path;
+    /// let mut languages = Languages::new();
+    /// let files = vec![
+    ///     Path::new("foo.txt"),
+    ///     Path::new("bar.txt"),
+    /// ];
+    /// languages.get_statistics_from(files, None);
+    /// ```
+    pub fn get_statistics_from<'a, 'b: 'a, I: 'b, F>(
+        &mut self,
+        files: I,
+        types: Option<Vec<LanguageType>>
+    )
+        where I: IntoIterator<Item = F>,
+              F: FileAccess<'a>,
+    {
+        utils::fs::get_all_file_accesses(files, &mut self.inner, types);
         self.inner.par_iter_mut().for_each(|(_, l)| l.total());
     }
 

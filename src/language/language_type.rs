@@ -1,45 +1,32 @@
 use std::borrow::Cow;
 use std::fmt;
-use std::path::{Path, PathBuf};
-use std::fs::File;
-use std::io::{self, Read, BufRead, BufReader};
+use std::path::Path;
+use std::io;
 use std::str::FromStr;
 
-use encoding_rs_io::DecodeReaderBytes;
-
-use utils::fs as fsutils;
 use self::LanguageType::*;
 use stats::Stats;
 
 use super::syntax::SyntaxCounter;
+use FileAccess;
 
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
 impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
     /// on success and giving back ownership of PathBuf on error.
-    pub fn parse(self, path: PathBuf) -> Result<Stats, (io::Error, PathBuf)> {
-        let text = {
-            let f = match File::open(&path) {
-                Ok(f) => f,
-                Err(e) => return Err((e, path)),
-            };
-            let mut s = String::new();
-            let mut reader = DecodeReaderBytes::new(f);
-
-            if let Err(e) = reader.read_to_string(&mut s) {
-                return Err((e, path));
-            }
-            s
-        };
-        Ok(self.parse_from_str(path, &text))
+    pub fn parse<'a, F>(self, file_access: F) -> io::Result<Stats>
+        where F: FileAccess<'a>
+    {
+        let text = file_access.read_to_string()?;
+        Ok(self.parse_from_str(file_access.name(), &text))
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, path: PathBuf, text: &str) -> Stats
+    pub fn parse_from_str<'a>(self, name: Cow<'a, str>, text: &str) -> Stats
     {
         let lines = text.lines();
-        let mut stats = Stats::new(path);
+        let mut stats = Stats::new(name.to_string());
 
         if self.is_blank() {
             let count = lines.count();
