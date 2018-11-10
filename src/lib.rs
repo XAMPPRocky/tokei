@@ -52,7 +52,6 @@
 
 #[macro_use]
 extern crate log;
-extern crate encoding_rs_io;
 extern crate ignore;
 extern crate rayon;
 

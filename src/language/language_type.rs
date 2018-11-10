@@ -5,13 +5,12 @@ use std::fs::File;
 use std::io::{self, Read, BufRead, BufReader};
 use std::str::FromStr;
 
-use encoding_rs_io::DecodeReaderBytes;
-
 use utils::fs as fsutils;
 use self::LanguageType::*;
 use stats::Stats;
 
 use super::syntax::SyntaxCounter;
+use utils::bytes::Bytes;
 
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
@@ -20,24 +19,28 @@ impl LanguageType {
     /// on success and giving back ownership of PathBuf on error.
     pub fn parse(self, path: PathBuf) -> Result<Stats, (io::Error, PathBuf)> {
         let text = {
-            let f = match File::open(&path) {
+            let mut f = match File::open(&path) {
                 Ok(f) => f,
                 Err(e) => return Err((e, path)),
             };
-            let mut s = String::new();
-            let mut reader = DecodeReaderBytes::new(f);
-
-            if let Err(e) = reader.read_to_string(&mut s) {
+            let mut s = Vec::new();
+            if let Err(e) = f.read_to_end(&mut s) {
                 return Err((e, path));
             }
             s
         };
-        Ok(self.parse_from_str(path, &text))
+        Ok(self.parse_from_bytes(path, &text))
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, path: PathBuf, text: &str) -> Stats
+    pub fn parse_from_str(self, path: PathBuf, text: &str) -> Stats {
+        self.parse_from_bytes(path, text.as_bytes())
+    }
+
+    /// Parses the text provided. Returning `Stats` on success.
+    pub fn parse_from_bytes(self, path: PathBuf, text: &[u8]) -> Stats
     {
+        let text = Bytes::new(text);
         let lines = text.lines();
         let mut stats = Stats::new(path);
 
@@ -55,12 +58,12 @@ impl LanguageType {
     /// line comments or quotes. Returns `bool` indicating whether it was
     /// successful or not.
     #[inline]
-    fn parse_basic(self, syntax: &SyntaxCounter, line: &str, stats: &mut Stats)
+    fn parse_basic(self, syntax: &SyntaxCounter, line: Bytes, stats: &mut Stats)
         -> bool
     {
         if syntax.quote.is_some() ||
            !syntax.stack.is_empty() ||
-           syntax.important_syntax().any(|s| line.contains(s))
+           syntax.important_syntax().any(|s| line.contains(s.as_bytes()))
         {
             return false;
         }
@@ -83,16 +86,17 @@ impl LanguageType {
     }
 
     #[inline]
-    fn parse_lines<'a>(self,
-                    lines: impl IntoIterator<Item=&'a str>,
-                    mut stats: Stats)
-        -> Stats
+    fn parse_lines<'a>(
+        self,
+        lines: impl IntoIterator<Item=Bytes<'a>>,
+        mut stats: Stats
+    ) -> Stats
     {
         let mut syntax = SyntaxCounter::new(self);
 
         for line in lines {
 
-            if line.chars().all(char::is_whitespace) {
+            if line.utf8_chars_lossy().all(char::is_whitespace) {
                 stats.blanks += 1;
                 trace!("Blank No.{}", stats.blanks);
                 continue;
@@ -153,7 +157,7 @@ impl LanguageType {
             trace!("{}", line);
 
             if ((!syntax.stack.is_empty() || ended_with_comments) && had_multi_line) ||
-                (syntax.start_of_comments().any(|comment| line.starts_with(comment)) &&
+                (syntax.start_of_comments().any(|comment| line.starts_with(comment.as_bytes())) &&
                  syntax.quote.is_none())
             {
                 stats.comments += 1;
