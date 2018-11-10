@@ -27,6 +27,7 @@ serde_json = "1"
 
 [dependencies]
 clap = "2"
+encoding_rs = "0.8"
 ignore = "0.4"
 log = "0.4"
 rayon = "1"

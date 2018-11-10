@@ -10,7 +10,7 @@ use self::LanguageType::*;
 use stats::Stats;
 
 use super::syntax::SyntaxCounter;
-use utils::bytes::Bytes;
+use utils::bytes::{self, Bytes};
 
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
@@ -18,29 +18,40 @@ impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
     /// on success and giving back ownership of PathBuf on error.
     pub fn parse(self, path: PathBuf) -> Result<Stats, (io::Error, PathBuf)> {
-        let text = {
-            let mut f = match File::open(&path) {
-                Ok(f) => f,
-                Err(e) => return Err((e, path)),
-            };
-            let mut s = Vec::new();
-            if let Err(e) = f.read_to_end(&mut s) {
-                return Err((e, path));
-            }
-            s
+        // NB: text must be in scope, since we potentially borrow from it when decoding.
+        let text = match read_to_vec(&path) {
+            Ok(text) => text,
+            Err(e) => return Err((e, path)),
         };
-        Ok(self.parse_from_bytes(path, &text))
+
+        let text = match bytes::decode(&text).map_err(|e| io::Error::new(io::ErrorKind::Other, e)) {
+            Ok(text) => text,
+            Err(e) => return Err((e, path)),
+        };
+
+        return Ok(self.parse_from_bytes_checked(path, Bytes::new(&text)));
+
+        fn read_to_vec(path: &Path) -> Result<Vec<u8>, io::Error> {
+            let mut text = Vec::new();
+            let mut f = File::open(&path)?;
+            f.read_to_end(&mut text)?;
+            Ok(text)
+        }
     }
 
     /// Parses the text provided. Returning `Stats` on success.
     pub fn parse_from_str(self, path: PathBuf, text: &str) -> Stats {
-        self.parse_from_bytes(path, text.as_bytes())
+        self.parse_from_bytes_checked(path, Bytes::new(text.as_bytes()))
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_bytes(self, path: PathBuf, text: &[u8]) -> Stats
-    {
-        let text = Bytes::new(text);
+    pub fn parse_from_bytes(self, path: PathBuf, text: &[u8]) -> Result<Stats, io::Error> {
+        let text = bytes::decode(text).map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+        Ok(self.parse_from_bytes_checked(path, Bytes::new(&text)))
+    }
+
+    /// Parse from a known good (UTF-8) sequence of bytes.
+    fn parse_from_bytes_checked(self, path: PathBuf, text: Bytes) -> Stats {
         let lines = text.lines();
         let mut stats = Stats::new(path);
 

@@ -1,5 +1,54 @@
 use std::fmt;
 use std::vec;
+use std::borrow::Cow;
+use std::error;
+
+use encoding_rs::Encoding;
+
+#[derive(Debug)]
+pub enum DecodingError {
+    /// BOM was present, but could not decode file using the specified encoding.
+    InvalidBom
+}
+
+impl error::Error for DecodingError {
+}
+
+impl fmt::Display for DecodingError {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            DecodingError::InvalidBom => write!(fmt, "invalid bom"),
+        }
+    }
+}
+
+/// Do your best to try and construct a Bytes instance while performing as much detection as
+/// possible.
+///
+/// This looks at:
+/// * The BOM of the file, if present.
+pub fn decode<'a>(bytes: &'a [u8]) -> Result<Cow<'a, [u8]>, DecodingError> {
+    if bytes.len() >= 2 {
+        let end = usize::min(3, bytes.len());
+
+        if let Some((encoding, n)) = Encoding::for_bom(&bytes[..end]) {
+            let out = match encoding.decode_without_bom_handling_and_without_replacement(&bytes[n..]) {
+                None => return Err(DecodingError::InvalidBom),
+                Some(out) => out,
+            };
+
+            match out {
+                Cow::Borrowed(s) => return Ok(Cow::from(s.as_bytes())),
+                Cow::Owned(s) => return Ok(Cow::from(s.into_bytes())),
+            }
+        }
+    }
+
+    // TODO: look for encoding comments in the first 5 (ish) lines.
+
+    // encoding could not be detected, pass through.
+    Ok(Cow::Borrowed(bytes))
+}
 
 #[derive(Clone, Copy)]
 pub struct Bytes<'a> {
