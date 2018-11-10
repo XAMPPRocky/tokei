@@ -24,6 +24,10 @@ impl LanguageType {
             Err(e) => return Err((e, path)),
         };
 
+        if bytes::is_binary(&text) {
+            return Err((io::Error::new(io::ErrorKind::Other, "binary file"), path));
+        }
+
         let text = match bytes::decode(&text).map_err(|e| io::Error::new(io::ErrorKind::Other, e)) {
             Ok(text) => text,
             Err(e) => return Err((e, path)),
@@ -46,6 +50,10 @@ impl LanguageType {
 
     /// Parses the text provided. Returning `Stats` on success.
     pub fn parse_from_bytes(self, path: PathBuf, text: &[u8]) -> Result<Stats, io::Error> {
+        if bytes::is_binary(&text) {
+            return Err(io::Error::new(io::ErrorKind::Other, "binary file"));
+        }
+
         let text = bytes::decode(text).map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
         Ok(self.parse_from_bytes_checked(path, Bytes::new(&text)))
     }

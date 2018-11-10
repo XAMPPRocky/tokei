@@ -4,6 +4,9 @@ use std::borrow::Cow;
 use std::error;
 
 use encoding_rs::Encoding;
+use memchr;
+
+const FIRST_FEW_BYTES: usize = 8000;
 
 #[derive(Debug)]
 pub enum DecodingError {
@@ -20,6 +23,15 @@ impl fmt::Display for DecodingError {
             DecodingError::InvalidBom => write!(fmt, "invalid bom"),
         }
     }
+}
+
+/// Test if file is a binary file by checking if any of `FIRST_FEW_BYTES` first bytes are null
+/// bytes (`0x00`).
+pub fn is_binary(bytes: &[u8]) -> bool {
+    // This mimics the git test that does the same from here:
+    // https://github.com/git/git/blob/2d3b1c576c85b7f5db1f418907af00ab88e0c303/xdiff-interface.c#L202
+    let end = usize::min(FIRST_FEW_BYTES, bytes.len());
+    memchr::memchr(0u8, &bytes[..end]).is_some()
 }
 
 /// Do your best to try and construct a Bytes instance while performing as much detection as

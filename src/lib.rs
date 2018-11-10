@@ -55,6 +55,7 @@ extern crate log;
 extern crate encoding_rs;
 extern crate ignore;
 extern crate rayon;
+extern crate memchr;
 
 #[cfg(feature = "io")]
 #[macro_use]
