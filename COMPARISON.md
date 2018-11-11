@@ -19,7 +19,7 @@ High Sierra 10.13.6. All benchmarks were done using [hyperfine].
 Performance benchmarks were performed against four large open source
 repositories; [Unreal Engine 4][Unreal](Hidden behind free signup), [Rust],
 [CPython], and [Redis]. For clarity two versions of graphs are presented as
-cloc's speeds are exponentially higher than the others so they presented with
+cloc's times are exponentially higher than the others so they presented with
 and without cloc.
 
 #### Repository Versions
