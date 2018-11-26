@@ -1,0 +1,66 @@
+.TH tokei "1"
+.SH NAME
+tokei \- A utility that allows you to count code, quickly.
+.SH DESCRIPTION
+Tokei is a program that displays statistics about your code. Tokei will show
+number of files, total lines within those files and code, comments, and blanks
+grouped by language.
+.SH USAGE
+.IP
+tokei [FLAGS] [OPTIONS] [\-\-] [input]...
+.SH FLAGS
+.HP
+\fB\-f, \-\-files\fR
+.IP
+Will print out statistics on individual files.
+.HP
+\fB\-h, \-\-help\fR
+.IP
+Prints help information
+.HP
+\fB\-l, \-\-languages\fR
+.IP
+Prints out supported languages and their extensions.
+.HP
+\fB\-V, \-\-version\fR
+.IP
+Prints version information
+.HP
+\fB\-v, \-\-verbose\fR
+.IP
+Set log output level:
+.RS
+.IP \[bu] 2
+\f[B]1\f[], to show unknown file extensions
+.IP \[bu] 2
+\f[B]2\f[], reserved for future debugging
+.IP \[bu] 2
+\f[B]3\f[], enable file level trace. Not recommended on multiple files
+.RE
+.IP
+.SH OPTIONS
+.HP
+\fB\-e, \-\-exclude <exclude>...\fR
+.IP
+Ignore all files & directories containing the word.
+.HP
+\fB\-i, \-\-input <file_input>\fR
+.IP
+Gives statistics from a previous tokei run. Can be given a file path, or
+\f[C]stdin\f[] to read from stdin.
+.HP
+\fB\-o, \-\-output <output>\fR
+.IP
+Outputs Tokei in a specific format. Compile with additional features for more
+format support. [possible values: \f[C]cbor\f[], \f[C]json\f[], \f[C]yaml\f[], \f[C]toml\f[]]
+.HP
+\fB\-s, \-\-sort <sort>\fR
+.IP
+Sort languages based on column [possible values: \f[C]files\f[], \f[C]lines\f[], \f[C]blanks\f[], \f[C]code\f[], \f[C]comments\f[]]
+.HP
+\fB\-t, \-\-type <types>\fR
+.IP
+Filters output by language type, separated by a comma. i.e. \f[C]\-t=Rust,Markdown\f[]
+.SH AUTHOR
+.PP
+Aaron P. \f[C]<theaaronepower@gmail.com>\f[] + Contributors
