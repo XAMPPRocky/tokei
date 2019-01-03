@@ -1442,6 +1442,15 @@
                 "swift"
             ]
         },
+        "Swig":{
+            "name":"SWIG",
+            "base":"c",
+            "nested":true,
+            "extensions":[
+                "swg",
+                "i"
+            ]
+        },
         "SystemVerilog":{
             "base":"c",
             "extensions":[
