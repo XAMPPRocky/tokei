@@ -63,11 +63,17 @@ impl<'a> Cli<'a> {
             3: enable file level trace. Not recommended on multiple files")
         ).get_matches();
 
-        let columns = matches.value_of("columns").and_then(|s| s.parse().ok())
+        let columns = matches.value_of("columns").map(parse_or_exit::<usize>)
             .unwrap_or_else(|| {
-                ::term_size::dimensions().map_or(FALLBACK_ROW_LEN, |(w, _)| {
-                    w.max(FALLBACK_ROW_LEN)
-                })
+                // If user passed `--files`, we output file paths and want to
+                // use all available width.
+                if matches.is_present("files") {
+                    ::term_size::dimensions().map_or(FALLBACK_ROW_LEN, |(w, _)| {
+                        w.max(FALLBACK_ROW_LEN)
+                    })
+                } else {
+                    FALLBACK_ROW_LEN
+                }
             });
 
 
