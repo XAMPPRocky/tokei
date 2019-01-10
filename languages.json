@@ -1634,7 +1634,8 @@
                 "--"
             ],
             "extensions":[
-                "vhd"
+                "vhd",
+                "vhdl"
             ]
         },
         "VisualBasic":{
