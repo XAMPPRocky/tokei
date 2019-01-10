@@ -12,13 +12,14 @@ use self::LanguageType::*;
 use stats::Stats;
 
 use super::syntax::SyntaxCounter;
+use config::Config;
 
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
 impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
     /// on success and giving back ownership of PathBuf on error.
-    pub fn parse(self, path: PathBuf) -> Result<Stats, (io::Error, PathBuf)> {
+    pub fn parse(self, path: PathBuf, config: &Config) -> Result<Stats, (io::Error, PathBuf)> {
         let text = {
             let f = match File::open(&path) {
                 Ok(f) => f,
@@ -32,11 +33,16 @@ impl LanguageType {
             }
             s
         };
-        Ok(self.parse_from_str(path, &text))
+
+        Ok(self.parse_from_str(path, &text, config))
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_str(self, path: PathBuf, text: &str) -> Stats
+    pub fn parse_from_str(self,
+                          path: PathBuf,
+                          text: &str,
+                          config: &Config)
+        -> Stats
     {
         let lines = text.lines();
         let mut stats = Stats::new(path);
@@ -47,7 +53,7 @@ impl LanguageType {
             stats.code = count;
             stats
         } else {
-            self.parse_lines(lines, stats)
+            self.parse_lines(config, lines, stats)
         }
     }
 
@@ -84,8 +90,9 @@ impl LanguageType {
 
     #[inline]
     fn parse_lines<'a>(self,
-                    lines: impl IntoIterator<Item=&'a str>,
-                    mut stats: Stats)
+                       config: &Config,
+                       lines: impl IntoIterator<Item=&'a str>,
+                       mut stats: Stats)
         -> Stats
     {
         let mut syntax = SyntaxCounter::new(self);
@@ -114,7 +121,6 @@ impl LanguageType {
             if self.parse_basic(&syntax, line, &mut stats) {
                 continue;
             }
-
 
             'window: for i in 0..line.len() {
                 if skip != 0 {
@@ -145,6 +151,7 @@ impl LanguageType {
                 }
 
                 if syntax.parse_line_comment(window) {
+                    ended_with_comments = true;
                     break 'window;
                 }
 
@@ -152,10 +159,34 @@ impl LanguageType {
 
             trace!("{}", line);
 
-            if ((!syntax.stack.is_empty() || ended_with_comments) && had_multi_line) ||
-                (syntax.start_of_comments().any(|comment| line.starts_with(comment)) &&
-                 syntax.quote.is_none())
-            {
+            let is_comments =
+                (
+                    (!syntax.stack.is_empty() || ended_with_comments) &&
+                     had_multi_line
+                ) ||
+                (
+                    // If we're currently in a comment or we just ended
+                    // with one.
+                    syntax.start_of_comments().any(|comment| {
+                        line.starts_with(comment)
+                    }) &&
+                    syntax.quote.is_none()
+                ) ||
+                (
+                    (
+                        // If we're currently in a doc string or we just ended
+                        // with one.
+                        syntax.quote.is_some() ||
+                        syntax.doc_quotes.iter().any(|(s, _)| line.starts_with(s))
+                    ) &&
+                    // `Some(true)` is import in order to respect the current
+                    // configuration.
+                    config.treat_doc_strings_as_comments == Some(true) &&
+                    syntax.quote_is_doc_quote
+                );
+
+
+            if is_comments {
                 stats.comments += 1;
                 trace!("Comment No.{}", stats.comments);
                 trace!("Was the Comment stack empty?: {}", !had_multi_line);

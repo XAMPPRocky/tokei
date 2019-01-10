@@ -27,11 +27,15 @@ serde_json = "1"
 
 [dependencies]
 clap = "2"
+dirs = "1"
 encoding_rs_io = "0.1"
 ignore = "0.4"
 log = "0.4"
 rayon = "1"
+serde = "1"
+serde_derive = "1"
 term_size = "0.3.1"
+toml = "0.4.10"
 
 [dependencies.env_logger]
 features = []
@@ -41,17 +45,9 @@ version = "0.5.0"
 optional = true
 version = "0.3"
 
-[dependencies.serde]
-optional = true
-version = "1"
-
 [dependencies.serde_cbor]
 optional = true
 version = "0.9"
-
-[dependencies.serde_derive]
-optional = true
-version = "1"
 
 [dependencies.serde_json]
 optional = true
@@ -68,11 +64,10 @@ tempdir = "0.3"
 
 [features]
 all = ["json", "cbor", "yaml"]
-cbor = ["io", "hex", "serde_cbor"]
+cbor = ["hex", "serde_cbor"]
 default = []
-io = ["serde_derive", "serde"]
-json = ["io", "serde_json"]
-yaml = ["io", "serde_yaml"]
+json = ["serde_json"]
+yaml = ["serde_yaml"]
 
 [profile.release]
 lto = true

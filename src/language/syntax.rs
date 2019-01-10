@@ -3,24 +3,28 @@ use log::Level::Trace;
 use super::language_type::LanguageType;
 
 pub(crate) struct SyntaxCounter {
-    pub(crate) is_fortran: bool,
     pub(crate) allows_nested: bool,
+    pub(crate) doc_quotes: &'static [(&'static str, &'static str)],
+    pub(crate) is_fortran: bool,
     pub(crate) line_comments: &'static [&'static str],
     pub(crate) multi_line_comments: &'static [(&'static str, &'static str)],
     pub(crate) nested_comments: &'static [(&'static str, &'static str)],
+    pub(crate) quote: Option<&'static str>,
+    pub(crate) quote_is_doc_quote: bool,
     pub(crate) quotes: &'static [(&'static str, &'static str)],
     pub(crate) stack: Vec<&'static str>,
-    pub(crate) quote: Option<&'static str>,
 }
 
 impl SyntaxCounter {
     pub(crate) fn new(language: LanguageType) -> Self {
         Self {
-            is_fortran: language.is_fortran(),
             allows_nested: language.allows_nested(),
+            doc_quotes: language.doc_quotes(),
+            is_fortran: language.is_fortran(),
             line_comments: language.line_comments(),
             multi_line_comments: language.multi_line_comments(),
             nested_comments: language.nested_comments(),
+            quote_is_doc_quote: false,
             quotes: language.quotes(),
             stack: Vec::with_capacity(1),
             quote: None,
@@ -31,6 +35,7 @@ impl SyntaxCounter {
     pub(crate) fn important_syntax(&self) -> impl Iterator<Item = &str> {
         self.quotes.into_iter()
             .map(|(s, _)| *s)
+            .chain(self.doc_quotes.into_iter().map(|(s, _)| *s))
             .chain(self.multi_line_comments.into_iter().map(|(s, _)| *s))
             .chain(self.nested_comments.into_iter().map(|(s, _)| *s))
     }
@@ -64,10 +69,20 @@ impl SyntaxCounter {
             return None
         }
 
+        for &(start, end) in self.doc_quotes {
+            if window.starts_with(start.as_bytes()) {
+                trace!("Start Doc {:?}", start);
+                self.quote = Some(end);
+                self.quote_is_doc_quote = true;
+                return Some(start.len());
+            }
+        }
+
         for &(start, end) in self.quotes {
             if window.starts_with(start.as_bytes()) {
                 trace!("Start {:?}", start);
                 self.quote = Some(end);
+                self.quote_is_doc_quote = false;
                 return Some(start.len());
             }
         }

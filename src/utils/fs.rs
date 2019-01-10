@@ -16,11 +16,12 @@ use rayon::prelude::*;
 // This is just a re-export from the auto generated file.
 pub use language::get_filetype_from_shebang;
 use language::{Language, LanguageType};
+use config::Config;
 
 pub fn get_all_files(paths: &[&str],
-                     ignored_directories: Vec<&str>,
+                     ignored_directories: &[&str],
                      languages: &mut BTreeMap<LanguageType, Language>,
-                     types: Option<Vec<LanguageType>>)
+                     config: &Config)
 {
     let (tx, rx) = mpsc::channel();
 
@@ -69,23 +70,23 @@ pub fn get_all_files(paths: &[&str],
         })
     });
 
-    let types: Option<&[LanguageType]> = types.as_ref().map(|v| &**v);
+    let types: Option<&[LanguageType]> = config.types.as_ref().map(|v| &**v);
 
     let iter: Vec<_> = rx.into_iter()
         .collect::<Vec<_>>()
         .into_par_iter()
         .filter_map(|entry| {
-            if let Some(language) = LanguageType::from_path(entry.path()) {
+            if let Some(language) = LanguageType::from_path(entry.path(), &config) {
                 if (types.is_some() &&
                     types.map(|t| t.contains(&language)).unwrap()) ||
                     types.is_none()
                 {
-                    match language.parse(entry.into_path()) {
+                    match language.parse(entry.into_path(), &config) {
                         Ok(s) => return Some((language, Some(s))),
                         Err((e, path)) => {
                             error!("{} reading {}", e.description(), path.display());
                             return Some((language, None));
-                        },
+                        }
                     }
                 }
             }
@@ -129,6 +130,7 @@ mod test {
     use std::fs::create_dir;
     use language::languages::Languages;
     use language::LanguageType;
+    use config::Config;
     use self::tempdir::TempDir;
 
     #[test]
@@ -137,9 +139,12 @@ mod test {
         let path_name = tmp_dir.path().join("directory.rs");
         create_dir(&path_name).expect("Couldn't create directory.rs within temp");
 
-        let mut l = Languages::new();
-        get_all_files(&[tmp_dir.into_path().to_str().unwrap()], vec![], &mut l, None);
+        let mut languages = Languages::new();
+        get_all_files(&[tmp_dir.into_path().to_str().unwrap()],
+                      &[],
+                      &mut languages,
+                      &Config::default());
 
-        assert!(l.get(&LanguageType::Rust).is_none());
+        assert!(languages.get(&LanguageType::Rust).is_none());
     }
 }

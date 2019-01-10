@@ -1,0 +1,3 @@
+columns = 80
+types = ["Python"]
+treat_doc_strings_as_comments = true

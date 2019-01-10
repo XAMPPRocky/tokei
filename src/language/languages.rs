@@ -8,28 +8,21 @@ use std::ops::{AddAssign, Deref, DerefMut};
 
 use rayon::prelude::*;
 
-#[cfg(feature = "io")] use serde;
+use serde;
 
+use config::Config;
 use super::{Language, LanguageType};
 use utils;
 
-
-/// A collection of existing languages([_List of Languages_](https://github.com/Aaronepower/tokei#supported-languages))
-#[derive(Debug, Default)]
+/// A newtype representing a list of languages counted in the provided
+/// directory.
+/// ([_List of
+/// Languages_](https://github.com/Aaronepower/tokei#supported-languages))
+#[derive(Debug, Default, Serialize)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
 }
 
-#[cfg(feature = "io")]
-impl serde::Serialize for Languages {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where S: serde::Serializer {
-            let map = self.remove_empty();
-            map.serialize(serializer)
-        }
-}
-
-#[cfg(feature = "io")]
 impl<'de> serde::Deserialize<'de> for Languages {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
         where D: serde::Deserializer<'de> {
@@ -40,7 +33,7 @@ impl<'de> serde::Deserialize<'de> for Languages {
 }
 
 impl Languages {
-    #[cfg(feature = "io")]
+
     fn from_previous(map: BTreeMap<LanguageType, Language>) -> Self {
         use std::collections::btree_map::Entry::*;
         let mut _self = Self::new();
@@ -58,25 +51,33 @@ impl Languages {
         _self
     }
 
-    /// Get statistics from the list of paths provided, and a list ignored
-    /// keywords to ignore paths containing them.
+    /// Populates the `Languages` struct with statistics about languages
+    /// provided by [`Language`].
+    ///
+    /// Takes a `&[&str]` of paths to recursively traverse, paths can be
+    /// relative, absolute or glob paths. a second `&[&str]` of paths to ignore,
+    /// these strings use the `.gitignore` syntax, such as `target`
+    /// or `**/*.bk`.
     ///
     /// ```no_run
-    /// # use tokei::*;
+    /// use tokei::{Config, Languages};
+    ///
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(&["."], vec![".git", "target"], None);
+    /// languages.get_statistics(&["."], &[".git", "target"], &Config::default());
     /// ```
+    ///
+    /// [`Language`]: struct.Language.html
     pub fn get_statistics(&mut self,
                           paths: &[&str],
-                          ignored: Vec<&str>,
-                          types: Option<Vec<LanguageType>>)
+                          ignored: &[&str],
+                          config: &Config)
     {
-        utils::fs::get_all_files(paths, ignored, &mut self.inner, types);
-
+        utils::fs::get_all_files(paths, ignored, &mut self.inner, config);
         self.inner.par_iter_mut().for_each(|(_, l)| l.total());
     }
 
-    /// Constructs a new, blank `Languages`.
+    /// Constructs a new, Languages struct. Languages is always empty and does
+    /// not allocate.
     ///
     /// ```
     /// # use tokei::*;
@@ -84,30 +85,6 @@ impl Languages {
     /// ```
     pub fn new() -> Self {
         Languages::default()
-    }
-
-    /// Creates a new map that only contains non empty languages.
-    ///
-    /// ```
-    /// use tokei::*;
-    /// use std::collections::BTreeMap;
-    ///
-    /// let mut languages = Languages::new();
-    /// languages.get_statistics(&["doesnt/exist"], vec![".git"], None);
-    ///
-    /// let empty_map = languages.remove_empty();
-    ///
-    /// assert_eq!(empty_map.len(), 0);
-    /// ```
-    pub fn remove_empty(&self) -> BTreeMap<&LanguageType, &Language> {
-        let mut map = BTreeMap::new();
-
-        for (name, language) in &self.inner {
-            if !language.is_empty() {
-                map.insert(name, language);
-            }
-        }
-        map
     }
 }
 

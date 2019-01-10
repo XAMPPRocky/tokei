@@ -1,22 +1,16 @@
- #![deny(trivial_casts,
-         trivial_numeric_casts,
-         unused_variables,
-         unstable_features,
-         unused_import_braces)]
-
-//! # Tokei: Code Analysis Library
+//! # Tokei: Easily count code.
 //!
-//! A simple, effcient library for counting code in directories.
-//! [_For the binary_](https://github.com/Aaronepower/tokei/)
+//! A simple, efficient library for counting code in directories. This
+//! functionality is also provided as a
+//! [CLI utility](//github.com/Aaronepower/tokei). Tokei uses a small state
+//! machine rather than regular expressions found in other code counters. Tokei
+//! can accurately count a lot more edge cases such as nested comments, or
+//! comment syntax inside string literals.
 //!
-//! ## How to use
+//! # Examples
 //!
-//! Tokei provides both `Languages` struct which a map of many existing programming languages,
-//! and `Language` for creating custom languages.
-//!
-//! ### Example
-//!
-//! Gets the total lines of code from all rust files in current directory, and all subdirectories.
+//! Gets the total lines of code from all rust files in current directory,
+//! and all subdirectories.
 //!
 //! ```no_run
 //! extern crate tokei;
@@ -25,50 +19,47 @@
 //! use std::fs::File;
 //! use std::io::Read;
 //!
-//! use tokei::{Languages, LanguageType};
+//! use tokei::{Config, Languages, LanguageType};
 //!
 //! fn main() {
 //!     // The paths to search. Accepts absolute, relative, and glob paths.
 //!     let paths = &["**/*.rs"];
 //!     // Exclude any path that contains any of these strings.
-//!     let excluded = vec!["target", ".git"];
+//!     let excluded = &["target"];
+//!     // `Config` allows you to configure what is searched and counted.
+//!     let config = Config::default();
 //!
-//!     // Create new Languages
 //!     let mut languages = Languages::new();
+//!     languages.get_statistics(paths, excluded, &config);
+//!     let rust = &languages[&LanguageType::Rust];
 //!
-//!     // Get statistics
-//!     languages.get_statistics(paths, excluded, None);
-//!
-//!     // Remove empty languages
-//!     let language_map = languages.remove_empty();
-//!
-//!     // Get Rust from statistics
-//!     let rust = language_map.get(&LanguageType::Rust).unwrap();
-//!
-//!     // Print the number of lines that were code.
 //!     println!("Lines of code: {}", rust.code);
 //! }
 //! ```
 
-#[macro_use]
-extern crate log;
+ #![deny(trivial_casts,
+         trivial_numeric_casts,
+         unused_variables,
+         unstable_features,
+         unused_import_braces,
+         missing_docs)]
+
+#[macro_use] extern crate log;
+#[macro_use] extern crate serde_derive;
+extern crate dirs;
 extern crate encoding_rs_io;
 extern crate ignore;
 extern crate rayon;
-
-#[cfg(feature = "io")]
-#[macro_use]
-extern crate serde_derive;
-
-#[cfg(feature = "io")]
 extern crate serde;
+extern crate toml;
 
-#[macro_use]
-mod utils;
+#[macro_use] mod utils;
+mod config;
 mod language;
-mod stats;
 mod sort;
+mod stats;
 
 pub use language::{LanguageType, Languages, Language};
 pub use stats::Stats;
 pub use sort::Sort;
+pub use config::Config;

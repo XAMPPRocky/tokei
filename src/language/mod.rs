@@ -16,19 +16,18 @@ use sort::Sort::*;
 use sort::Sort;
 use stats::Stats;
 
-/// Struct representing a single Language.
-#[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
-#[derive(Clone, Debug, Default)]
+/// A struct representing statistics about a single Language.
+#[derive(Clone, Debug, Deserialize, Default, Serialize)]
 pub struct Language {
-    /// Number of blank lines.
+    /// The total number of blank lines.
     pub blanks: usize,
-    /// Number of lines of code.
+    /// The total number of lines of code.
     pub code: usize,
-    /// Number of comments(both single, and multi-line)
+    /// The total number of comments(both single, and multi-line)
     pub comments: usize,
-    /// Number of total lines.
+    /// The total number of total lines.
     pub lines: usize,
-    /// A collection of statistics based on the files provide from `files`
+    /// A collection of statistics of individual files.
     pub stats: Vec<Stats>,
     /// Whether this language had problems with file parsing
     pub inaccurate: bool,
@@ -45,7 +44,23 @@ impl Language {
         Self::default()
     }
 
-    /// Adds file stats to the Language.
+    /// Add a `Stat` to the Language. This will not update the totals in the
+    /// Language struct.
+    ///
+    /// ```
+    /// use std::path::PathBuf;
+    /// use tokei::{Language, Stats};
+    ///
+    /// let mut language = Language::new();
+    ///
+    /// language.add_stat(Stats {
+    ///     lines: 10,
+    ///     code: 4,
+    ///     comments: 3,
+    ///     blanks: 3,
+    ///     name: PathBuf::from("test.rs"),
+    /// });
+    /// ```
     pub fn add_stat(&mut self, stat: Stats) {
         self.stats.push(stat);
     }
@@ -56,7 +71,29 @@ impl Language {
         self.inaccurate = true;
     }
 
-    /// Totals up all the statistics currently in the language.
+    /// Totals up the statistics of the `Stat` structs currently contained in
+    /// the language.
+    ///
+    /// ```
+    /// use std::path::PathBuf;
+    /// use tokei::{Language, Stats};
+    ///
+    /// let mut language = Language::new();
+    ///
+    /// language.add_stat(Stats {
+    ///     lines: 10,
+    ///     code: 4,
+    ///     comments: 3,
+    ///     blanks: 3,
+    ///     name: PathBuf::from("test.rs"),
+    /// });
+    ///
+    /// assert_eq!(0, language.lines);
+    ///
+    /// language.total();
+    ///
+    /// assert_eq!(10, language.lines);
+    /// ```
     pub fn total(&mut self) {
         let mut blanks = 0;
         let mut code = 0;
@@ -91,8 +128,36 @@ impl Language {
     }
 
     /// Sorts each of the `Stats` structs contained in the language based
-    /// on what category is provided
-    /// panic!'s if given the wrong category.
+    /// on what category is provided.
+    ///
+    /// ```
+    /// use std::path::PathBuf;
+    /// use tokei::{Language, Sort, Stats};
+    ///
+    /// let mut language = Language::new();
+    ///
+    /// language.add_stat(Stats {
+    ///     lines: 10,
+    ///     code: 8,
+    ///     comments: 0,
+    ///     blanks: 2,
+    ///     name: PathBuf::from("test.rs"),
+    /// });
+    ///
+    /// language.add_stat(Stats {
+    ///     lines: 20,
+    ///     code: 4,
+    ///     comments: 13,
+    ///     blanks: 3,
+    ///     name: PathBuf::from("testsuite.rs"),
+    /// });
+    ///
+    /// language.sort_by(Sort::Lines);
+    /// assert_eq!(20, language.stats[0].lines);
+    ///
+    /// language.sort_by(Sort::Code);
+    /// assert_eq!(8, language.stats[0].code);
+    /// ```
     pub fn sort_by(&mut self, category: Sort) {
         match category {
             Blanks => self.stats.sort_by(|a, b| b.blanks.cmp(&a.blanks)),

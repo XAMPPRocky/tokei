@@ -9,12 +9,12 @@ extern crate term_size;
 extern crate tokei;
 
 mod cli;
-mod input;
 mod cli_utils;
+mod input;
 
 use std::{error::Error, process, io::{self, Write}};
 
-use tokei::{Language, Languages, Sort};
+use tokei::{Language, Languages, Sort, Config};
 
 use cli::Cli;
 use cli_utils::*;
@@ -22,6 +22,10 @@ use input::*;
 
 fn main() -> Result<(), Box<Error>> {
     let mut cli = Cli::from_args();
+    let mut config = Config::from_config_files();
+
+    config.types = ::std::mem::replace(&mut cli.types, None).or(config.types);
+
     if cli.print_languages {
         Cli::print_supported_languages();
         process::exit(0);
@@ -38,7 +42,6 @@ fn main() -> Result<(), Box<Error>> {
     }
 
     {
-        let types = ::std::mem::replace(&mut cli.types, None);
         let input = cli.input();
 
         for path in &input {
@@ -48,7 +51,7 @@ fn main() -> Result<(), Box<Error>> {
             }
         }
 
-        languages.get_statistics(&input, cli.ignored_directories(), types);
+        languages.get_statistics(&input, &cli.ignored_directories(), &config);
     }
 
     if let Some(format) = cli.output {
@@ -56,7 +59,14 @@ fn main() -> Result<(), Box<Error>> {
         process::exit(0);
     }
 
-    let row = "-".repeat(cli.columns);
+    let columns = cli.columns.or(config.columns).unwrap_or_else(|| {
+        term_size::dimensions().map_or(FALLBACK_ROW_LEN, |(w, _)| {
+            w.max(FALLBACK_ROW_LEN)
+        })
+    });
+
+
+    let row = "-".repeat(columns);
 
     let mut stdout = io::BufWriter::new(io::stdout());
 
@@ -64,7 +74,7 @@ fn main() -> Result<(), Box<Error>> {
         print_inaccuracy_warning(&mut stdout)?;
     }
 
-    print_header(&mut stdout, &row, cli.columns)?;
+    print_header(&mut stdout, &row, columns)?;
 
     if let Some(sort_category) = cli.sort {
         for (_, ref mut language) in &mut languages {
@@ -98,7 +108,7 @@ fn main() -> Result<(), Box<Error>> {
         total += language;
     }
 
-    print_language(&mut stdout, cli.columns, &total, "Total")?;
+    print_language(&mut stdout, columns, &total, "Total")?;
     writeln!(stdout, "{}", row)?;
 
     Ok(())

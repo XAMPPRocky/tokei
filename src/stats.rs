@@ -2,7 +2,7 @@ use std::fmt;
 use std::path::PathBuf;
 
 /// A struct representing the statistics of a file.
-#[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
+#[derive(Deserialize, Serialize)]
 #[derive(Clone, Debug)]
 pub struct Stats {
     /// Number of blank lines within the file.
@@ -19,7 +19,9 @@ pub struct Stats {
 }
 
 impl Stats {
-    /// Create a new `Stats` from a `ignore::DirEntry`.
+    /// Create a new `Stats` from a [`PathBuf`].
+    ///
+    /// [`PathBuf`]: //doc.rust-lang.org/std/path/struct.PathBuf.html
     pub fn new(name: PathBuf) -> Self {
         Stats {
             blanks: 0,

@@ -96,7 +96,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<error::Error>> {
         #[test]
         fn {0}() {{
             let mut languages = Languages::new();
-            languages.get_statistics(&["{1}"], Vec::new(), None);
+            languages.get_statistics(&["{1}"], &[], &Config::default());
 
             if languages.len() != 1 {{
                 panic!("wrong languages detected: expected just {0}, found {{:?}}",

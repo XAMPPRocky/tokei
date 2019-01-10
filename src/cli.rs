@@ -11,7 +11,7 @@ pub struct Cli<'a> {
     pub print_languages: bool,
     pub sort: Option<Sort>,
     pub types: Option<Vec<LanguageType>>,
-    pub columns: usize,
+    pub columns: Option<usize>,
     pub verbose: u64,
 }
 
@@ -63,14 +63,7 @@ impl<'a> Cli<'a> {
             3: enable file level trace. Not recommended on multiple files")
         ).get_matches();
 
-        let columns = matches.value_of("columns").and_then(|s| s.parse().ok())
-            .unwrap_or_else(|| {
-                ::term_size::dimensions().map_or(FALLBACK_ROW_LEN, |(w, _)| {
-                    w.max(FALLBACK_ROW_LEN)
-                })
-            });
-
-
+        let columns = matches.value_of("columns").and_then(|s| s.parse().ok());
         let files = matches.is_present("files");
         let print_languages = matches.is_present("languages");
         let verbose = matches.occurrences_of("verbose");

@@ -2,10 +2,15 @@
 // Use of this source code is governed by the APACHE2.0/MIT licence that can be
 // found in the LICENCE-{APACHE/MIT} file.
 
-#[cfg_attr(feature = "io", derive(Deserialize, Serialize))]
+/// Represents a individual programming language. Can be used to provide
+/// information about the language, such as multi line comments, single line
+/// comments, string literal syntax, whether a given language allows nesting
+/// comments.
+#[derive(Deserialize, Serialize)]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum LanguageType {
     {{~#each languages}}
+        #[allow(missing_docs)]
         {{~@key}},
     {{/each}}
 }
@@ -176,8 +181,8 @@ impl LanguageType {
     }
 
     /// Provides every variant in a Vec
-    pub fn list() -> Vec<Self> {
-        return vec! [
+    pub fn list() -> &'static [Self] {
+        return &[
             {{#each languages}}
                 {{@key}},
             {{~/each}}
@@ -324,15 +329,44 @@ impl LanguageType {
         }
     }
 
+    /// Returns the doc quotes of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Python;
+    /// assert_eq!(lang.doc_quotes(), &[("\"\"\"", "\"\"\""), ("'''", "'''")]);
+    /// ```
+    pub fn doc_quotes(self) -> &'static [(&'static str, &'static str)] {
+        match self {
+            {{#each languages}}
+            {{#if this.doc_quotes}}
+                {{~@key}} =>
+                        &[
+                            {{~#each this.doc_quotes}}
+                                (
+                                {{~#each this}}
+                                    "{{this}}",
+                                {{~/each}}
+                                ),
+                            {{~/each}}
+                        ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
     /// Get language from a file path. May open and read the file.
     ///
     /// ```no_run
-    /// # use tokei::*;
-    /// let rust = LanguageType::from_path("./main.rs");
+    /// use tokei::{Config, LanguageType};
+    ///
+    /// let rust = LanguageType::from_path("./main.rs", &Config::default());
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
-    pub fn from_path<P: AsRef<Path>>(entry: P) -> Option<Self> {
+    pub fn from_path<P: AsRef<Path>>(entry: P, _config: &Config)
+        -> Option<Self>
+    {
         let entry = entry.as_ref();
 
         if let Some(filename) = fsutils::get_filename(&entry) {
@@ -355,6 +389,16 @@ impl LanguageType {
             .or_else(|| get_filetype_from_shebang(&entry));
 
         if let Some(extension) = filetype {
+            /*
+            if let Some(ref languages) = config.languages {
+                for (language, lang_config) in languages {
+                    if lang_config.extensions.iter().any(|e| e == extension) {
+                        return Some(*language)
+                    }
+                }
+            }
+            */
+
             match extension {
                 {{~#each languages}}
                     {{~#if this.extensions}}
