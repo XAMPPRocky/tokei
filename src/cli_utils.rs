@@ -2,7 +2,7 @@ use std::str::FromStr;
 use std::{fmt, process, io::{self, Write}};
 
 use tokei::{Language, LanguageType};
-use input::Format;
+use crate::input::Format;
 
 pub const FALLBACK_ROW_LEN: usize = 79;
 const NO_LANG_HEADER_ROW_LEN: usize = 67;

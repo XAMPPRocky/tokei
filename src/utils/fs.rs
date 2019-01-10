@@ -14,9 +14,9 @@ use ignore::WalkState::*;
 use rayon::prelude::*;
 
 // This is just a re-export from the auto generated file.
-pub use language::get_filetype_from_shebang;
-use language::{Language, LanguageType};
-use config::Config;
+pub use crate::language::get_filetype_from_shebang;
+use crate::language::{Language, LanguageType};
+use crate::config::Config;
 
 pub fn get_all_files(paths: &[&str],
                      ignored_directories: &[&str],

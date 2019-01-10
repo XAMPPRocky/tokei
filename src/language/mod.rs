@@ -12,9 +12,8 @@ use std::ops::AddAssign;
 pub use self::languages::Languages;
 pub use self::language_type::*;
 
-use sort::Sort::*;
-use sort::Sort;
-use stats::Stats;
+use crate::sort::Sort::{self, *};
+use crate::stats::Stats;
 
 /// A struct representing statistics about a single Language.
 #[derive(Clone, Debug, Deserialize, Default, Serialize)]

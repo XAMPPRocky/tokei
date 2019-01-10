@@ -8,11 +8,9 @@ use std::ops::{AddAssign, Deref, DerefMut};
 
 use rayon::prelude::*;
 
-use serde;
-
-use config::Config;
+use crate::config::Config;
 use super::{Language, LanguageType};
-use utils;
+use crate::utils;
 
 /// A newtype representing a list of languages counted in the provided
 /// directory.

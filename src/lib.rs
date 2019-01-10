@@ -46,12 +46,6 @@
 
 #[macro_use] extern crate log;
 #[macro_use] extern crate serde_derive;
-extern crate dirs;
-extern crate encoding_rs_io;
-extern crate ignore;
-extern crate rayon;
-extern crate serde;
-extern crate toml;
 
 #[macro_use] mod utils;
 mod config;
@@ -59,7 +53,7 @@ mod language;
 mod sort;
 mod stats;
 
-pub use language::{LanguageType, Languages, Language};
-pub use stats::Stats;
-pub use sort::Sort;
-pub use config::Config;
+pub use self::language::{LanguageType, Languages, Language};
+pub use self::stats::Stats;
+pub use self::sort::Sort;
+pub use self::config::Config;

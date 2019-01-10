@@ -7,12 +7,12 @@ use std::str::FromStr;
 
 use encoding_rs_io::DecodeReaderBytes;
 
-use utils::fs as fsutils;
+use crate::utils::fs as fsutils;
 use self::LanguageType::*;
-use stats::Stats;
+use crate::stats::Stats;
 
 use super::syntax::SyntaxCounter;
-use config::Config;
+use crate::config::Config;
 
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 

@@ -3,10 +3,6 @@
 // found in the LICENCE-{APACHE, MIT} file.
 
 #[macro_use] extern crate clap;
-extern crate env_logger;
-extern crate log;
-extern crate term_size;
-extern crate tokei;
 
 mod cli;
 mod cli_utils;
@@ -16,9 +12,9 @@ use std::{error::Error, process, io::{self, Write}};
 
 use tokei::{Language, Languages, Sort, Config};
 
-use cli::Cli;
-use cli_utils::*;
-use input::*;
+use crate::cli::Cli;
+use crate::cli_utils::*;
+use crate::input::*;
 
 fn main() -> Result<(), Box<Error>> {
     let mut cli = Cli::from_args();

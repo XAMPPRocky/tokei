@@ -2,7 +2,7 @@
 use std::{env, fs};
 use std::path::PathBuf;
 
-use language::LanguageType;
+use crate::language::LanguageType;
 
 /// A configuration struct for how [`Languages::get_statistics`] searches and
 /// counts languages.
