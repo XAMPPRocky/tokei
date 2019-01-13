@@ -8,7 +8,7 @@
   or code.
   The config files can be specified in two places, the current directory tokei
   is running in and your [system configuration
-  directory](docs.rs/tokei/struct.Config.html#method.from_config_files). The
+  directory](//docs.rs/tokei/struct.Config.html#method.from_config_files). The
   priority of options is as follows
   `CLI > <current_directory> > <configuration_directory>`.
 * Tokei is now available on [Conda](https://anaconda.org/conda-forge/tokei).
