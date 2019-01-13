@@ -294,26 +294,28 @@ with the following information. If you're unsure have a look at
 ABAP
 ActionScript
 Ada
-Alex
 Agda
+Alex
 ASP
 ASP.NET
 Assembly
-Autoconf
-SH
 AutoHotKey
+Autoconf
+Automake
 BASH
-FISH
 Batch
+BrightScript
 C
 C Header
+CMake
 C#
 C Shell
 Cabal
 Cassius
 Ceylon
 Clojure
-CMake
+ClojureC
+ClojureScript
 COBOL
 CoffeeScript
 Cogent
@@ -322,36 +324,43 @@ ColdFusion CFScript
 Coq
 C++
 C++ Header
-CSS
 Crystal
+CSS
 D
 Dart
 Device Tree
 Dockerfile
+.NET Resource
+Dream Maker
+Edn
+Emacs Lisp
 Elixir
 Elm
-Emacs Development Environment
-Emacs Lisp
+Elvish
+Emacs Dev Env
 Erlang
 FEN
-Forth
-F*
 F#
+Fish
+Forth
 FORTRAN Legacy
 FORTRAN Modern
+F*
 GDScript
 GLSL
 Go
 Groovy
-Happy
+Hamlet
 Handlebars
+Happy
 Haskell
 Haxe
 HCL
 HEX
+HLSL
 HTML
-Hamlet
 Idris
+INI
 Intel HEX
 Isabelle
 JAI
@@ -361,11 +370,14 @@ JSON
 JSX
 Julia
 Julius
+Kakoune script
 Kotlin
 Lean
 LESS
 LD Script
-LISP
+Liquid
+Lisp
+Logtalk
 Lua
 Lucius
 Madlang
@@ -373,23 +385,26 @@ Makefile
 Markdown
 Meson
 Mint
-ModuleDef
+Module-Definition
+MSBuild
 Mustache
 Nim
 Nix
+Not Quite Perl
 OCaml
 Objective C
 Objective C++
-Org mode
+Org
 Oz
+PSL Assertion
 Pascal
 Perl
+Perl6
 PHP
 Polly
 Processing
 Prolog
 Protocol Buffers
-PSL Assertions
 PureScript
 Python
 QCL
@@ -402,36 +417,53 @@ ReStructuredText
 Ruby
 Ruby HTML
 Rust
+SRecode Template
 Sass
 Scala
+Scheme
 Scons
-SRecode Template
-Standard ML
+Shell
+Standard ML (SML)
 Specman e
-SPICE Netlists
+Spice Netlist
 SQL
 SVG
 Swift
+SWIG
 SystemVerilog
 TCL
 TeX
 Plain Text
 TOML
+Twig
 TypeScript
+Unreal Markdown
+Unreal Plugin
+Unreal Project
 Unreal Script
+Unreal Shader
+Unreal Shader Header
 Ur/Web
-Vala
+Ur/Web Project
 VB6
 VBScript
+Vala
 Verilog
-Verilog argument files
+Verilog Args File
 VHDL
 Vim Script
+Visual Basic
+Visual Studio Project
+Visual Studio Solution
+Vue
 Wolfram
-Xaml
+XSL
+XAML
+XCode Config
 XML
 Xtend
 YAML
+Zig
 Zsh
 ```
 
