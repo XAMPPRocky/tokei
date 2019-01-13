@@ -1,3 +1,44 @@
+# 9.0.0
+
+* Tokei now has config files. You can now specify some commonly used arguments
+  in a `.tokeirc`/`tokei.toml`. Namely `columns` to set the default column
+  output, `types` to filter your count to just a single set of languages, and
+  `treat_doc_strings_as_comments` which is a new option that allows you to
+  specify whether to treat doc strings such as `"""` in Python as comments
+  or code.
+  The config files can be specified in two places, the current directory tokei
+  is running in and your [system configuration
+  directory](docs.rs/tokei/struct.Config.html#method.from_config_files). The
+  priority of options is as follows
+  `CLI > <current_directory> > <configuration_directory>`.
+* Tokei is now available on [Conda](https://anaconda.org/conda-forge/tokei).
+* [Tokei's README has been translated
+  to chinese.](https://github.com/chinanf-boy/tokei-zh#tokei-)
+* `LanguageType` now implements `Hash`.
+* Tokei now batches it's console output, this should result in a small
+  performance boost.
+* There is now a `--columns` argument for manually setting tokei's output width.
+* The `--sort` argument is now case-insensitive.
+* Tokei will now mark languages who's files failed to parse correctly as
+  potentially inaccurate.
+* Due to a bug in trust-ci `x86_64-unknown-netbsd` versions are will not be
+  available in GitHub releases. (You will still be able to install from source.)
+* Due to toml-rs's lacking enum support the TOML output option has
+  been disabled.
+
+**Added languages**
+- @t-richards Liquid
+- @diaphore Added the `.glsl` extension to GLSL.
+- @ahmedelgabri Twig
+- @pmoura Logtalk
+- @alekratz Perl, Not Quite Perl
+- @Aaronepower Automake, .NET Resource, HLSL, INI, Unreal Plugin,
+  Unreal Project, Unreal Shader, Unreal Shader Header, Unreal Markdown,
+  Visual Basic, Visual Studio Solution, Visual Studio Project, XCode Config,
+- @TheMrNomis SWIG
+- @xnorme Added the `.vhdl` extension to VHDL
+
+
 # 8.0.0
 * A language's comments, and quotes are now available through the `LanguageType`
   enum.
