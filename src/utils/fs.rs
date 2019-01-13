@@ -18,7 +18,7 @@ pub use crate::language::get_filetype_from_shebang;
 use crate::language::{Language, LanguageType};
 use crate::config::Config;
 
-pub fn get_all_files(paths: &[&str],
+pub fn get_all_files<A: AsRef<Path>>(paths: &[A],
                      ignored_directories: &[&str],
                      languages: &mut BTreeMap<LanguageType, Language>,
                      config: &Config)
@@ -72,27 +72,20 @@ pub fn get_all_files(paths: &[&str],
 
     let types: Option<&[LanguageType]> = config.types.as_ref().map(|v| &**v);
 
-    let iter: Vec<_> = rx.into_iter()
+    let iter = rx.into_iter()
         .collect::<Vec<_>>()
         .into_par_iter()
-        .filter_map(|entry| {
-            if let Some(language) = LanguageType::from_path(entry.path(), &config) {
-                if (types.is_some() &&
-                    types.map(|t| t.contains(&language)).unwrap()) ||
-                    types.is_none()
-                {
-                    match language.parse(entry.into_path(), &config) {
-                        Ok(s) => return Some((language, Some(s))),
-                        Err((e, path)) => {
-                            error!("{} reading {}", e.description(), path.display());
-                            return Some((language, None));
-                        }
-                    }
-                }
-            }
-
-            None
-    }).collect();
+        .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)))
+        .filter(|(_, l)| types.map(|t| t.contains(l)).unwrap_or(true))
+        .map(|(entry, language)| {
+            language.parse(entry.into_path(), &config)
+                .map(|stats| (language, Some(stats)))
+                .unwrap_or_else(|(e, path)| {
+                    error!("{} reading {}", e.description(), path.display());
+                    (language, None)
+                })
+        })
+        .collect::<Vec<_>>();
 
     for (language_type, stats) in iter {
         let entry = languages.entry(language_type).or_insert_with(Language::new);
@@ -106,32 +99,21 @@ pub fn get_all_files(paths: &[&str],
 }
 
 pub(crate) fn get_extension(path: &Path) -> Option<String> {
-    match path.extension() {
-        Some(extension_os) => {
-            Some(extension_os.to_string_lossy().to_lowercase())
-        },
-        None => None
-    }
+    path.extension().map(|e| e.to_string_lossy().to_lowercase())
 }
 
 pub(crate) fn get_filename(path: &Path) -> Option<String> {
-    match path.file_name() {
-        Some(filename_os) => {
-            Some(filename_os.to_string_lossy().to_lowercase())
-        },
-        None => None
-    }
+    path.file_name().map(|e| e.to_string_lossy().to_lowercase())
 }
 
 #[cfg(test)]
 mod test {
-    extern crate tempdir;
-    use super::*;
     use std::fs::create_dir;
-    use language::languages::Languages;
-    use language::LanguageType;
-    use config::Config;
-    use self::tempdir::TempDir;
+
+    use tempdir::TempDir;
+
+    use crate::{config::Config, language::{LanguageType, languages::Languages}};
+    use super::*;
 
     #[test]
     fn walker_directory_as_file() {

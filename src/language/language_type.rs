@@ -109,8 +109,8 @@ impl LanguageType {
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
             let line = if syntax.is_fortran { line } else { line.trim() };
+            let had_multi_line = !syntax.stack.is_empty();
             let mut ended_with_comments = false;
-            let mut had_multi_line = !syntax.stack.is_empty();
             let mut skip = 0;
             macro_rules! skip {
                 ($skip:expr) => {{

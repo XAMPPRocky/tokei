@@ -5,6 +5,7 @@
 use std::collections::{btree_map, BTreeMap};
 use std::iter::IntoIterator;
 use std::ops::{AddAssign, Deref, DerefMut};
+use std::path::Path;
 
 use rayon::prelude::*;
 
@@ -65,8 +66,8 @@ impl Languages {
     /// ```
     ///
     /// [`Language`]: struct.Language.html
-    pub fn get_statistics(&mut self,
-                          paths: &[&str],
+    pub fn get_statistics<A: AsRef<Path>>(&mut self,
+                          paths: &[A],
                           ignored: &[&str],
                           config: &Config)
     {
