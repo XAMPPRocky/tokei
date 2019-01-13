@@ -1,6 +1,8 @@
 use std::str::FromStr;
 use std::{fmt, process, io::{self, Write}};
 
+use clap::crate_version;
+
 use tokei::{Language, LanguageType};
 use crate::input::Format;
 

@@ -1,7 +1,3 @@
-// Copyright (c) 2015 Aaron Power
-// Use of this source code is governed by the APACHE2.0/MIT licence that can be
-// found in the LICENCE-{APACHE/MIT} file.
-
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::path::Path;

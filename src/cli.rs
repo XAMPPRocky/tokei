@@ -1,8 +1,7 @@
-use clap::ArgMatches;
-use tokei::{LanguageType, Sort};
+use clap::{clap_app, crate_description, ArgMatches};
 
-use crate::input::Format;
-use crate::cli_utils::*;
+use crate::{cli_utils::*, input::Format};
+use tokei::{LanguageType, Sort};
 
 pub struct Cli<'a> {
     matches: ArgMatches<'a>,

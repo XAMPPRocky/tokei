@@ -1,7 +1,3 @@
-// Copyright (c) 2015 Aaron Power
-// Use of this source code is governed by the APACHE2.0/MIT licence that can be
-// found in the LICENCE-{APACHE/MIT} file.
-
 use std::collections::{btree_map, BTreeMap};
 use std::iter::IntoIterator;
 use std::ops::{AddAssign, Deref, DerefMut};

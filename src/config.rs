@@ -59,9 +59,9 @@ impl Config {
     /// columns = 80
     /// types = ["Python"]
     /// treat_doc_strings_as_comments = true
-    ///
-    /// [[languages.Python]]
-    /// extensions = ["py3"]
+    // ///
+    // /// [[languages.Python]]
+    // /// extensions = ["py3"]
     /// ```
     pub fn from_config_files() -> Self {
         let conf_dir = ::dirs::config_dir()

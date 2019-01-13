@@ -1,7 +1,3 @@
-// Copyright (c) 2015 Aaron Power
-// Use of this source code is governed by the APACHE2.0/MIT licence that can be
-// found in the LICENCE-{APACHE/MIT} file.
-
 /// Represents a individual programming language. Can be used to provide
 /// information about the language, such as multi line comments, single line
 /// comments, string literal syntax, whether a given language allows nesting

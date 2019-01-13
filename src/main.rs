@@ -1,20 +1,13 @@
-// Copyright (c) 2015 Aaron Power
-// Use of this source code is governed by the MIT/APACHE2.0 license that can be
-// found in the LICENCE-{APACHE, MIT} file.
-
-#[macro_use] extern crate clap;
-
 mod cli;
 mod cli_utils;
 mod input;
 
 use std::{error::Error, process, io::{self, Write}};
 
-use tokei::{Language, Languages, Sort, Config};
-
 use crate::cli::Cli;
 use crate::cli_utils::*;
 use crate::input::*;
+use tokei::{Language, Languages, Sort, Config};
 
 fn main() -> Result<(), Box<Error>> {
     let mut cli = Cli::from_args();
