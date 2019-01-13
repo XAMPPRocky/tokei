@@ -62,7 +62,7 @@ impl<'a> Cli<'a> {
             3: enable file level trace. Not recommended on multiple files")
         ).get_matches();
 
-        let columns = matches.value_of("columns").and_then(|s| s.parse().ok());
+        let columns = matches.value_of("columns").map(parse_or_exit::<usize>);
         let files = matches.is_present("files");
         let print_languages = matches.is_present("languages");
         let verbose = matches.occurrences_of("verbose");
