@@ -49,9 +49,13 @@ fn main() -> Result<(), Box<Error>> {
     }
 
     let columns = cli.columns.or(config.columns).unwrap_or_else(|| {
-        term_size::dimensions().map_or(FALLBACK_ROW_LEN, |(w, _)| {
-            w.max(FALLBACK_ROW_LEN)
-        })
+        if cli.files {
+            term_size::dimensions().map_or(FALLBACK_ROW_LEN, |(w, _)| {
+                w.max(FALLBACK_ROW_LEN)
+            })
+        } else {
+            FALLBACK_ROW_LEN
+        }
     });
 
 
