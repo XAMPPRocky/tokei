@@ -1431,6 +1431,19 @@
                 "srt"
             ]
         },
+        "Stratego":{
+            "name":"Stratego/XT",
+            "base":"c",
+            "quotes":[
+              ["\\\"", "\\\""],
+              ["$[", "]"],
+              ["$<", ">" ],
+              [ "${", "}" ]
+            ],
+            "extensions":[
+                "str"
+            ]
+        },
         "Svg":{
             "name":"SVG",
             "base":"html",
