@@ -636,6 +636,12 @@
                 "go"
             ]
         },
+        "GraphQL":{
+            "extensions":[
+                "graphql",
+                "gql"
+            ]
+        },
         "Groovy":{
             "base":"c",
             "extensions":[
