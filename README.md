@@ -108,7 +108,11 @@ $ nix-env -i tokei
 Launch the Docker container by supplying the path as a volume in read only mode:
 
 ```shell
-$ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei     
+$ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei
+```
+or
+```shell
+$ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei tokei --sort lines
 ```
 
 ### Manual
