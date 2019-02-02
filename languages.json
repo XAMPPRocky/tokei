@@ -1290,6 +1290,12 @@
                 "cshtml"
             ]
         },
+        "ROSMsg":{
+            "base":"c",
+            "extensions":[
+                "msg"
+            ],
+        },    
         "Ruby":{
             "line_comment":[
                 "#"
