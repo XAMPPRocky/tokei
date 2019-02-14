@@ -1385,6 +1385,13 @@
                 "sml"
             ]
         },
+        "Solidity":{
+            "name":"Solidity",
+            "base":"c",
+            "extensions":[
+                "sol"
+            ]
+        },
         "SpecmanE":{
             "name":"Specman e",
             "line_comment":[

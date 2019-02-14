@@ -424,6 +424,7 @@ Scheme
 Scons
 Shell
 Standard ML (SML)
+Solidity
 Specman e
 Spice Netlist
 SQL
