@@ -1,4 +1,4 @@
-# 88 lines 71 code 3 comments 14 blank
+# 89 lines 72 code 3 comments 14 blank
 
 """
 A simple GraphQL schema which is well described. This is not a comment.
@@ -86,3 +86,4 @@ type User {
   lastName: String
   birthday: Date
 }
+
