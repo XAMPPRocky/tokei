@@ -59,7 +59,8 @@ fn main() -> Result<(), Box<Error>> {
     });
 
 
-    let row = "-".repeat(columns);
+    let line_char = if locale_requests_utf8() { "─" } else { "-" };
+    let row = line_char.repeat(columns);
 
     let mut stdout = io::BufWriter::new(io::stdout());
 
@@ -84,9 +85,9 @@ fn main() -> Result<(), Box<Error>> {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
         }
 
-        print_results(&mut stdout, &row, languages.into_iter(), cli.files)?
+        print_results(&mut stdout, &row, columns, languages.into_iter(), cli.files)?
     } else  {
-        print_results(&mut stdout, &row, languages.iter(), cli.files)?
+        print_results(&mut stdout, &row, columns, languages.iter(), cli.files)?
     }
 
     // If we're listing files there's already a trailing row so we don't want an
