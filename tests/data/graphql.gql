@@ -1,0 +1,89 @@
+# 89 lines 71 code 3 comments 15 blanks
+
+"""
+A simple GraphQL schema which is well described. This is not a comment.
+See: https://facebook.github.io/graphql/June2018/#sec-Descriptions
+"""
+type Query {
+  """
+  Translates a string from a given language into a different language.
+  """
+  translate(
+    "The original language that `text` is provided in."
+    fromLanguage: Language
+
+    "The translated language to be returned."
+    toLanguage: Language
+
+    "The text to be translated."
+    text: String
+  ): String
+}
+
+"""
+The set of languages supported by `translate`.
+"""
+enum Language {
+  "English"
+  EN
+
+  "French"
+  FR
+
+  "Chinese"
+  CH
+}
+
+# Comment the query and use "quotes" inside the comment
+query withFragments($expandedInfo: Boolean) {
+  user(id: "3bd5a1cbed10e") {
+    id # Insignificant comment
+
+    ... @include(if: $expandedInfo) {
+      firstName
+      lastName
+      birthday
+    }
+
+    friends(first: 10) {
+      ...friendFields
+    }
+
+    profiles(
+      handles: [
+        "zuck",
+        "cocacola",
+        "#hashed#hash#inside"
+      ]
+    ) {
+      handle
+
+      ... on User {
+        friends {
+          count
+        }
+      }
+
+      ... on Page {
+        likers {
+          count
+        }
+      }
+    }
+  }
+}
+
+fragment friendFields on User {
+  id
+  firstName
+  profilePic(size: 50)
+}
+
+# A simple GraphQL type definition
+type User {
+  id: ID
+  firstName: String
+  lastName: String
+  birthday: Date
+}
+

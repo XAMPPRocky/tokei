@@ -636,6 +636,20 @@
                 "go"
             ]
         },
+        "Graphql":{
+            "name":"GraphQL",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["\\\"\\\"\\\"", "\\\"\\\"\\\""]
+            ],
+            "line_comment":[
+                "#"
+            ],
+            "extensions":[
+                "gql",
+                "graphql"
+            ]
+        },
         "Groovy":{
             "base":"c",
             "extensions":[
