@@ -274,6 +274,8 @@ Example show total lines:
 [![](https://tokei.rs/b1/github/Aaronepower/tokei?category=lines)](https://github.com/Aaronepower/tokei).
 ```
 
+The server code hosted on tokei.rs is in [Aaronepower/tokei_rs](https://github.com/Aaronepower/tokei_rs)
+
 ## Plugins
 Thanks to contributors tokei is now available as a plugin for some text editors.
 
