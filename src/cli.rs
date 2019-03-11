@@ -1,16 +1,23 @@
+use std::mem;
+
 use clap::{clap_app, crate_description, ArgMatches};
+use tokei::{Config, LanguageType, Sort};
 
 use crate::{cli_utils::*, input::Format};
-use tokei::{LanguageType, Sort};
 
+#[derive(Debug)]
 pub struct Cli<'a> {
     matches: ArgMatches<'a>,
-    pub output: Option<Format>,
+    pub columns: Option<usize>,
     pub files: bool,
+    pub hidden: bool,
+    pub no_ignore: bool,
+    pub no_ignore_parent: bool,
+    pub no_ignore_vcs: bool,
+    pub output: Option<Format>,
     pub print_languages: bool,
     pub sort: Option<Sort>,
     pub types: Option<Vec<LanguageType>>,
-    pub columns: Option<usize>,
     pub verbose: u64,
 }
 
@@ -35,12 +42,19 @@ impl<'a> Cli<'a> {
                 +takes_value
                 "Gives statistics from a previous tokei run. Can be given a file path, \
                 or \"stdin\" to read from stdin.")
+            (@arg hidden: --hidden "Count hidden files.")
             (@arg input:
                 conflicts_with[languages] ...
                 "The input file(s)/directory(ies) to be counted.")
             (@arg languages: -l --languages
                 conflicts_with[input]
                 "Prints out supported languages and their extensions.")
+            (@arg no_ignore: --("no-ignore")
+                "Don't respect ignore files.")
+            (@arg no_ignore_parent: --("no-ignore-parent")
+                "Don't respect ignore files in parent directories.")
+            (@arg no_ignore_vcs: --("no-ignore-vcs")
+                "Don't respect VCS ignore files.")
             (@arg output: -o --output
                 // `all` is used so to fail later with a better error
                 possible_values(Format::all())
@@ -64,6 +78,10 @@ impl<'a> Cli<'a> {
 
         let columns = matches.value_of("columns").map(parse_or_exit::<usize>);
         let files = matches.is_present("files");
+        let hidden = matches.is_present("hidden");
+        let no_ignore = matches.is_present("no_ignore");
+        let no_ignore_parent = matches.is_present("no_ignore_parent");
+        let no_ignore_vcs = matches.is_present("no_ignore_vcs");
         let print_languages = matches.is_present("languages");
         let verbose = matches.occurrences_of("verbose");
         let types = matches.value_of("types").map(|e| {
@@ -82,16 +100,26 @@ impl<'a> Cli<'a> {
         let output = matches.value_of("output")
                             .map(parse_or_exit::<Format>);
 
-        Cli {
-            matches,
-            output,
+        crate::cli_utils::setup_logger(verbose);
+
+        let cli = Cli {
+            columns,
             files,
+            hidden,
+            matches,
+            no_ignore,
+            no_ignore_parent,
+            no_ignore_vcs,
+            output,
             print_languages,
             sort,
             types,
             verbose,
-            columns,
-        }
+        };
+
+        debug!("CLI Config: {:#?}", cli);
+
+        cli
     }
 
     pub fn file_input(&self) ->  Option<&str> {
@@ -117,6 +145,41 @@ impl<'a> Cli<'a> {
         for key in LanguageType::list() {
             println!("{:<25}", key);
         }
+    }
+
+    /// Overrides the shared options (See `tokei::Config` for option
+    /// descriptions) between the CLI and the config files. CLI flags have
+    /// higher precedence than options present in config files.
+    ///
+    /// #### Shared options
+    /// * `no_ignore`
+    /// * `no_ignore_parent`
+    /// * `no_ignore_vcs`
+    /// * `types`
+    pub fn override_config(&mut self, mut config: Config) -> Config {
+        config.hidden = match self.hidden {
+            true => Some(true),
+            false => config.hidden,
+        };
+
+        config.no_ignore = match self.no_ignore {
+            true => Some(true),
+            false => config.no_ignore
+        };
+
+        config.no_ignore_parent = match self.no_ignore_parent {
+            true => Some(true),
+            false => config.no_ignore_parent
+        };
+
+        config.no_ignore_vcs = match self.no_ignore_vcs {
+            true => Some(true),
+            false => config.no_ignore_vcs
+        };
+
+        config.types = mem::replace(&mut self.types, None).or(config.types);
+
+        config
     }
 
     pub fn print_input_parse_failure(input_filename: &str) {

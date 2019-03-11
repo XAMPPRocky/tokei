@@ -27,12 +27,12 @@ macro_rules! get_digit {
 }
 
 mod config {
-    use std::collections::HashMap;
     use tokei::*;
 
     /*
     #[test]
     fn extension_change() {
+        use std::collections::HashMap;
         let mut languages = Languages::new();
         let config = Config {
             languages: {

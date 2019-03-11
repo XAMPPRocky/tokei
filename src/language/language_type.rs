@@ -201,3 +201,12 @@ impl LanguageType {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rust_allows_nested() {
+        assert!(LanguageType::Rust.allows_nested());
+    }
+}

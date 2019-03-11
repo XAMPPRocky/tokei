@@ -3,6 +3,7 @@ authors = ["Aaronepower <theaaronepower@gmail.com>"]
 build = "build.rs"
 categories = ["command-line-utilities", "development-tools", "visualization"]
 description = "A utility that allows you to count code, quickly."
+edition = "2018"
 homepage = "https://tokei.rs"
 include = ["Cargo.lock", "Cargo.toml", "LICENCE-APACHE", "LICENCE-MIT", "build.rs", "languages.json", "src/**/*"]
 keywords = ["utility", "cli", "cloc", "lines", "statistics"]
@@ -11,7 +12,6 @@ name = "tokei"
 readme = "README.md"
 repository = "https://github.com/Aaronepower/tokei.git"
 version = "9.0.0"
-edition = "2018"
 
 [badges]
 [badges.appveyor]
@@ -61,7 +61,8 @@ version = "0.8"
 [dev-dependencies]
 lazy_static = "1"
 regex = "1.0"
-tempdir = "0.3"
+tempfile = "3.0.7"
+git2 = "0.8.0"
 
 [features]
 all = ["json", "cbor", "yaml"]
@@ -70,6 +71,7 @@ default = []
 json = ["serde_json"]
 yaml = ["serde_yaml"]
 
+[profile]
 [profile.release]
 lto = true
 panic = "abort"

@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 /// A struct representing the statistics of a file.
 #[derive(Deserialize, Serialize)]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Stats {
     /// Number of blank lines within the file.
     pub blanks: usize,

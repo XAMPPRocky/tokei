@@ -12,7 +12,7 @@ use crate::sort::Sort::{self, *};
 use crate::stats::Stats;
 
 /// A struct representing statistics about a single Language.
-#[derive(Clone, Debug, Deserialize, Default, Serialize)]
+#[derive(Clone, Debug, Deserialize, Default, PartialEq, Serialize)]
 pub struct Language {
     /// The total number of blank lines.
     pub blanks: usize,

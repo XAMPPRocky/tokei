@@ -498,12 +498,3 @@ pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn rust() {
-        assert_eq!(LanguageType::Rust.allows_nested(), true);
-    }
-}

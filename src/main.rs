@@ -1,3 +1,5 @@
+#[macro_use] extern crate log;
+
 mod cli;
 mod cli_utils;
 mod input;
@@ -11,16 +13,13 @@ use tokei::{Language, Languages, Sort, Config};
 
 fn main() -> Result<(), Box<Error>> {
     let mut cli = Cli::from_args();
-    let mut config = Config::from_config_files();
-
-    config.types = ::std::mem::replace(&mut cli.types, None).or(config.types);
 
     if cli.print_languages {
         Cli::print_supported_languages();
         process::exit(0);
     }
 
-    setup_logger(cli.verbose);
+    let config = cli.override_config(Config::from_config_files());
     let mut languages = Languages::new();
 
     if let Some(input) = cli.file_input() {
