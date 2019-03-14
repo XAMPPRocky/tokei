@@ -103,6 +103,18 @@ $ brew install tokei
 $ nix-env -i tokei
 ```
 
+### In a container
+
+Launch the Docker container by supplying the path as a volume in read only mode:
+
+```shell
+$ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei
+```
+or
+```shell
+$ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei tokei --sort lines
+```
+
 ### Manual
 You can download prebuilt binaries in the
 [releases section](https://github.com/Aaronepower/tokei/releases), or create
