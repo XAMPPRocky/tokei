@@ -1,0 +1,24 @@
+// 24 lines 12 code 6 comments 6 blanks
+module stratego
+
+strategies
+
+/** // */
+main =
+  !"/* "
+  ; id // */
+
+foo =
+  ?'a'
+
+rules
+
+foobar: "//" -> "\\" // " '
+/* " ' */
+
+foo: a -> a // /*
+where
+  b := 'b' // */
+// ; c := $[quotes with anti quotes [b], which are not supported by tokei atm so this is a commented line of code]
+// ; c := ${quotes with anti quotes {b}, which are not supported by tokei atm so this is a commented line of code}
+// ; c := $<quotes with anti quotes <b>, which are not supported by tokei atm so this is a commented line of code>
