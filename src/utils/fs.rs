@@ -14,6 +14,8 @@ pub use crate::language::get_filetype_from_shebang;
 use crate::language::{Language, LanguageType};
 use crate::config::Config;
 
+const IGNORE_FILE: &str = ".tokeignore";
+
 pub fn get_all_files<A: AsRef<Path>>(paths: &[A],
                      ignored_directories: &[&str],
                      languages: &mut BTreeMap<LanguageType, Language>,
@@ -40,12 +42,14 @@ pub fn get_all_files<A: AsRef<Path>>(paths: &[A],
 
     // Flip the booleans as ignore's semantics are the opposite of our options.
     let no_ignore_vcs = config.no_ignore_vcs.map(|b| !b).unwrap_or(true);
-    walker.git_exclude(no_ignore_vcs);
-    walker.git_global(no_ignore_vcs);
-    walker.git_ignore(no_ignore_vcs);
-    walker.hidden(config.hidden.map(|b| !b).unwrap_or(true));
-    walker.ignore(config.no_ignore.map(|b| !b).unwrap_or(true));
-    walker.parents(config.no_ignore_parent.map(|b| !b).unwrap_or(true));
+
+    walker.add_custom_ignore_filename(IGNORE_FILE)
+          .git_exclude(no_ignore_vcs)
+          .git_global(no_ignore_vcs)
+          .git_ignore(no_ignore_vcs)
+          .hidden(config.hidden.map(|b| !b).unwrap_or(true))
+          .ignore(config.no_ignore.map(|b| !b).unwrap_or(true))
+          .parents(config.no_ignore_parent.map(|b| !b).unwrap_or(true));
 
     walker.build_parallel().run(move|| {
         let tx = tx.clone();
@@ -118,6 +122,7 @@ mod tests {
     use tempfile::TempDir;
 
     use crate::{config::Config, language::{LanguageType, languages::Languages}};
+    use super::IGNORE_FILE;
 
     const FILE_CONTENTS: &[u8] = &*b"fn main() {}";
     const FILE_NAME: &str = "main.rs";
@@ -271,6 +276,34 @@ mod tests {
         assert!(languages.get(LANGUAGE).is_none());
 
         config.no_ignore_vcs = Some(true);
+
+        super::get_all_files(&[dir.path().to_str().unwrap()],
+                             &[],
+                             &mut languages,
+                             &config);
+
+        assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn custom_ignore() {
+        let dir = TempDir::new().expect("Couldn't creat temp dir.");
+        let config = Config::default();
+        let mut languages = Languages::new();
+
+        git2::Repository::init(dir.path()).expect("Couldn't create git repo.");
+
+        fs::write(dir.path().join(IGNORE_FILE), IGNORE_PATTERN).unwrap();
+        fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        super::get_all_files(&[dir.path().to_str().unwrap()],
+                             &[],
+                             &mut languages,
+                             &config);
+
+        assert!(languages.get(LANGUAGE).is_none());
+
+        fs::remove_file(dir.path().join(IGNORE_FILE)).unwrap();
 
         super::get_all_files(&[dir.path().to_str().unwrap()],
                              &[],
