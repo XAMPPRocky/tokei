@@ -11,7 +11,7 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/Aaronepower/tokei.git"
-version = "9.0.0"
+version = "9.1.0"
 
 [badges]
 [badges.appveyor]
@@ -36,7 +36,7 @@ rayon = "1"
 serde = "1"
 serde_derive = "1"
 term_size = "0.3.1"
-toml = "0.4.10"
+toml = "0.5"
 
 [dependencies.env_logger]
 features = []
