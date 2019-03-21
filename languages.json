@@ -1104,7 +1104,7 @@
         },
         "Pascal":{
             "line_comment":[
-                "//"
+                "//" 
             ],
             "multi_line":[
                 ["{", "}"],
