@@ -1181,6 +1181,13 @@
                 "php"
             ]
         },
+        "Po":{
+            "name":"PO translations",
+            "base": "hash",
+            "extensions":[
+                "po"
+            ]
+        },
         "Polly":{
             "base":"html",
             "extensions":[

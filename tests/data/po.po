@@ -1,0 +1,14 @@
+# 14 lines 5 code 7 comments 2 blanks
+
+#  translator-comments
+#. extracted-comments
+#: reference…
+#, flag…
+#| msgid "Hell# o!"
+msgid "Hello world!"
+msgstr "Salut les gens !"
+""
+
+ #: lib/error.c:116
+ msgid "Unknown # system error"
+ msgstr "Error desconegut #. del sistema"
