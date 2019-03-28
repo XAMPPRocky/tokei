@@ -1171,6 +1171,18 @@
                 "pm6"
             ]
         },
+        "Pest": {
+            "line_comment":[
+                "//"
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "pest"
+            ]
+        },
         "NotQuitePerl":{
             "name": "Not Quite Perl",
             "line_comment":[
