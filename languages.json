@@ -1,72 +1,72 @@
 {
-    "languages":{
-        "Abap":{
-            "name":"ABAP",
-            "line_comment":[
+    "languages": {
+        "Abap": {
+            "name": "ABAP",
+            "line_comment": [
                 "*",
                 "\\\""
             ],
-            "extensions":[
+            "extensions": [
                 "abap"
             ]
         },
-        "ActionScript":{
-            "base":"c",
-            "extensions":[
+        "ActionScript": {
+            "base": "c",
+            "extensions": [
                 "as"
             ]
         },
-        "Ada":{
-            "line_comment":[
+        "Ada": {
+            "line_comment": [
                 "--"
             ],
-            "extensions":[
+            "extensions": [
                 "ada",
                 "adb",
                 "ads",
                 "pad"
             ]
         },
-        "Alex":{
-            "extensions":[
+        "Alex": {
+            "extensions": [
                 "x"
             ]
         },
-        "Agda":{
+        "Agda": {
             "base": "haskell",
-            "extensions":[
+            "extensions": [
                 "agda"
             ]
         },
-        "Assembly":{
-            "line_comment":[
+        "Assembly": {
+            "line_comment": [
                 ";"
             ],
-            "quotes":[
+            "quotes": [
                 ["\\\"", "\\\""],
                 ["'", "'"]
             ],
-            "extensions":[
+            "extensions": [
                 "s",
                 "asm"
             ]
         },
-        "Asp":{
-            "name":"ASP",
-            "line_comment":[
+        "Asp": {
+            "name": "ASP",
+            "line_comment": [
                 "'",
                 "REM"
             ],
-            "extensions":[
+            "extensions": [
                 "asa",
                 "asp"
             ]
         },
-        "AspNet":{
-            "name":"ASP.NET",
-            "multi_line":[
-                ["<!--", "-->"],
-                ["<%--", "-->"]
+        "AspNet": {
+            "name": "ASP.NET",
+            "multi_line": [
+                    ["<!--", "-->"],
+                    ["<%--", "-->"]
             ],
             "extensions":[
                 "asax",
@@ -1725,6 +1725,19 @@
             ],
             "extensions":[
                 "vue"
+            ]
+        },
+        "WebAssembly": {
+            "extensions": [
+                "wat",
+                "wast"
+            ],
+            "line_comment":[
+                ";;"
+            ],
+            "quites": [
+                ["\\\"", "\\\""],
+                ["'", "'"]
             ]
         },
         "Wolfram":{
