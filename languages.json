@@ -1763,16 +1763,16 @@
             ]
         },
         "WebAssembly": {
-            "extensions": [
-                "wat",
-                "wast"
-            ],
             "line_comment":[
                 ";;"
             ],
             "quites": [
                 ["\\\"", "\\\""],
                 ["'", "'"]
+            ],
+            "extensions": [
+                "wat",
+                "wast"
             ]
         },
         "Wolfram":{
