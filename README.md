@@ -1,11 +1,11 @@
 # Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
-[![Linux build status](https://img.shields.io/travis/Aaronepower/tokei.svg?branch=master)](https://travis-ci.org/Aaronepower/tokei)
-[![Windows build status](https://ci.appveyor.com/api/projects/status/github/Aaronepower/tokei?svg=true)](https://ci.appveyor.com/project/Aaronepower/tokei)
+[![Linux build status](https://img.shields.io/travis/XAMPPRocky/tokei.svg?branch=master)](https://travis-ci.org/XAMPPRocky/tokei)
+[![Windows build status](https://ci.appveyor.com/api/projects/status/github/XAMPPRocky/tokei?svg=true)](https://ci.appveyor.com/project/XAMPPRocky/tokei)
 [![](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
-[![](https://img.shields.io/github/issues-raw/Aaronepower/tokei.svg)](https://github.com/Aaronepower/tokei/issues)
-[![](https://tokei.rs/b1/github/Aaronepower/tokei?category=code)](https://github.com/Aaronepower/tokei)
+[![](https://img.shields.io/github/issues-raw/XAMPPRocky/tokei.svg)](https://github.com/XAMPPRocky/tokei/issues)
+[![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/XAMPPRocky/tokei)
 [![Documentation](https://docs.rs/tokei/badge.svg)](https://docs.rs/tokei/)
-[![Donate using Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/Aaronepower/donate)
+[![Donate using Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/XAMPPRocky/donate)
 
 Tokei is a program that displays statistics about your code. Tokei will show number of files, total lines within those files and code, comments, and blanks grouped by language.
 
@@ -119,10 +119,10 @@ $ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei 
 
 ### Manual
 You can download prebuilt binaries in the
-[releases section](https://github.com/Aaronepower/tokei/releases), or create
+[releases section](https://github.com/XAMPPRocky/tokei/releases), or create
 from source.
 ```shell
-$ git clone https://github.com/Aaronepower/tokei.git
+$ git clone https://github.com/XAMPPRocky/tokei.git
 $ cd tokei
 $ cargo build --release
 ```
@@ -267,16 +267,16 @@ ARGS:
 
 ## Badges
 Tokei has support for badges. For example
-[![](https://tokei.rs/b1/github/Aaronepower/tokei)](https://github.com/Aaronepower/tokei).
+[![](https://tokei.rs/b1/github/XAMPPRocky/tokei)](https://github.com/XAMPPRocky/tokei).
 
 ```
-[![](https://tokei.rs/b1/github/Aaronepower/tokei)](https://github.com/Aaronepower/tokei).
+[![](https://tokei.rs/b1/github/XAMPPRocky/tokei)](https://github.com/XAMPPRocky/tokei).
 ```
 
 Tokei's URL scheme is as follows.
 
 ```
-https://tokei.rs/b1/{host: values: github|gitlab}/{Repo Owner eg: Aaronepower}/{Repo name eg: tokei}
+https://tokei.rs/b1/{host: values: github|gitlab}/{Repo Owner eg: XAMPPRocky}/{Repo name eg: tokei}
 ```
 
 By default the badge will show the repo's LoC(_Lines of Code_), you can also
@@ -285,10 +285,10 @@ string. It can be either `code`, `blanks`, `files`, `lines`, `comments`,
 Example show total lines:
 
 ```
-[![](https://tokei.rs/b1/github/Aaronepower/tokei?category=lines)](https://github.com/Aaronepower/tokei).
+[![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=lines)](https://github.com/XAMPPRocky/tokei).
 ```
 
-The server code hosted on tokei.rs is in [Aaronepower/tokei_rs](https://github.com/Aaronepower/tokei_rs)
+The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
 ## Plugins
 Thanks to contributors tokei is now available as a plugin for some text editors.
@@ -497,7 +497,7 @@ $ tokei . -e *.d
 
 ## Canonical Source
 The canonical source of this repo is hosted on
-[GitHub](https://github.com/Aaronepower/tokei). If you have a GitHub account,
+[GitHub](https://github.com/XAMPPRocky/tokei). If you have a GitHub account,
 please make your issues, and pull requests there.
 
 ## Copyright and License

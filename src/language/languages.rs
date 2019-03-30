@@ -12,7 +12,7 @@ use crate::utils;
 /// A newtype representing a list of languages counted in the provided
 /// directory.
 /// ([_List of
-/// Languages_](https://github.com/Aaronepower/tokei#supported-languages))
+/// Languages_](https://github.com/XAMPPRocky/tokei#supported-languages))
 #[derive(Debug, Default, Serialize)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,

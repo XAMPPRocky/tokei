@@ -202,4 +202,4 @@ This file crashes the program.
 ```
 
 [Rust's enum style]: (https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md#general-naming-conventions)
-[`tests/data/rust.rs`]: https://github.com/Aaronepower/tokei/blob/master/tests/data/rust.rs
+[`tests/data/rust.rs`]: https://github.com/XAMPPRocky/tokei/blob/master/tests/data/rust.rs

@@ -32,7 +32,7 @@
 - @ahmedelgabri Twig
 - @pmoura Logtalk
 - @alekratz Perl, Not Quite Perl
-- @Aaronepower Automake, .NET Resource, HLSL, INI, Unreal Plugin,
+- @XAMPPRocky Automake, .NET Resource, HLSL, INI, Unreal Plugin,
   Unreal Project, Unreal Shader, Unreal Shader Header, Unreal Markdown,
   Visual Basic, Visual Studio Solution, Visual Studio Project, XCode Config,
 - @TheMrNomis SWIG
@@ -122,7 +122,7 @@ Made various optimisations, up to 65% faster in some cases.
 
 **Added Languages:**
 - @seiks Added Fish Shell
-- @Aaronepower Added Module-Definition
+- @XAMPPRocky Added Module-Definition
 - @tbu- Added Vala
 
 # 6.0.0
@@ -373,7 +373,7 @@ Conversely tokei can now take in results in those formats, and add them to the c
 
 Premilarily support for nested comments(_currently only supported for rust_)
 
-Change in the output format [PR #35](https://github.com/Aaronepower/tokei/pull/35)
+Change in the output format [PR #35](https://github.com/XAMPPRocky/tokei/pull/35)
 
 Moved  `.sc` from Lisp to Scala.
 

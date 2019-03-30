@@ -2,7 +2,7 @@
 //!
 //! A simple, efficient library for counting code in directories. This
 //! functionality is also provided as a
-//! [CLI utility](//github.com/Aaronepower/tokei). Tokei uses a small state
+//! [CLI utility](//github.com/XAMPPRocky/tokei). Tokei uses a small state
 //! machine rather than regular expressions found in other code counters. Tokei
 //! can accurately count a lot more edge cases such as nested comments, or
 //! comment syntax inside string literals.
