@@ -1103,17 +1103,20 @@
             ]
         },
         "Pascal":{
+            "nested":true, 
+            "line_comment":[
+                "//"
+            ],
             "multi_line":[
                 ["{", "}"],
-                ["(*", "*)"],
-                ["{", "*)"],
-                ["(*", "}"]
+                ["(*", "*)"]
             ],
             "quotes":[
                 ["'", "'"]
             ],
             "extensions":[
-                "pas"
+                "pas",
+                "pp"
             ]
         },
         "Perl":{
