@@ -1103,7 +1103,7 @@
             ]
         },
         "Pascal":{
-            "nested":true,
+            "nested":true, 
             "line_comment":[
                 "//"
             ],
