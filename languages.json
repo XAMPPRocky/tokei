@@ -1187,6 +1187,18 @@
                 "polly"
             ]
         },
+        "PostCss":{
+            "name":"PostCSS",
+            "base":"c",
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "pcss",
+                "sss"
+            ]
+        },
         "Processing":{
             "base":"c",
             "extensions":[
