@@ -1319,6 +1319,15 @@
                 "cshtml"
             ]
         },
+        "RPMSpecfile":{
+            "name":"RPM Specfile",
+            "base":[
+                "hash"
+            ],
+            "extensions":[
+                "spec"
+            ]
+        },
         "Ruby":{
             "line_comment":[
                 "#"
