@@ -1321,9 +1321,7 @@
         },
         "RPMSpecfile":{
             "name":"RPM Specfile",
-            "base":[
-                "hash"
-            ],
+            "base":"hash",
             "extensions":[
                 "spec"
             ]
