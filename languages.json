@@ -1190,6 +1190,15 @@
                 "polly"
             ]
         },
+        "Pony":{
+            "base":"c",
+            "doc_quotes": [
+                ["\\\"\\\"\\\"", "\\\"\\\"\\\""]
+            ],
+            "extensions":[
+                "pony"
+            ]
+        },
         "PostCss":{
             "name":"PostCSS",
             "base":"c",
