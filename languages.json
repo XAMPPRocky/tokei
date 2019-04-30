@@ -392,17 +392,6 @@
                 "css"
             ]
         },
-        "PostCSS": {
-            "base":"c",
-            "quotes":[
-                ["\\\"", "\\\""],
-                ["'", "'"]
-            ],
-            "extensions":[
-                "pcss",
-                "sss"
-            ]
-        },
         "D":{
             "base":"c",
             "quotes":[
