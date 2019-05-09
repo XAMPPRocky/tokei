@@ -32,7 +32,7 @@ This is tokei running on its own directory
         - [Fedora](#fedora)
         - [FreeBSD](#freebsd)
         - [Homebrew](#homebrew)
-        - [Nix/NixOS](#nix/nixos)
+        - [Nix/NixOS](#nixnixos)
     - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
