@@ -47,15 +47,18 @@ fn main() -> Result<(), Box<Error>> {
         process::exit(0);
     }
 
-    let columns = cli.columns.or(config.columns).unwrap_or_else(|| {
-        if cli.files {
-            term_size::dimensions().map_or(FALLBACK_ROW_LEN, |(w, _)| {
-                w.max(FALLBACK_ROW_LEN)
-            })
-        } else {
-            FALLBACK_ROW_LEN
-        }
-    });
+    let columns = cli
+        .columns
+        .or(config.columns)
+        .or_else(|| {
+            if cli.files {
+                term_size::dimensions().map(|(w, _)| w)
+            } else {
+                None
+            }
+        })
+    .unwrap_or(FALLBACK_ROW_LEN)
+        .max(FALLBACK_ROW_LEN);
 
 
     let row = "-".repeat(columns);
