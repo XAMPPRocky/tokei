@@ -38,6 +38,22 @@
                 "agda"
             ]
         },
+        "Asn1": {
+            "name": "ASN.1",
+            "line_comment": [
+                "--"
+            ],
+            "quotes": [
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "multi_line": [
+                ["/*", "*/"]
+            ],
+            "extensions": [
+                "asn1"
+            ]
+        },
         "Assembly": {
             "line_comment": [
                 ";"
