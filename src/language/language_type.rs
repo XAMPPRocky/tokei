@@ -88,7 +88,7 @@ impl LanguageType {
             return false;
         }
 
-        if syntax.line_comments.into_iter()
+        if syntax.line_comments.iter()
                                .any(|s| line.starts_with(s.as_bytes()))
         {
             stats.comments += 1;

@@ -33,18 +33,18 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn important_syntax(&self) -> impl Iterator<Item = &str> {
-        self.quotes.into_iter()
+        self.quotes.iter()
             .map(|(s, _)| *s)
-            .chain(self.doc_quotes.into_iter().map(|(s, _)| *s))
-            .chain(self.multi_line_comments.into_iter().map(|(s, _)| *s))
-            .chain(self.nested_comments.into_iter().map(|(s, _)| *s))
+            .chain(self.doc_quotes.iter().map(|(s, _)| *s))
+            .chain(self.multi_line_comments.iter().map(|(s, _)| *s))
+            .chain(self.nested_comments.iter().map(|(s, _)| *s))
     }
 
     #[inline]
     pub(crate) fn start_of_comments(&self) -> impl Iterator<Item = &&str> {
-        self.line_comments.into_iter()
-            .chain(self.multi_line_comments.into_iter().map(|(s, _)| s))
-            .chain(self.nested_comments.into_iter().map(|(s, _)| s))
+        self.line_comments.iter()
+            .chain(self.multi_line_comments.iter().map(|(s, _)| s))
+            .chain(self.nested_comments.iter().map(|(s, _)| s))
     }
 
     #[inline]
@@ -98,7 +98,7 @@ impl SyntaxCounter {
             return None
         }
 
-        let iter = self.multi_line_comments.into_iter()
+        let iter = self.multi_line_comments.iter()
                                           .chain(self.nested_comments);
         for &(start, end) in iter {
             if window.starts_with(start.as_bytes()) {

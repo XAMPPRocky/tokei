@@ -157,24 +157,28 @@ impl<'a> Cli<'a> {
     /// * `no_ignore_vcs`
     /// * `types`
     pub fn override_config(&mut self, mut config: Config) -> Config {
-        config.hidden = match self.hidden {
-            true => Some(true),
-            false => config.hidden,
+        config.hidden = if self.hidden {
+            Some(true)
+        } else {
+            config.hidden
         };
 
-        config.no_ignore = match self.no_ignore {
-            true => Some(true),
-            false => config.no_ignore
+        config.no_ignore = if self.no_ignore {
+            Some(true)
+        } else {
+            config.no_ignore
         };
 
-        config.no_ignore_parent = match self.no_ignore_parent {
-            true => Some(true),
-            false => config.no_ignore_parent
+        config.no_ignore_parent = if self.no_ignore_parent {
+            Some(true)
+        } else {
+            config.no_ignore_parent
         };
 
-        config.no_ignore_vcs = match self.no_ignore_vcs {
-            true => Some(true),
-            false => config.no_ignore_vcs
+        config.no_ignore_vcs = if self.no_ignore_vcs {
+            Some(true)
+        } else {
+            config.no_ignore_vcs
         };
 
         config.types = mem::replace(&mut self.types, None).or(config.types);

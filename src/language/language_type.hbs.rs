@@ -178,7 +178,7 @@ impl LanguageType {
 
     /// Provides every variant in a Vec
     pub fn list() -> &'static [Self] {
-        return &[
+        &[
             {{#each languages}}
                 {{@key}},
             {{~/each}}
