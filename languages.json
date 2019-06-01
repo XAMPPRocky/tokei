@@ -354,7 +354,8 @@
                 "cpp",
                 "cxx",
                 "c++",
-                "pcc"
+                "pcc",
+                "tpp"
             ]
         },
         "CppHeader":{
