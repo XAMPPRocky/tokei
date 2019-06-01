@@ -1,9 +1,10 @@
-use std::str::FromStr;
-use std::error::Error;
-use std::collections::BTreeMap;
+use std::{
+    collections::BTreeMap,
+    error::Error,
+    str::FromStr,
+};
 
-use tokei::Languages;
-use tokei::{LanguageType, Language};
+use tokei::{Language, Languages, LanguageType};
 
 type LanguageMap = BTreeMap<LanguageType, Language>;
 

@@ -1,9 +1,11 @@
-use std::borrow::Cow;
-use std::fmt;
-use std::path::{Path, PathBuf};
-use std::fs::File;
-use std::io::{self, Read, BufRead, BufReader};
-use std::str::FromStr;
+use std::{
+    borrow::Cow,
+    fmt,
+    fs::File,
+    io::{self, Read, BufRead, BufReader},
+    path::{Path, PathBuf},
+    str::FromStr,
+};
 
 use grep_searcher::LineIter;
 use encoding_rs_io::DecodeReaderBytesBuilder;
@@ -12,10 +14,7 @@ use crate::{
     config::Config,
     language::syntax::SyntaxCounter,
     stats::Stats,
-    utils::{
-        ext::SliceExt,
-        fs as fsutils,
-    },
+    utils::{ext::SliceExt, fs as fsutils},
 };
 
 use self::LanguageType::*;

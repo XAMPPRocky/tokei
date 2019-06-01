@@ -1,5 +1,9 @@
-use std::str::FromStr;
-use std::{fmt, process, io::{self, Write}};
+use std::{
+    fmt,
+    io::{self, Write},
+    process,
+    str::FromStr,
+};
 
 use clap::crate_version;
 
@@ -27,7 +31,7 @@ pub fn crate_version() -> String {
 pub fn setup_logger(verbose_option: u64) {
     use log::LevelFilter;
 
-    let mut builder = ::env_logger::Builder::new();
+    let mut builder = env_logger::Builder::new();
 
     let filter_level = match verbose_option {
         1 => LevelFilter::Warn,

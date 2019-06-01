@@ -1,5 +1,7 @@
-use std::borrow::Cow;
-use std::str::FromStr;
+use std::{
+    borrow::Cow,
+    str::FromStr,
+};
 
 /// Used for sorting languages.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]

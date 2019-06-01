@@ -1,13 +1,17 @@
-use std::collections::{btree_map, BTreeMap};
-use std::iter::IntoIterator;
-use std::ops::{AddAssign, Deref, DerefMut};
-use std::path::Path;
+use std::{
+    collections::{btree_map, BTreeMap},
+    iter::IntoIterator,
+    ops::{AddAssign, Deref, DerefMut},
+    path::Path,
+};
 
 use rayon::prelude::*;
 
-use crate::config::Config;
-use super::{Language, LanguageType};
-use crate::utils;
+use crate::{
+    config::Config,
+    language::{Language, LanguageType},
+    utils,
+};
 
 /// A newtype representing a list of languages counted in the provided
 /// directory.

@@ -4,12 +4,19 @@ mod cli;
 mod cli_utils;
 mod input;
 
-use std::{error::Error, process, io::{self, Write}};
+use std::{
+    error::Error,
+    io::{self, Write},
+    process,
+};
 
-use crate::cli::Cli;
-use crate::cli_utils::*;
-use crate::input::*;
 use tokei::{Language, Languages, Sort, Config};
+
+use crate::{
+    cli::Cli,
+    cli_utils::*,
+    input::*,
+};
 
 fn main() -> Result<(), Box<Error>> {
     let mut cli = Cli::from_args();

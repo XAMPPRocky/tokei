@@ -2,14 +2,20 @@ pub mod languages;
 pub mod language_type;
 mod syntax;
 
-use std::mem;
-use std::ops::AddAssign;
+use std::{
+    mem,
+    ops::AddAssign,
+};
 
-pub use self::languages::Languages;
-pub use self::language_type::*;
+pub use self::{
+    languages::Languages,
+    language_type::*,
+};
 
-use crate::sort::Sort::{self, *};
-use crate::stats::Stats;
+use crate::{
+    sort::Sort::{self, *},
+    stats::Stats,
+};
 
 /// A struct representing statistics about a single Language.
 #[derive(Clone, Debug, Deserialize, Default, PartialEq, Serialize)]

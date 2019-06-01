@@ -1,5 +1,7 @@
-use std::fmt;
-use std::path::PathBuf;
+use std::{
+    fmt,
+    path::PathBuf,
+};
 
 /// A struct representing the statistics of a file.
 #[derive(Deserialize, Serialize)]

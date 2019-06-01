@@ -1,6 +1,8 @@
-// use std::collections::HashMap;
-use std::{env, fs};
-use std::path::PathBuf;
+use std::{
+    env,
+    fs,
+    path::PathBuf,
+};
 
 use crate::language::LanguageType;
 
@@ -42,7 +44,6 @@ pub struct Config {
 }
 
 impl Config {
-
     /// Get either `tokei.toml` or `.tokeirc`. `tokei.toml` takes precedence
     /// over `.tokeirc` as the latter is a hidden file on Unix and not idiomatic
     /// on Windows.

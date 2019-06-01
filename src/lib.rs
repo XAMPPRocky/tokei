@@ -53,7 +53,9 @@ mod language;
 mod sort;
 mod stats;
 
-pub use self::language::{LanguageType, Languages, Language};
-pub use self::stats::Stats;
-pub use self::sort::Sort;
-pub use self::config::Config;
+pub use self::{
+    config::Config,
+    language::{LanguageType, Languages, Language},
+    sort::Sort,
+    stats::Stats,
+};

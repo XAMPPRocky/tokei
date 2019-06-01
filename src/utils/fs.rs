@@ -1,18 +1,25 @@
-use std::collections::BTreeMap;
-use std::error::Error;
-use std::path::Path;
-use std::sync::mpsc;
+use std::{
+    collections::BTreeMap,
+    error::Error,
+    path::Path,
+    sync::mpsc,
+};
 
-use ignore::WalkBuilder;
-use ignore::overrides::OverrideBuilder;
-use ignore::WalkState::*;
+use ignore::{
+    WalkBuilder,
+    WalkState::Continue,
+    overrides::OverrideBuilder,
+};
 
 use rayon::prelude::*;
 
 // This is just a re-export from the auto generated file.
 pub use crate::language::get_filetype_from_shebang;
-use crate::language::{Language, LanguageType};
-use crate::config::Config;
+
+use crate::{
+    config::Config,
+    language::{Language, LanguageType},
+};
 
 const IGNORE_FILE: &str = ".tokeignore";
 
