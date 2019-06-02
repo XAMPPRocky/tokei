@@ -154,6 +154,8 @@ impl LanguageType {
                     ended_with_comments = true;
                     skip!(skip_amount);
                     continue;
+                } else if syntax.quote.is_some() {
+                    continue;
                 }
 
                 let is_quote_or_multi_line = syntax.parse_quote(window)
