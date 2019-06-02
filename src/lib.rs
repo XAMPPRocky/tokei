@@ -23,7 +23,7 @@
 //!
 //! fn main() {
 //!     // The paths to search. Accepts absolute, relative, and glob paths.
-//!     let paths = &["**/*.rs"];
+//!     let paths = &["src", "tests"];
 //!     // Exclude any path that contains any of these strings.
 //!     let excluded = &["target"];
 //!     // `Config` allows you to configure what is searched and counted.
