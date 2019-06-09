@@ -63,7 +63,7 @@ version = "0.8"
 lazy_static = "1"
 regex = "1.0"
 tempfile = "3.0.7"
-git2 = { version = "0.8.0", default-features=false, features = [] }
+git2 = { version = "0.9.0", default-features=false, features = [] }
 
 [features]
 all = ["json", "cbor", "yaml"]
