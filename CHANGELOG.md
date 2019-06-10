@@ -1,3 +1,25 @@
+# 10.0.0
+
+- Fixed minor parsing bugs.
+- Width is now limited to 80 unless you use the `--files` flag.
+- Added the `mjs` extension to JavaScript.
+- Added the `tpp` extension to C++.
+- You can now disable Tokei's git ignore detection, similar to ripgrep. See
+  `--help` for options.
+- You can now add a `.tokeignore` file to your project to specify file paths
+  for tokei to always ignore. This file uses the same syntax as `.gitignore`.
+- Improved Pascal representation
+
+**Added languages**
+@hobofan solidity
+@stefanmaric GraphQL
+@jhpratt PostCSS
+@evitalis RPM
+@alexmaco Pony
+@yjhmelody WASM, LLVM, Pest 
+@XAMPPRocky ASN.1
+
+
 # 9.0.0
 
 * Tokei now has config files. You can now specify some commonly used arguments
