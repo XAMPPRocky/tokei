@@ -11,13 +11,13 @@
 - Improved Pascal representation
 
 **Added languages**
-@hobofan solidity
-@stefanmaric GraphQL
-@jhpratt PostCSS
-@evitalis RPM
-@alexmaco Pony
-@yjhmelody WASM, LLVM, Pest 
-@XAMPPRocky ASN.1
+- @hobofan solidity
+- @stefanmaric GraphQL
+- @jhpratt PostCSS
+- @evitalis RPM
+- @alexmaco Pony
+- @yjhmelody WASM, LLVM, Pest 
+- @XAMPPRocky ASN.1
 
 
 # 9.0.0
