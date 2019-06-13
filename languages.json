@@ -1095,14 +1095,14 @@
             ]
         },
         "ObjectiveC":{
-            "name":"Objective C",
+            "name":"Objective-C",
             "base":"c",
             "extensions":[
                 "m"
             ]
         },
         "ObjectiveCpp":{
-            "name":"Objective C++",
+            "name":"Objective-C++",
             "base":"c",
             "extensions":[
                 "mm"
@@ -1827,7 +1827,7 @@
             ]
         },
         "XcodeConfig":{
-            "name":"XCode Config",
+            "name":"Xcode Config",
             "line_comment": [
                 "//"
             ],
