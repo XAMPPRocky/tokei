@@ -425,8 +425,8 @@ Nim
 Nix
 Not Quite Perl
 OCaml
-Objective C
-Objective C++
+Objective-C
+Objective-C++
 Org
 Oz
 PSL Assertion
@@ -493,7 +493,7 @@ Vue
 Wolfram
 XSL
 XAML
-XCode Config
+Xcode Config
 XML
 Xtend
 YAML

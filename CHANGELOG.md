@@ -56,7 +56,7 @@
 - @alekratz Perl, Not Quite Perl
 - @XAMPPRocky Automake, .NET Resource, HLSL, INI, Unreal Plugin,
   Unreal Project, Unreal Shader, Unreal Shader Header, Unreal Markdown,
-  Visual Basic, Visual Studio Solution, Visual Studio Project, XCode Config,
+  Visual Basic, Visual Studio Solution, Visual Studio Project, Xcode Config,
 - @TheMrNomis SWIG
 - @xnorme Added the `.vhdl` extension to VHDL
 

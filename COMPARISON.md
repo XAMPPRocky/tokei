@@ -182,7 +182,7 @@ Rust                             1              5             10             24
  Makefile                 1            5            4            0            1
  Module-Definition        8         1385         1349           14           22
  MSBuild                  9          900          744           72           84
- Objective C              7          794          635           61           98
+ Objective-C              7          794          635           61           98
  Prolog                   1           24           24            0            0
  Python                1834       753782       590076        53996       109710
  ReStructuredText       984       289166       289166            0            0
@@ -213,7 +213,7 @@ HTML                        10      1839     1736         3      100          0
 MSBuild                      9       899      744        81       74          4
 Module-Definition            8      1385     1349        14       22         18
 SVG                          8        11        9         0        2          0
-Objective C                  7       789      635        57       97         71
+Objective-C                  7       789      635        57       97         71
 Assembly                     7      2134     1839        37      258         28
 D                            5        81       73         1        7          4
 XML                          5       132       76         0       56          0
@@ -292,7 +292,7 @@ DOS Batch                               29            289             87        
 Windows Module Definition                8             22             14           1349
 MSBuild script                          27             44              4            679
 YAML                                    13            118             78            656
-Objective C                              7             98             61            635
+Objective-C                              7             98             61            635
 Lisp                                     1            109             81            502
 Pascal                                   3            110            261            333
 Windows Resource File                    7             40             47            289
@@ -596,8 +596,8 @@ SUM:                             11507         126916         259567         636
  Markdown                78        14774        14774            0            0
  Module-Definition      165        27216        24434          453         2329
  MSBuild                 95        11785        11316          463            6
- Objective C            325        78887        53269        14421        11197
- Objective C++          139        41798        30898         4430         6470
+ Objective-C            325        78887        53269        14421        11197
+ Objective-C++          139        41798        30898         4430         6470
  Perl                    44         9033         6505         1193         1335
  Python                3775      1237391       947198       103874       186319
  Shell                  386       153390       116471        19913        17006
@@ -625,18 +625,18 @@ CMake                     1395    137792    83799     37093    16900       8172
 HTML                      1065    179304   155477     13501    10326          0
 XML                        641    149271   145848       989     2434          0
 Makefile                   378     26797    13825      7874     5098        818
-Objective C                325     76867    53170     12748    10949       6074
+Objective-C                325     76867    53170     12748    10949       6074
 Shell                      238    152504   110731     24819    16954      18967
 JavaScript                 222     89613    70526     10684     8403      26425
 Batch                      218      6798     4866       525     1407        782
 Autoconf                   185    126415   105366      9171    11878      16329
 Module-Definition          165     27216    24434       453     2329        420
 JSON                       146     71515    71468         0       47          0
-Objective C++              139     41120    30879      3816     6425       2290
+Objective-C++              139     41120    30879      3816     6425       2290
 Java                        98     22476    16214      3577     2685       2000
 MSBuild                     95     11712    11277       430        5          0
 Markdown                    78     14774    11210         0     3564          0
-XCode Config                64      2354      317      1764      273          0
+Xcode Config                64      2354      317      1764      273          0
 License                     57      4943     4160         0      783          0
 Perl                        44      9031     6421      1275     1335       1005
 CSS                         28     23900    21330       321     2249          0
@@ -702,9 +702,9 @@ MSBuild script                         198              6            481        
 CMake                                 1350          16535          36540          81666
 JavaScript                             213           8772          11060          67595
 Bourne Shell                           298           9876          13933          62513
-Objective C                            325          11197          14417          53273
+Objective-C                            325          11197          14417          53273
 JSON                                   134             41              0          51854
-Objective C++                          117           5529           3857          27409
+Objective-C++                          117           5529           3857          27409
 INI                                    256           5218            935          24151
 CSS                                     24           2210            483          20619
 Windows Module Definition              136           1934            395          20206
