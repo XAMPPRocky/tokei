@@ -310,7 +310,8 @@
                 ["'", "'"]
             ],
             "extensions":[
-                "coffee"
+                "coffee",
+                "cjsx"
             ]
         },
         "Cogent":{
