@@ -5,3 +5,4 @@ src/test
 *.bk
 *.rustfmt
 .DS_Store
+.tokeirc
