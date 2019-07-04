@@ -11,7 +11,7 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/XAMPPRocky/tokei.git"
-version = "10.0.0"
+version = "10.0.1"
 
 [badges]
 [badges.appveyor]
