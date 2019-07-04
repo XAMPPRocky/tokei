@@ -25,7 +25,7 @@ impl<'a> Cli<'a> {
     pub fn from_args() -> Self {
         let matches = clap_app!(tokei =>
             (version: &*crate_version())
-            (author: "Aaron P. <theaaronepower@gmail.com> + Contributors")
+            (author: "Erin P. <xampprocky@gmail.com> + Contributors")
             (about: crate_description!())
             (@arg columns: -c --columns
                 +takes_value

@@ -1,5 +1,5 @@
 [package]
-authors = ["XAMPPRocky <xampprocky@gmail.com>"]
+authors = ["Erin Power <xampprocky@gmail.com>"]
 build = "build.rs"
 categories = ["command-line-utilities", "development-tools", "visualization"]
 description = "A utility that allows you to count code, quickly."
