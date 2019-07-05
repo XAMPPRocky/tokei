@@ -13,7 +13,21 @@ Tokei is a program that displays statistics about your code. Tokei will show num
 - [中文](https://github.com/chinanf-boy/tokei-zh#支持的语言)
 
 ## Example
-![A gif showcasing tokei counting a directory.](https://tokei.rs/images/tokei.gif)
+```terminal
+-------------------------------------------------------------------------------
+ Language            Files        Lines         Code     Comments       Blanks
+-------------------------------------------------------------------------------
+ Dockerfile              1           64           36           14           14
+ JSON                    1         1919         1919            0            0
+ Markdown                5         1952         1952            0            0
+ Rust                   19         2922         2093          412          417
+ Shell                   4          138          102            8           28
+ TOML                    1           78           66            0           12
+ YAML                    1           80           60            8           12
+-------------------------------------------------------------------------------
+ Total                  32         7153         6228          442          483
+-------------------------------------------------------------------------------
+```
 
 ## [Documentation](https://docs.rs/tokei)
 
