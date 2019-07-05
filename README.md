@@ -13,7 +13,7 @@ Tokei is a program that displays statistics about your code. Tokei will show num
 - [中文](https://github.com/chinanf-boy/tokei-zh#支持的语言)
 
 ## Example
-![A gif showcasing tokei counting a directory.](//tokei.rs/images/tokei.gif)
+![A gif showcasing tokei counting a directory.](https://tokei.rs/images/tokei.gif)
 
 ## [Documentation](https://docs.rs/tokei)
 
