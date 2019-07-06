@@ -1266,6 +1266,29 @@
                 "pro"
             ]
         },
+        "PowerShell":{
+            "line_comment":[
+                "#"
+            ],
+            "multi_line":[
+                ["<#", "#>"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"],
+                ["\\\"@", "@\\\""],
+                ["@'", "'@"]
+            ],
+            "extensions":[
+                "ps1",
+                "psm1",
+                "psd1",
+                "ps1xml",
+                "cdxml",
+                "pssc",
+                "psc1"
+            ]
+        },
         "PSL":{
             "name":"PSL Assertion",
             "base":"c",
