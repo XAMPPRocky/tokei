@@ -147,7 +147,7 @@ $ cargo build --release
 ##### Windows
 - Create a folder for tokei
 - search for `env`
-- open "edit your enviroment variables"
+- open "edit your environment variables"
 - edit `PATH`
 - append folder path to the end of the string ie: `<path_stuff_here>;C:/tokei/;`
 
