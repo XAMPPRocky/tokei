@@ -213,7 +213,7 @@ mod tests {
         let mut config = Config::default();
         let mut languages = Languages::new();
 
-        fs::create_dir_all(&child_dir).expect(&format!("Couldn't create {:?}", child_dir));
+        fs::create_dir_all(&child_dir).unwrap_or_else(|_| panic!("Couldn't create {:?}", child_dir));
         fs::write(parent_dir.path().join(".ignore"), IGNORE_PATTERN)
             .expect("Couldn't create .gitinore.");
         fs::write(child_dir.join(FILE_NAME), FILE_CONTENTS)

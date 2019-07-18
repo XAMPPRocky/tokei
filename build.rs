@@ -11,7 +11,7 @@ use handlebars::Handlebars;
 use serde_json::Value;
 use ignore::Walk;
 
-fn main() -> Result<(), Box<error::Error>> {
+fn main() -> Result<(), Box<dyn error::Error>> {
     let out_dir = env::var_os("OUT_DIR").expect("No OUT_DIR variable.");
     generate_languages(&out_dir)?;
     generate_tests(&out_dir)?;
@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<error::Error>> {
     Ok(())
 }
 
-fn generate_languages(out_dir: &OsStr) -> Result<(), Box<error::Error>>  {
+fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>>  {
     let handlebars = {
         let mut h = Handlebars::new();
         h.register_escape_fn(handlebars::no_escape);
@@ -68,7 +68,7 @@ fn compare_json_str_len(a: &Value, b: &Value) -> cmp::Ordering {
     max_b_size.cmp(&max_a_size)
 }
 
-fn generate_tests(out_dir: &OsStr) -> Result<(), Box<error::Error>> {
+fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
     // Length of string literal below by number of languages
     const INITIAL_BUFFER_SIZE: usize = 989 * 130;
     let mut string = String::with_capacity(INITIAL_BUFFER_SIZE);
