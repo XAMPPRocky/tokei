@@ -373,9 +373,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "handlebars"
-version = "1.1.0"
+version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
+ "hashbrown 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.4.6 (registry+https://github.com/rust-lang/crates.io-index)",
  "pest 2.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -385,6 +386,14 @@ dependencies = [
  "serde 1.0.92 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_json 1.0.39 (registry+https://github.com/rust-lang/crates.io-index)",
  "walkdir 2.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "hashbrown"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "serde 1.0.92 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -969,7 +978,7 @@ dependencies = [
  "env_logger 0.6.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "git2 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "grep-searcher 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
- "handlebars 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "handlebars 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "hex 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "ignore 0.4.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1170,7 +1179,8 @@ dependencies = [
 "checksum grep-matcher 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "79d0758870964e3fbdda18d1ef3db93bd7f88448afd0654c559e3ff7fc37420e"
 "checksum grep-searcher 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)" = "7b7bc66f34baf6182fb7c8ab653120c63f082f65d155aff0d359de771c00c14b"
 "checksum half 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "9353c2a89d550b58fa0061d8ed8d002a7d8cdf2494eb0e432859bd3a9e543836"
-"checksum handlebars 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d82e5750d8027a97b9640e3fefa66bbaf852a35228e1c90790efd13c4b09c166"
+"checksum handlebars 2.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "df044dd42cdb7e32f28557b661406fc0f2494be75199779998810dbc35030e0d"
+"checksum hashbrown 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e1de41fb8dba9714efd92241565cdff73f78508c95697dd56787d3cba27e2353"
 "checksum hex 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)" = "805026a5d0141ffc30abb3be3173848ad46a1b1664fe632428479619a3644d77"
 "checksum humantime 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3ca7e5f2e110db35f93b837c81797f3714500b81d517bf20c431b16d3ca4f114"
 "checksum idna 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "38f09e0f0b1fb55fdee1f17470ad800da77af5186a1a76c026b679358b7e844e"
