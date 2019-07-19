@@ -18,7 +18,7 @@ use crate::{
     input::*,
 };
 
-fn main() -> Result<(), Box<Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     let mut cli = Cli::from_args();
 
     if cli.print_languages {
