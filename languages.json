@@ -1045,6 +1045,18 @@
             "extensions": ["def"],
             "line_comment": [";"]
         },
+        "MoonScript":{
+            "line_comment":[
+                "--"
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "moon"
+            ]
+        },
         "Meson":{
             "line_comment":[
                 "#"
