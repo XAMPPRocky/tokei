@@ -5,7 +5,6 @@
 [![](https://img.shields.io/github/issues-raw/XAMPPRocky/tokei.svg)](https://github.com/XAMPPRocky/tokei/issues)
 [![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/XAMPPRocky/tokei)
 [![Documentation](https://docs.rs/tokei/badge.svg)](https://docs.rs/tokei/)
-[![Donate using Liberapay](https://liberapay.com/assets/widgets/donate.svg)](https://liberapay.com/XAMPPRocky/donate)
 
 Tokei is a program that displays statistics about your code. Tokei will show number of files, total lines within those files and code, comments, and blanks grouped by language.
 
