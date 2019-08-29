@@ -1635,6 +1635,22 @@
                 "txt"
             ]
         },
+        "Thrift":{
+            "line_comment":[
+                "#",
+                "//"
+            ],
+            "multi_line":[
+                ["/*", "*/"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ],
+            "extensions":[
+                "thrift"
+            ]
+        },
         "Toml":{
             "name":"TOML",
             "base":"hash",
