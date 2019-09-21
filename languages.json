@@ -542,6 +542,13 @@
                 "fen"
             ]
         },
+        "FlatBuffers":{
+            "name":"FlatBuffers Schema",
+            "base":"c",
+            "extensions":[
+                "fbs"
+            ]
+        },
         "Fstar":{
             "name":"F*",
             "base":"func",
