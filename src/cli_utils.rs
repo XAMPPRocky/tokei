@@ -76,9 +76,9 @@ pub fn print_results<'a, I, W>(sink: &mut W, row: &str, languages: I, list_files
           W: Write,
 {
     let path_len = row.len() - NO_LANG_ROW_LEN_NO_SPACES;
-    let lang_section_len = row.len();
+    let columns = row.len();
     for (name, language) in languages.filter(isnt_empty) {
-        print_language(sink, lang_section_len, language, name.name())?;
+        print_language(sink, columns, language, name.name())?;
 
         if list_files {
             writeln!(sink, "{}", row)?;
@@ -97,19 +97,27 @@ pub fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
 }
 
 pub fn print_language<W>(sink: &mut W,
-                     lang_section_len: usize,
+                     columns: usize,
                      language: &Language,
                      name: &str)
     -> io::Result<()>
     where W: Write,
 {
+    let mut lang_section_len = columns - NO_LANG_ROW_LEN;
     if language.inaccurate {
-        write!(sink, " {} {:<len$} ",
-               name, IDENT_INACCURATE,
-               len = lang_section_len - (NO_LANG_ROW_LEN + name.len() + 1))?;
-    } else {
-        write!(sink, " {:<len$} ", name, len = lang_section_len - NO_LANG_ROW_LEN)?;
+        lang_section_len -= IDENT_INACCURATE.len();
     }
+    // truncate and replace the last char with a `|` if the name is too long
+    if lang_section_len < name.len() {
+        write!(sink, " {:.len$}", name, len = lang_section_len - 1)?;
+        write!(sink, "|")?;
+    } else {
+        write!(sink, " {:<len$}", name, len = lang_section_len)?;
+    }
+    if language.inaccurate {
+        write!(sink, "{}", IDENT_INACCURATE)?;
+    };
+    write!(sink, " ")?;
     writeln!(sink,
              "{:>6} {:>12} {:>12} {:>12} {:>12}",
              language.stats.len(),
