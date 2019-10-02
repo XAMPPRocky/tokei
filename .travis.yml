@@ -38,9 +38,9 @@ matrix:
     - env: TARGET=x86_64-apple-darwin
       os: osx
 
-    # *BSD
-    - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
-    - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
+    # *BSD Also don't work anymore, 2019-10-02
+    # - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
+    # - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
     # Doesn't work at the moment. 2018-09-07
     # error adding symbols: DSO missing from command line
     # - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
