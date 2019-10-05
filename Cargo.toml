@@ -24,7 +24,7 @@ repository = "XAMPPRocky/tokei"
 handlebars = "2.0.1"
 ignore = "0.4.7"
 lazy_static = "1.4.0"
-serde_json = "1.0.39"
+serde_json = "1.0.41"
 
 [dependencies]
 clap = "2.33.0"
@@ -53,7 +53,7 @@ version = "0.10.1"
 
 [dependencies.serde_json]
 optional = true
-version = "1.0.39"
+version = "1.0.41"
 
 [dependencies.serde_yaml]
 optional = true
