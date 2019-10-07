@@ -45,8 +45,8 @@ matrix:
     # error adding symbols: DSO missing from command line
     # - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
 
-    # Windows
-    - env: TARGET=x86_64-pc-windows-gnu
+    # Windows also doesn't work anymore 2019-10-07
+    # - env: TARGET=x86_64-pc-windows-gnu
 
     # Testing other channels
     - env: TARGET=x86_64-unknown-linux-gnu
