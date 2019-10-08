@@ -57,7 +57,7 @@ version = "1.0.41"
 
 [dependencies.serde_yaml]
 optional = true
-version = "0.8.9"
+version = "0.8.11"
 
 [dev-dependencies]
 lazy_static = "1.4.0"
