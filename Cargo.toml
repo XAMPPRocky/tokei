@@ -61,7 +61,7 @@ version = "0.8.9"
 
 [dev-dependencies]
 lazy_static = "1.4.0"
-regex = "1.1.7"
+regex = "1.2.0"
 tempfile = "3.0.8"
 git2 = { version = "0.10.1", default-features = false, features = [] }
 
