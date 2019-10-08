@@ -49,7 +49,7 @@ version = "0.3.2"
 
 [dependencies.serde_cbor]
 optional = true
-version = "0.10.1"
+version = "0.10.2"
 
 [dependencies.serde_json]
 optional = true
