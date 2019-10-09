@@ -1,0 +1,34 @@
+// 34 lines 21 code 6 comments 7 blanks
+
+include "another_schema.fbs";
+
+namespace Example;
+
+// one line comment
+enum PhoneType: byte {
+    MOBILE,
+    HOME,
+    WORK
+}
+
+/* block comment
+   another line
+   end */
+table PhoneNumber {
+    number: string;
+    type: PhoneType;
+}
+
+/// documentation comment
+table Person {
+    name: string;
+    id: int32;
+    email: string;
+    phones: [PhoneNumber]; // a stray quote "
+}
+
+table AddressBook {
+    people: /* a block comment inside code */ [Person];
+}
+
+root_type AddressBook; /* block /* comments cannot be nested (except the start comment) */
