@@ -37,7 +37,7 @@ serde = "1.0.92"
 serde_derive = "1.0.101"
 term_size = "0.3.1"
 toml = "0.5.3"
-grep-searcher = "0.1.4"
+grep-searcher = "0.1.6"
 
 [dependencies.env_logger]
 features = []
