@@ -28,7 +28,7 @@ serde_json = "1.0.41"
 
 [dependencies]
 clap = "2.33.0"
-dirs = "2.0.1"
+dirs = "2.0.2"
 encoding_rs_io = "0.1.6"
 ignore = "0.4.7"
 log = "0.4.6"
