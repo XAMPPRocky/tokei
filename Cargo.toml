@@ -22,7 +22,7 @@ repository = "XAMPPRocky/tokei"
 
 [build-dependencies]
 handlebars = "2.0.1"
-ignore = "0.4.7"
+ignore = "0.4.10"
 lazy_static = "1.4.0"
 serde_json = "1.0.41"
 
@@ -30,7 +30,7 @@ serde_json = "1.0.41"
 clap = "2.33.0"
 dirs = "2.0.2"
 encoding_rs_io = "0.1.6"
-ignore = "0.4.7"
+ignore = "0.4.10"
 log = "0.4.6"
 rayon = "1.2.0"
 serde = "1.0.92"
