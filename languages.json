@@ -751,6 +751,13 @@
                 "hlsl"
             ]
         },
+        "HolyC":{
+            "base":"c",
+            "extensions":[
+                "HC",
+                "hc"
+            ]
+        },
         "Html":{
             "name":"HTML",
             "base":"html",
