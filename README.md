@@ -386,6 +386,7 @@ Haxe
 HCL
 HEX
 HLSL
+HolyC
 HTML
 Idris
 INI
