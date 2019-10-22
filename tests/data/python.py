@@ -1,4 +1,4 @@
-# 15 lines, 10 code, 2 comments, 3 blanks
+# 23 lines, 15 code, 3 comments, 5 blanks
 
 
 def add(x, y):
@@ -13,3 +13,11 @@ def add(x, y):
     y += len(string)
     # Add the two numbers.
     x + y
+
+
+# foo function
+def foo(x):
+    """
+     >>> x: str
+    """
+    print('simple string ' + x)
