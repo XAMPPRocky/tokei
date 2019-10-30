@@ -33,7 +33,8 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn important_syntax(&self) -> impl Iterator<Item = &str> {
-        self.quotes.iter()
+        self.quotes
+            .iter()
             .map(|(s, _)| *s)
             .chain(self.doc_quotes.iter().map(|(s, _)| *s))
             .chain(self.multi_line_comments.iter().map(|(s, _)| *s))
@@ -42,7 +43,8 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn start_of_comments(&self) -> impl Iterator<Item = &&str> {
-        self.line_comments.iter()
+        self.line_comments
+            .iter()
             .chain(self.multi_line_comments.iter().map(|(s, _)| s))
             .chain(self.nested_comments.iter().map(|(s, _)| s))
     }
@@ -50,7 +52,7 @@ impl SyntaxCounter {
     #[inline]
     pub(crate) fn parse_line_comment(&self, window: &[u8]) -> bool {
         if self.quote.is_some() || !self.stack.is_empty() {
-            return false
+            return false;
         }
 
         for comment in self.line_comments {
@@ -66,7 +68,7 @@ impl SyntaxCounter {
     #[inline]
     pub(crate) fn parse_quote(&mut self, window: &[u8]) -> Option<usize> {
         if !self.stack.is_empty() {
-            return None
+            return None;
         }
 
         for &(start, end) in self.doc_quotes {
@@ -91,20 +93,17 @@ impl SyntaxCounter {
     }
 
     #[inline]
-    pub(crate) fn parse_multi_line_comment(&mut self, window: &[u8])
-        -> Option<usize>
-    {
+    pub(crate) fn parse_multi_line_comment(&mut self, window: &[u8]) -> Option<usize> {
         if self.quote.is_some() {
-            return None
+            return None;
         }
 
-        let iter = self.multi_line_comments.iter()
-                                          .chain(self.nested_comments);
+        let iter = self.multi_line_comments.iter().chain(self.nested_comments);
         for &(start, end) in iter {
             if window.starts_with(start.as_bytes()) {
-                if self.stack.is_empty() ||
-                   self.allows_nested ||
-                   self.nested_comments.contains(&(start, end))
+                if self.stack.is_empty()
+                    || self.allows_nested
+                    || self.nested_comments.contains(&(start, end))
                 {
                     self.stack.push(end);
 
@@ -113,7 +112,6 @@ impl SyntaxCounter {
                     } else {
                         trace!("Start {:?}", start);
                     }
-
                 }
 
                 return Some(start.len());
@@ -124,26 +122,29 @@ impl SyntaxCounter {
     }
 
     #[inline]
-    pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize>
-    {
-        if self.quote.map_or(false, |q| window.starts_with(q.as_bytes())) {
+    pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
+        if self
+            .quote
+            .map_or(false, |q| window.starts_with(q.as_bytes()))
+        {
             let quote = self.quote.take().unwrap();
             trace!("End {:?}", quote);
             Some(quote.len())
         } else if window.starts_with(br"\") {
             // Tell the state machine to skip the next character because it has
             // been escaped.
-             Some(2)
+            Some(2)
         } else {
             None
         }
     }
 
     #[inline]
-    pub(crate) fn parse_end_of_multi_line(&mut self, window: &[u8])
-        -> Option<usize>
-    {
-        if self.stack.last().map_or(false, |l| window.starts_with(l.as_bytes()))
+    pub(crate) fn parse_end_of_multi_line(&mut self, window: &[u8]) -> Option<usize> {
+        if self
+            .stack
+            .last()
+            .map_or(false, |l| window.starts_with(l.as_bytes()))
         {
             let last = self.stack.pop().unwrap();
             if log_enabled!(Trace) && self.stack.is_empty() {
@@ -158,4 +159,3 @@ impl SyntaxCounter {
         }
     }
 }
-

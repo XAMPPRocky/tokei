@@ -1,11 +1,7 @@
-use std::{
-    fmt,
-    path::PathBuf,
-};
+use std::{fmt, path::PathBuf};
 
 /// A struct representing the statistics of a file.
-#[derive(Deserialize, Serialize)]
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct Stats {
     /// Number of blank lines within the file.
     pub blanks: usize,
@@ -46,15 +42,17 @@ fn find_char_boundary(s: &str, index: usize) -> usize {
 
 macro_rules! display_stats {
     ($f:expr, $this:expr, $name:expr, $max:expr) => {
-        write!($f,
-               " {: <max$} {:>12} {:>12} {:>12} {:>12}",
-               $name,
-               $this.lines,
-               $this.code,
-               $this.comments,
-               $this.blanks,
-               max = $max)
-    }
+        write!(
+            $f,
+            " {: <max$} {:>12} {:>12} {:>12} {:>12}",
+            $name,
+            $this.lines,
+            $this.code,
+            $this.comments,
+            $this.blanks,
+            max = $max
+        )
+    };
 }
 
 impl fmt::Display for Stats {

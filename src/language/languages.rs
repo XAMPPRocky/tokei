@@ -24,15 +24,16 @@ pub struct Languages {
 
 impl<'de> serde::Deserialize<'de> for Languages {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-        where D: serde::Deserializer<'de> {
-            let map = <_>::deserialize(deserializer)?;
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let map = <_>::deserialize(deserializer)?;
 
-            Ok(Self::from_previous(map))
-        }
+        Ok(Self::from_previous(map))
+    }
 }
 
 impl Languages {
-
     fn from_previous(map: BTreeMap<LanguageType, Language>) -> Self {
         use std::collections::btree_map::Entry::*;
         let mut _self = Self::new();
@@ -66,11 +67,12 @@ impl Languages {
     /// ```
     ///
     /// [`Language`]: struct.Language.html
-    pub fn get_statistics<A: AsRef<Path>>(&mut self,
-                          paths: &[A],
-                          ignored: &[&str],
-                          config: &Config)
-    {
+    pub fn get_statistics<A: AsRef<Path>>(
+        &mut self,
+        paths: &[A],
+        ignored: &[&str],
+        config: &Config,
+    ) {
         utils::fs::get_all_files(paths, ignored, &mut self.inner, config);
         self.inner.par_iter_mut().for_each(|(_, l)| l.total());
     }
@@ -89,8 +91,7 @@ impl Languages {
 
 impl IntoIterator for Languages {
     type Item = <BTreeMap<LanguageType, Language> as IntoIterator>::Item;
-    type IntoIter =
-        <BTreeMap<LanguageType, Language> as IntoIterator>::IntoIter;
+    type IntoIter = <BTreeMap<LanguageType, Language> as IntoIterator>::IntoIter;
 
     fn into_iter(self) -> Self::IntoIter {
         self.inner.into_iter()
@@ -117,9 +118,7 @@ impl<'a> IntoIterator for &'a mut Languages {
 
 impl AddAssign<BTreeMap<LanguageType, Language>> for Languages {
     fn add_assign(&mut self, rhs: BTreeMap<LanguageType, Language>) {
-
         for (name, language) in rhs {
-
             if let Some(result) = self.inner.get_mut(&name) {
                 *result += language;
             }

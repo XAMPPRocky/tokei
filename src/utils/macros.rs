@@ -7,9 +7,9 @@ macro_rules! opt_warn {
             None => {
                 warn!($message);
                 continue;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! rs_warn {
@@ -20,9 +20,9 @@ macro_rules! rs_warn {
                 use std::error::Error;
                 warn!("{}", error.description());
                 continue;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! opt_error {
@@ -32,9 +32,9 @@ macro_rules! opt_error {
             None => {
                 error!($message);
                 continue;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! rs_error {
@@ -45,9 +45,9 @@ macro_rules! rs_error {
                 use std::error::Error;
                 error!("{}", error.description());
                 continue;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! opt_ret_warn {
@@ -57,9 +57,9 @@ macro_rules! opt_ret_warn {
             None => {
                 warn!($message);
                 return None;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! rs_ret_warn {
@@ -70,9 +70,9 @@ macro_rules! rs_ret_warn {
                 use std::error::Error;
                 warn!("{}", error.description());
                 return None;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! opt_ret_error {
@@ -82,9 +82,9 @@ macro_rules! opt_ret_error {
             None => {
                 error!($message);
                 return None;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! rs_ret_error {
@@ -95,9 +95,9 @@ macro_rules! rs_ret_error {
                 use std::error::Error;
                 error!("{}", error.description());
                 return None;
-            },
+            }
         }
-    }
+    };
 }
 
 macro_rules! debug {

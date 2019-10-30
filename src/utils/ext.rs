@@ -20,7 +20,7 @@ impl SliceExt for [u8] {
         let length = self.len();
 
         if length == 0 {
-            return &self
+            return &self;
         }
 
         let start = match self.iter().position(|c| !c.is_whitespace()) {
@@ -41,14 +41,14 @@ impl SliceExt for [u8] {
         let needle_length = needle.len();
 
         if needle_length == 0 || needle_length > self_length {
-            return false
+            return false;
         } else if needle_length == self_length {
-            return self == needle
+            return self == needle;
         }
 
         for window in self.windows(needle_length) {
             if needle == window {
-                return true
+                return true;
             }
         }
 

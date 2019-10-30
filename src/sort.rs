@@ -1,7 +1,4 @@
-use std::{
-    borrow::Cow,
-    str::FromStr,
-};
+use std::{borrow::Cow, str::FromStr};
 
 /// Used for sorting languages.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -28,7 +25,7 @@ impl FromStr for Sort {
             "code" => Sort::Code,
             "files" => Sort::Files,
             "lines" => Sort::Lines,
-            s => return Err(format!("Unsupported sorting option: {}", s))
+            s => return Err(format!("Unsupported sorting option: {}", s)),
         })
     }
 }

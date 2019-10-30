@@ -2,14 +2,14 @@ extern crate handlebars;
 extern crate ignore;
 extern crate serde_json;
 
-use std::{cmp, env, error};
 use std::ffi::OsStr;
 use std::fs::{self, File};
 use std::path::Path;
+use std::{cmp, env, error};
 
 use handlebars::Handlebars;
-use serde_json::Value;
 use ignore::Walk;
+use serde_json::Value;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
     let out_dir = env::var_os("OUT_DIR").expect("No OUT_DIR variable.");
@@ -19,7 +19,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
     Ok(())
 }
 
-fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>>  {
+fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
     let handlebars = {
         let mut h = Handlebars::new();
         h.register_escape_fn(handlebars::no_escape);
@@ -28,11 +28,12 @@ fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>>  {
 
     let mut json: Value = serde_json::from_reader(File::open(&"languages.json")?)?;
 
-    for (_key, ref mut item) in json.get_mut("languages")
-                                   .unwrap()
-                                   .as_object_mut()
-                                   .unwrap()
-                                   .iter_mut()
+    for (_key, ref mut item) in json
+        .get_mut("languages")
+        .unwrap()
+        .as_object_mut()
+        .unwrap()
+        .iter_mut()
     {
         macro_rules! sort_prop {
             ($prop:expr) => {{
@@ -41,7 +42,7 @@ fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>>  {
                         .unwrap()
                         .sort_unstable_by(compare_json_str_len)
                 }
-            }}
+            }};
         }
 
         sort_prop!("quotes");
@@ -52,9 +53,7 @@ fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>>  {
     let mut source_template = File::open(&"src/language/language_type.hbs.rs")?;
     let mut output_file = File::create(&output)?;
 
-    handlebars.render_template_source_to_write(&mut source_template,
-                                               &json,
-                                               &mut output_file)?;
+    handlebars.render_template_source_to_write(&mut source_template, &json, &mut output_file)?;
     Ok(())
 }
 
@@ -73,17 +72,15 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
     const INITIAL_BUFFER_SIZE: usize = 989 * 130;
     let mut string = String::with_capacity(INITIAL_BUFFER_SIZE);
 
-    let walker = Walk::new("./tests/data/").filter(|p| {
-        match p {
-            &Ok(ref p) => {
-                if let Ok(ref p) = p.metadata() {
-                    p.is_file()
-                } else {
-                    false
-                }
-            },
-            _ => false,
+    let walker = Walk::new("./tests/data/").filter(|p| match p {
+        &Ok(ref p) => {
+            if let Ok(ref p) = p.metadata() {
+                p.is_file()
+            } else {
+                false
+            }
         }
+        _ => false,
     });
 
     for path in walker {
@@ -92,7 +89,8 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
 
         let name = path.file_stem().unwrap().to_str().unwrap().to_lowercase();
 
-        string.push_str(&format!(r#"
+        string.push_str(&format!(
+            r#"
         #[test]
         fn {0}() {{
             let mut languages = Languages::new();
@@ -116,7 +114,10 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
             assert_eq!(get_digit!(BLANKS, contents), language.blanks);
             println!("{{}} BLANKS MATCH", name);
         }}
-        "#, name, path.display()));
+        "#,
+            name,
+            path.display()
+        ));
     }
 
     Ok(fs::write(Path::new(&out_dir).join("tests.rs"), string)?)

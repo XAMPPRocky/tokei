@@ -37,17 +37,22 @@
 //! }
 //! ```
 
- #![deny(trivial_casts,
-         trivial_numeric_casts,
-         unused_variables,
-         unstable_features,
-         unused_import_braces,
-         missing_docs)]
+#![deny(
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_variables,
+    unstable_features,
+    unused_import_braces,
+    missing_docs
+)]
 
-#[macro_use] extern crate log;
-#[macro_use] extern crate serde_derive;
+#[macro_use]
+extern crate log;
+#[macro_use]
+extern crate serde_derive;
 
-#[macro_use] mod utils;
+#[macro_use]
+mod utils;
 mod config;
 mod language;
 mod sort;
@@ -55,7 +60,7 @@ mod stats;
 
 pub use self::{
     config::Config,
-    language::{LanguageType, Languages, Language},
+    language::{Language, LanguageType, Languages},
     sort::Sort,
     stats::Stats,
 };
