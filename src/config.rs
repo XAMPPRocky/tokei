@@ -1,8 +1,4 @@
-use std::{
-    env,
-    fs,
-    path::PathBuf,
-};
+use std::{env, fs, path::PathBuf};
 
 use crate::language::LanguageType;
 
@@ -89,7 +85,8 @@ impl Config {
         Config {
             columns: current_dir.columns.or(conf_dir.columns),
             //languages: current_dir.languages.or(conf_dir.languages),
-            treat_doc_strings_as_comments: current_dir.treat_doc_strings_as_comments
+            treat_doc_strings_as_comments: current_dir
+                .treat_doc_strings_as_comments
                 .or(conf_dir.treat_doc_strings_as_comments),
             types: current_dir.types.or(conf_dir.types),
             no_ignore: current_dir.no_ignore.or(conf_dir.no_ignore),

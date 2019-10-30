@@ -74,7 +74,8 @@ impl<'a> Cli<'a> {
             1: to show unknown file extensions,
             2: reserved for future debugging,
             3: enable file level trace. Not recommended on multiple files")
-        ).get_matches();
+        )
+        .get_matches();
 
         let columns = matches.value_of("columns").map(parse_or_exit::<usize>);
         let files = matches.is_present("files");
@@ -86,9 +87,9 @@ impl<'a> Cli<'a> {
         let verbose = matches.occurrences_of("verbose");
         let types = matches.value_of("types").map(|e| {
             e.split(',')
-             .map(|t| t.parse::<LanguageType>())
-             .filter_map(Result::ok)
-             .collect()
+                .map(|t| t.parse::<LanguageType>())
+                .filter_map(Result::ok)
+                .collect()
         });
 
         // Sorting category should be restricted by clap but parse before we do
@@ -97,8 +98,7 @@ impl<'a> Cli<'a> {
         // Format category is overly accepting by clap (so the user knows what
         // is supported) but this will fail if support is not compiled in and
         // give a useful error to the user.
-        let output = matches.value_of("output")
-                            .map(parse_or_exit::<Format>);
+        let output = matches.value_of("output").map(parse_or_exit::<Format>);
 
         crate::cli_utils::setup_logger(verbose);
 
@@ -122,7 +122,7 @@ impl<'a> Cli<'a> {
         cli
     }
 
-    pub fn file_input(&self) ->  Option<&str> {
+    pub fn file_input(&self) -> Option<&str> {
         self.matches.value_of("file_input")
     }
 
@@ -191,7 +191,8 @@ impl<'a> Cli<'a> {
 
         let not_supported = Format::not_supported();
         if !not_supported.is_empty() {
-            eprintln!("
+            eprintln!(
+                "
 This version of tokei was compiled without serialization support for the following formats:
 
     {not_supported}
@@ -204,11 +205,10 @@ Or use the 'all' feature:
 
     cargo install tokei --features all
     \n",
-    not_supported = not_supported.join(", "),
-    // no space after comma to ease copypaste
-    all = self::Format::all_feature_names().join(",")
-    );
+                not_supported = not_supported.join(", "),
+                // no space after comma to ease copypaste
+                all = self::Format::all_feature_names().join(",")
+            );
         }
     }
 }
-

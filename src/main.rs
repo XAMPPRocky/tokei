@@ -1,4 +1,5 @@
-#[macro_use] extern crate log;
+#[macro_use]
+extern crate log;
 
 mod cli;
 mod cli_utils;
@@ -10,13 +11,9 @@ use std::{
     process,
 };
 
-use tokei::{Language, Languages, Sort, Config};
+use tokei::{Config, Language, Languages, Sort};
 
-use crate::{
-    cli::Cli,
-    cli_utils::*,
-    input::*,
-};
+use crate::{cli::Cli, cli_utils::*, input::*};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut cli = Cli::from_args();
@@ -64,9 +61,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 None
             }
         })
-    .unwrap_or(FALLBACK_ROW_LEN)
+        .unwrap_or(FALLBACK_ROW_LEN)
         .max(FALLBACK_ROW_LEN);
-
 
     let row = "-".repeat(columns);
 
@@ -94,7 +90,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
 
         print_results(&mut stdout, &row, languages.into_iter(), cli.files)?
-    } else  {
+    } else {
         print_results(&mut stdout, &row, languages.iter(), cli.files)?
     }
 

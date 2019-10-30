@@ -1,12 +1,13 @@
-#[macro_use] extern crate lazy_static;
+#[macro_use]
+extern crate lazy_static;
+extern crate ignore;
 extern crate regex;
 extern crate tokei;
-extern crate ignore;
 
 use std::fs;
 
 use regex::Regex;
-use tokei::{Languages, Config};
+use tokei::{Config, Languages};
 
 lazy_static! {
     static ref LINES: Regex = Regex::new(r"\d+ lines").unwrap();
@@ -18,12 +19,14 @@ lazy_static! {
 macro_rules! get_digit {
     ($regex:expr, $text:expr) => {{
         let matched = $regex.find(&$text).expect("Couldn't find category");
-        matched.as_str().split_whitespace()
+        matched
+            .as_str()
+            .split_whitespace()
             .next()
             .unwrap()
             .parse::<usize>()
             .unwrap()
-    }}
+    }};
 }
 
 mod config {
@@ -70,8 +73,10 @@ mod config {
         languages.get_statistics(&["tests/data/python.py"], &[], &config);
 
         if languages.len() != 1 {
-            panic!("wrong languages detected: expected just Python, found {:?}",
-                   languages.into_iter().collect::<Vec<_>>());
+            panic!(
+                "wrong languages detected: expected just Python, found {:?}",
+                languages.into_iter().collect::<Vec<_>>()
+            );
         }
 
         let (_, language) = languages.into_iter().next().unwrap();
