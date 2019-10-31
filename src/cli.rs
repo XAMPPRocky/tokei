@@ -35,7 +35,7 @@ impl<'a> Cli<'a> {
             (@arg exclude: -e --exclude
                 +takes_value
                 +multiple number_of_values(1)
-                "Ignore all files & directories containing the word.")
+                "Ignore all files & directories matching the pattern.")
             (@arg files: -f --files
                 "Will print out statistics on individual files.")
             (@arg file_input: -i --input
@@ -45,7 +45,7 @@ impl<'a> Cli<'a> {
             (@arg hidden: --hidden "Count hidden files.")
             (@arg input:
                 conflicts_with[languages] ...
-                "The input file(s)/directory(ies) to be counted.")
+                "The path(s) to the file or directory to be counted.
             (@arg languages: -l --languages
                 conflicts_with[input]
                 "Prints out supported languages and their extensions.")
