@@ -45,7 +45,7 @@ impl<'a> Cli<'a> {
             (@arg hidden: --hidden "Count hidden files.")
             (@arg input:
                 conflicts_with[languages] ...
-                "The path(s) to the file or directory to be counted.
+                "The path(s) to the file or directory to be counted.")
             (@arg languages: -l --languages
                 conflicts_with[input]
                 "Prints out supported languages and their extensions.")
