@@ -1161,6 +1161,21 @@
                 "rei"
             ]
         },
+        "Odin":{
+            "extensions":[
+                "odin"
+            ],
+            "line_comment":[
+                "//"
+            ],
+            "multi_line":[
+                ["/*", "*/"]
+            ],
+            "quotes":[
+                ["\\\"", "\\\""],
+                ["'", "'"]
+            ]
+        },
         "Org":{
             "line_comment":[
                 "# "
