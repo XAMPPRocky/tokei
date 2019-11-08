@@ -1,0 +1,157 @@
+// 157 lines 137 code 7 comments 13 blanks
+
+#![enable(implicit_some)]
+Container(
+    transform: (
+        id: "background",
+        anchor: Middle,
+        stretch: XY( x_margin: 0., y_margin: 0., keep_aspect_ratio: false),
+        width: 20.,
+        height: 20.,
+    ),
+    background: SolidColor(0.03, 0.03, 0.03, 1.0),
+    children: [
+
+        Container(
+            transform: (
+                id: "container_start",
+                y: 180,
+                width: 755.,
+                height: 170.,
+                anchor: Middle,
+            ),
+            background: SolidColor(1.0, 0.65, 0.0, 1.0),
+            children: [
+
+                // Complex Button
+                Button(
+                    transform: (
+                        id: "start",
+                        width: 750.,
+                        height: 165.,
+                        tab_order: 1,
+                        anchor: Middle,
+                        mouse_reactive: true,
+                    ),
+                    button: (
+                        text: "START GAME",
+                        font: File("font/square.ttf", ("TTF", ())),
+                        font_size: 75.,
+                        normal_text_color: (1.0, 0.65, 0., 1.0), // ffa500
+                        // hover_text_color: (1.0, 0.65, 0., 1.0),
+                        // press_text_color: (1.0, 0.65, 0., 1.0),
+                        normal_image: SolidColor(0., 0., 0., 1.),
+                        hover_image: SolidColor(0.1, 0.1, 0.1, 1.),
+                        press_image: SolidColor(0.15, 0.15, 0.15, 1.),
+                    )
+                ),
+            ]
+        ),
+
+
+        Container(
+            transform: (
+                id: "container_load",
+                y: 0,
+                width: 755.,
+                height: 170.,
+                anchor: Middle,
+            ),
+            background: SolidColor(1.0, 0.65, 0.0, 1.0),
+            children: [
+
+                // Complex Button
+                Button(
+                    transform: (
+                        id: "load",
+                        width: 750.,
+                        height: 165.,
+                        tab_order: 3,
+                        anchor: Middle,
+                        mouse_reactive: true,
+                    ),
+                    button: (
+                        text: "LOAD GAME",
+                        font: File("font/square.ttf", ("TTF", ())),
+                        font_size: 75.,
+                        normal_text_color: (1.0, 0.65, 0., 1.0), // ffa500
+                        normal_image: SolidColor(0., 0., 0., 1.),
+                        hover_image: SolidColor(0.1, 0.1, 0.1, 1.),
+                        press_image: SolidColor(0.15, 0.15, 0.15, 1.),
+                    )
+                ),
+            ]
+        ),
+
+
+        Container(
+            transform: (
+                id: "container_options",
+                y: -180,
+                width: 755.,
+                height: 170.,
+                anchor: Middle,
+            ),
+            background: SolidColor(1.0, 0.65, 0.0, 1.0),
+            children: [
+
+                // Complex Button
+                Button(
+                    transform: (
+                        id: "options",
+                        width: 750.,
+                        height: 165.,
+                        tab_order: 3,
+                        anchor: Middle,
+                        mouse_reactive: true,
+                    ),
+                    button: (
+                        text: "OPTIONS",
+                        font: File("font/square.ttf", ("TTF", ())),
+                        font_size: 75.,
+                        normal_text_color: (1.0, 0.65, 0., 1.0), // ffa500
+                        normal_image: SolidColor(0., 0., 0., 1.),
+                        hover_image: SolidColor(0.1, 0.1, 0.1, 1.),
+                        press_image: SolidColor(0.15, 0.15, 0.15, 1.),
+                    )
+                ),
+            ]
+        ),
+
+
+        Container(
+            transform: (
+                id: "container_credits",
+                y: -360,
+                width: 755.,
+                height: 170.,
+                anchor: Middle,
+            ),
+            background: SolidColor(1.0, 0.65, 0.0, 1.0),
+            children: [
+
+                // Complex Button
+                Button(
+                    transform: (
+                        id: "credits",
+                        width: 750.,
+                        height: 165.,
+                        tab_order: 3,
+                        anchor: Middle,
+                        mouse_reactive: true,
+                    ),
+                    button: (
+                        text: "CREDITS",
+                        font: File("font/square.ttf", ("TTF", ())),
+                        font_size: 75.,
+                        normal_text_color: (1.0, 0.65, 0., 1.0), // ffa500
+                        normal_image: SolidColor(0., 0., 0., 1.),
+                        hover_image: SolidColor(0.1, 0.1, 0.1, 1.),
+                        press_image: SolidColor(0.15, 0.15, 0.15, 1.),
+                    )
+                ),
+            ]
+        ),
+
+    ],
+)

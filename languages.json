@@ -1451,6 +1451,14 @@
                 "cshtml"
             ]
         },
+        "RON":{
+            "name":"Rusty Object Notation",
+            "base":"c",
+            "nested":true,
+            "extensions":[
+                "ron"
+            ]
+        },
         "RPMSpecfile":{
             "name":"RPM Specfile",
             "base":"hash",
