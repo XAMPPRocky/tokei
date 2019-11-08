@@ -99,6 +99,11 @@ $ conda install -c conda-forge tokei
 $ sudo dnf install tokei
 ```
 
+### OpenSUSE
+```shell
+$ sudo zypper install tokei
+```
+
 #### FreeBSD
 ```shell
 $ pkg install tokei
