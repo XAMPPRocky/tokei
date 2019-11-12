@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, error::Error, path::Path, sync::mpsc};
+use std::{collections::BTreeMap, error::Error, path::Path};
 
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState::Continue};
 
@@ -20,7 +20,7 @@ pub fn get_all_files<A: AsRef<Path>>(
     languages: &mut BTreeMap<LanguageType, Language>,
     config: &Config,
 ) {
-    let (tx, rx) = mpsc::channel();
+    let (tx, rx) = crossbeam_channel::unbounded();
 
     let mut paths = paths.iter();
     let mut walker = WalkBuilder::new(paths.next().unwrap());
