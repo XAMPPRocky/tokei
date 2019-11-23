@@ -659,6 +659,13 @@
                 "gd"
             ]
         },
+        "Gherkin":{
+            "name":"Gherkin (Cucumber)",
+            "base":"hash",
+            "extensions":[
+                "feature"
+            ]
+        },
         "Glsl":{
             "name":"GLSL",
             "base":"c",

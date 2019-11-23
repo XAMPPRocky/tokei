@@ -380,6 +380,7 @@ FORTRAN Legacy
 FORTRAN Modern
 F*
 GDScript
+Gherkin (Cucumber)
 GLSL
 Go
 Groovy
