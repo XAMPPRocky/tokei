@@ -42,8 +42,13 @@ pub fn get_all_files<A: AsRef<Path>>(
     // Flip the booleans as ignore's semantics are the opposite of our options.
     let no_ignore_vcs = config.no_ignore_vcs.map(|b| !b).unwrap_or(true);
 
+    // Custom ignore files always work even if the `ignore` option is false,
+    // so we only add if that option is not present.
+    if !config.no_ignore.unwrap_or(false) {
+        walker.add_custom_ignore_filename(IGNORE_FILE);
+    }
+
     walker
-        .add_custom_ignore_filename(IGNORE_FILE)
         .git_exclude(no_ignore_vcs)
         .git_global(no_ignore_vcs)
         .git_ignore(no_ignore_vcs)
