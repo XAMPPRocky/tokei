@@ -995,7 +995,7 @@ dependencies = [
 
 [[package]]
 name = "tokei"
-version = "10.1.0"
+version = "10.1.1"
 dependencies = [
  "clap 2.33.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam-channel 0.4.0 (registry+https://github.com/rust-lang/crates.io-index)",

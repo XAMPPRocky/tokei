@@ -1,3 +1,12 @@
+# 10.1.1
+
+- Fixed `.tokeignore` always working even when `--no-ignore` is present.
+- Updated dependencies
+
+**Added languages**
+
+- @erikaxel Gherkin (Cucumber)
+
 # 10.1.0
 
 - Added `cjsx` extension to CoffeeScript.
