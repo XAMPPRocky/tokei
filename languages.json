@@ -708,12 +708,6 @@
                 "gvy"
             ]
         },
-        "Happy":{
-            "extensions":[
-                "y",
-                "ly"
-            ]
-        },
         "Handlebars":{
             "multi_line":[
                 ["<!--", "-->"],
@@ -945,6 +939,14 @@
             "extensions":[
                 "kt",
                 "kts"
+            ]
+        },
+        "Lex":{
+            "name":"LEX",
+            "base":"c",
+            "extensions":[
+                "l",
+                "lpp"
             ]
         },
         "Lean":{
@@ -1991,6 +1993,14 @@
             "extensions":[
                 "xtend"
 
+            ]
+        },
+        "Yacc":{
+            "name":"YACC",
+            "base":"c",
+            "extensions":[
+                "y",
+                "ypp"
             ]
         },
         "Yaml":{
