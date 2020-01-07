@@ -629,6 +629,16 @@
                 "f95"
             ]
         },
+        "FreeMarker":{
+            "multi_line":[
+                ["<#--", "-->"]
+            ],
+            "extensions":[
+                "ftl",
+                "ftlh",
+                "ftlx"
+            ]
+        },
         "FSharp":{
             "name":"F#",
             "line_comment":[
