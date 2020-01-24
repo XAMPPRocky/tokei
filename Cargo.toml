@@ -21,7 +21,7 @@ repository = "XAMPPRocky/tokei"
 repository = "XAMPPRocky/tokei"
 
 [build-dependencies]
-handlebars = "2.0.4"
+handlebars = "3.0.0"
 ignore = "0.4.11"
 lazy_static = "1.4.0"
 serde_json = "1.0.45"
