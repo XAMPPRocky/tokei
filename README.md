@@ -522,7 +522,7 @@ please make your issues, and pull requests there.
 ## Copyright and License
 (C) Copyright 2015 by Aaron Power and contributors
 
-See CONTRIBUTORS.md for a full list of contributors.
+See [the graph](https://github.com/XAMPPRocky/tokei/graphs/contributors) for a full list of contributors.
 
 Tokei is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
 
