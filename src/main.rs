@@ -33,18 +33,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    {
-        let input = cli.input();
+    let input = cli.input();
 
-        for path in &input {
-            if ::std::fs::metadata(path).is_err() {
-                eprintln!("Error: '{}' not found.", path);
-                process::exit(1);
-            }
+    for path in &input {
+        if ::std::fs::metadata(path).is_err() {
+            eprintln!("Error: '{}' not found.", path);
+            process::exit(1);
         }
-
-        languages.get_statistics(&input, &cli.ignored_directories(), &config);
     }
+
+    languages.get_statistics(&input, &cli.ignored_directories(), &config);
 
     if let Some(format) = cli.output {
         print!("{}", format.print(languages).unwrap());
