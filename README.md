@@ -225,8 +225,8 @@ tokei with the features flag.
   YAML:
   cargo install tokei --features yaml
 
-  CBOR:
-  cargo install tokei --features cbor
+  TOML:
+  cargo install tokei --features toml
 ```
 
 **Currently supported formats**
