@@ -1392,7 +1392,8 @@
                 "python3"
             ],
             "extensions":[
-                "py"
+                "py",
+                "pyw"
             ]
         },
         "Qcl":{
