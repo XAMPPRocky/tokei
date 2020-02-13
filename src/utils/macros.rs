@@ -17,8 +17,7 @@ macro_rules! rs_warn {
         match $result {
             Ok(result) => result,
             Err(error) => {
-                use std::error::Error;
-                warn!("{}", error.description());
+                warn!("{}", error);
                 continue;
             }
         }
@@ -42,8 +41,7 @@ macro_rules! rs_error {
         match $result {
             Ok(result) => result,
             Err(error) => {
-                use std::error::Error;
-                error!("{}", error.description());
+                error!("{}", error);
                 continue;
             }
         }
@@ -67,8 +65,7 @@ macro_rules! rs_ret_warn {
         match $result {
             Ok(result) => result,
             Err(error) => {
-                use std::error::Error;
-                warn!("{}", error.description());
+                warn!("{}", error);
                 return None;
             }
         }
@@ -92,8 +89,7 @@ macro_rules! rs_ret_error {
         match $result {
             Ok(result) => result,
             Err(error) => {
-                use std::error::Error;
-                error!("{}", error.description());
+                error!("{}", error);
                 return None;
             }
         }

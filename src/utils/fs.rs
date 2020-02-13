@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, error::Error, path::Path};
+use std::{collections::BTreeMap, path::Path};
 
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState::Continue};
 
@@ -69,11 +69,11 @@ pub fn get_all_files<A: AsRef<Path>>(
                             err: ref error,
                         } = **error
                         {
-                            error!("{} reading {}", error.description(), path.display());
+                            error!("{} reading {}", error, path.display());
                             return Continue;
                         }
                     }
-                    error!("{}", error.description());
+                    error!("{}", error);
                     return Continue;
                 }
             };
@@ -101,7 +101,7 @@ pub fn get_all_files<A: AsRef<Path>>(
                 .parse(entry.into_path(), &config)
                 .map(|stats| (language, Some(stats)))
                 .unwrap_or_else(|(e, path)| {
-                    error!("{} reading {}", e.description(), path.display());
+                    error!("Error reading {}:\n{}", path.display(), e);
                     (language, None)
                 })
         })
