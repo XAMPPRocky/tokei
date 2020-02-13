@@ -1,3 +1,8 @@
+# 10.1.2
+
+- Added `pyw` extension to Python.
+- Updated dependencies
+
 # 10.1.1
 
 - Fixed `.tokeignore` always working even when `--no-ignore` is present.
