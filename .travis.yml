@@ -1,5 +1,5 @@
-# Based on the "trust" template v0.1.1
-# https://github.com/japaric/trust/tree/v0.1.1
+# Based on the "trust" template v0.1.2
+# https://github.com/japaric/trust/tree/v0.1.2
 
 dist: trusty
 language: rust
@@ -10,11 +10,30 @@ env:
   global:
     - CRATE_NAME=tokei
     - MAKE_DEB=yes
-    - DEB_MAINTAINER="Aaron Power <theaaronepower@gmail.com>"
-    - DEB_DESCRIPTION="A utility that allows you to count code, quickly."
+    - DEB_MAINTAINER="Erin Power <xampprocky@gmail.com>"
+    - DEB_DESCRIPTION="Count your code, quickly."
 
 matrix:
   include:
+    # Android
+    # - env: TARGET=aarch64-linux-android DISABLE_TESTS=1
+    # - env: TARGET=arm-linux-androideabi DISABLE_TESTS=1
+    # - env: TARGET=armv7-linux-androideabi DISABLE_TESTS=1
+    # - env: TARGET=i686-linux-android DISABLE_TESTS=1
+    # - env: TARGET=x86_64-linux-android DISABLE_TESTS=1
+
+    # iOS
+    # - env: TARGET=aarch64-apple-ios DISABLE_TESTS=1
+    #   os: osx
+    # - env: TARGET=armv7-apple-ios DISABLE_TESTS=1
+    #   os: osx
+    # - env: TARGET=armv7s-apple-ios DISABLE_TESTS=1
+    #   os: osx
+    # - env: TARGET=i386-apple-ios DISABLE_TESTS=1
+    #   os: osx
+    # - env: TARGET=x86_64-apple-ios DISABLE_TESTS=1
+    #   os: osx
+
     # Linux
     - env: TARGET=aarch64-unknown-linux-gnu
     - env: TARGET=arm-unknown-linux-gnueabi
@@ -33,20 +52,26 @@ matrix:
     - env: TARGET=x86_64-unknown-linux-musl
 
     # OSX
-    - env: TARGET=i686-apple-darwin
-      os: osx
+    # - env: TARGET=i686-apple-darwin
+    #   os: osx
     - env: TARGET=x86_64-apple-darwin
       os: osx
 
-    # *BSD Also don't work anymore, 2019-10-02
-    # - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
-    # - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
-    # Doesn't work at the moment. 2018-09-07
-    # error adding symbols: DSO missing from command line
-    # - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
+    # *BSD
+    - env: TARGET=i686-unknown-freebsd DISABLE_TESTS=1
+    - env: TARGET=x86_64-unknown-freebsd DISABLE_TESTS=1
+    - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
 
-    # Windows also doesn't work anymore 2019-10-07
+    # Windows
     # - env: TARGET=x86_64-pc-windows-gnu
+
+    # Bare metal
+    # These targets don't support std and as such are likely not suitable for
+    # most crates.
+    # - env: TARGET=thumbv6m-none-eabi
+    # - env: TARGET=thumbv7em-none-eabi
+    # - env: TARGET=thumbv7em-none-eabihf
+    # - env: TARGET=thumbv7m-none-eabi
 
     # Testing other channels
     - env: TARGET=x86_64-unknown-linux-gnu
@@ -54,9 +79,6 @@ matrix:
     - env: TARGET=x86_64-apple-darwin
       os: osx
       rust: nightly
-
-  allow_failures:
-    - rust: nightly
 
 before_install:
   - set -e
