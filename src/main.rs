@@ -42,13 +42,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    languages.get_statistics(&input, &cli.ignored_directories(), &config);
-
-    if let Some(format) = cli.output {
-        print!("{}", format.print(languages).unwrap());
-        process::exit(0);
-    }
-
     let columns = cli
         .columns
         .or(config.columns)
@@ -61,6 +54,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         })
         .unwrap_or(FALLBACK_ROW_LEN)
         .max(FALLBACK_ROW_LEN);
+
+    languages.get_statistics(&input, &cli.ignored_directories(), &config);
+
+    if let Some(format) = cli.output {
+        print!("{}", format.print(languages).unwrap());
+        process::exit(0);
+    }
 
     let row = "-".repeat(columns);
 

@@ -73,7 +73,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
     let mut string = String::with_capacity(INITIAL_BUFFER_SIZE);
 
     let walker = Walk::new("./tests/data/").filter(|p| match p {
-        &Ok(ref p) => {
+        Ok(ref p) => {
             if let Ok(ref p) = p.metadata() {
                 p.is_file()
             } else {
