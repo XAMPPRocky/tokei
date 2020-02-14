@@ -33,10 +33,10 @@ properties of a language in `languages.json`, through examples.
 ```
 
 Above is the JavaScript's definition. The first thing that needs to be defined
-is the key, the keys format should be same as 
-[Rust's enum style].
-As this key will be used in an enum for identifying the language. For a lot of 
-language's this also works for showing the language when we print to the screen. 
+is the key, the keys format should be same as [Rust's enum style]. As this key
+will be used in an enum for identifying the language. For a lot of language's
+this also works for showing the language when we print to the screen. 
+
 However there are some languages whose names don't work with the enum style.
 For example `JSON` is usually shown in all caps, but that doesn't fit in Rust's
 enum style. So we have an additional optional field called `name`, which defines
@@ -143,10 +143,19 @@ detected as a `CMake` file, not a `Text` file.
 A test file is required with language additions. The file should
 contain every variant comments and quotes, as well as a comment
 at the top of the file containing the manually verified lines,
-code, comments, blanks e.g.
-`// 39 lines 32 code 2 comments 5 blanks`. The comment should use
-the syntax of the language you're testing. A good example of a
-test file is [`tests/data/rust.rs`].
+code, comments, blanks in the following format.
+
+```rust
+NUM lines NUM code NUM comments NUM blanks
+```
+
+### Example
+```
+// 39 lines 32 code 2 comments 5 blanks`
+```
+
+The comment should use the syntax of the language you're testing.
+A good example of a test file is [`tests/data/rust.rs`].
 
 ```rust
 // 39 lines 32 code 2 comments 5 blanks
