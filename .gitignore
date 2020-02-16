@@ -6,3 +6,4 @@ src/test
 *.rustfmt
 .DS_Store
 .tokeirc
+node_modules

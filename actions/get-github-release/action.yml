@@ -1,0 +1,23 @@
+name: Get GitHub Release
+description: Installs the latest binary from GitHub Releases.
+
+inputs:
+  owner:
+    description: The owner of the GitHub repository e.g. `rust-lang`
+    required: true
+  repo:
+    description: The name of the repository containing the releases.
+    required: true
+  matches:
+    description: The regex to match against the name of the asset release.
+    required: true
+  token:
+    description: GitHub token for authenication.
+    required: true
+  install_path:
+    description: The path to install the binary. Defaults to /tmp/<repo name>
+    required: false
+
+runs:
+  using: node12
+  main: dist/index.js
