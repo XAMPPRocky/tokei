@@ -44,7 +44,7 @@ test_script:
     )
 
 before_deploy:
-  - cargo rustc --target %TARGET% --release --bin %CRATE_NAME% -- -C lto
+  - cargo build --target %TARGET% --release --bin %CRATE_NAME% --all-features
   - ps: ci\before_deploy.ps1
 
 deploy:
