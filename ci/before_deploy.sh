@@ -17,7 +17,7 @@ main() {
 
     test -f Cargo.lock || cargo generate-lockfile
 
-    cross rustc --bin tokei --target $TARGET --release -- -C lto
+    cross build --bin tokei --target $TARGET --release --all-features
 
     # TODO Update this to package the right artifacts
     cp target/$TARGET/release/tokei $stage/
