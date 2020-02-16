@@ -1,0 +1,193 @@
+name: Mean Bean CI
+
+on: [push, pull_request]
+
+jobs:
+  # This job downloads and stores `cross` as an artifact, so that it can be
+  # redownloaded across all of the jobs. Currently this copied pasted between
+  # `ci.yml` and `deploy.yml`. Make sure to update both places when making
+  # changes.
+  install-cross:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          depth: 50
+      - uses: ./actions/get-github-release
+        id: cross
+        with:
+          owner: rust-embedded
+          repo: cross
+          matches: ${{ matrix.platform }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v1
+        with:
+          name: cross-${{ matrix.platform }}
+          path: ${{ steps.cross.outputs.install_path }}
+    strategy:
+      matrix:
+        platform: [linux-musl, apple-darwin]
+
+  windows:
+    runs-on: windows-latest
+    # Windows technically doesn't need this, but if we don't block windows on it
+    # some of the windows jobs could fill up the concurrent job queue before
+    # one of the install-cross jobs has started, so this makes sure all
+    # artifacts are downloaded first.
+    needs: install-cross
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          depth: 50
+      - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
+      - run: ci/build.bash cargo ${{ matrix.target }}
+      - run: ci/test.bash cargo ${{ matrix.target }}
+
+    strategy:
+      fail-fast: true
+      matrix:
+        channel: [stable, beta, nightly]
+        target:
+          # MSVC
+          - i686-pc-windows-msvc
+          - x86_64-pc-windows-msvc
+          # GNU: You typically only need to test Windows GNU if you're
+          # specifically targetting it, and it can cause issues with some
+          # dependencies if you're not so it's disabled by self.
+          # - i686-pc-windows-gnu
+          # - x86_64-pc-windows-gnu
+
+  macos:
+    runs-on: macos-latest
+    needs: install-cross
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          depth: 50
+
+      - uses: actions/download-artifact@v1
+        with:
+          name: cross-apple-darwin
+          path: /usr/local/bin/
+
+      - run: chmod +x /usr/local/bin/cross
+
+      - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
+      - run: ci/build.bash cross ${{ matrix.target }}
+        # Only test on macOS platforms since we can't simulate the others.
+      - run: ci/test.bash cross ${{ matrix.target }}
+        if: matrix.target == 'x86_64-apple-darwin'
+
+    strategy:
+      fail-fast: true
+      matrix:
+        channel: [stable, beta, nightly]
+        target:
+          # macOS
+          - x86_64-apple-darwin
+          # iOS
+          - aarch64-apple-ios
+          - armv7-apple-ios
+          - armv7s-apple-ios
+          - i386-apple-ios
+          - x86_64-apple-ios
+        # There are no beta or nightly versions of these platforms available.
+        exclude:
+          - target: armv7-apple-ios
+            channel: beta
+          - target: armv7-apple-ios
+            channel: nightly
+          - target: armv7s-apple-ios
+            channel: beta
+          - target: armv7s-apple-ios
+            channel: nightly
+          - target: i386-apple-ios
+            channel: beta
+          - target: i386-apple-ios
+            channel: nightly
+
+  linux:
+    runs-on: ubuntu-latest
+    needs: install-cross
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          depth: 50
+
+      - name: Download Cross
+        uses: actions/download-artifact@v1
+        with:
+          name: cross-linux-musl
+          path: /tmp/
+      - run: chmod +x /tmp/cross
+      - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
+      - run: ci/build.bash /tmp/cross ${{ matrix.target }}
+        # These targets have issues with being tested so they are disabled
+        # by default. You can try disabling to see if they work for
+        # your project.
+      - run: ci/test.bash /tmp/cross ${{ matrix.target }}
+        if: |
+          !contains(matrix.target, 'android') &&
+          !contains(matrix.target, 'bsd') &&
+          !contains(matrix.target, 'solaris') &&
+          matrix.target != 'armv5te-unknown-linux-musleabi' &&
+          matrix.target != 'sparc64-unknown-linux-gnu'
+
+    strategy:
+      fail-fast: true
+      matrix:
+        channel: [stable, beta, nightly]
+        target:
+          # WASM, off by default as most rust projects aren't compatible yet.
+          # - wasm32-unknown-emscripten
+          # Linux
+          - aarch64-unknown-linux-gnu
+          - aarch64-unknown-linux-musl
+          - arm-unknown-linux-gnueabi
+          - arm-unknown-linux-gnueabihf
+          - arm-unknown-linux-musleabi
+          - arm-unknown-linux-musleabihf
+          - armv5te-unknown-linux-musleabi
+          - armv7-unknown-linux-gnueabihf
+          - armv7-unknown-linux-musleabihf
+          - i586-unknown-linux-gnu
+          - i586-unknown-linux-musl
+          - i686-unknown-linux-gnu
+          - i686-unknown-linux-musl
+          - mips-unknown-linux-gnu
+          - mips-unknown-linux-musl
+          - mips64-unknown-linux-gnuabi64
+          - mips64el-unknown-linux-gnuabi64
+          - mipsel-unknown-linux-gnu
+          - mipsel-unknown-linux-musl
+          - powerpc-unknown-linux-gnu
+          - powerpc64-unknown-linux-gnu
+          - powerpc64le-unknown-linux-gnu
+          - s390x-unknown-linux-gnu
+          - x86_64-unknown-linux-gnu
+          - x86_64-unknown-linux-musl
+          - sparc64-unknown-linux-gnu
+          # Android
+          - aarch64-linux-android
+          - arm-linux-androideabi
+          - armv7-linux-androideabi
+          - i686-linux-android
+          - x86_64-linux-android
+          # *BSD
+          # The FreeBSD targets can have issues linking so they are disabled
+          # by default.
+          # - i686-unknown-freebsd
+          # - x86_64-unknown-freebsd
+          - x86_64-unknown-netbsd
+          # DragonFly (Doesn't currently work)
+          # - x86_64-unknown-dragonfly
+          # Solaris
+          - sparcv9-sun-solaris
+          - x86_64-sun-solaris
+          # Bare Metal
+          # These are no-std embedded targets, so they will only build if your
+          # crate is `no_std` compatible.
+          # - thumbv6m-none-eabi
+          # - thumbv7em-none-eabi
+          # - thumbv7em-none-eabihf
+          # - thumbv7m-none-eabi

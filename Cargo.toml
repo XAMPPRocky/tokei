@@ -23,7 +23,6 @@ yaml = ["serde_yaml"]
 [profile.release]
 lto = true
 panic = "abort"
-debug = true
 
 [badges.appveyor]
 repository = "XAMPPRocky/tokei"
