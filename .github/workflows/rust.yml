@@ -12,6 +12,6 @@ jobs:
     - name: Build & Run check
       run: cargo run --verbose
     - name: All features build & run check
-      run: cargo build --verbose --features all
+      run: cargo build --locked --verbose --features all
     - name: Run tests
-      run: cargo test --verbose --features all
+      run: cargo test --locked --verbose --features all
