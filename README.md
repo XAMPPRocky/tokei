@@ -98,7 +98,7 @@ $ conda install -c conda-forge tokei
 $ sudo dnf install tokei
 ```
 
-### OpenSUSE
+#### OpenSUSE
 ```shell
 $ sudo zypper install tokei
 ```
@@ -108,7 +108,7 @@ $ sudo zypper install tokei
 $ pkg install tokei
 ```
 
-#### Homebrew
+#### MacOS (Homebrew)
 ```shell
 $ brew install tokei
 ```
