@@ -479,6 +479,15 @@
                 "resx"
             ]
         },
+        "Dust": {
+            "name": "Dust.js",
+            "multi_line": [
+                ["{!", "!}"]
+            ],
+            "extensions": [
+                "dust"
+            ]
+        },
         "Edn":{
             "line_comment":[
                 ";"
