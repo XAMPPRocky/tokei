@@ -519,7 +519,7 @@ The canonical source of this repo is hosted on
 please make your issues, and pull requests there.
 
 ## Copyright and License
-(C) Copyright 2015 by Aaron Power and contributors
+(C) Copyright 2015 by XAMPPRocky and contributors
 
 See [the graph](https://github.com/XAMPPRocky/tokei/graphs/contributors) for a full list of contributors.
 
