@@ -1859,6 +1859,22 @@
                 "vbs"
             ]
         },
+        "Velocity": {
+            "name": "Apache Velocity",
+            "line_comment": [
+                "##"
+            ],
+            "multi_line": [
+                ["#*", "*#"]
+            ],
+            "extensions": [
+                "vm"
+            ],
+            "quotes": [
+                ["'", "'"],
+                ["\\\"", "\\\""]
+            ]
+        },
         "Verilog":{
             "base":"c",
             "extensions":[
