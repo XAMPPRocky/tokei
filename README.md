@@ -1,5 +1,5 @@
 # Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
-![CI Status](https://github.com/XAMPPRocky/tokei/workflows/Rust/badge.svg)
+![Mean Bean CI](https://github.com/XAMPPRocky/tokei/workflows/Mean%20Bean%20CI/badge.svg)
 [![](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
 [![](https://img.shields.io/github/issues-raw/XAMPPRocky/tokei.svg)](https://github.com/XAMPPRocky/tokei/issues)
 [![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/XAMPPRocky/tokei)
