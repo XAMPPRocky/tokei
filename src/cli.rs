@@ -54,7 +54,7 @@ impl<'a> Cli<'a> {
             (@arg no_ignore_parent: --("no-ignore-parent")
                 "Don't respect ignore files in parent directories.")
             (@arg no_ignore_vcs: --("no-ignore-vcs")
-                "Don't respect VCS ignore files.")
+                "Don't respect VCS (.gitignore, .hgignore, etc) ignore files.")
             (@arg output: -o --output
                 // `all` is used so to fail later with a better error
                 possible_values(Format::all())
