@@ -1,0 +1,11 @@
+## 11 lines 5 code 4 comments 2 blanks
+
+This text is visible. #* This text, as part of a multi-line
+comment, is not visible. This text is not visible; it is also
+part of the multi-line comment. This text still not
+visible. *# This text is outside the comment, so it is visible.
+## This text is not visible.
+
+#macro( d )
+  <tr><td></td></tr>
+#end

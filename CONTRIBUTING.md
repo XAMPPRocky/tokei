@@ -48,7 +48,7 @@ how the language should look when displayed to the user.
 ```
 
 For defining comments has a few properties: firstly is the most commonly used
-`single` property which defines single line comments. Comments which don't
+`line_comment` property which defines single line comments. Comments which don't
 continue onto the next line.
 
 ```rust
@@ -56,13 +56,13 @@ let x = 5; // default x position
 let y = 0; // default y position
 ```
 
-The `single` property expects an array of strings, as some languages have 
+The `line_comment` property expects an array of strings, as some languages have 
 multiple syntaxes for defining a a single line comment. For example `PHP` allows
 both `#` and `//` as comments.
 
 ```json
 "Php": {
-    "single": [
+    "line_comment": [
         "#",
         "//"
     ]
@@ -151,7 +151,7 @@ NUM lines NUM code NUM comments NUM blanks
 
 ### Example
 ```
-// 39 lines 32 code 2 comments 5 blanks`
+// 39 lines 32 code 2 comments 5 blanks
 ```
 
 The comment should use the syntax of the language you're testing.

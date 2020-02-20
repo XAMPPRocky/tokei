@@ -479,6 +479,15 @@
                 "resx"
             ]
         },
+        "Dust": {
+            "name": "Dust.js",
+            "multi_line": [
+                ["{!", "!}"]
+            ],
+            "extensions": [
+                "dust"
+            ]
+        },
         "Edn":{
             "line_comment":[
                 ";"
@@ -1850,6 +1859,22 @@
                 "vbs"
             ]
         },
+        "Velocity": {
+            "name": "Apache Velocity",
+            "line_comment": [
+                "##"
+            ],
+            "multi_line": [
+                ["#*", "*#"]
+            ],
+            "extensions": [
+                "vm"
+            ],
+            "quotes": [
+                ["'", "'"],
+                ["\\\"", "\\\""]
+            ]
+        },
         "Verilog":{
             "base":"c",
             "extensions":[
@@ -1930,7 +1955,7 @@
             "line_comment":[
                 ";;"
             ],
-            "quites": [
+            "quotes": [
                 ["\\\"", "\\\""],
                 ["'", "'"]
             ],
