@@ -378,6 +378,7 @@ Forth
 FORTRAN Legacy
 FORTRAN Modern
 F*
+GDB Script
 GDScript
 Gherkin (Cucumber)
 GLSL
