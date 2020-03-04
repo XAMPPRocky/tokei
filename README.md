@@ -331,6 +331,7 @@ Alex
 ASP
 ASP.NET
 Assembly
+AssemblyGAS
 AutoHotKey
 Autoconf
 Automake

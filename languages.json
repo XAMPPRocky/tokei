@@ -63,8 +63,14 @@
                 ["'", "'"]
             ],
             "extensions": [
-                "s",
                 "asm"
+            ]
+        },
+        "AssemblyGAS": {
+	    "name": "GNU Style Assembly",
+            "base":"c",
+            "extensions": [
+                "s"
             ]
         },
         "Asp": {
