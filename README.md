@@ -263,14 +263,9 @@ Thanks to contributors tokei is now available as a plugin for some text editors.
 
 ## Supported Languages
 
-If there is a language that you want added, feel free to submit a pull request
-with the following information. If you're unsure have a look at
-[`languages.json`](./languages.json) to see how other languages are defined.
-
-- Name of language
-- File Extension(s)
-- The comment syntax (_Does it have block comments? is it the same as C?_)
-- The string literal syntax
+If there is a language that you would to add to tokei feel free to make a pull
+request. Languages are defined in [`languages.json`](./languages.json), and you can
+read how to add and test your language in our [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ```
 ABAP
