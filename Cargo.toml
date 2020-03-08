@@ -48,6 +48,7 @@ term_size = "0.3.1"
 toml = "0.5.6"
 grep-searcher = "0.1.6"
 crossbeam-channel = "0.4.2"
+num-format = "0.4.0"
 
 [dependencies.env_logger]
 features = []

@@ -4,6 +4,7 @@ extern crate log;
 mod cli;
 mod cli_utils;
 mod input;
+mod output;
 
 use std::{
     error::Error,
@@ -55,6 +56,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap_or(FALLBACK_ROW_LEN)
         .max(FALLBACK_ROW_LEN);
 
+    let num_format = &cli.num_format;
+
     languages.get_statistics(&input, &cli.ignored_directories(), &config);
 
     if let Some(format) = cli.output {
@@ -87,9 +90,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
         }
 
-        print_results(&mut stdout, &row, languages.into_iter(), cli.files)?
+        print_results(
+            &mut stdout,
+            &row,
+            languages.into_iter(),
+            cli.files,
+            num_format,
+        )?
     } else {
-        print_results(&mut stdout, &row, languages.iter(), cli.files)?
+        print_results(&mut stdout, &row, languages.iter(), cli.files, num_format)?
     }
 
     // If we're listing files there's already a trailing row so we don't want an
@@ -104,7 +113,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         total += language;
     }
 
-    print_language(&mut stdout, columns, &total, "Total")?;
+    print_language(&mut stdout, columns, &total, "Total", num_format)?;
     writeln!(stdout, "{}", row)?;
 
     Ok(())

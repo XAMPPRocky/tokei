@@ -1,12 +1,13 @@
 use std::mem;
 
 use clap::{clap_app, crate_description, ArgMatches};
+use num_format::{CustomFormat, Format as NumFormat};
 use tokei::{Config, LanguageType, Sort};
 
-use crate::{cli_utils::*, input::Format};
+use crate::{cli_utils::*, input::Format, output::NumberFormatStyle};
 
 #[derive(Debug)]
-pub struct Cli<'a> {
+pub struct Cli<'a, F: NumFormat> {
     matches: ArgMatches<'a>,
     pub columns: Option<usize>,
     pub files: bool,
@@ -18,10 +19,11 @@ pub struct Cli<'a> {
     pub print_languages: bool,
     pub sort: Option<Sort>,
     pub types: Option<Vec<LanguageType>>,
+    pub num_format: F,
     pub verbose: u64,
 }
 
-impl<'a> Cli<'a> {
+impl<'a> Cli<'a, CustomFormat> {
     pub fn from_args() -> Self {
         let matches = clap_app!(tokei =>
             (version: &*crate_version())
@@ -69,6 +71,12 @@ impl<'a> Cli<'a> {
             (@arg types: -t --type
                 +takes_value
                 "Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown")
+            (@arg num_format_style: -n --("num-format")
+                possible_values(NumberFormatStyle::all())
+                conflicts_with[output]
+                +takes_value
+                "Format of printed numbers, i.e. plain (1234, default), commas (1,234), or dots \
+                 (1.234). Cannot be used with --output.")
             (@arg verbose: -v --verbose ...
             "Set log output level:
             1: to show unknown file extensions,
@@ -91,6 +99,11 @@ impl<'a> Cli<'a> {
                 .filter_map(Result::ok)
                 .collect()
         });
+        let num_format_style: NumberFormatStyle = matches
+            .value_of("num_format_style")
+            .and_then(NumberFormatStyle::from_str)
+            .unwrap_or(NumberFormatStyle::Plain);
+        let num_format = num_format_style.get_format();
 
         // Sorting category should be restricted by clap but parse before we do
         // work just in case.
@@ -114,6 +127,7 @@ impl<'a> Cli<'a> {
             print_languages,
             sort,
             types,
+            num_format,
             verbose,
         };
 

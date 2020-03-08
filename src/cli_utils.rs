@@ -6,9 +6,10 @@ use std::{
 };
 
 use clap::crate_version;
+use num_format::{Format as NumFormat, ToFormattedString};
 
 use crate::input::Format;
-use tokei::{Language, LanguageType};
+use tokei::{Language, LanguageType, Stats};
 
 pub const FALLBACK_ROW_LEN: usize = 79;
 const NO_LANG_HEADER_ROW_LEN: usize = 67;
@@ -75,25 +76,32 @@ pub fn print_header<W: Write>(sink: &mut W, row: &str, columns: usize) -> io::Re
     writeln!(sink, "{}", row)
 }
 
-pub fn print_results<'a, I, W>(
+pub fn print_results<'a, I, W, F>(
     sink: &mut W,
     row: &str,
     languages: I,
     list_files: bool,
+    num_format: &F,
 ) -> io::Result<()>
 where
     I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     W: Write,
+    F: NumFormat,
 {
     let path_len = row.len() - NO_LANG_ROW_LEN_NO_SPACES;
     let columns = row.len();
     for (name, language) in languages.filter(isnt_empty) {
-        print_language(sink, columns, language, name.name())?;
+        print_language(sink, columns, language, name.name(), num_format)?;
 
         if list_files {
             writeln!(sink, "{}", row)?;
             for stat in &language.stats {
-                writeln!(sink, "{:1$}", stat, path_len)?;
+                writeln!(
+                    sink,
+                    "{:1$}",
+                    FormattableStats::new(stat, num_format),
+                    path_len
+                )?;
             }
             writeln!(sink, "{}", row)?;
         }
@@ -106,14 +114,16 @@ pub fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
     !language.is_empty()
 }
 
-pub fn print_language<W>(
+pub fn print_language<W, F>(
     sink: &mut W,
     columns: usize,
     language: &Language,
     name: &str,
+    num_format: &F,
 ) -> io::Result<()>
 where
     W: Write,
+    F: NumFormat,
 {
     let mut lang_section_len = columns - NO_LANG_ROW_LEN;
     if language.inaccurate {
@@ -133,11 +143,11 @@ where
     writeln!(
         sink,
         "{:>6} {:>12} {:>12} {:>12} {:>12}",
-        language.stats.len(),
-        language.lines,
-        language.code,
-        language.comments,
-        language.blanks
+        language.stats.len().to_formatted_string(num_format),
+        language.lines.to_formatted_string(num_format),
+        language.code.to_formatted_string(num_format),
+        language.comments.to_formatted_string(num_format),
+        language.blanks.to_formatted_string(num_format)
     )
 }
 
@@ -150,4 +160,58 @@ where
         "Note: results can be inaccurate for languages marked with '{}'",
         IDENT_INACCURATE
     )
+}
+
+pub struct FormattableStats<'a, F: NumFormat> {
+    stats: &'a Stats,
+    num_format: &'a F,
+}
+
+impl<'a, F: NumFormat> FormattableStats<'a, F> {
+    pub fn new(stats: &'a Stats, num_format: &'a F) -> Self {
+        FormattableStats { stats, num_format }
+    }
+}
+
+macro_rules! display_stats {
+    ($f:expr, $this:expr, $name:expr, $max:expr, $format:expr) => {
+        write!(
+            $f,
+            " {: <max$} {:>12} {:>12} {:>12} {:>12}",
+            $name,
+            $this.lines.to_formatted_string($format),
+            $this.code.to_formatted_string($format),
+            $this.comments.to_formatted_string($format),
+            $this.blanks.to_formatted_string($format),
+            max = $max
+        )
+    };
+}
+
+fn find_char_boundary(s: &str, index: usize) -> usize {
+    for i in 0..4 {
+        if s.is_char_boundary(index + i) {
+            return index + i;
+        }
+    }
+    unreachable!();
+}
+
+impl<'a, F: NumFormat> fmt::Display for FormattableStats<'a, F> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let name = self.stats.name.to_string_lossy();
+        let name_length = name.len();
+
+        let max_len = f.width().unwrap_or(25);
+
+        if name_length <= max_len {
+            display_stats!(f, self.stats, name, max_len, self.num_format)
+        } else {
+            let mut formatted = String::from("|");
+            // Add 1 to the index to account for the '|' we add to the output string
+            let from = find_char_boundary(&name, name_length + 1 - max_len);
+            formatted.push_str(&name[from..]);
+            display_stats!(f, self.stats, formatted, max_len, self.num_format)
+        }
+    }
 }
