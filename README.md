@@ -33,14 +33,7 @@ Tokei is a program that displays statistics about your code. Tokei will show num
 
 - [Features](#features)
 - [Installation](#installation)
-    - [Automatic](#automatic)
-        - [Arch Linux](#arch-linux)
-        - [Cargo](#cargo)
-        - [Conda](#conda)
-        - [Fedora](#fedora)
-        - [FreeBSD](#freebsd)
-        - [Homebrew](#homebrew)
-        - [Nix/NixOS](#nixnixos)
+    - [Package Managers](#package-managers)
     - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
@@ -76,83 +69,40 @@ Tokei is a program that displays statistics about your code. Tokei will show num
 
 ## Installation
 
-### Automatic
-
-#### Arch Linux
-```shell
-$ pacman -S tokei
-```
-
-#### Cargo
-```shell
-$ cargo install tokei
-```
-
-#### Conda
-```shell
-$ conda install -c conda-forge tokei
-```
-
-#### Fedora
-```shell
-$ sudo dnf install tokei
-```
-
-#### OpenSUSE
-```shell
-$ sudo zypper install tokei
-```
-
-#### FreeBSD
-```shell
-$ pkg install tokei
-```
-
-#### MacOS (Homebrew)
-```shell
-$ brew install tokei
-```
-
-#### Nix/NixOS
-```shell
-$ nix-env -i tokei
-```
-
-### In a container
-
-Launch the Docker container by supplying the path as a volume in read only mode:
-
-```shell
-$ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei
-```
-or
-```shell
-$ docker run -v ~/Development/code/myproject/foo:/data:ro mbologna/docker-tokei tokei --sort lines
+### Package Managers
+```console
+# Arch Linux
+pacman -S tokei
+# Cargo
+cargo install tokei 
+# Conda
+conda install -c conda-forge tokei
+# Fedora
+sudo dnf install tokei
+# FreeBSD
+pkg install tokei
+# MacOS (Homebrew)
+brew install tokei
+# Nix/NixOS
+nix-env -i tokei
+# OpenSUSE
+sudo zypper install tokei
 ```
 
 ### Manual
+
+#### Downloading
 You can download prebuilt binaries in the
-[releases section](https://github.com/XAMPPRocky/tokei/releases), or create
-from source.
-```shell
-$ git clone https://github.com/XAMPPRocky/tokei.git
-$ cd tokei
-$ cargo build --release
+[releases section](https://github.com/XAMPPRocky/tokei/releases).
+
+#### Building
+You can also build and install from source (requires the latest stable [Rust] compiler.)
+```console
+git clone https://github.com/XAMPPRocky/tokei.git
+cargo install --path tokei
 ```
-##### Linux
-```
-# sudo mv target/release/tokei /usr/local/bin
-```
-##### OSX
-```
-# sudo mv target/release/tokei /usr/local/bin/tokei
-```
-##### Windows
-- Create a folder for tokei
-- search for `env`
-- open "edit your environment variables"
-- edit `PATH`
-- append folder path to the end of the string ie: `<path_stuff_here>;C:/tokei/;`
+
+[rust]: https://www-rust-lang.org
 
 ## How to use Tokei
 
