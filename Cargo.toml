@@ -46,7 +46,7 @@ serde = "1.0.104"
 serde_derive = "1.0.104"
 term_size = "0.3.1"
 toml = "0.5.6"
-grep-searcher = "0.1.6"
+grep-searcher = "0.1.7"
 crossbeam-channel = "0.4.2"
 
 [dependencies.env_logger]
