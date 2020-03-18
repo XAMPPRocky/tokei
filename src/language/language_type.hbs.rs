@@ -4,6 +4,7 @@
 /// comments.
 #[derive(Deserialize, Serialize)]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+#[non_exhaustive]
 pub enum LanguageType {
     {{~#each languages}}
         #[allow(missing_docs)]
@@ -12,132 +13,6 @@ pub enum LanguageType {
 }
 
 impl LanguageType {
-
-    pub(crate) fn blank_allows_nested() -> bool {
-        false
-    }
-
-    pub(crate) fn blank_line_comments() -> &'static [&'static str] {
-        &[]
-    }
-
-    pub(crate) fn blank_multi_line_comments()
-        -> &'static [(&'static str, &'static str)]
-    {
-        &[]
-    }
-
-    pub(crate) fn blank_quotes() -> &'static [(&'static str, &'static str)] {
-        &[]
-    }
-
-    pub(crate) fn c_allows_nested() -> bool {
-        Self::blank_allows_nested()
-    }
-
-    pub(crate) fn c_line_comments() -> &'static [&'static str] {
-        &["//"]
-    }
-
-    pub(crate) fn c_multi_line_comments()
-        -> &'static [(&'static str, &'static str)]
-    {
-        &[("/*", "*/")]
-    }
-
-    pub(crate) fn c_quotes() -> &'static [(&'static str, &'static str)] {
-        &[("\"", "\"")]
-    }
-
-    pub(crate) fn func_allows_nested() -> bool {
-        Self::blank_allows_nested()
-    }
-
-    pub(crate) fn func_line_comments() -> &'static [&'static str] {
-        Self::blank_line_comments()
-    }
-
-    pub(crate) fn func_multi_line_comments()
-        -> &'static [(&'static str, &'static str)]
-    {
-        &[("(*", "*)")]
-    }
-
-    pub(crate) fn func_quotes() -> &'static [(&'static str, &'static str)] {
-        Self::c_quotes()
-    }
-
-    pub(crate) fn hash_allows_nested() -> bool {
-        Self::blank_allows_nested()
-    }
-
-    pub(crate) fn hash_line_comments() -> &'static [&'static str] {
-        &["#"]
-    }
-
-    pub(crate) fn hash_multi_line_comments()
-        -> &'static [(&'static str, &'static str)]
-    {
-        Self::blank_multi_line_comments()
-    }
-
-    pub(crate) fn hash_quotes() -> &'static [(&'static str, &'static str)] {
-        Self::blank_quotes()
-    }
-
-    pub(crate) fn haskell_allows_nested() -> bool {
-        true
-    }
-
-    pub(crate) fn haskell_line_comments() -> &'static [&'static str] {
-        &["--"]
-    }
-
-    pub(crate) fn haskell_multi_line_comments()
-        -> &'static [(&'static str, &'static str)]
-    {
-        &[("{-", "-}")]
-    }
-
-    pub(crate) fn haskell_quotes() -> &'static [(&'static str, &'static str)] {
-        Self::blank_quotes()
-    }
-
-    pub(crate) fn html_allows_nested() -> bool {
-        Self::blank_allows_nested()
-    }
-
-    pub(crate) fn html_line_comments() -> &'static [&'static str] {
-        Self::blank_line_comments()
-    }
-
-    pub(crate) fn html_multi_line_comments()
-        -> &'static [(&'static str, &'static str)]
-    {
-        &[("<!--", "-->")]
-    }
-
-    pub(crate) fn html_quotes() -> &'static [(&'static str, &'static str)] {
-        Self::c_quotes()
-    }
-
-    pub(crate) fn pro_allows_nested() -> bool {
-        Self::blank_allows_nested()
-    }
-
-    pub(crate) fn pro_line_comments() -> &'static [&'static str] {
-        &["%"]
-    }
-
-    pub(crate) fn pro_multi_line_comments()
-        -> &'static [(&'static str, &'static str)]
-    {
-        &[("/*", "*/")]
-    }
-
-    pub(crate) fn pro_quotes() -> &'static [(&'static str, &'static str)] {
-        Self::c_quotes()
-    }
 
     /// Returns the display name of a language.
     ///
@@ -194,21 +69,16 @@ impl LanguageType {
     pub fn line_comments(self) -> &'static [&'static str] {
         match self {
             {{#each languages}}
-                {{~@key}} =>
-                    {{#if this.line_comment}}
+                {{#if this.line_comment}}
+                    {{~@key}} =>
                         &[
                             {{~#each this.line_comment}}
                                 "{{~this}}",
                             {{~/each}}
                         ],
-                    {{else}}
-                        {{#if this.base}}
-                            Self::{{this.base}}_line_comments(),
-                        {{else}}
-                            Self::blank_line_comments(),
-                        {{~/if}}
-                    {{~/if}}
+                {{~/if}}
             {{~/each}}
+            _ => &[],
         }
     }
 
@@ -222,10 +92,10 @@ impl LanguageType {
     {
         match self {
             {{#each languages}}
+                    {{#if this.multi_line_comments}}
                 {{~@key}} =>
-                    {{#if this.multi_line}}
                         &[
-                            {{~#each this.multi_line}}
+                            {{~#each this.multi_line_comments}}
                                 (
                                 {{~#each this}}
                                     "{{~this}}",
@@ -233,14 +103,9 @@ impl LanguageType {
                                 ),
                             {{~/each}}
                         ],
-                    {{else}}
-                        {{#if this.base}}
-                            Self::{{this.base}}_multi_line_comments(),
-                        {{else}}
-                            Self::blank_multi_line_comments(),
-                        {{~/if}}
                     {{~/if}}
             {{~/each}}
+            _ => &[],
         }
     }
 
@@ -254,21 +119,9 @@ impl LanguageType {
     pub fn allows_nested(self) -> bool {
         match self {
             {{#each languages}}
-                {{~@key}} =>
-                    {{~#if this.base}}
-                        {{~#if this.nested}}
-                            true
-                        {{else}}
-                                Self::{{this.base}}_allows_nested()
-                        {{~/if}}
-                    {{else}}
-                        {{~#if this.nested}}
-                            true
-                        {{else}}
-                            false
-                        {{~/if}}
-                    {{~/if}},
+                {{~#if this.nested}} {{~@key}} => true, {{~/if}}
             {{~/each}}
+            _ => false,
         }
     }
 
@@ -303,25 +156,16 @@ impl LanguageType {
     pub fn quotes(self) -> &'static [(&'static str, &'static str)] {
         match self {
             {{#each languages}}
-                {{~@key}} =>
-                    {{#if this.quotes}}
+                {{#if this.quotes}}
+                    {{~@key}} =>
                         &[
                             {{~#each this.quotes}}
-                                (
-                                {{~#each this}}
-                                    "{{this}}",
-                                {{~/each}}
-                                ),
+                                ( {{~#each this}}"{{this}}",{{~/each}} ),
                             {{~/each}}
                         ],
-                    {{else}}
-                        {{#if this.base}}
-                            Self::{{this.base}}_quotes(),
-                        {{else}}
-                            Self::blank_quotes(),
-                        {{~/if}}
-                    {{~/if}}
+                {{~/if}}
             {{~/each}}
+            _ => &[],
         }
     }
 
@@ -348,6 +192,22 @@ impl LanguageType {
             {{~/if}}
             {{~/each}}
             _ => &[],
+        }
+    }
+
+    /// Returns the parts of syntax that determines whether tokei can skip large
+    /// parts of analysis.
+    pub fn important_syntax(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+                {{~@key}} =>
+                    &[
+                        {{#if this.quotes}}{{#each this.quotes}}"{{this.0}}",{{/each}}{{/if}}
+                        {{#if this.doc_quotes}}{{#each this.doc_quotes}}"{{this.0}}",{{/each}}{{/if}}
+                        {{#if this.multi_line_comments}}{{#each this.multi_line_comments}}"{{this.0}}",{{/each}}{{/if}}
+                        {{#if this.nested_comments}}{{#each this.nested_comments}}"{{this.0}}",{{/each}}{{/if}}
+                    ],
+            {{~/each}}
         }
     }
 

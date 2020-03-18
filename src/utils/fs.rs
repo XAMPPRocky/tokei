@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, path::Path};
+use std::{collections::BTreeMap, path::Path, sync::Arc};
 
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState::Continue};
 
@@ -89,16 +89,24 @@ pub fn get_all_files<A: AsRef<Path>>(
     });
 
     let types: Option<&[LanguageType]> = config.types.as_ref().map(|v| &**v);
+    let matchers = dashmap::DashMap::<
+        LanguageType,
+        Arc<(aho_corasick::AhoCorasick, aho_corasick::AhoCorasick)>,
+    >::new();
 
     let iter = rx
         .into_iter()
-        .collect::<Vec<_>>()
-        .into_par_iter()
+        .par_bridge()
         .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)))
         .filter(|(_, l)| types.map(|t| t.contains(l)).unwrap_or(true))
         .map(|(entry, language)| {
+            let matchers = matchers
+                .entry(language)
+                .or_insert_with(|| Arc::new(language.create_matchers()))
+                .clone();
+
             language
-                .parse(entry.into_path(), &config)
+                .parse(entry.into_path(), &config, matchers)
                 .map(|stats| (language, Some(stats)))
                 .unwrap_or_else(|(e, path)| {
                     error!("Error reading {}:\n{}", path.display(), e);

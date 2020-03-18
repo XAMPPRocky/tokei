@@ -44,16 +44,6 @@ impl SyntaxCounter {
     }
 
     #[inline]
-    pub(crate) fn important_syntax(&self) -> impl Iterator<Item = &str> {
-        self.quotes
-            .iter()
-            .map(|(s, _)| *s)
-            .chain(self.doc_quotes.iter().map(|(s, _)| *s))
-            .chain(self.multi_line_comments.iter().map(|(s, _)| *s))
-            .chain(self.nested_comments.iter().map(|(s, _)| *s))
-    }
-
-    #[inline]
     pub(crate) fn start_of_comments(&self) -> impl Iterator<Item = &&str> {
         self.line_comments
             .iter()

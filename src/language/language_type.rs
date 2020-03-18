@@ -5,10 +5,8 @@ use std::{
     io::{self, BufRead, BufReader, Read},
     path::{Path, PathBuf},
     str::FromStr,
+    sync::Arc,
 };
-
-use encoding_rs_io::DecodeReaderBytesBuilder;
-use grep_searcher::LineIter;
 
 use crate::{
     config::Config,
@@ -17,6 +15,10 @@ use crate::{
     utils::{ext::SliceExt, fs as fsutils},
 };
 
+use aho_corasick::AhoCorasick;
+use encoding_rs_io::DecodeReaderBytesBuilder;
+use grep_searcher::LineIter;
+
 use self::LanguageType::*;
 
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
@@ -24,7 +26,12 @@ include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
     /// on success and giving back ownership of PathBuf on error.
-    pub fn parse(self, path: PathBuf, config: &Config) -> Result<Stats, (io::Error, PathBuf)> {
+    pub fn parse(
+        self,
+        path: PathBuf,
+        config: &Config,
+        matchers: Arc<(AhoCorasick, AhoCorasick)>,
+    ) -> Result<Stats, (io::Error, PathBuf)> {
         let text = {
             let f = match File::open(&path) {
                 Ok(f) => f,
@@ -39,12 +46,18 @@ impl LanguageType {
             s
         };
 
-        Ok(self.parse_from_slice(path, &text, config))
+        Ok(self.parse_from_slice(path, &text, config, matchers))
     }
 
     /// Parses the text provided. Returns `Stats` on success.
-    pub fn parse_from_str<A: AsRef<str>>(self, path: PathBuf, text: A, config: &Config) -> Stats {
-        self.parse_from_slice(path, text.as_ref().as_bytes(), config)
+    pub fn parse_from_str<A: AsRef<str>>(
+        self,
+        path: PathBuf,
+        text: A,
+        config: &Config,
+        matchers: Arc<(AhoCorasick, AhoCorasick)>,
+    ) -> Stats {
+        self.parse_from_slice(path, text.as_ref().as_bytes(), config, matchers)
     }
 
     /// Parses the text provided. Returning `Stats` on success.
@@ -53,6 +66,7 @@ impl LanguageType {
         path: PathBuf,
         text: A,
         config: &Config,
+        matchers: Arc<(AhoCorasick, AhoCorasick)>,
     ) -> Stats {
         let lines = LineIter::new(b'\n', text.as_ref());
         let mut stats = Stats::new(path);
@@ -63,8 +77,15 @@ impl LanguageType {
             stats.code = count;
             stats
         } else {
-            self.parse_lines(config, lines, stats)
+            self.parse_lines(config, lines, stats, matchers)
         }
+    }
+
+    pub(crate) fn create_matchers(self) -> (AhoCorasick, AhoCorasick) {
+        (
+            aho_corasick::AhoCorasick::new_auto_configured(self.important_syntax()),
+            aho_corasick::AhoCorasick::new_auto_configured(self.line_comments()),
+        )
     }
 
     #[inline]
@@ -73,10 +94,10 @@ impl LanguageType {
         config: &Config,
         lines: impl IntoIterator<Item = &'a [u8]>,
         mut stats: Stats,
+        matchers: Arc<(AhoCorasick, AhoCorasick)>,
     ) -> Stats {
         let mut syntax = SyntaxCounter::new(self);
-        let matcher = aho_corasick::AhoCorasick::new(syntax.important_syntax());
-        let single_comment = aho_corasick::AhoCorasick::new(syntax.line_comments);
+        let (ref matcher, ref single_comment) = *matchers;
 
         for line in lines {
             // FORTRAN has a rule where it only counts as a comment if it's the
