@@ -9,26 +9,13 @@ file. JSON was decided to make it easy to add new languages, and change code
 structure without changing large data structures. Here we will go over the
 properties of a language in `languages.json`, through examples.
 
-```
-"JavaScript":{
-    "base":"c",
-    "quotes":[
-        [
-            "\\\"",
-            "\\\""
-        ],
-        [
-            "'",
-            "'"
-        ],
-        [
-            "`",
-            "`"
-        ]
-    ],
-    "extensions":[
-        "js"
-    ]
+```json
+"JavaScript": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["js", "mjs"]
 },
 ```
 
@@ -76,31 +63,6 @@ let x = /* There is a reason
     for this comment I swear */
     10;
 ```
-
-A lot of languages have the same commenting syntax usually inheriting from the 
-authors previous language or preferred language. In order to avoid code reuse
-tokei's languages have a `base` property which says to use a common comment
-syntax. e.g.
-
-```json
-"ActionScript":{
-    "base":"c",
-    "extensions":[
-        "as"
-    ]
-}
-```
-
-#### Bases
-
-- `blank` A language with no comments.
-- `c` Single: `//`, Multi line: `/* */`, Quotes: `" "`
-- `func` Multi line: `(* *)`, Quotes: `" "`
-- `html` Multi line: `<!-- -->`, Quotes: `" "`
-- `hash` Single: `#`
-- `haskell` Single: `--`, Multi line: `{- -}`, Nested: `true`
-- `pro` Single: `%`, Multi line: `/* */`, Quotes: `" "`
-
 
 Some languages have a single, standard filename with no extension
 like `Makefile` or `Dockerfile`. These can be defined with the
