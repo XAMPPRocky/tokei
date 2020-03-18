@@ -1,4 +1,4 @@
-// 41 lines 28 code 5 comments 8 blanks
+// 50 lines 33 code 8 comments 9 blanks
 
 /* /* we can't nest block comments in c, but we can start one */
 int main(void) {
@@ -39,3 +39,12 @@ void foobar() {
     int b = 5;
     int c = 6; // */
 }
+
+/*\
+ / comment
+\*/
+struct Point {
+    int x;
+    int y;
+    int z;
+};

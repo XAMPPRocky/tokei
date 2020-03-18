@@ -67,38 +67,6 @@ impl LanguageType {
         }
     }
 
-    /// Attempts to parse the line as simply as possible if there are no multi
-    /// line comments or quotes. Returns `bool` indicating whether it was
-    /// successful or not.
-    #[inline]
-    fn parse_basic(self, syntax: &SyntaxCounter, line: &[u8], stats: &mut Stats) -> bool {
-        if syntax.quote.is_some()
-            || !syntax.stack.is_empty()
-            || syntax
-                .important_syntax()
-                .any(|s| line.contains_slice(s.as_bytes()))
-        {
-            return false;
-        }
-
-        if syntax
-            .line_comments
-            .iter()
-            .any(|s| line.starts_with(s.as_bytes()))
-        {
-            stats.comments += 1;
-            trace!("Comment No.{}", stats.comments);
-        } else {
-            stats.code += 1;
-            trace!("Code No.{}", stats.code);
-        }
-
-        trace!("{}", String::from_utf8_lossy(line));
-        trace!("^ Skippable.");
-
-        true
-    }
-
     #[inline]
     fn parse_lines<'a>(
         self,
@@ -107,18 +75,38 @@ impl LanguageType {
         mut stats: Stats,
     ) -> Stats {
         let mut syntax = SyntaxCounter::new(self);
+        let matcher = aho_corasick::AhoCorasick::new(syntax.important_syntax());
+        let single_comment = aho_corasick::AhoCorasick::new(syntax.line_comments);
 
         for line in lines {
-            if line.trim().is_empty() {
-                stats.blanks += 1;
-                trace!("Blank No.{}", stats.blanks);
-                continue;
-            }
-
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
             let line = if syntax.is_fortran { line } else { line.trim() };
+            trace!("{}", String::from_utf8_lossy(line));
+
+            if line.trim().is_empty() {
+                stats.blanks += 1;
+                trace!("Blank No.{}", stats.blanks);
+                continue;
+            } else if syntax.is_plain_mode() && !matcher.is_match(line) {
+                trace!("^ Skippable");
+
+                if single_comment
+                    .earliest_find(line)
+                    .map(|m| m.start() == 0)
+                    .unwrap_or(false)
+                {
+                    stats.comments += 1;
+                    trace!("Comment No.{}", stats.comments);
+                } else {
+                    stats.code += 1;
+                    trace!("Code No.{}", stats.code);
+                }
+
+                continue;
+            }
+
             let had_multi_line = !syntax.stack.is_empty();
             let mut ended_with_comments = false;
             let mut skip = 0;
@@ -126,10 +114,6 @@ impl LanguageType {
                 ($skip:expr) => {{
                     skip = $skip - 1;
                 }};
-            }
-
-            if self.parse_basic(&syntax, line, &mut stats) {
-                continue;
             }
 
             'window: for i in 0..line.len() {

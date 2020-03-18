@@ -2,6 +2,18 @@ use log::Level::Trace;
 
 use super::language_type::LanguageType;
 
+/// Tracks the syntax of the language as well as the current state in the file.
+/// Current has what could be consider three types of mode.
+/// - `plain` mode: This is the normal state, blanks are counted as blanks,
+///   string literals can trigger `string` mode, and comments can trigger
+///   `comment` mode.
+/// - `string` mode: This when the state machine is current inside a string
+///   literal for a given language, comments cannot trigger `comment` mode while
+///   in `string` mode.
+/// - `string` mode: This when the state machine is current inside a comment
+///   for a given language, strings cannot trigger `string` mode while in
+///   `comment` mode.
+#[derive(Clone, Debug)]
 pub(crate) struct SyntaxCounter {
     pub(crate) allows_nested: bool,
     pub(crate) doc_quotes: &'static [(&'static str, &'static str)],
@@ -92,6 +104,21 @@ impl SyntaxCounter {
         None
     }
 
+    /// Returns whether the syntax is currently in plain mode.
+    pub(crate) fn is_plain_mode(&self) -> bool {
+        self.quote.is_none() && self.stack.is_empty()
+    }
+
+    /// Returns whether the syntax is currently in string mode.
+    pub(crate) fn _is_string_mode(&self) -> bool {
+        self.quote.is_some()
+    }
+
+    /// Returns whether the syntax is currently in comment mode.
+    pub(crate) fn _is_comment_mode(&self) -> bool {
+        !self.stack.is_empty()
+    }
+
     #[inline]
     pub(crate) fn parse_multi_line_comment(&mut self, window: &[u8]) -> Option<usize> {
         if self.quote.is_some() {
@@ -123,17 +150,18 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
-        if self
-            .quote
-            .map_or(false, |q| window.starts_with(q.as_bytes()))
-        {
-            let quote = self.quote.take().unwrap();
-            trace!("End {:?}", quote);
-            Some(quote.len())
-        } else if window.starts_with(br"\") {
-            // Tell the state machine to skip the next character because it has
-            // been escaped.
-            Some(2)
+        if let Some(quote) = self.quote {
+            if window.starts_with(quote.as_bytes()) {
+                let quote = self.quote.take().unwrap();
+                trace!("End {:?}", quote);
+                Some(quote.len())
+            } else if window.starts_with(br"\") {
+                // Tell the state machine to skip the next character because it
+                // has been escaped.
+                Some(2)
+            } else {
+                None
+            }
         } else {
             None
         }
