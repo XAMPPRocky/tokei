@@ -21,7 +21,7 @@ json = ["serde_json"]
 yaml = ["serde_yaml"]
 
 [profile.release]
-lto = true
+lto = "thin"
 panic = "abort"
 
 [badges.appveyor]
