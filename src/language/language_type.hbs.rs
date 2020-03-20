@@ -195,6 +195,162 @@ impl LanguageType {
         }
     }
 
+    pub(crate) fn start_any_comments(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+                {{~@key}} =>
+                    &[
+                        {{#if this.line_comment}}
+                            {{~#each this.line_comment}}
+                                "{{this}}",
+                            {{~/each}}
+                        {{~/if}}
+                        {{#if this.multi_line_comments}}
+                            {{~#each this.multi_line_comments}}
+                                "{{this.0}}",
+                            {{~/each}}
+                        {{~/if}}
+                        {{#if this.nested_comments}}
+                            {{~#each this.nested_comments}}
+                                "{{this.0}}",
+                            {{~/each}}
+                        {{~/if}}
+                    ],
+            {{~/each}}
+        }
+    }
+
+
+    pub(crate) fn _start_string_literals(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.quotes}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.quotes}}
+                            "{{this.0}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
+    pub(crate) fn _end_string_literals(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.quotes}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.quotes}}
+                            "{{this.1}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
+    pub(crate) fn _start_multi_line_comments(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.multi_line_comments}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.multi_line_comments}}
+                            "{{this.0}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
+    pub(crate) fn _end_multi_line_comments(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.multi_line_comments}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.multi_line_comments}}
+                            "{{this.1}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
+    pub(crate) fn _start_nested_comments(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.nested_comments}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.nested_comments}}
+                            "{{this.0}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
+    pub(crate) fn _end_nested_comments(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.nested_comments}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.nested_comments}}
+                            "{{this.1}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
+    /// Returns the starting doc literal.
+    pub(crate) fn _start_doc_quotes(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.doc_quotes}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.doc_quotes}}
+                            "{{this.0}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
+    /// Returns the starting doc literal.
+    pub(crate) fn _end_doc_quotes(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.doc_quotes}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.doc_quotes}}
+                            "{{this.1}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
     /// Returns the parts of syntax that determines whether tokei can skip large
     /// parts of analysis.
     pub fn important_syntax(self) -> &'static [&'static str] {

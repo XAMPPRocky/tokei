@@ -1,3 +1,7 @@
+use std::sync::Arc;
+
+use aho_corasick::AhoCorasick;
+use dashmap::DashMap;
 use log::Level::Trace;
 
 use super::language_type::LanguageType;
@@ -15,40 +19,61 @@ use super::language_type::LanguageType;
 ///   `comment` mode.
 #[derive(Clone, Debug)]
 pub(crate) struct SyntaxCounter {
-    pub(crate) allows_nested: bool,
-    pub(crate) doc_quotes: &'static [(&'static str, &'static str)],
-    pub(crate) is_fortran: bool,
-    pub(crate) line_comments: &'static [&'static str],
-    pub(crate) multi_line_comments: &'static [(&'static str, &'static str)],
-    pub(crate) nested_comments: &'static [(&'static str, &'static str)],
+    pub(crate) shared: Arc<SharedMatchers>,
     pub(crate) quote: Option<&'static str>,
     pub(crate) quote_is_doc_quote: bool,
-    pub(crate) quotes: &'static [(&'static str, &'static str)],
     pub(crate) stack: Vec<&'static str>,
+}
+
+#[derive(Clone, Debug)]
+pub(crate) struct SharedMatchers {
+    pub allows_nested: bool,
+    pub doc_quotes: &'static [(&'static str, &'static str)],
+    pub important_syntax: AhoCorasick,
+    pub any_comments: AhoCorasick,
+    pub is_fortran: bool,
+    pub line_comments: &'static [&'static str],
+    pub multi_line_comments: &'static [(&'static str, &'static str)],
+    pub nested_comments: &'static [(&'static str, &'static str)],
+    pub string_literals: &'static [(&'static str, &'static str)],
+}
+
+impl SharedMatchers {
+    pub fn new(language: LanguageType) -> Arc<Self> {
+        lazy_static::lazy_static! {
+            pub(crate) static ref MATCHERS: DashMap<LanguageType, Arc<SharedMatchers>> = DashMap::new();
+        }
+
+        MATCHERS
+            .entry(language)
+            .or_insert_with(|| Arc::new(Self::init(language)))
+            .value()
+            .clone()
+    }
+
+    pub fn init(language: LanguageType) -> Self {
+        Self {
+            allows_nested: language.allows_nested(),
+            doc_quotes: language.doc_quotes(),
+            is_fortran: language.is_fortran(),
+            important_syntax: AhoCorasick::new_auto_configured(language.important_syntax()),
+            any_comments: AhoCorasick::new_auto_configured(language.start_any_comments()),
+            line_comments: language.line_comments(),
+            multi_line_comments: language.multi_line_comments(),
+            nested_comments: language.nested_comments(),
+            string_literals: language.quotes(),
+        }
+    }
 }
 
 impl SyntaxCounter {
     pub(crate) fn new(language: LanguageType) -> Self {
         Self {
-            allows_nested: language.allows_nested(),
-            doc_quotes: language.doc_quotes(),
-            is_fortran: language.is_fortran(),
-            line_comments: language.line_comments(),
-            multi_line_comments: language.multi_line_comments(),
-            nested_comments: language.nested_comments(),
+            shared: SharedMatchers::new(language),
             quote_is_doc_quote: false,
-            quotes: language.quotes(),
             stack: Vec::with_capacity(1),
             quote: None,
         }
-    }
-
-    #[inline]
-    pub(crate) fn start_of_comments(&self) -> impl Iterator<Item = &&str> {
-        self.line_comments
-            .iter()
-            .chain(self.multi_line_comments.iter().map(|(s, _)| s))
-            .chain(self.nested_comments.iter().map(|(s, _)| s))
     }
 
     #[inline]
@@ -57,11 +82,14 @@ impl SyntaxCounter {
             return false;
         }
 
-        for comment in self.line_comments {
-            if window.starts_with(comment.as_bytes()) {
-                trace!("Start {:?}", comment);
-                return true;
-            }
+        if let Some(comment) = self
+            .shared
+            .line_comments
+            .iter()
+            .find(|c| window.starts_with(c.as_bytes()))
+        {
+            trace!("Start {:?}", comment);
+            return true;
         }
 
         false
@@ -73,22 +101,28 @@ impl SyntaxCounter {
             return None;
         }
 
-        for &(start, end) in self.doc_quotes {
-            if window.starts_with(start.as_bytes()) {
-                trace!("Start Doc {:?}", start);
-                self.quote = Some(end);
-                self.quote_is_doc_quote = true;
-                return Some(start.len());
-            }
+        if let Some((start, end)) = self
+            .shared
+            .doc_quotes
+            .iter()
+            .find(|(s, _)| window.starts_with(s.as_bytes()))
+        {
+            trace!("Start Doc {:?}", start);
+            self.quote = Some(end);
+            self.quote_is_doc_quote = true;
+            return Some(start.len());
         }
 
-        for &(start, end) in self.quotes {
-            if window.starts_with(start.as_bytes()) {
-                trace!("Start {:?}", start);
-                self.quote = Some(end);
-                self.quote_is_doc_quote = false;
-                return Some(start.len());
-            }
+        if let Some((start, end)) = self
+            .shared
+            .string_literals
+            .iter()
+            .find(|(s, _)| window.starts_with(s.as_bytes()))
+        {
+            trace!("Start {:?}", start);
+            self.quote = Some(end);
+            self.quote_is_doc_quote = false;
+            return Some(start.len());
         }
 
         None
@@ -115,16 +149,20 @@ impl SyntaxCounter {
             return None;
         }
 
-        let iter = self.multi_line_comments.iter().chain(self.nested_comments);
+        let iter = self
+            .shared
+            .multi_line_comments
+            .iter()
+            .chain(self.shared.nested_comments);
         for &(start, end) in iter {
             if window.starts_with(start.as_bytes()) {
                 if self.stack.is_empty()
-                    || self.allows_nested
-                    || self.nested_comments.contains(&(start, end))
+                    || self.shared.allows_nested
+                    || self.shared.nested_comments.contains(&(start, end))
                 {
                     self.stack.push(end);
 
-                    if log_enabled!(Trace) && self.allows_nested {
+                    if log_enabled!(Trace) && self.shared.allows_nested {
                         trace!("Start nested {:?}", start);
                     } else {
                         trace!("Start {:?}", start);

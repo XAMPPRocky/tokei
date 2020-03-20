@@ -258,6 +258,7 @@ dependencies = [
  "ahash",
  "cfg-if",
  "num_cpus",
+ "serde",
 ]
 
 [[package]]
@@ -901,6 +902,9 @@ name = "serde"
 version = "1.0.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e707fbbf255b8fc8c3b99abb91e7257a622caeb20a9818cbadbeeede4e0932ff"
+dependencies = [
+ "serde_derive",
+]
 
 [[package]]
 name = "serde_cbor"
@@ -914,9 +918,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.104"
+version = "1.0.105"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "128f9e303a5a29922045a830221b8f78ec74a5f544944f3d5984f8ec3895ef64"
+checksum = "ac5d00fc561ba2724df6758a17de23df5914f20e41cb00f94d5b7ae42fffaff8"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1056,7 +1060,6 @@ dependencies = [
  "regex",
  "serde",
  "serde_cbor",
- "serde_derive",
  "serde_json",
  "serde_yaml",
  "tempfile",

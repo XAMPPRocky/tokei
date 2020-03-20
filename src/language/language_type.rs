@@ -5,7 +5,6 @@ use std::{
     io::{self, BufRead, BufReader, Read},
     path::{Path, PathBuf},
     str::FromStr,
-    sync::Arc,
 };
 
 use crate::{
@@ -15,7 +14,6 @@ use crate::{
     utils::{ext::SliceExt, fs as fsutils},
 };
 
-use aho_corasick::AhoCorasick;
 use encoding_rs_io::DecodeReaderBytesBuilder;
 use grep_searcher::LineIter;
 
@@ -26,12 +24,7 @@ include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 impl LanguageType {
     /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
     /// on success and giving back ownership of PathBuf on error.
-    pub fn parse(
-        self,
-        path: PathBuf,
-        config: &Config,
-        matchers: Arc<(AhoCorasick, AhoCorasick)>,
-    ) -> Result<Stats, (io::Error, PathBuf)> {
+    pub fn parse(self, path: PathBuf, config: &Config) -> Result<Stats, (io::Error, PathBuf)> {
         let text = {
             let f = match File::open(&path) {
                 Ok(f) => f,
@@ -46,18 +39,12 @@ impl LanguageType {
             s
         };
 
-        Ok(self.parse_from_slice(path, &text, config, matchers))
+        Ok(self.parse_from_slice(path, &text, config))
     }
 
     /// Parses the text provided. Returns `Stats` on success.
-    pub fn parse_from_str<A: AsRef<str>>(
-        self,
-        path: PathBuf,
-        text: A,
-        config: &Config,
-        matchers: Arc<(AhoCorasick, AhoCorasick)>,
-    ) -> Stats {
-        self.parse_from_slice(path, text.as_ref().as_bytes(), config, matchers)
+    pub fn parse_from_str<A: AsRef<str>>(self, path: PathBuf, text: A, config: &Config) -> Stats {
+        self.parse_from_slice(path, text.as_ref().as_bytes(), config)
     }
 
     /// Parses the text provided. Returning `Stats` on success.
@@ -66,7 +53,6 @@ impl LanguageType {
         path: PathBuf,
         text: A,
         config: &Config,
-        matchers: Arc<(AhoCorasick, AhoCorasick)>,
     ) -> Stats {
         let lines = LineIter::new(b'\n', text.as_ref());
         let mut stats = Stats::new(path);
@@ -77,15 +63,8 @@ impl LanguageType {
             stats.code = count;
             stats
         } else {
-            self.parse_lines(config, lines, stats, matchers)
+            self.parse_lines(config, lines, stats)
         }
-    }
-
-    pub(crate) fn create_matchers(self) -> (AhoCorasick, AhoCorasick) {
-        (
-            aho_corasick::AhoCorasick::new_auto_configured(self.important_syntax()),
-            aho_corasick::AhoCorasick::new_auto_configured(self.line_comments()),
-        )
     }
 
     #[inline]
@@ -94,29 +73,32 @@ impl LanguageType {
         config: &Config,
         lines: impl IntoIterator<Item = &'a [u8]>,
         mut stats: Stats,
-        matchers: Arc<(AhoCorasick, AhoCorasick)>,
     ) -> Stats {
         let mut syntax = SyntaxCounter::new(self);
-        let (ref matcher, ref single_comment) = *matchers;
 
         for line in lines {
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
-            let line = if syntax.is_fortran { line } else { line.trim() };
+            let line = if syntax.shared.is_fortran {
+                line
+            } else {
+                line.trim()
+            };
             trace!("{}", String::from_utf8_lossy(line));
 
             if line.trim().is_empty() {
                 stats.blanks += 1;
                 trace!("Blank No.{}", stats.blanks);
                 continue;
-            } else if syntax.is_plain_mode() && !matcher.is_match(line) {
+            } else if syntax.is_plain_mode() && !syntax.shared.important_syntax.is_match(line) {
                 trace!("^ Skippable");
 
-                if single_comment
-                    .earliest_find(line)
-                    .map(|m| m.start() == 0)
-                    .unwrap_or(false)
+                if syntax
+                    .shared
+                    .line_comments
+                    .iter()
+                    .any(|c| line.starts_with(c.as_bytes()))
                 {
                     stats.comments += 1;
                     trace!("Comment No.{}", stats.comments);
@@ -180,15 +162,17 @@ impl LanguageType {
                     // If we're currently in a comment or we just ended
                     // with one.
                     syntax
-                        .start_of_comments()
-                        .any(|comment| line.starts_with(comment.as_bytes()))
+                        .shared
+                        .any_comments
+                        .earliest_find(line)
+                        .map_or(false, |e| e.start() == 0)
                         && syntax.quote.is_none()
                 )
                 || ((
                         // If we're currently in a doc string or we just ended
                         // with one.
                         syntax.quote.is_some() ||
-                        syntax.doc_quotes.iter().any(|(s, _)| line.starts_with(s.as_bytes()))
+                        syntax.shared.doc_quotes.iter().any(|(s, _)| line.starts_with(s.as_bytes()))
                     ) &&
                     // `Some(true)` is import in order to respect the current
                     // configuration.

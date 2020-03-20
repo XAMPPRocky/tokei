@@ -1,4 +1,4 @@
-use std::{collections::BTreeMap, path::Path, sync::Arc};
+use std::{collections::BTreeMap, path::Path};
 
 use ignore::{overrides::OverrideBuilder, WalkBuilder, WalkState::Continue};
 
@@ -78,10 +78,8 @@ pub fn get_all_files<A: AsRef<Path>>(
                 }
             };
 
-            if let Some(file_type) = entry.file_type() {
-                if file_type.is_file() {
-                    tx.send(entry).unwrap();
-                }
+            if entry.file_type().map_or(false, |ft| ft.is_file()) {
+                tx.send(entry).unwrap();
             }
 
             Continue
@@ -89,10 +87,6 @@ pub fn get_all_files<A: AsRef<Path>>(
     });
 
     let types: Option<&[LanguageType]> = config.types.as_ref().map(|v| &**v);
-    let matchers = dashmap::DashMap::<
-        LanguageType,
-        Arc<(aho_corasick::AhoCorasick, aho_corasick::AhoCorasick)>,
-    >::new();
 
     let iter = rx
         .into_iter()
@@ -100,13 +94,8 @@ pub fn get_all_files<A: AsRef<Path>>(
         .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)))
         .filter(|(_, l)| types.map(|t| t.contains(l)).unwrap_or(true))
         .map(|(entry, language)| {
-            let matchers = matchers
-                .entry(language)
-                .or_insert_with(|| Arc::new(language.create_matchers()))
-                .clone();
-
             language
-                .parse(entry.into_path(), &config, matchers)
+                .parse(entry.into_path(), &config)
                 .map(|stats| (language, Some(stats)))
                 .unwrap_or_else(|(e, path)| {
                     error!("Error reading {}:\n{}", path.display(), e);
