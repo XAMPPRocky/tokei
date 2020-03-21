@@ -20,6 +20,7 @@ pub fn get_all_files<A: AsRef<Path>>(
     languages: &mut BTreeMap<LanguageType, Language>,
     config: &Config,
 ) {
+    let languages = parking_lot::Mutex::new(languages);
     let (tx, rx) = crossbeam_channel::unbounded();
 
     let mut paths = paths.iter();
@@ -88,31 +89,22 @@ pub fn get_all_files<A: AsRef<Path>>(
 
     let types: Option<&[LanguageType]> = config.types.as_ref().map(|v| &**v);
 
-    let iter = rx
-        .into_iter()
+    rx.into_iter()
         .par_bridge()
         .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)))
-        .filter(|(_, l)| types.map(|t| t.contains(l)).unwrap_or(true))
-        .map(|(entry, language)| {
-            language
-                .parse(entry.into_path(), &config)
-                .map(|stats| (language, Some(stats)))
-                .unwrap_or_else(|(e, path)| {
-                    error!("Error reading {}:\n{}", path.display(), e);
-                    (language, None)
-                })
+        .filter(|(_, l)| types.map_or(true, |t| t.contains(l)))
+        .for_each(|(entry, language)| {
+            let result = language.parse(entry.into_path(), &config);
+            let mut lock = languages.lock();
+            let entry = lock.entry(language).or_insert_with(Language::new);
+            match result {
+                Ok(stats) => entry.add_stat(stats),
+                Err((error, path)) => {
+                    entry.mark_inaccurate();
+                    error!("Error reading {}:\n{}", path.display(), error);
+                }
+            }
         })
-        .collect::<Vec<_>>();
-
-    for (language_type, stats) in iter {
-        let entry = languages.entry(language_type).or_insert_with(Language::new);
-
-        if let Some(stats) = stats {
-            entry.add_stat(stats);
-        } else {
-            entry.mark_inaccurate();
-        }
-    }
 }
 
 pub(crate) fn get_extension(path: &Path) -> Option<String> {

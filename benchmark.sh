@@ -39,12 +39,11 @@ fi
 cargo build --release
 
 if [ $FULL = true ]; then
-    hyperfine -w 5 "target/release/tokei $input" \
+    hyperfine -w 10 --export-csv './results.csv' "target/release/tokei $input" \
                 "tokei $input" \
                 "scc $input" \
-                "loc $input" \
-                "cloc $input"
+                "loc $input" # \ "cloc $input"
 else
-    hyperfine -w 10 -m 50 "target/release/tokei $input" \
+    hyperfine -w 5 "target/release/tokei $input" \
                 "tokei $input"
 fi

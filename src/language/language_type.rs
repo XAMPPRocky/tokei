@@ -16,6 +16,7 @@ use crate::{
 
 use encoding_rs_io::DecodeReaderBytesBuilder;
 use grep_searcher::LineIter;
+use rayon::prelude::*;
 
 use self::LanguageType::*;
 
@@ -54,16 +55,66 @@ impl LanguageType {
         text: A,
         config: &Config,
     ) -> Stats {
-        let lines = LineIter::new(b'\n', text.as_ref());
+        let text = text.as_ref();
+        let lines = LineIter::new(b'\n', text);
         let mut stats = Stats::new(path);
+        let syntax = SyntaxCounter::new(self);
 
         if self.is_blank() {
             let count = lines.count();
             stats.lines = count;
             stats.code = count;
             stats
+        } else if let Some(end) = syntax
+            .shared
+            .important_syntax
+            .earliest_find(text)
+            .and_then(|m| {
+                // Get the position of the last line before the important
+                // syntax.
+                text[..=m.start()]
+                    .into_iter()
+                    .rev()
+                    .position(|&c| c == b'\n')
+                    .filter(|&p| p != 0)
+                    .map(|p| m.start() - p)
+            })
+        {
+            let (skippable_text, rest) = text.split_at(end + 1);
+            let lines = LineIter::new(b'\n', skippable_text);
+            let is_fortran = syntax.shared.is_fortran;
+            let comments = syntax.shared.line_comments;
+
+            let (mut stats, (code, comments, blanks)) = rayon::join(
+                move || self.parse_lines(config, LineIter::new(b'\n', rest), stats, syntax),
+                move || {
+                    lines
+                        .par_bridge()
+                        .map(|line| {
+                            // FORTRAN has a rule where it only counts as a comment if it's the
+                            // first character in the column, so removing starting whitespace
+                            // could cause a miscount.
+                            let line = if is_fortran { line } else { line.trim() };
+                            trace!("{}", String::from_utf8_lossy(line));
+
+                            if line.trim().is_empty() {
+                                (0, 0, 1)
+                            } else if comments.iter().any(|c| line.starts_with(c.as_bytes())) {
+                                (0, 1, 0)
+                            } else {
+                                (1, 0, 0)
+                            }
+                        })
+                        .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
+                },
+            );
+
+            stats.code += code;
+            stats.comments += comments;
+            stats.blanks += blanks;
+            stats
         } else {
-            self.parse_lines(config, lines, stats)
+            self.parse_lines(config, lines, stats, syntax)
         }
     }
 
@@ -73,9 +124,8 @@ impl LanguageType {
         config: &Config,
         lines: impl IntoIterator<Item = &'a [u8]>,
         mut stats: Stats,
+        mut syntax: SyntaxCounter,
     ) -> Stats {
-        let mut syntax = SyntaxCounter::new(self);
-
         for line in lines {
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
@@ -161,12 +211,7 @@ impl LanguageType {
                 || (
                     // If we're currently in a comment or we just ended
                     // with one.
-                    syntax
-                        .shared
-                        .any_comments
-                        .earliest_find(line)
-                        .map_or(false, |e| e.start() == 0)
-                        && syntax.quote.is_none()
+                    syntax.shared.any_comments.is_match(line) && syntax.quote.is_none()
                 )
                 || ((
                         // If we're currently in a doc string or we just ended

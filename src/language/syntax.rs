@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use aho_corasick::AhoCorasick;
+use aho_corasick::{AhoCorasick, AhoCorasickBuilder};
 use dashmap::DashMap;
 use log::Level::Trace;
 
@@ -29,8 +29,8 @@ pub(crate) struct SyntaxCounter {
 pub(crate) struct SharedMatchers {
     pub allows_nested: bool,
     pub doc_quotes: &'static [(&'static str, &'static str)],
-    pub important_syntax: AhoCorasick,
-    pub any_comments: AhoCorasick,
+    pub important_syntax: AhoCorasick<u16>,
+    pub any_comments: AhoCorasick<u16>,
     pub is_fortran: bool,
     pub line_comments: &'static [&'static str],
     pub multi_line_comments: &'static [(&'static str, &'static str)],
@@ -52,12 +52,22 @@ impl SharedMatchers {
     }
 
     pub fn init(language: LanguageType) -> Self {
+        fn init_corasick(pattern: &[&'static str], anchored: bool) -> AhoCorasick<u16> {
+            let mut builder = AhoCorasickBuilder::new();
+            builder
+                .anchored(anchored)
+                .byte_classes(false)
+                .dfa(true)
+                .prefilter(true);
+            builder.build_with_size(pattern).unwrap()
+        }
+
         Self {
             allows_nested: language.allows_nested(),
             doc_quotes: language.doc_quotes(),
             is_fortran: language.is_fortran(),
-            important_syntax: AhoCorasick::new_auto_configured(language.important_syntax()),
-            any_comments: AhoCorasick::new_auto_configured(language.start_any_comments()),
+            important_syntax: init_corasick(language.important_syntax(), false),
+            any_comments: init_corasick(language.start_any_comments(), true),
             line_comments: language.line_comments(),
             multi_line_comments: language.multi_line_comments(),
             nested_comments: language.nested_comments(),
