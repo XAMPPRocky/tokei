@@ -74,7 +74,7 @@ jobs:
 
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
       - run: ci/build.bash cross ${{ matrix.target }}
-        # Only test on macOS platforms since we can't simulate the others.
+        # Only test on macOS platforms since we can't simulate iOS.
       - run: ci/test.bash cross ${{ matrix.target }}
         if: matrix.target == 'x86_64-apple-darwin'
 
@@ -87,24 +87,7 @@ jobs:
           - x86_64-apple-darwin
           # iOS
           - aarch64-apple-ios
-          - armv7-apple-ios
-          - armv7s-apple-ios
-          - i386-apple-ios
           - x86_64-apple-ios
-        # There are no beta or nightly versions of these platforms available.
-        exclude:
-          - target: armv7-apple-ios
-            channel: beta
-          - target: armv7-apple-ios
-            channel: nightly
-          - target: armv7s-apple-ios
-            channel: beta
-          - target: armv7s-apple-ios
-            channel: nightly
-          - target: i386-apple-ios
-            channel: beta
-          - target: i386-apple-ios
-            channel: nightly
 
   linux:
     runs-on: ubuntu-latest
