@@ -40,8 +40,11 @@ jobs:
         with:
           depth: 50
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
+        shell: bash
       - run: ci/build.bash cargo ${{ matrix.target }}
+        shell: bash
       - run: ci/test.bash cargo ${{ matrix.target }}
+        shell: bash
 
     strategy:
       fail-fast: true
