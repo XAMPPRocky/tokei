@@ -1,3 +1,44 @@
+# 11.0.0
+
+**Added languages**
+
+- @bwidawsk GNU Assembly, GDB Script
+- @isker Dust, Apache Velocity
+- @andreblanke FreeMarker
+
+
+Thanks to some major internal refactoring, Tokei has received significant
+performance improvements, and is now one of the fastest code counters across any
+size of codebase. With Tokei 11 showing up to 40–60% faster results than tokei's
+previous version. To showcase the improvements I've highlighted benchmarks
+of counting five differently sized codebases. Redis (~220k lines), Rust (~16M
+lines), and the Unreal Engine (~37.5M lines). In every one of these benchmarks
+Tokei 11 performed the best by a noticeable margin.
+
+*All benchmarks were done on a 15-inch MacBook Pro, with a 2.7GHz Intel Core i7
+processor and 16GB 2133 MHz LPDDR3 RAM running macOS Catalina 10.15.3. Your
+mileage may vary, All benchmarks were done using [hyperfine], using default
+settings for all programs.*
+
+[hyperfine]: https://github.com/sharkdp/hyperfine
+
+### Tokei
+**Note** This benchmark is not accurate due to `tokei` and `loc` both taking
+less than 5ms to complete, there is a high degree of error between the times and
+should mostly be considered equivalent. However it is included because it is
+notable that `scc` takes nearly 3x as long to complete on smaller codebases
+(~5k lines).
+![Graph comparing programs running on the tokei source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=1242634543&format=image)
+
+### Redis
+![Graph comparing programs running on the redis source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=2009389097&format=image)
+
+### Rust
+![Graph comparing programs running on the rust source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=424069399&format=image)
+
+### Unreal
+![Graph comparing programs running on the unreal source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=439405321&format=image)
+
 # 10.1.2
 
 - Added `pyw` extension to Python.

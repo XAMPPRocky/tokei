@@ -2,7 +2,7 @@
 authors = ["Erin Power <xampprocky@gmail.com>"]
 build = "build.rs"
 categories = ["command-line-utilities", "development-tools", "visualization"]
-description = "A utility that allows you to count code, quickly."
+description = "Count your code, quickly."
 edition = "2018"
 homepage = "https://tokei.rs"
 include = ["Cargo.lock", "Cargo.toml", "LICENCE-APACHE", "LICENCE-MIT", "build.rs", "languages.json", "src/**/*"]
@@ -11,7 +11,7 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/XAMPPRocky/tokei.git"
-version = "10.1.2"
+version = "11.0.0"
 
 [features]
 all = ["json", "cbor", "yaml"]
