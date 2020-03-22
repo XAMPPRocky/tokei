@@ -381,6 +381,7 @@ Perl
 Perl6
 PHP
 Polly
+PowerShell
 Processing
 Prolog
 Protocol Buffers
