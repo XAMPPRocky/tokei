@@ -530,10 +530,10 @@ pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
     let mut words = line.split_whitespace();
     match words.next() {
         {{#each languages}}
+        {{~#if this.shebangs}}
         {{~#each this.shebangs}}
         | Some("{{this}}")
         {{~/each}}
-        {{~#if this.shebangs}}
             => Some("{{~@key}}"),
         {{~/if}}
         {{~/each}}
