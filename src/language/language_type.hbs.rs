@@ -195,6 +195,28 @@ impl LanguageType {
         }
     }
 
+    /// Returns the shebang of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Bash;
+    /// assert_eq!(lang.shebang_paths(), &["#!/bin/bash"]);
+    /// ```
+    pub fn shebang_paths(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.shebang_paths}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.shebang_paths}}
+                            "{{~this}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
     pub(crate) fn start_any_comments(self) -> &'static [&'static str] {
         match self {
             {{#each languages}}
@@ -484,9 +506,17 @@ pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
 
     let mut words = line.split_whitespace();
     match words.next() {
-        Some("#!/bin/sh") => Some("sh"),
-        Some("#!/bin/csh") => Some("csh"),
-        Some("#!/usr/bin/perl") => Some("pl"),
+        {{#each languages}}
+        {{~#each this.shebang_paths}}
+        Some("{{this}}")
+        {{~#unless @last}}
+        |
+        {{~/unless}}
+        {{~/each}}
+        {{~#if this.shebang_paths}}
+            => Some("{{~@key}}"),
+        {{~/if}}
+        {{~/each}}
         Some("#!/usr/bin/env") => {
             if let Some(word) = words.next() {
                 match word {
