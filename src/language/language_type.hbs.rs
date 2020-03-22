@@ -199,15 +199,15 @@ impl LanguageType {
     /// ```
     /// use tokei::LanguageType;
     /// let lang = LanguageType::Bash;
-    /// assert_eq!(lang.shebang_paths(), &["#!/bin/bash"]);
+    /// assert_eq!(lang.shebangs(), &["#!/bin/bash"]);
     /// ```
-    pub fn shebang_paths(self) -> &'static [&'static str] {
+    pub fn shebangs(self) -> &'static [&'static str] {
         match self {
             {{#each languages}}
-            {{#if this.shebang_paths}}
+            {{#if this.shebangs}}
                 {{~@key}} =>
                     &[
-                        {{~#each this.shebang_paths}}
+                        {{~#each this.shebangs}}
                             "{{~this}}",
                         {{~/each}}
                     ],
@@ -420,7 +420,7 @@ impl LanguageType {
         let extension = fsutils::get_extension(&entry);
         match extension {
             Some(extension) => LanguageType::from_file_extension(extension.as_str()),
-            None => LanguageType::from_shebang_path(&entry),
+            None => LanguageType::from_shebang(&entry),
         }
     }
 
@@ -438,7 +438,7 @@ impl LanguageType {
             {{~#each languages}}
                 {{~#if this.extensions}}
                     {{~#each this.extensions}}
-                        "{{~this}}" {{~#unless @last}} | {{~/unless}}
+                        | "{{~this}}"
                     {{~/each}}
                         => Some({{~@key}}),
                 {{~/if}}
@@ -455,11 +455,11 @@ impl LanguageType {
     /// ```no_run
     /// use tokei::LanguageType;
     ///
-    /// let rust = LanguageType::from_shebang_path("./main.rs");
+    /// let rust = LanguageType::from_shebang("./main.rs");
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
-    pub fn from_shebang_path(entry: &Path) -> Option<Self> {
+    pub fn from_shebang(entry: &Path) -> Option<Self> {
         if let Some(filetype) = get_filetype_from_shebang(&entry) {
             match filetype {
                 {{~#each languages}}
@@ -530,13 +530,10 @@ pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
     let mut words = line.split_whitespace();
     match words.next() {
         {{#each languages}}
-        {{~#each this.shebang_paths}}
-        Some("{{this}}")
-        {{~#unless @last}}
-        |
-        {{~/unless}}
+        {{~#each this.shebangs}}
+        | Some("{{this}}")
         {{~/each}}
-        {{~#if this.shebang_paths}}
+        {{~#if this.shebangs}}
             => Some("{{~@key}}"),
         {{~/if}}
         {{~/each}}
