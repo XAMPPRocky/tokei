@@ -419,8 +419,7 @@ impl LanguageType {
 
         let extension = fsutils::get_extension(&entry);
         let filetype = extension.as_ref()
-            .map(|s| &**s)
-            .or_else(|| get_filetype_from_shebang(&entry));
+            .map(|s| &**s);
 
         if let Some(extension) = filetype {
             /*
@@ -448,7 +447,20 @@ impl LanguageType {
                 },
             }
         } else {
-            None
+            // Check the shebang if the extension failed
+            if let Some(filetype) = get_filetype_from_shebang(&entry) {
+                match filetype {
+                    {{~#each languages}}
+                        "{{~@key}}" => Some({{~@key}}),
+                    {{~/each}}
+                    extension => {
+                        warn!("Unknown extension: {}", extension);
+                        None
+                    },
+                }
+            } else {
+                None
+            }
         }
     }
 }
