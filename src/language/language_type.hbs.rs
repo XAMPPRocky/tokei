@@ -454,8 +454,9 @@ impl LanguageType {
     ///
     /// ```no_run
     /// use tokei::LanguageType;
+    /// use std::path::Path;
     ///
-    /// let rust = LanguageType::from_shebang("./main.rs");
+    /// let rust = LanguageType::from_shebang(Path::new("./main.rs"));
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
@@ -548,7 +549,7 @@ pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
                                     |
                                 {{~/unless}}
                             {{~/each}}
-                                => Some("{{this.extensions.[0]}}"),
+                                => Some("{{@key}}"),
                         {{~/if}}
                     {{~/each}}
                     env => {
