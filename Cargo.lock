@@ -474,9 +474,9 @@ dependencies = [
 
 [[package]]
 name = "ignore"
-version = "0.4.12"
+version = "0.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7c81b30e645a7b49ad57340fd900717e6b3404bfe8322035ef189d434c412aa1"
+checksum = "d692f1fdb7a67fad17cb4d3dbe3fc9c4d50d3113349251678db987b225ccabba"
 dependencies = [
  "crossbeam-channel",
  "crossbeam-utils",
