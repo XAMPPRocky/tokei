@@ -76,6 +76,7 @@
     },
     "Sh": {
       "name": "Shell",
+      "shebangs": ["#!/bin/sh"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "env": ["sh"],
@@ -83,6 +84,7 @@
     },
     "Bash": {
       "name": "BASH",
+      "shebangs": ["#!/bin/bash"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "env": ["bash"],
@@ -100,6 +102,7 @@
       "extensions": ["elv"]
     },
     "Fish": {
+      "shebangs": ["#!/bin/fish"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "env": ["fish"],
@@ -221,6 +224,7 @@
     },
     "CShell": {
       "name": "C Shell",
+      "shebangs": ["#!/bin/csh"],
       "line_comment": ["#"],
       "env": ["csh"],
       "extensions": ["csh"]
@@ -719,6 +723,7 @@
       "extensions": ["pas", "pp"]
     },
     "Perl": {
+      "shebangs": ["#!/usr/bin/perl"],
       "line_comment": ["#"],
       "multi_line_comments": [["=pod", "=cut"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
@@ -1206,6 +1211,7 @@
       "extensions": ["zig"]
     },
     "Zsh": {
+      "shebangs": ["#!/bin/zsh"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["zsh"]

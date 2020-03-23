@@ -195,6 +195,28 @@ impl LanguageType {
         }
     }
 
+    /// Returns the shebang of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Bash;
+    /// assert_eq!(lang.shebangs(), &["#!/bin/bash"]);
+    /// ```
+    pub fn shebangs(self) -> &'static [&'static str] {
+        match self {
+            {{#each languages}}
+            {{#if this.shebangs}}
+                {{~@key}} =>
+                    &[
+                        {{~#each this.shebangs}}
+                            "{{~this}}",
+                        {{~/each}}
+                    ],
+            {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
     pub(crate) fn start_any_comments(self) -> &'static [&'static str] {
         match self {
             {{#each languages}}
@@ -396,29 +418,52 @@ impl LanguageType {
         }
 
         let extension = fsutils::get_extension(&entry);
-        let filetype = extension.as_ref()
-            .map(|s| &**s)
-            .or_else(|| get_filetype_from_shebang(&entry));
+        match extension {
+            Some(extension) => LanguageType::from_file_extension(extension.as_str()),
+            None => LanguageType::from_shebang(&entry),
+        }
+    }
 
-        if let Some(extension) = filetype {
-            /*
-            if let Some(ref languages) = config.languages {
-                for (language, lang_config) in languages {
-                    if lang_config.extensions.iter().any(|e| e == extension) {
-                        return Some(*language)
-                    }
-                }
-            }
-            */
+    /// Get language from a file extension.
+    ///
+    /// ```no_run
+    /// use tokei::LanguageType;
+    ///
+    /// let rust = LanguageType::from_file_extension("rs");
+    ///
+    /// assert_eq!(rust, Some(LanguageType::Rust));
+    /// ```
+    pub fn from_file_extension(extension: &str) -> Option<Self> {
+        match extension {
+            {{~#each languages}}
+                {{~#if this.extensions}}
+                    {{~#each this.extensions}}
+                        | "{{~this}}"
+                    {{~/each}}
+                        => Some({{~@key}}),
+                {{~/if}}
+            {{~/each}}
+            extension => {
+                warn!("Unknown extension: {}", extension);
+                None
+            },
+        }
+    }
 
-            match extension {
+    /// Get language from a shebang. May open and read the file.
+    ///
+    /// ```no_run
+    /// use tokei::LanguageType;
+    ///
+    /// let rust = LanguageType::from_shebang("./main.rs");
+    ///
+    /// assert_eq!(rust, Some(LanguageType::Rust));
+    /// ```
+    pub fn from_shebang<P: AsRef<Path>>(entry: P) -> Option<Self> {
+        if let Some(filetype) = get_filetype_from_shebang(entry.as_ref()) {
+            match filetype {
                 {{~#each languages}}
-                    {{~#if this.extensions}}
-                        {{~#each this.extensions}}
-                            "{{~this}}" {{~#unless @last}} | {{~/unless}}
-                        {{~/each}}
-                            => Some({{~@key}}),
-                    {{~/if}}
+                    "{{~@key}}" => Some({{~@key}}),
                 {{~/each}}
                 extension => {
                     warn!("Unknown extension: {}", extension);
@@ -484,9 +529,14 @@ pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
 
     let mut words = line.split_whitespace();
     match words.next() {
-        Some("#!/bin/sh") => Some("sh"),
-        Some("#!/bin/csh") => Some("csh"),
-        Some("#!/usr/bin/perl") => Some("pl"),
+        {{#each languages}}
+        {{~#if this.shebangs}}
+        {{~#each this.shebangs}}
+        | Some("{{this}}")
+        {{~/each}}
+            => Some("{{~@key}}"),
+        {{~/if}}
+        {{~/each}}
         Some("#!/usr/bin/env") => {
             if let Some(word) = words.next() {
                 match word {
@@ -498,7 +548,7 @@ pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
                                     |
                                 {{~/unless}}
                             {{~/each}}
-                                => Some("{{this.extensions.[0]}}"),
+                                => Some("{{@key}}"),
                         {{~/if}}
                     {{~/each}}
                     env => {
