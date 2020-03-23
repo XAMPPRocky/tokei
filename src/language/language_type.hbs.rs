@@ -454,14 +454,13 @@ impl LanguageType {
     ///
     /// ```no_run
     /// use tokei::LanguageType;
-    /// use std::path::Path;
     ///
-    /// let rust = LanguageType::from_shebang(Path::new("./main.rs"));
+    /// let rust = LanguageType::from_shebang("./main.rs");
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
-    pub fn from_shebang(entry: &Path) -> Option<Self> {
-        if let Some(filetype) = get_filetype_from_shebang(&entry) {
+    pub fn from_shebang<P: AsRef<Path>>(entry: P) -> Option<Self> {
+        if let Some(filetype) = get_filetype_from_shebang(entry.as_ref()) {
             match filetype {
                 {{~#each languages}}
                     "{{~@key}}" => Some({{~@key}}),
