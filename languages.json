@@ -715,6 +715,11 @@
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["oz"]
     },
+    "Pan": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["pan", "tpl"]
+    },
     "Pascal": {
       "nested": true,
       "line_comment": ["//"],
