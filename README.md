@@ -73,7 +73,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 # Arch Linux
 pacman -S tokei
 # Cargo
-cargo install tokei 
+cargo install tokei
 # Conda
 conda install -c conda-forge tokei
 # Fedora
@@ -405,6 +405,7 @@ R
 Racket
 Rakefile
 Razor
+Renpy
 ReStructuredText
 RON
 RPMSpecfile
