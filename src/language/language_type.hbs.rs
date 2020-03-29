@@ -150,8 +150,8 @@ impl LanguageType {
     /// Returns the quotes of a language.
     /// ```
     /// use tokei::LanguageType;
-    /// let lang = LanguageType::Rust;
-    /// assert_eq!(lang.quotes(), &[("r#\"", "\"#"), ("#\"", "\"#"), ("\"", "\"")]);
+    /// let lang = LanguageType::C;
+    /// assert_eq!(lang.quotes(), &[("\"", "\"")]);
     /// ```
     pub fn quotes(self) -> &'static [(&'static str, &'static str)] {
         match self {
