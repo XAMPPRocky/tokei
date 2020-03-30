@@ -87,24 +87,40 @@ pub fn get_all_files<A: AsRef<Path>>(
         })
     });
 
-    let types: Option<&[LanguageType]> = config.types.as_ref().map(|v| &**v);
-
-    rx.into_iter()
-        .par_bridge()
-        .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)))
-        .filter(|(_, l)| types.map_or(true, |t| t.contains(l)))
-        .for_each(|(entry, language)| {
-            let result = language.parse(entry.into_path(), &config);
-            let mut lock = languages.lock();
-            let entry = lock.entry(language).or_insert_with(Language::new);
-            match result {
-                Ok(stats) => entry.add_stat(stats),
-                Err((error, path)) => {
-                    entry.mark_inaccurate();
-                    error!("Error reading {}:\n{}", path.display(), error);
+    if let Some(types) = config.types.as_ref().map(|v| &**v) {
+        rx.into_iter()
+            .par_bridge()
+            .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)))
+            .filter(|(_, l)| types.contains(l))
+            .for_each(|(entry, language)| {
+                let result = language.parse(entry.into_path(), &config);
+                let mut lock = languages.lock();
+                let entry = lock.entry(language).or_insert_with(Language::new);
+                match result {
+                    Ok(stats) => entry.add_stat(stats),
+                    Err((error, path)) => {
+                        entry.mark_inaccurate();
+                        error!("Error reading {}:\n{}", path.display(), error);
+                    }
                 }
-            }
-        })
+            })
+    } else {
+        rx.into_iter()
+            .par_bridge()
+            .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)))
+            .for_each(|(entry, language)| {
+                let result = language.parse(entry.into_path(), &config);
+                let mut lock = languages.lock();
+                let entry = lock.entry(language).or_insert_with(Language::new);
+                match result {
+                    Ok(stats) => entry.add_stat(stats),
+                    Err((error, path)) => {
+                        entry.mark_inaccurate();
+                        error!("Error reading {}:\n{}", path.display(), error);
+                    }
+                }
+            })
+    }
 }
 
 pub(crate) fn get_extension(path: &Path) -> Option<String> {
