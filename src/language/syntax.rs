@@ -188,18 +188,14 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
-        if let Some(quote) = self.quote {
-            if window.starts_with(quote.as_bytes()) {
-                let quote = self.quote.take().unwrap();
-                trace!("End {:?}", quote);
-                Some(quote.len())
-            } else if window.starts_with(br"\") {
-                // Tell the state machine to skip the next character because it
-                // has been escaped.
-                Some(2)
-            } else {
-                None
-            }
+        if window.starts_with(self.quote?.as_bytes()) {
+            let quote = self.quote.take().unwrap();
+            trace!("End {:?}", quote);
+            Some(quote.len())
+        } else if window.starts_with(br"\") {
+            // Tell the state machine to skip the next character because it
+            // has been escaped.
+            Some(2)
         } else {
             None
         }
