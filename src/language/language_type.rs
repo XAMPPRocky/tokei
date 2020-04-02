@@ -112,6 +112,7 @@ impl LanguageType {
             stats.code += code;
             stats.comments += comments;
             stats.blanks += blanks;
+            stats.lines = code + comments + blanks;
             stats
         } else {
             self.parse_lines(config, lines, stats, syntax)
