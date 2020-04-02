@@ -101,7 +101,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
                        languages.into_iter().collect::<Vec<_>>());
             }}
 
-            let (name, language) = languages.into_iter().next().unwrap();
+            let (name, mut language) = languages.into_iter().next().unwrap();
 
             let contents = fs::read_to_string("{1}").unwrap();
 
@@ -113,6 +113,13 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
             println!("{{}} COMMENTS MATCH", name);
             assert_eq!(get_digit!(BLANKS, contents), language.blanks);
             println!("{{}} BLANKS MATCH", name);
+
+            let stats = language.stats.pop().unwrap();
+
+            assert_eq!(language.lines, stats.lines);
+            assert_eq!(language.code, stats.code);
+            assert_eq!(language.comments, stats.comments);
+            assert_eq!(language.blanks, stats.blanks);
         }}
         "#,
             name,
