@@ -157,7 +157,7 @@ mod tests {
 
     #[test]
     fn hidden() {
-        let dir = TempDir::new().expect("Couldn't creat temp dir.");
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
         let mut config = Config::default();
         let mut languages = Languages::new();
 
@@ -186,7 +186,7 @@ mod tests {
 
     #[test]
     fn no_ignore() {
-        let dir = TempDir::new().expect("Couldn't creat temp dir.");
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
         let mut config = Config::default();
         let mut languages = Languages::new();
 
@@ -226,7 +226,7 @@ mod tests {
         fs::create_dir_all(&child_dir)
             .unwrap_or_else(|_| panic!("Couldn't create {:?}", child_dir));
         fs::write(parent_dir.path().join(".ignore"), IGNORE_PATTERN)
-            .expect("Couldn't create .gitinore.");
+            .expect("Couldn't create .gitignore.");
         fs::write(child_dir.join(FILE_NAME), FILE_CONTENTS).expect("Couldn't create child.rs");
 
         super::get_all_files(
@@ -252,7 +252,7 @@ mod tests {
 
     #[test]
     fn no_ignore_vcs_gitignore() {
-        let dir = TempDir::new().expect("Couldn't creat temp dir.");
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
         let mut config = Config::default();
         let mut languages = Languages::new();
 
@@ -284,7 +284,7 @@ mod tests {
 
     #[test]
     fn no_ignore_vcs_gitexclude() {
-        let dir = TempDir::new().expect("Couldn't creat temp dir.");
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
         let mut config = Config::default();
         let mut languages = Languages::new();
 
@@ -316,7 +316,7 @@ mod tests {
 
     #[test]
     fn custom_ignore() {
-        let dir = TempDir::new().expect("Couldn't creat temp dir.");
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
         let config = Config::default();
         let mut languages = Languages::new();
 
