@@ -1,3 +1,15 @@
+# 11.1.0
+
+**Added Languages**
+
+- @rubdos Arduino
+- @LuqueDaniel Pan
+- @itkovian Ren'Py
+
+- Added `LanguageType::shebangs`, `LanguageType::from_file_extension`, and
+  `LanguageType::from_shebang`. (@solanav)
+
+
 # 11.0.0
 
 **Added languages**
