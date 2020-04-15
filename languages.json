@@ -712,6 +712,11 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
+    "OpenType": {
+      "name": "OpenType Feature File",
+      "line_comment": ["#"],
+      "extensions": ["fea"]
+    },
     "Org": {
       "line_comment": ["# "],
       "extensions": ["org"]

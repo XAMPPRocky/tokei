@@ -1,0 +1,54 @@
+# 54 lines 24 code 24 comments 6 blanks
+languagesystem DFLT dflt;
+languagesystem latn dflt;
+languagesystem latn DEU;
+languagesystem latn TRK;
+languagesystem cyrl dflt;
+
+feature smcp {
+    sub [a-z] by [A.sc-Z.sc];
+    # Since all the rules in this feature are of the same type, they will be grouped in a single lookup.
+    # Since no script or language keyword has been specified yet,
+    # the lookup will be registered for this feature under all the language systems.
+} smcp;
+
+feature liga {
+    sub f f by f_f;
+    sub f i by f_i;
+    sub f l by f_l;
+    # Since all the rules in this feature are of the same type, they will be
+    # grouped in a single lookup.
+    # Since no script or language keyword has been specified yet,
+    # the lookup will be registered for this feature under all the language systems.
+
+    script latn;
+        language dflt;
+        # lookupflag 0;      (implicit)
+            sub c t by c_t;
+            sub c s by c_s;
+        # The rules above will be placed in a lookup that is registered for all
+        # the specified languages for the script latn, but not any other scripts.
+
+        language DEU;
+        # script latn;       (stays the same)
+        # lookupflag 0;      (stays the same)
+            sub c h by c_h;
+            sub c k by c_k;
+        # The rules above will be placed in a lookup that is registered only
+        # under the script 'latn', 'language DEU'.
+
+        language TRK;
+        # This will inherit both the top level default rules - the rules defined
+        # before the first 'script' statement, and the script-level default
+        # rules for 'latn: all the lookups of this feature defined after the
+        # 'script latn' statement, and before the 'language DEU' statement.
+        # If 'TRK' were not named here, it would not inherit the default rules
+        # for the script 'latn'.
+} liga;
+
+feature kern {
+    pos a y -150;
+    # [more pos statements]
+    # All the rules in this feature will be grouped in a single lookup
+    # that is registered under all the languagesystems.
+} kern;
