@@ -392,6 +392,10 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["fs", "fsi", "fsx", "fsscript"]
     },
+    "Futhark": {
+      "line_comment": ["--"],
+      "extensions": ["fut"]
+    },
     "GDB": {
       "name": "GDB Script",
       "line_comment": ["#"],
