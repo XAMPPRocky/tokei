@@ -462,6 +462,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["tf", "tfvars"]
     },
+    "Headache": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["ha"]
+    },
     "Hlsl": {
       "name": "HLSL",
       "line_comment": ["//"],
