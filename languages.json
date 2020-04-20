@@ -429,6 +429,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["go"]
     },
+    "Gohtml": {
+      "name": "Go HTML",
+      "multi_line_comments": [["<!--", "-->"], ["{{/*", "*/}}"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["gohtml"]
+    },
     "Graphql": {
       "name": "GraphQL",
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],

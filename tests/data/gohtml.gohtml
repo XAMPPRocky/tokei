@@ -1,0 +1,41 @@
+<!-- 41 lines 20 code 14 comments 7 blanks -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{{ .title }}</title>
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+      {{/* GoHTML comment */}}
+      <div id="modalSearch" class="modal fade" role="dialog"> </div>
+    </nav>
+
+    <!-- HTML single line Comment-->
+    <main>
+      <article>
+        <h1>{{ .title }}</h1>
+        <p>{{ .text }}</p>
+      </article>
+    </main>
+
+    {{ template "footer" . }}
+
+  </body>
+
+  {{/*
+    GoHTML
+    multi line
+    comment
+  */}}
+
+  <!--
+          document.write("Multi-line and Code comment!");
+  //-->
+
+  <!--[if IE 8]>
+          IE Special comment
+  <![endif]-->
+</html>
