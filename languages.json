@@ -920,7 +920,7 @@
       "name": "Ruby HTML",
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["rhtml"]
+      "extensions": ["rhtml", "erb"]
     },
     "Rust": {
       "line_comment": ["//"],
