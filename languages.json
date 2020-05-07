@@ -1064,6 +1064,13 @@
       ],
       "extensions": ["toml"]
     },
+    "Tsx": {
+      "name": "TSX",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["tsx"]
+    },
     "Twig": {
       "name": "Twig",
       "multi_line_comments": [["<!--", "-->"]],
@@ -1075,7 +1082,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
-      "extensions": ["ts", "tsx"]
+      "extensions": ["ts"]
     },
     "UnrealPlugin": {
       "name": "Unreal Plugin",
