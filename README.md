@@ -433,6 +433,7 @@ Tex
 Text
 Thrift
 Toml
+Tsx
 Twig
 TypeScript
 UnrealDeveloperMarkdown
