@@ -44,8 +44,8 @@ let x = 5; // default x position
 let y = 0; // default y position
 ```
 
-The `line_comment` property expects an array of strings, as some languages have 
-multiple syntaxes for defining a a single line comment. For example `PHP` allows
+The `line_comment` property expects an array of strings, as some languages have
+multiple syntaxes for defining a single line comment. For example `PHP` allows
 both `#` and `//` as comments.
 
 ```json
