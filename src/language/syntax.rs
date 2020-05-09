@@ -14,7 +14,7 @@ use super::language_type::LanguageType;
 /// - `string` mode: This when the state machine is current inside a string
 ///   literal for a given language, comments cannot trigger `comment` mode while
 ///   in `string` mode.
-/// - `string` mode: This when the state machine is current inside a comment
+/// - `comment` mode: This when the state machine is current inside a comment
 ///   for a given language, strings cannot trigger `string` mode while in
 ///   `comment` mode.
 #[derive(Clone, Debug)]
