@@ -10,7 +10,7 @@ fn main() {
     }
 }
 
-fn foo() {
+fn foo<'a, 'b>(name: &'b str) {
     let this_ends = "a \"test/*.";
     call1();
     call2();
