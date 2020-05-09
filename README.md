@@ -26,7 +26,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 -------------------------------------------------------------------------------
 ```
 
-## [Documentation](https://docs.rs/tokei)
+## [API Documentation](https://docs.rs/tokei)
 
 ## Table of Contents
 
