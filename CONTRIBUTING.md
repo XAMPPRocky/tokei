@@ -1,9 +1,10 @@
 # Contributing to Tokei
 
-* [Language Addition](#language-addition)
-* [Bug Reports](#bug-reports)
+- [Language Addition](#language-addition)
+- [Bug Reports](#bug-reports)
 
 # Language Addition
+
 Currently tokei generates languages from the [`languages.json`](languages.json)
 file. JSON was decided to make it easy to add new languages, and change code
 structure without changing large data structures. Here we will go over the
@@ -22,7 +23,7 @@ properties of a language in `languages.json`, through examples.
 Above is the JavaScript's definition. The first thing that needs to be defined
 is the key, the keys format should be same as [Rust's enum style]. As this key
 will be used in an enum for identifying the language. For a lot of language's
-this also works for showing the language when we print to the screen. 
+this also works for showing the language when we print to the screen.
 
 However there are some languages whose names don't work with the enum style.
 For example `JSON` is usually shown in all caps, but that doesn't fit in Rust's
@@ -102,6 +103,7 @@ detected as a `CMake` file, not a `Text` file.
 ```
 
 # Tests
+
 A test file is required with language additions. The file should
 contain every variant comments and quotes, as well as a comment
 at the top of the file containing the manually verified lines,
@@ -112,6 +114,7 @@ NUM lines NUM code NUM comments NUM blanks
 ```
 
 ### Example
+
 ```
 // 39 lines 32 code 2 comments 5 blanks
 ```
@@ -132,7 +135,7 @@ fn main() {
     }
 }
 
-fn foo() {
+fn foo<'a, 'b>(name: &'b str) {
     let this_ends = "a \"test/*.";
     call1();
     call2();
@@ -158,9 +161,11 @@ fn foo() {
     let b = 5;
     let c = 6; // */
 }
+
 ```
 
 # Bug Reports
+
 Please include the error message, and a minimum working example
 including the file, or file structure.
 
@@ -172,5 +177,5 @@ This file crashes the program.
 \`\`\`
 ```
 
-[Rust's enum style]: (https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md#general-naming-conventions)
+[rust's enum style]: (https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md#general-naming-conventions)
 [`tests/data/rust.rs`]: https://github.com/XAMPPRocky/tokei/blob/master/tests/data/rust.rs
