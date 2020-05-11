@@ -1006,7 +1006,6 @@
       "extensions": ["str"]
     },
     "Svelte": {
-      "name": "Svelte",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
