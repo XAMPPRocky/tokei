@@ -1,4 +1,5 @@
 # Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
+
 [![Mean Bean CI](https://github.com/XAMPPRocky/tokei/workflows/Mean%20Bean%20CI/badge.svg)](https://github.com/XAMPPRocky/tokei/actions?query=workflow%3A%22Mean+Bean+CI%22)
 [![crates.io](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
 [![Help Wanted](https://img.shields.io/github/issues/XAMPPRocky/tokei/help%20wanted?color=green)](https://github.com/XAMPPRocky/tokei/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
@@ -8,9 +9,11 @@
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
 ### Translations
+
 - [中文](https://github.com/chinanf-boy/tokei-zh#支持的语言)
 
 ## Example
+
 ```console
 -------------------------------------------------------------------------------
  Language            Files        Lines         Code     Comments       Blanks
@@ -32,8 +35,8 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 - [Features](#features)
 - [Installation](#installation)
-    - [Package Managers](#package-managers)
-    - [Manual](#manual)
+  - [Package Managers](#package-managers)
+  - [Manual](#manual)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Badges](#badges)
@@ -69,6 +72,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 ## Installation
 
 ### Package Managers
+
 ```console
 # Arch Linux
 pacman -S tokei
@@ -91,11 +95,14 @@ sudo zypper install tokei
 ### Manual
 
 #### Downloading
+
 You can download prebuilt binaries in the
 [releases section](https://github.com/XAMPPRocky/tokei/releases).
 
 #### Building
+
 You can also build and install from source (requires the latest stable [Rust] compiler.)
+
 ```console
 cargo install --git https://github.com/XAMPPRocky/tokei.git
 ```
@@ -114,17 +121,20 @@ $ tokei ./foo
 ```
 
 #### Multiple folders
+
 To have tokei report on multiple folders in the same call simply add a comma,
 or a space followed by another path.
 
 ```shell
 $ tokei ./foo ./bar ./baz
 ```
+
 ```shell
 $ tokei ./foo, ./bar, ./baz
 ```
 
 #### Excluding folders
+
 Tokei will respect all `.gitignore` and `.ignore` files, and you can use
 the `--exclude` option to exclude any additional files. The `--exclude` flag has
 the same semantics as `.gitignore`.
@@ -134,6 +144,7 @@ $ tokei ./foo --exclude *.rs
 ```
 
 #### Sorting output
+
 By default tokei sorts alphabetically by language name, however using `--sort`
 tokei can also sort by any of the columns.
 
@@ -144,6 +155,7 @@ $ tokei ./foo --sort code
 ```
 
 #### Outputting file statistics
+
 By default tokei only outputs the total of the languages, and using `--files`
 flag tokei can also output individual file statistics.
 
@@ -152,6 +164,7 @@ $ tokei ./foo --files
 ```
 
 #### Outputting into different formats
+
 Tokei normally outputs into a nice human readable format designed for terminals.
 There is also using the `--output` option various other formats that are more
 useful for bringing the data into another program.
@@ -177,6 +190,7 @@ tokei with the features flag.
 ```
 
 **Currently supported formats**
+
 - JSON `--output json`
 - YAML `--output yaml`
 - TOML `--output toml`
@@ -187,6 +201,7 @@ $ tokei ./foo --output json
 ```
 
 #### Reading in stored formats
+
 Tokei can also take in the outputted formats added in the previous results to it's
 current run. Tokei can take either a path to a file, the format passed in as a
 value to the option, or from stdin.
@@ -230,6 +245,7 @@ ARGS:
 ```
 
 ## Badges
+
 Tokei has support for badges. For example
 [![](https://tokei.rs/b1/github/XAMPPRocky/tokei)](https://github.com/XAMPPRocky/tokei).
 
@@ -255,6 +271,7 @@ Example show total lines:
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
 ## Plugins
+
 Thanks to contributors tokei is now available as a plugin for some text editors.
 
 - [Vim](https://github.com/vmchale/tokei-vim) by [vmchale](https://github.com/vmchale/)
@@ -424,6 +441,7 @@ Spice
 Sql
 SRecode
 Stratego
+Svelte
 Svg
 Swift
 Swig
@@ -471,6 +489,7 @@ Zsh
 ## Common issues
 
 ### Tokei says I have a lot of D code, but I know there is no D code!
+
 This is likely due to `gcc` generating `.d` files. Until the D people decide on
 a different file extension, you can always exclude `.d` files using the
 `-e --exclude` flag like so
@@ -480,11 +499,13 @@ $ tokei . -e *.d
 ```
 
 ## Canonical Source
+
 The canonical source of this repo is hosted on
 [GitHub](https://github.com/XAMPPRocky/tokei). If you have a GitHub account,
 please make your issues, and pull requests there.
 
 ## Copyright and License
+
 (C) Copyright 2015 by XAMPPRocky and contributors
 
 See [the graph](https://github.com/XAMPPRocky/tokei/graphs/contributors) for a full list of contributors.
