@@ -77,21 +77,25 @@ impl Config {
             .and_then(Self::get_config)
             .unwrap_or_else(Self::default);
 
+        let home_dir = env::home_dir()
+            .and_then(Self::get_config)
+            .unwrap_or_else(Self::default);
+
         let current_dir = env::current_dir()
             .ok()
             .and_then(Self::get_config)
             .unwrap_or_else(Self::default);
 
         Config {
-            columns: current_dir.columns.or(conf_dir.columns),
+            columns: current_dir.columns.or(home_dir.columns.or(conf_dir.columns)),
             //languages: current_dir.languages.or(conf_dir.languages),
             treat_doc_strings_as_comments: current_dir
                 .treat_doc_strings_as_comments
-                .or(conf_dir.treat_doc_strings_as_comments),
-            types: current_dir.types.or(conf_dir.types),
-            no_ignore: current_dir.no_ignore.or(conf_dir.no_ignore),
-            no_ignore_parent: current_dir.no_ignore_parent.or(conf_dir.no_ignore_parent),
-            no_ignore_vcs: current_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs),
+                .or(home_dir.treat_doc_strings_as_comments.or(conf_dir.treat_doc_strings_as_comments)),
+            types: current_dir.types.or(home_dir.types.or(conf_dir.types)),
+            no_ignore: current_dir.no_ignore.or(home_dir.no_ignore.or(conf_dir.no_ignore)),
+            no_ignore_parent: current_dir.no_ignore_parent.or(home_dir.no_ignore_parent.or(conf_dir.no_ignore_parent)),
+            no_ignore_vcs: current_dir.no_ignore_vcs.or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
             ..Self::default()
         }
     }
