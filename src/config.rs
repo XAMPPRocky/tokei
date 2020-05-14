@@ -50,11 +50,12 @@ impl Config {
             .and_then(|s| toml::from_str(&s).ok())
     }
 
-    /// Creates a `Config` from two configuration files if they are available.
+    /// Creates a `Config` from three configuration files if they are available.
     /// Files can have two different names `tokei.toml` and `.tokeirc`.
     /// Firstly it will attempt to find a config in the configuration directory
-    /// (see below), and secondly from the current directory. The current
-    /// directory's configuration will take priority over the configuration
+    /// (see below), secondly from the home directory, `$HOME/`, 
+    /// and thirdly from the current directory, `./`. 
+    /// The current directory's configuration will take priority over the configuratio
     /// directory.
     ///
     /// |Platform | Value | Example |
