@@ -219,7 +219,9 @@
     },
     "Crystal": {
       "line_comment": ["#"],
+      "shebangs": ["#!/usr/bin/crystal"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "env": ["crystal"],
       "extensions": ["cr"]
     },
     "CSharp": {
