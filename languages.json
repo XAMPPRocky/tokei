@@ -491,8 +491,9 @@
     },
     "Html": {
       "name": "HTML",
-      "multi_line_comments": [["<!--", "-->"]],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "line_comment": ["//"],
+      "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["html", "htm"]
     },
     "Hamlet": {
