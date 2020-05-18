@@ -1197,8 +1197,8 @@
     },
     "Vue": {
       "name": "Vue",
-      "multi_line_comments": [["<!--", "-->"]],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "line_comment": ["//"],
+      "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["vue"]
     },
