@@ -306,6 +306,7 @@ Css
 D
 Dart
 DeviceTree
+Dhall
 Dockerfile
 DotNetResource
 DreamMaker
