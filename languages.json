@@ -208,6 +208,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["R\\\"(", ")\\\""]],
       "extensions": ["cc", "cpp", "cxx", "c++", "pcc", "tpp"]
     },
     "CppHeader": {
@@ -229,6 +230,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["@\\\"", "\\\""]],
       "extensions": ["cs"]
     },
     "CShell": {
@@ -392,6 +394,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["(*", "*)"]],
       "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["@\\\"", "\\\""]],
       "extensions": ["fs", "fsi", "fsx", "fsscript"]
     },
     "Futhark": {
@@ -930,7 +933,8 @@
       "multi_line_comments": [["/*", "*/"]],
       "nested": true,
       "extensions": ["rs"],
-      "quotes": [["\\\"", "\\\""], ["r#\\\"", "\\\"#"], ["#\\\"", "\\\"#"]]
+      "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
     },
     "ReStructuredText": {
       "blank": true,

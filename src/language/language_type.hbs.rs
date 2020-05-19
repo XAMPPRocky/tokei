@@ -169,6 +169,28 @@ impl LanguageType {
         }
     }
 
+    /// Returns the verbatim quotes of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::CSharp;
+    /// assert_eq!(lang.verbatim_quotes(), &[("@\"", "\"")]);
+    /// ```
+    pub fn verbatim_quotes(self) -> &'static [(&'static str, &'static str)] {
+        match self {
+            {{#each languages}}
+                {{#if this.verbatim_quotes}}
+                    {{~@key}} =>
+                        &[
+                            {{~#each this.verbatim_quotes}}
+                                ( {{~#each this}}"{{this}}",{{~/each}} ),
+                            {{~/each}}
+                        ],
+                {{~/if}}
+            {{~/each}}
+            _ => &[],
+        }
+    }
+
     /// Returns the doc quotes of a language.
     /// ```
     /// use tokei::LanguageType;
