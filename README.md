@@ -104,10 +104,6 @@ cargo install --git https://github.com/XAMPPRocky/tokei.git
 
 ## How to use Tokei
 
-### Configuration
-
-There're three places Tokei would get configuration from, `~/.config/`, `./`, `~/`.
-Each of these file names are accepted, `tokei.toml`, `.tokeirc`.
 
 #### Basic usage
 
@@ -117,6 +113,15 @@ and all subfolders.
 ```shell
 $ tokei ./foo
 ```
+
+### Configuration
+
+Tokei has a [configuration] file that allows you to change default behaviour.
+The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
+this file in three different places. The current directory,your home directory,
+and your configuration directory.
+
+[configuration]: ./.tokeirc.example
 
 #### Multiple folders
 To have tokei report on multiple folders in the same call simply add a comma,
