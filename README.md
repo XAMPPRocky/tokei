@@ -102,8 +102,15 @@ cargo install --git https://github.com/XAMPPRocky/tokei.git
 
 [rust]: https://www-rust-lang.org
 
-## How to use Tokei
 
+## Configuration
+
+Tokei has a [configuration] file that allows you to change default behaviour.
+The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
+this file in three different places. The current directory,your home directory,
+and your configuration directory.
+
+## How to use Tokei
 
 #### Basic usage
 
@@ -113,13 +120,6 @@ and all subfolders.
 ```shell
 $ tokei ./foo
 ```
-
-### Configuration
-
-Tokei has a [configuration] file that allows you to change default behaviour.
-The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
-this file in three different places. The current directory,your home directory,
-and your configuration directory.
 
 [configuration]: ./.tokeirc.example
 
