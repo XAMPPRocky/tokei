@@ -1,3 +1,22 @@
+# 11.2.0
+
+**Added Languages**
+- @alexmaco Dhall
+- @NickHackman Svelte
+- @athas Futhark
+- @morphy2k Gohtml
+- @LucasMW Headache
+- @rosasynstylae Tsx
+- @XAMPPRocky OpenType Feature Files
+
+- Added shebang and env detection for Crystal.
+- @NickHackman Updated both Vue and HTML to count CSS & JS comments as comments.
+- @XAMPPRocky renamed Perl6's display name to Rakudo.
+- @dbackeus Added `erb` extension for Ruby HTML.
+- @kobataiwan Tokei will now check for a configuration file in your home
+  directory as well as your current and configuration directory.
+- @dependabot Updated dependencies
+
 # 11.1.0
 
 **Added Languages**
