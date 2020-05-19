@@ -122,7 +122,7 @@ and all subfolders.
 $ tokei ./foo
 ```
 
-[configuration]: ./.tokeirc.example
+[configuration]: ./tokei.example.toml
 
 #### Multiple folders
 To have tokei report on multiple folders in the same call simply add a comma,
