@@ -1,4 +1,4 @@
-(* 13 lines 5 code 4 comments 4 blanks *)
+(* 15 lines 6 code 5 comments 4 blanks *)
 
 // Comment
 
@@ -11,3 +11,5 @@ let bar = "(*
     Code
 *)"
 
+let baz = @"a:\"
+// Comment
