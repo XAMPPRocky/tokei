@@ -104,6 +104,11 @@ cargo install --git https://github.com/XAMPPRocky/tokei.git
 
 ## How to use Tokei
 
+### Configuration
+
+There're three places Tokei would get configuration from, `~/.config/`, `./`, `~/`.
+Each of these file names are accepted, `tokei.toml`, `.tokeirc`.
+
 #### Basic usage
 
 This is the basic way to use tokei. Which will report on the code in `./foo`

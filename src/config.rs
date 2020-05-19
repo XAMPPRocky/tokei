@@ -50,11 +50,12 @@ impl Config {
             .and_then(|s| toml::from_str(&s).ok())
     }
 
-    /// Creates a `Config` from two configuration files if they are available.
+    /// Creates a `Config` from three configuration files if they are available.
     /// Files can have two different names `tokei.toml` and `.tokeirc`.
     /// Firstly it will attempt to find a config in the configuration directory
-    /// (see below), and secondly from the current directory. The current
-    /// directory's configuration will take priority over the configuration
+    /// (see below), secondly from the home directory, `$HOME/`, 
+    /// and thirdly from the current directory, `./`. 
+    /// The current directory's configuration will take priority over the configuratio
     /// directory.
     ///
     /// |Platform | Value | Example |
@@ -77,21 +78,25 @@ impl Config {
             .and_then(Self::get_config)
             .unwrap_or_else(Self::default);
 
+        let home_dir = env::home_dir()
+            .and_then(Self::get_config)
+            .unwrap_or_else(Self::default);
+
         let current_dir = env::current_dir()
             .ok()
             .and_then(Self::get_config)
             .unwrap_or_else(Self::default);
 
         Config {
-            columns: current_dir.columns.or(conf_dir.columns),
+            columns: current_dir.columns.or(home_dir.columns.or(conf_dir.columns)),
             //languages: current_dir.languages.or(conf_dir.languages),
             treat_doc_strings_as_comments: current_dir
                 .treat_doc_strings_as_comments
-                .or(conf_dir.treat_doc_strings_as_comments),
-            types: current_dir.types.or(conf_dir.types),
-            no_ignore: current_dir.no_ignore.or(conf_dir.no_ignore),
-            no_ignore_parent: current_dir.no_ignore_parent.or(conf_dir.no_ignore_parent),
-            no_ignore_vcs: current_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs),
+                .or(home_dir.treat_doc_strings_as_comments.or(conf_dir.treat_doc_strings_as_comments)),
+            types: current_dir.types.or(home_dir.types.or(conf_dir.types)),
+            no_ignore: current_dir.no_ignore.or(home_dir.no_ignore.or(conf_dir.no_ignore)),
+            no_ignore_parent: current_dir.no_ignore_parent.or(home_dir.no_ignore_parent.or(conf_dir.no_ignore_parent)),
+            no_ignore_vcs: current_dir.no_ignore_vcs.or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
             ..Self::default()
         }
     }
