@@ -16,9 +16,6 @@ jobs:
   install-cross:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-        with:
-          depth: 50
       - uses: XAMPPRocky/get-github-release@v1
         id: cross
         with:
