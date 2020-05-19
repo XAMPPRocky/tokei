@@ -1014,6 +1014,12 @@
       "quotes": [["\\\"", "\\\""], ["$[", "]"], ["$<", ">"], ["${", "}"]],
       "extensions": ["str"]
     },
+    "Svelte": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["svelte"]
+    },
     "Svg": {
       "name": "SVG",
       "multi_line_comments": [["<!--", "-->"]],

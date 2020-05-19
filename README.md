@@ -425,6 +425,7 @@ Spice
 Sql
 SRecode
 Stratego
+Svelte
 Svg
 Swift
 Swig
