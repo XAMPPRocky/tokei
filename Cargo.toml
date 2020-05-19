@@ -24,11 +24,6 @@ yaml = ["serde_yaml"]
 lto = "thin"
 panic = "abort"
 
-[badges.appveyor]
-repository = "XAMPPRocky/tokei"
-[badges.travis-ci]
-repository = "XAMPPRocky/tokei"
-
 [build-dependencies]
 handlebars = "3.0.1"
 ignore = "0.4.15"
