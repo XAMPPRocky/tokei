@@ -34,6 +34,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - [Installation](#installation)
     - [Package Managers](#package-managers)
     - [Manual](#manual)
+- [Configuration](#configuration)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Badges](#badges)
