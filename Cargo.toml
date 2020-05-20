@@ -11,7 +11,7 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/XAMPPRocky/tokei.git"
-version = "11.1.1"
+version = "11.2.0"
 
 [features]
 all = ["json", "cbor", "yaml"]
@@ -23,11 +23,6 @@ yaml = ["serde_yaml"]
 [profile.release]
 lto = "thin"
 panic = "abort"
-
-[badges.appveyor]
-repository = "XAMPPRocky/tokei"
-[badges.travis-ci]
-repository = "XAMPPRocky/tokei"
 
 [build-dependencies]
 handlebars = "3.0.1"

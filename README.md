@@ -34,6 +34,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - [Installation](#installation)
     - [Package Managers](#package-managers)
     - [Manual](#manual)
+- [Configuration](#configuration)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Badges](#badges)
@@ -102,6 +103,14 @@ cargo install --git https://github.com/XAMPPRocky/tokei.git
 
 [rust]: https://www-rust-lang.org
 
+
+## Configuration
+
+Tokei has a [configuration] file that allows you to change default behaviour.
+The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
+this file in three different places. The current directory,your home directory,
+and your configuration directory.
+
 ## How to use Tokei
 
 #### Basic usage
@@ -112,6 +121,8 @@ and all subfolders.
 ```shell
 $ tokei ./foo
 ```
+
+[configuration]: ./tokei.example.toml
 
 #### Multiple folders
 To have tokei report on multiple folders in the same call simply add a comma,
@@ -306,6 +317,7 @@ Css
 D
 Dart
 DeviceTree
+Dhall
 Dockerfile
 DotNetResource
 DreamMaker
@@ -424,6 +436,7 @@ Spice
 Sql
 SRecode
 Stratego
+Svelte
 Svg
 Swift
 Swig

@@ -16,9 +16,6 @@ jobs:
   install-cross:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-        with:
-          depth: 50
       - uses: XAMPPRocky/get-github-release@v1
         id: cross
         with:
@@ -50,11 +47,6 @@ jobs:
       - uses: actions/checkout@v2
       - run: bash ci/set_rust_version.bash stable ${{ matrix.target }}
       - run: bash ci/build.bash cargo ${{ matrix.target }} RELEASE
-      - run: |
-          cd ./target/${{ matrix.target }}/release/
-          7z a "${{ env.BIN }}.zip" "${{ env.BIN }}.exe"
-          mv "${{ env.BIN }}.zip" $GITHUB_WORKSPACE
-        shell: bash
         # We're using using a fork of `actions/create-release` that detects
         # whether a release is already available or not first.
       - uses: XAMPPRocky/create-release@v1.0.2
@@ -74,8 +66,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ env.BIN }}.zip
-          asset_name: ${{ env.BIN }}-${{ matrix.target }}.zip
+          asset_path: target/${{ matrix.target }}/release/${{ env.BIN }}.exe
+          asset_name: ${{ env.BIN }}-${{ matrix.target }}.exe
           asset_content_type: application/zip
 
   macos:

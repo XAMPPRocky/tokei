@@ -272,6 +272,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["dts", "dtsi"]
     },
+    "Dhall":{
+      "nested": true,
+      "line_comment": ["--"],
+      "multi_line_comments": [["{-", "-}"]],
+      "quotes": [["\\\"", "\\\""], ["''", "''"]],
+      "extensions": ["dhall"]
+    },
     "DreamMaker": {
       "name": "Dream Maker",
       "line_comment": ["//"],
@@ -494,8 +501,9 @@
     },
     "Html": {
       "name": "HTML",
-      "multi_line_comments": [["<!--", "-->"]],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "line_comment": ["//"],
+      "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["html", "htm"]
     },
     "Hamlet": {
@@ -1010,6 +1018,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["$[", "]"], ["$<", ">"], ["${", "}"]],
       "extensions": ["str"]
+    },
+    "Svelte": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["svelte"]
     },
     "Svg": {
       "name": "SVG",
