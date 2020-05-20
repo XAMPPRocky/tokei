@@ -231,7 +231,7 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "verbatim_quotes": [["@\\\"", "\\\""]],
-      "extensions": ["cs"]
+      "extensions": ["cs", "csx"]
     },
     "CShell": {
       "name": "C Shell",
