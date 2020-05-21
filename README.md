@@ -83,6 +83,9 @@ sudo dnf install tokei
 pkg install tokei
 # MacOS (Homebrew)
 brew install tokei
+# MacOS (MacPorts)
+sudo port selfupdate
+sudo port install tokei
 # Nix/NixOS
 nix-env -i tokei
 # OpenSUSE
