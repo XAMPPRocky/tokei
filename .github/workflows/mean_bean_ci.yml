@@ -14,9 +14,6 @@ jobs:
   install-cross:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-        with:
-          depth: 50
       - uses: XAMPPRocky/get-github-release@v1
         id: cross
         with:
@@ -41,8 +38,6 @@ jobs:
     needs: install-cross
     steps:
       - uses: actions/checkout@v2
-        with:
-          depth: 50
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
         shell: bash
       - run: ci/build.bash cargo ${{ matrix.target }}
@@ -69,9 +64,6 @@ jobs:
     needs: install-cross
     steps:
       - uses: actions/checkout@v2
-        with:
-          depth: 50
-
       - uses: actions/download-artifact@v1
         with:
           name: cross-apple-darwin
@@ -101,9 +93,6 @@ jobs:
     needs: install-cross
     steps:
       - uses: actions/checkout@v2
-        with:
-          depth: 50
-
       - name: Download Cross
         uses: actions/download-artifact@v1
         with:

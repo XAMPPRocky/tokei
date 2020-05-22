@@ -83,6 +83,9 @@ sudo dnf install tokei
 pkg install tokei
 # MacOS (Homebrew)
 brew install tokei
+# MacOS (MacPorts)
+sudo port selfupdate
+sudo port install tokei
 # Nix/NixOS
 nix-env -i tokei
 # OpenSUSE
@@ -101,7 +104,7 @@ You can also build and install from source (requires the latest stable [Rust] co
 cargo install --git https://github.com/XAMPPRocky/tokei.git
 ```
 
-[rust]: https://www-rust-lang.org
+[rust]: https://www.rust-lang.org
 
 
 ## Configuration
