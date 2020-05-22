@@ -104,7 +104,7 @@ You can also build and install from source (requires the latest stable [Rust] co
 cargo install --git https://github.com/XAMPPRocky/tokei.git
 ```
 
-[rust]: https://www-rust-lang.org
+[rust]: https://www.rust-lang.org
 
 
 ## Configuration
