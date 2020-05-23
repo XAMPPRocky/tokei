@@ -285,6 +285,7 @@ ActionScript
 Ada
 Agda
 Alex
+Alloy
 Asn1
 Asp
 AspNet

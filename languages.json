@@ -24,6 +24,11 @@
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["agda"]
     },
+    "Alloy": {
+      "line_comment": ["--", "//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["als"]
+    },
     "Arduino": {
       "name": "Arduino C++",
       "line_comment": ["//"],
