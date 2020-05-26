@@ -1,6 +1,6 @@
 # 11.2.0
 
-- Added shebang and env detection for Crystal.
+- @alexmaco Added shebang and env detection for Crystal.
 - @NickHackman Updated both Vue and HTML to count CSS & JS comments as comments.
 - @XAMPPRocky renamed Perl6's display name to Rakudo.
 - @dbackeus Added `erb` extension for Ruby HTML.
