@@ -26,7 +26,12 @@ impl<'a> Cli<'a> {
         let matches = clap_app!(tokei =>
             (version: &*crate_version())
             (author: "Erin P. <xampprocky@gmail.com> + Contributors")
-            (about: crate_description!())
+            (about: concat!(
+                    crate_description!(),
+                    "\n",
+                    "Support this project on GitHub Sponsors: https://github.com/sponsors/XAMPPRocky"
+                )
+            )
             (@arg columns: -c --columns
                 +takes_value
                 conflicts_with[output]
