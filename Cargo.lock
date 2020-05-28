@@ -1022,7 +1022,7 @@ dependencies = [
 
 [[package]]
 name = "tokei"
-version = "11.2.0"
+version = "11.2.1"
 dependencies = [
  "aho-corasick",
  "clap",
