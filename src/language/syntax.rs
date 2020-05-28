@@ -23,6 +23,7 @@ pub(crate) struct SyntaxCounter {
     pub(crate) quote: Option<&'static str>,
     pub(crate) quote_is_doc_quote: bool,
     pub(crate) stack: Vec<&'static str>,
+    pub(crate) quote_is_verbatim: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -36,6 +37,7 @@ pub(crate) struct SharedMatchers {
     pub multi_line_comments: &'static [(&'static str, &'static str)],
     pub nested_comments: &'static [(&'static str, &'static str)],
     pub string_literals: &'static [(&'static str, &'static str)],
+    pub verbatim_string_literals: &'static [(&'static str, &'static str)],
 }
 
 impl SharedMatchers {
@@ -72,6 +74,7 @@ impl SharedMatchers {
             multi_line_comments: language.multi_line_comments(),
             nested_comments: language.nested_comments(),
             string_literals: language.quotes(),
+            verbatim_string_literals: language.verbatim_quotes(),
         }
     }
 }
@@ -81,6 +84,7 @@ impl SyntaxCounter {
         Self {
             shared: SharedMatchers::new(language),
             quote_is_doc_quote: false,
+            quote_is_verbatim: false,
             stack: Vec::with_capacity(1),
             quote: None,
         }
@@ -119,7 +123,21 @@ impl SyntaxCounter {
         {
             trace!("Start Doc {:?}", start);
             self.quote = Some(end);
+            self.quote_is_verbatim = false;
             self.quote_is_doc_quote = true;
+            return Some(start.len());
+        }
+
+        if let Some((start, end)) = self
+            .shared
+            .verbatim_string_literals
+            .iter()
+            .find(|(s, _)| window.starts_with(s.as_bytes()))
+        {
+            trace!("Start verbatim {:?}", start);
+            self.quote = Some(end);
+            self.quote_is_verbatim = true;
+            self.quote_is_doc_quote = false;
             return Some(start.len());
         }
 
@@ -131,6 +149,7 @@ impl SyntaxCounter {
         {
             trace!("Start {:?}", start);
             self.quote = Some(end);
+            self.quote_is_verbatim = false;
             self.quote_is_doc_quote = false;
             return Some(start.len());
         }
@@ -192,9 +211,9 @@ impl SyntaxCounter {
             let quote = self.quote.take().unwrap();
             trace!("End {:?}", quote);
             Some(quote.len())
-        } else if window.starts_with(br"\") {
+        } else if window.starts_with(br"\") && !self.quote_is_verbatim {
             // Tell the state machine to skip the next character because it
-            // has been escaped.
+            // has been escaped if the string isn't a verbatim string.
             Some(2)
         } else {
             None

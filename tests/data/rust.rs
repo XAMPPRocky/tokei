@@ -1,8 +1,10 @@
-// 39 lines 32 code 2 comments 5 blanks
+// 41 lines 33 code 3 comments 5 blanks
 
 /* /**/ */
 fn main() {
-    let start = "/*";
+    let start = r##"/*##\"
+\"##;
+    // comment
     loop {
         if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
             break;

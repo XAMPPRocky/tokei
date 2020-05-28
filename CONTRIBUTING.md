@@ -65,6 +65,24 @@ let x = /* There is a reason
     10;
 ```
 
+The `verbatim_quotes` property expects an array of strings, as some languages
+have multiple syntaxes for defining verbatim strings. A verbatim string
+in the context of Tokei is a string literal that can have unescaped `"`s. For example [`CSharp`](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/strings/#regular-and-verbatim-string-literals)
+
+```json
+"CSharp": {
+  "verbatim_quotes": [
+    [
+      "@\\\"",
+      "\\\""
+    ]
+  ]
+```
+
+```csharp
+const string BasePath = @"C:\";
+```
+
 Some languages have a single, standard filename with no extension
 like `Makefile` or `Dockerfile`. These can be defined with the
 `filenames` property:
@@ -123,11 +141,13 @@ The comment should use the syntax of the language you're testing.
 A good example of a test file is [`tests/data/rust.rs`].
 
 ```rust
-// 39 lines 32 code 2 comments 5 blanks
+// 41 lines 33 code 3 comments 5 blanks
 
 /* /**/ */
 fn main() {
-    let start = "/*";
+    let start = r##"/*\"
+\"##;
+    // comment
     loop {
         if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
             break;

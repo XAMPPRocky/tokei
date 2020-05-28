@@ -46,6 +46,7 @@ fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
         }
 
         sort_prop!("quotes");
+        sort_prop!("verbatim_quotes");
         sort_prop!("multi_line");
     }
 
