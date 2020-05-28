@@ -3,6 +3,7 @@ use std::sync::Arc;
 use aho_corasick::{AhoCorasick, AhoCorasickBuilder};
 use dashmap::DashMap;
 use log::Level::Trace;
+use once_cell::sync::Lazy;
 
 use super::language_type::LanguageType;
 
@@ -42,9 +43,7 @@ pub(crate) struct SharedMatchers {
 
 impl SharedMatchers {
     pub fn new(language: LanguageType) -> Arc<Self> {
-        lazy_static::lazy_static! {
-            pub(crate) static ref MATCHERS: DashMap<LanguageType, Arc<SharedMatchers>> = DashMap::new();
-        }
+        static MATCHERS: Lazy<DashMap<LanguageType, Arc<SharedMatchers>>> = Lazy::new(DashMap::new);
 
         MATCHERS
             .entry(language)

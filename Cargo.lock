@@ -619,6 +619,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "once_cell"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0b631f7e854af39a1739f401cf34a8a013dfe09eac4fa4dba91e9768bd28168d"
+
+[[package]]
 name = "opaque-debug"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1036,8 +1042,8 @@ dependencies = [
  "handlebars",
  "hex",
  "ignore",
- "lazy_static",
  "log",
+ "once_cell",
  "parking_lot",
  "rayon",
  "regex",
