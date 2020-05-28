@@ -4,9 +4,6 @@ use ignore::{overrides::OverrideBuilder, DirEntry, WalkBuilder, WalkState::Conti
 
 use rayon::prelude::*;
 
-// This is just a re-export from the auto generated file.
-pub use crate::language::get_filetype_from_shebang;
-
 use crate::{
     config::Config,
     language::{Language, LanguageType},

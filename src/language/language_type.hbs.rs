@@ -6,10 +6,9 @@
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[non_exhaustive]
 pub enum LanguageType {
-    {{~#each languages}}
-        #[allow(missing_docs)]
-        {{~@key}},
-    {{/each}}
+    {% for key, _ in languages -%}
+        #[allow(missing_docs)] {{key}},
+    {% endfor %}
 }
 
 impl LanguageType {
@@ -24,25 +23,17 @@ impl LanguageType {
     /// ```
     pub fn name(self) -> &'static str {
         match self {
-            {{~#each languages}}
-                {{@key}} =>
-                {{#if this.name}}
-                    "{{~name}}"
-                {{else}}
-                    "{{~@key}}"
-                {{~/if}},
-            {{~/each}}
+            {% for key, value in languages -%}
+                {{key}} => {% if value.name %}"{{value.name}}"{% else %}"{{key}}"{% endif %},
+            {% endfor %}
         }
     }
 
     pub(crate) fn is_blank(self) -> bool {
         match self {
-            {{#each languages}}
-                {{#if this.blank}}
-                    {{@key}} => true,
-                {{/if}}
-            {{/each}}
-            _ => false,
+            {% for key, v in languages -%}
+                {{key}} => {{ v.blank | default(value=false) }},
+            {% endfor %}
         }
     }
 
@@ -53,11 +44,7 @@ impl LanguageType {
 
     /// Provides every variant in a Vec
     pub fn list() -> &'static [Self] {
-        &[
-            {{#each languages}}
-                {{@key}},
-            {{~/each}}
-        ]
+        &[{% for key, _ in languages %}{{key}}, {%- endfor %}]
     }
 
     /// Returns the single line comments of a language.
@@ -68,16 +55,9 @@ impl LanguageType {
     /// ```
     pub fn line_comments(self) -> &'static [&'static str] {
         match self {
-            {{#each languages}}
-                {{#if this.line_comment}}
-                    {{~@key}} =>
-                        &[
-                            {{~#each this.line_comment}}
-                                "{{~this}}",
-                            {{~/each}}
-                        ],
-                {{~/if}}
-            {{~/each}}
+            {% for key, value in languages -%}
+                {{key}} => &[{% for item in value.line_comment | default(value=[]) %}"{{item}}",{% endfor %}],
+            {% endfor %}
             _ => &[],
         }
     }
@@ -91,20 +71,13 @@ impl LanguageType {
     pub fn multi_line_comments(self) -> &'static [(&'static str, &'static str)]
     {
         match self {
-            {{#each languages}}
-                    {{#if this.multi_line_comments}}
-                {{~@key}} =>
-                        &[
-                            {{~#each this.multi_line_comments}}
-                                (
-                                {{~#each this}}
-                                    "{{~this}}",
-                                {{~/each}}
-                                ),
-                            {{~/each}}
-                        ],
-                    {{~/if}}
-            {{~/each}}
+            {% for key, value in languages -%}
+                {{key}} => &[
+                    {%- for items in value.multi_line_comments | default(value=[]) -%}
+                        ({% for item in items %}"{{item}}",{% endfor %}),
+                    {%- endfor -%}
+                ],
+            {% endfor %}
             _ => &[],
         }
     }
@@ -118,10 +91,9 @@ impl LanguageType {
     /// ```
     pub fn allows_nested(self) -> bool {
         match self {
-            {{#each languages}}
-                {{~#if this.nested}} {{~@key}} => true, {{~/if}}
-            {{~/each}}
-            _ => false,
+            {% for key, v in languages -%}
+                {{key}} => {{ v.nested | default(value=false) }},
+            {% endfor %}
         }
     }
 
@@ -135,15 +107,13 @@ impl LanguageType {
     pub fn nested_comments(self) -> &'static [(&'static str, &'static str)]
     {
         match self {
-            {{#each languages}}
-                {{~@key}} => &[
-                    {{~#each this.nested_comments}}
-                    (
-                        {{~#each this}} "{{this}}", {{~/each}}
-                    ),
-                    {{~/each}}
+            {% for key, value in languages -%}
+                {{key}} => &[
+                    {%- for items in value.nested_comments | default(value=[]) -%}
+                        ({% for item in items %}"{{item}}",{% endfor %}),
+                    {%- endfor -%}
                 ],
-            {{~/each}}
+            {% endfor %}
         }
     }
 
@@ -155,16 +125,13 @@ impl LanguageType {
     /// ```
     pub fn quotes(self) -> &'static [(&'static str, &'static str)] {
         match self {
-            {{#each languages}}
-                {{#if this.quotes}}
-                    {{~@key}} =>
-                        &[
-                            {{~#each this.quotes}}
-                                ( {{~#each this}}"{{this}}",{{~/each}} ),
-                            {{~/each}}
-                        ],
-                {{~/if}}
-            {{~/each}}
+            {% for key, value in languages -%}
+                {{key}} => &[
+                    {%- for items in value.quotes | default(value=[]) -%}
+                        ({% for item in items %}"{{item}}",{% endfor %}),
+                    {%- endfor -%}
+                ],
+            {% endfor %}
             _ => &[],
         }
     }
@@ -177,16 +144,13 @@ impl LanguageType {
     /// ```
     pub fn verbatim_quotes(self) -> &'static [(&'static str, &'static str)] {
         match self {
-            {{#each languages}}
-                {{#if this.verbatim_quotes}}
-                    {{~@key}} =>
-                        &[
-                            {{~#each this.verbatim_quotes}}
-                                ( {{~#each this}}"{{this}}",{{~/each}} ),
-                            {{~/each}}
-                        ],
-                {{~/if}}
-            {{~/each}}
+            {% for key, value in languages -%}
+                {{key}} => &[
+                    {%- for items in value.verbatim_quotes | default(value=[]) -%}
+                        ({% for item in items %}"{{item}}",{% endfor %}),
+                    {%- endfor -%}
+                ],
+            {% endfor %}
             _ => &[],
         }
     }
@@ -199,20 +163,13 @@ impl LanguageType {
     /// ```
     pub fn doc_quotes(self) -> &'static [(&'static str, &'static str)] {
         match self {
-            {{#each languages}}
-            {{#if this.doc_quotes}}
-                {{~@key}} =>
-                        &[
-                            {{~#each this.doc_quotes}}
-                                (
-                                {{~#each this}}
-                                    "{{this}}",
-                                {{~/each}}
-                                ),
-                            {{~/each}}
-                        ],
-            {{~/if}}
-            {{~/each}}
+            {% for key, value in languages -%}
+                {{key}} => &[
+                    {% for items in value.doc_quotes | default(value=[])-%}
+                        ({% for item in items %}"{{item}}",{% endfor %}),
+                    {%- endfor %}
+                ],
+            {%- endfor %}
             _ => &[],
         }
     }
@@ -225,173 +182,25 @@ impl LanguageType {
     /// ```
     pub fn shebangs(self) -> &'static [&'static str] {
         match self {
-            {{#each languages}}
-            {{#if this.shebangs}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.shebangs}}
-                            "{{~this}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
+            {% for key, lang in languages -%}
+                {{key}} => &[{% for item in lang.shebangs | default(value=[]) %}"{{item}}",{% endfor %}],
+            {% endfor %}
             _ => &[],
         }
     }
 
     pub(crate) fn start_any_comments(self) -> &'static [&'static str] {
         match self {
-            {{#each languages}}
-                {{~@key}} =>
-                    &[
-                        {{#if this.line_comment}}
-                            {{~#each this.line_comment}}
-                                "{{this}}",
-                            {{~/each}}
-                        {{~/if}}
-                        {{#if this.multi_line_comments}}
-                            {{~#each this.multi_line_comments}}
-                                "{{this.0}}",
-                            {{~/each}}
-                        {{~/if}}
-                        {{#if this.nested_comments}}
-                            {{~#each this.nested_comments}}
-                                "{{this.0}}",
-                            {{~/each}}
-                        {{~/if}}
-                    ],
-            {{~/each}}
-        }
-    }
+            {% for key, value in languages -%}
+                {%- set starting_multi_line_comments = value.multi_line_comments | default(value=[]) | map(attribute="0") -%}
+                {%- set starting_nested_comments = value.nested_comments | default(value=[]) | map(attribute="0") -%}
 
-
-    pub(crate) fn _start_string_literals(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.quotes}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.quotes}}
-                            "{{this.0}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
-        }
-    }
-
-    pub(crate) fn _end_string_literals(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.quotes}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.quotes}}
-                            "{{this.1}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
-        }
-    }
-
-    pub(crate) fn _start_multi_line_comments(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.multi_line_comments}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.multi_line_comments}}
-                            "{{this.0}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
-        }
-    }
-
-    pub(crate) fn _end_multi_line_comments(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.multi_line_comments}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.multi_line_comments}}
-                            "{{this.1}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
-        }
-    }
-
-    pub(crate) fn _start_nested_comments(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.nested_comments}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.nested_comments}}
-                            "{{this.0}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
-        }
-    }
-
-    pub(crate) fn _end_nested_comments(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.nested_comments}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.nested_comments}}
-                            "{{this.1}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
-        }
-    }
-
-    /// Returns the starting doc literal.
-    pub(crate) fn _start_doc_quotes(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.doc_quotes}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.doc_quotes}}
-                            "{{this.0}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
-        }
-    }
-
-    /// Returns the starting doc literal.
-    pub(crate) fn _end_doc_quotes(self) -> &'static [&'static str] {
-        match self {
-            {{#each languages}}
-            {{#if this.doc_quotes}}
-                {{~@key}} =>
-                    &[
-                        {{~#each this.doc_quotes}}
-                            "{{this.1}}",
-                        {{~/each}}
-                    ],
-            {{~/if}}
-            {{~/each}}
-            _ => &[],
+                {{key}} => &[
+                    {%- for item in value.line_comment | default(value=[]) | concat(with=starting_multi_line_comments) | concat(with=starting_nested_comments) -%}
+                        "{{item}}",
+                    {%- endfor -%}
+                ],
+            {% endfor %}
         }
     }
 
@@ -399,15 +208,21 @@ impl LanguageType {
     /// parts of analysis.
     pub fn important_syntax(self) -> &'static [&'static str] {
         match self {
-            {{#each languages}}
-                {{~@key}} =>
-                    &[
-                        {{#if this.quotes}}{{#each this.quotes}}"{{this.0}}",{{/each}}{{/if}}
-                        {{#if this.doc_quotes}}{{#each this.doc_quotes}}"{{this.0}}",{{/each}}{{/if}}
-                        {{#if this.multi_line_comments}}{{#each this.multi_line_comments}}"{{this.0}}",{{/each}}{{/if}}
-                        {{#if this.nested_comments}}{{#each this.nested_comments}}"{{this.0}}",{{/each}}{{/if}}
-                    ],
-            {{~/each}}
+            {% for key, value in languages -%}
+                {%- set starting_quotes = value.quotes | default(value=[]) | map(attribute="0") -%}
+                {%- set starting_doc_quotes = value.doc_quotes | default(value=[]) | map(attribute="0") -%}
+                {%- set starting_multi_line_comments = value.multi_line_comments | default(value=[]) | map(attribute="0") -%}
+                {%- set starting_nested_comments = value.nested_comments | default(value=[]) | map(attribute="0") -%}
+
+                {{key}} => &[
+                    {%- for item in starting_quotes |
+                                   concat(with=starting_doc_quotes) |
+                                   concat(with=starting_multi_line_comments) |
+                                   concat(with=starting_nested_comments) -%}
+                        "{{item}}",
+                    {%- endfor -%}
+                ],
+            {% endfor %}
         }
     }
 
@@ -427,20 +242,19 @@ impl LanguageType {
 
         if let Some(filename) = fsutils::get_filename(&entry) {
             match &*filename {
-                {{~#each languages}}
-                    {{~#if this.filenames}}
-                        {{~#each this.filenames}}
-                            "{{~this}}" {{~#unless @last}} | {{~/unless}}
-                        {{~/each}}
-                            => return Some({{~@key}}),
-                    {{~/if}}
-                {{~/each}}
+                {% for key, value in languages -%}
+                    {%- if value.filenames -%}
+                        {%- for item in value.filenames -%}
+                            | "{{item}}"
+                        {%- endfor -%}
+                            => return Some({{key}}),
+                    {% endif -%}
+                {%- endfor %}
                 _ => ()
             }
         }
 
-        let extension = fsutils::get_extension(&entry);
-        match extension {
+        match fsutils::get_extension(&entry) {
             Some(extension) => LanguageType::from_file_extension(extension.as_str()),
             None => LanguageType::from_shebang(&entry),
         }
@@ -457,14 +271,11 @@ impl LanguageType {
     /// ```
     pub fn from_file_extension(extension: &str) -> Option<Self> {
         match extension {
-            {{~#each languages}}
-                {{~#if this.extensions}}
-                    {{~#each this.extensions}}
-                        | "{{~this}}"
-                    {{~/each}}
-                        => Some({{~@key}}),
-                {{~/if}}
-            {{~/each}}
+            {% for key, value in languages -%}
+                {%- if value.extensions -%}
+                    {%- for item in value.extensions  %}| "{{item}}" {% endfor %}=> Some({{key}}),
+                {% endif -%}
+            {%- endfor %}
             extension => {
                 warn!("Unknown extension: {}", extension);
                 None
@@ -482,18 +293,43 @@ impl LanguageType {
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
     pub fn from_shebang<P: AsRef<Path>>(entry: P) -> Option<Self> {
-        if let Some(filetype) = get_filetype_from_shebang(entry.as_ref()) {
-            match filetype {
-                {{~#each languages}}
-                    "{{~@key}}" => Some({{~@key}}),
-                {{~/each}}
-                extension => {
-                    warn!("Unknown extension: {}", extension);
+        let file = match File::open(entry) {
+            Ok(file) => file,
+            _ => return None,
+        };
+
+        let mut buf = BufReader::new(file);
+        let mut line = String::new();
+        let _ = buf.read_line(&mut line);
+
+        let mut words = line.split_whitespace();
+        match words.next() {
+            {# First match against any shebang paths, and then check if the
+               language matches any found in the environment shebang path. #}
+            {% for key, value in languages -%}
+                {%- if value.shebangs %}
+                    {%- for item in value.shebangs  %}| Some("{{item}}") {% endfor %}=> Some({{key}}),
+                {% endif -%}
+            {%- endfor %}
+
+            Some("#!/usr/bin/env") => {
+                if let Some(word) = words.next() {
+                    match word {
+                        {% for key, value in languages -%}
+                            {%- if value.env -%}
+                                {%- for item in value.env  %}| "{{item}}" {% endfor %}=> Some({{key}}),
+                            {% endif -%}
+                        {%- endfor %}
+                        env => {
+                            warn!("Unknown environment: {:?}", env);
+                            None
+                        }
+                    }
+                } else {
                     None
-                },
+                }
             }
-        } else {
-            None
+            _ => None,
         }
     }
 }
@@ -503,14 +339,10 @@ impl FromStr for LanguageType {
 
     fn from_str(from: &str) -> Result<Self, Self::Err> {
         match &*from {
-            {{~#each languages}}
-                {{~#if this.name}}
-                    "{{~this.name}}"
-                {{else}}
-                    "{{~@key}}"
-                {{~/if}}
-                    => Ok({{~@key}}),
-            {{~/each}}
+            {% for key, value in languages %}
+                {% if value.name %}"{{value.name}}"{% else %}"{{key}}"{% endif %}
+                => Ok({{key}}),
+            {% endfor %}
             _ => Err("Language not found, please use `-l` to see all available\
                      languages."),
         }
@@ -535,54 +367,3 @@ impl<'a> From<&'a LanguageType> for Cow<'a, LanguageType> {
         Cow::Borrowed(from)
     }
 }
-
-
-/// This is for getting the file type from the first line of a file
-pub fn get_filetype_from_shebang(file: &Path) -> Option<&'static str>
-{
-    let file = match File::open(file) {
-        Ok(file) => file,
-        _ => return None,
-    };
-
-    let mut buf = BufReader::new(file);
-    let mut line = String::new();
-    let _ = buf.read_line(&mut line);
-
-    let mut words = line.split_whitespace();
-    match words.next() {
-        {{#each languages}}
-        {{~#if this.shebangs}}
-        {{~#each this.shebangs}}
-        | Some("{{this}}")
-        {{~/each}}
-            => Some("{{~@key}}"),
-        {{~/if}}
-        {{~/each}}
-        Some("#!/usr/bin/env") => {
-            if let Some(word) = words.next() {
-                match word {
-                    {{~#each languages}}
-                        {{~#if this.env}}
-                            {{~#each this.env}}
-                                "{{~this}}"
-                                {{~#unless @last}}
-                                    |
-                                {{~/unless}}
-                            {{~/each}}
-                                => Some("{{@key}}"),
-                        {{~/if}}
-                    {{~/each}}
-                    env => {
-                        warn!("Unknown environment: {:?}", env);
-                        None
-                    }
-                }
-            } else {
-                None
-            }
-        }
-        _ => None,
-    }
-}
-

@@ -1,4 +1,3 @@
-extern crate handlebars;
 extern crate ignore;
 extern crate serde_json;
 
@@ -7,7 +6,6 @@ use std::fs::{self, File};
 use std::path::Path;
 use std::{cmp, env, error};
 
-use handlebars::Handlebars;
 use ignore::Walk;
 use serde_json::Value;
 
@@ -20,11 +18,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 }
 
 fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
-    let handlebars = {
-        let mut h = Handlebars::new();
-        h.register_escape_fn(handlebars::no_escape);
-        h
-    };
+    let mut tera = tera::Tera::default();
 
     let mut json: Value = serde_json::from_reader(File::open(&"languages.json")?)?;
 
@@ -50,11 +44,10 @@ fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
         sort_prop!("multi_line");
     }
 
-    let output = Path::new(&out_dir).join("language_type.rs");
-    let mut source_template = File::open(&"src/language/language_type.hbs.rs")?;
-    let mut output_file = File::create(&output)?;
+    let output_path = Path::new(&out_dir).join("language_type.rs");
+    let rust_code = tera.render_str(&std::fs::read_to_string("src/language/language_type.hbs.rs")?, &tera::Context::from_value(json)?)?;
+    std::fs::write(output_path, rust_code)?;
 
-    handlebars.render_template_source_to_write(&mut source_template, &json, &mut output_file)?;
     Ok(())
 }
 
