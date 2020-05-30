@@ -1,7 +1,10 @@
-use std::{fmt, path::PathBuf};
+use std::{collections::BTreeMap, fmt, path::PathBuf};
+
+use crate::LanguageType;
 
 /// A struct representing the statistics of a file.
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
+#[non_exhaustive]
 pub struct Stats {
     /// Number of blank lines within the file.
     pub blanks: usize,
@@ -14,6 +17,8 @@ pub struct Stats {
     pub lines: usize,
     /// File name.
     pub name: PathBuf,
+    /// Languages contained inside the language.
+    pub contexts: BTreeMap<LanguageType, Stats>,
 }
 
 impl Stats {
@@ -27,6 +32,7 @@ impl Stats {
             comments: 0,
             lines: 0,
             name,
+            contexts: BTreeMap::new(),
         }
     }
 }

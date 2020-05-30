@@ -41,21 +41,6 @@ impl Language {
 
     /// Add a `Stat` to the Language. This will not update the totals in the
     /// Language struct.
-    ///
-    /// ```
-    /// use std::path::PathBuf;
-    /// use tokei::{Language, Stats};
-    ///
-    /// let mut language = Language::new();
-    ///
-    /// language.add_stat(Stats {
-    ///     lines: 10,
-    ///     code: 4,
-    ///     comments: 3,
-    ///     blanks: 3,
-    ///     name: PathBuf::from("test.rs"),
-    /// });
-    /// ```
     pub fn add_stat(&mut self, stat: Stats) {
         self.stats.push(stat);
     }
@@ -69,19 +54,13 @@ impl Language {
     /// Totals up the statistics of the `Stat` structs currently contained in
     /// the language.
     ///
-    /// ```
-    /// use std::path::PathBuf;
-    /// use tokei::{Language, Stats};
+    /// ```no_run
+    /// use std::{collections::BTreeMap, path::PathBuf};
+    /// use tokei::Language;
     ///
     /// let mut language = Language::new();
     ///
-    /// language.add_stat(Stats {
-    ///     lines: 10,
-    ///     code: 4,
-    ///     comments: 3,
-    ///     blanks: 3,
-    ///     name: PathBuf::from("test.rs"),
-    /// });
+    /// // Add stats...
     ///
     /// assert_eq!(0, language.lines);
     ///
@@ -122,27 +101,13 @@ impl Language {
     /// Sorts each of the `Stats` structs contained in the language based
     /// on what category is provided.
     ///
-    /// ```
-    /// use std::path::PathBuf;
-    /// use tokei::{Language, Sort, Stats};
+    /// ```no_run
+    /// use std::{collections::BTreeMap, path::PathBuf};
+    /// use tokei::{Language, Sort};
     ///
     /// let mut language = Language::new();
     ///
-    /// language.add_stat(Stats {
-    ///     lines: 10,
-    ///     code: 8,
-    ///     comments: 0,
-    ///     blanks: 2,
-    ///     name: PathBuf::from("test.rs"),
-    /// });
-    ///
-    /// language.add_stat(Stats {
-    ///     lines: 20,
-    ///     code: 4,
-    ///     comments: 13,
-    ///     blanks: 3,
-    ///     name: PathBuf::from("testsuite.rs"),
-    /// });
+    /// // Add stats...
     ///
     /// language.sort_by(Sort::Lines);
     /// assert_eq!(20, language.stats[0].lines);

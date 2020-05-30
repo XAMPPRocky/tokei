@@ -9,7 +9,7 @@ use std::{
 
 use crate::{
     config::Config,
-    language::syntax::SyntaxCounter,
+    language::syntax::{Context, SyntaxCounter},
     stats::Stats,
     utils::{ext::SliceExt, fs as fsutils},
 };

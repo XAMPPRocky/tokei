@@ -39,6 +39,19 @@ pub(crate) struct SharedMatchers {
     pub nested_comments: &'static [(&'static str, &'static str)],
     pub string_literals: &'static [(&'static str, &'static str)],
     pub verbatim_string_literals: &'static [(&'static str, &'static str)],
+    pub contexts: &'static [Context],
+}
+
+#[derive(Clone, Debug)]
+pub enum Context {
+    Html {
+        tag: &'static str,
+        default: LanguageType,
+    },
+    Json {
+        path: &'static str,
+        default: LanguageType,
+    }
 }
 
 impl SharedMatchers {
@@ -74,6 +87,7 @@ impl SharedMatchers {
             nested_comments: language.nested_comments(),
             string_literals: language.quotes(),
             verbatim_string_literals: language.verbatim_quotes(),
+            contexts: language.contexts(),
         }
     }
 }

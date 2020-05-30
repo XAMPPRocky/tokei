@@ -58,7 +58,6 @@ impl LanguageType {
             {% for key, value in languages -%}
                 {{key}} => &[{% for item in value.line_comment | default(value=[]) %}"{{item}}",{% endfor %}],
             {% endfor %}
-            _ => &[],
         }
     }
 
@@ -78,7 +77,6 @@ impl LanguageType {
                     {%- endfor -%}
                 ],
             {% endfor %}
-            _ => &[],
         }
     }
 
@@ -132,7 +130,6 @@ impl LanguageType {
                     {%- endfor -%}
                 ],
             {% endfor %}
-            _ => &[],
         }
     }
 
@@ -151,7 +148,6 @@ impl LanguageType {
                     {%- endfor -%}
                 ],
             {% endfor %}
-            _ => &[],
         }
     }
 
@@ -170,7 +166,6 @@ impl LanguageType {
                     {%- endfor %}
                 ],
             {%- endfor %}
-            _ => &[],
         }
     }
 
@@ -185,9 +180,32 @@ impl LanguageType {
             {% for key, lang in languages -%}
                 {{key}} => &[{% for item in lang.shebangs | default(value=[]) %}"{{item}}",{% endfor %}],
             {% endfor %}
-            _ => &[],
         }
     }
+
+    /// Returns the different language contexts the language can contain.
+    pub(crate) fn contexts(self) -> &'static [Context] {
+        match self {
+            {% for key, value in languages -%}
+                {{key}} => &[
+                    {% for context in value.contexts | default(value=[])-%}
+                    {% if value.kind == "html" %}
+                        Context::Html {
+                            tag: "{{context.tag}}",
+                            default: {{context.default}},
+                        },
+                    {% elif value.kind == "json" %}
+                        Context::Json {
+                            path: "{{context.path}}",
+                            default: {{context.default}},
+                        },
+                    {% endif %}
+                    {%- endfor %}
+                ],
+            {%- endfor %}
+        }
+    }
+
 
     pub(crate) fn start_any_comments(self) -> &'static [&'static str] {
         match self {

@@ -509,6 +509,11 @@
       "line_comment": ["//"],
       "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "kind": "html",
+      "contexts": [
+          { "tag": "script", "default": "JavaScript" },
+          { "tag": "style", "default": "Css" }
+      ],
       "extensions": ["html", "htm"]
     },
     "Hamlet": {
