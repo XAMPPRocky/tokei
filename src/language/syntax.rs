@@ -103,6 +103,21 @@ impl SyntaxCounter {
         }
     }
 
+    /// Returns whether the syntax is currently in plain mode.
+    pub(crate) fn is_plain_mode(&self) -> bool {
+        self.quote.is_none() && self.stack.is_empty()
+    }
+
+    /// Returns whether the syntax is currently in string mode.
+    pub(crate) fn _is_string_mode(&self) -> bool {
+        self.quote.is_some()
+    }
+
+    /// Returns whether the syntax is currently in comment mode.
+    pub(crate) fn _is_comment_mode(&self) -> bool {
+        !self.stack.is_empty()
+    }
+
     #[inline]
     pub(crate) fn parse_line_comment(&self, window: &[u8]) -> bool {
         if self.quote.is_some() || !self.stack.is_empty() {
@@ -170,19 +185,19 @@ impl SyntaxCounter {
         None
     }
 
-    /// Returns whether the syntax is currently in plain mode.
-    pub(crate) fn is_plain_mode(&self) -> bool {
-        self.quote.is_none() && self.stack.is_empty()
-    }
-
-    /// Returns whether the syntax is currently in string mode.
-    pub(crate) fn _is_string_mode(&self) -> bool {
-        self.quote.is_some()
-    }
-
-    /// Returns whether the syntax is currently in comment mode.
-    pub(crate) fn _is_comment_mode(&self) -> bool {
-        !self.stack.is_empty()
+    #[inline]
+    pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
+        if window.starts_with(self.quote?.as_bytes()) {
+            let quote = self.quote.take().unwrap();
+            trace!("End {:?}", quote);
+            Some(quote.len())
+        } else if window.starts_with(br"\") && !self.quote_is_verbatim {
+            // Tell the state machine to skip the next character because it
+            // has been escaped if the string isn't a verbatim string.
+            Some(2)
+        } else {
+            None
+        }
     }
 
     #[inline]
@@ -216,21 +231,6 @@ impl SyntaxCounter {
         }
 
         None
-    }
-
-    #[inline]
-    pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
-        if window.starts_with(self.quote?.as_bytes()) {
-            let quote = self.quote.take().unwrap();
-            trace!("End {:?}", quote);
-            Some(quote.len())
-        } else if window.starts_with(br"\") && !self.quote_is_verbatim {
-            // Tell the state machine to skip the next character because it
-            // has been escaped if the string isn't a verbatim string.
-            Some(2)
-        } else {
-            None
-        }
     }
 
     #[inline]
