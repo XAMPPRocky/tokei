@@ -84,30 +84,29 @@ impl LanguageType {
             let lines = LineIter::new(b'\n', skippable_text);
             let is_fortran = syntax.shared.is_fortran;
             let comments = syntax.shared.line_comments;
+            let parse_lines = move || self.parse_lines(config, LineIter::new(b'\n', rest), stats, syntax);
+            let simple_parse = move || {
+                lines
+                    .par_bridge()
+                    .map(|line| {
+                        // FORTRAN has a rule where it only counts as a comment if it's the
+                        // first character in the column, so removing starting whitespace
+                        // could cause a miscount.
+                        let line = if is_fortran { line } else { line.trim() };
+                        trace!("{}", String::from_utf8_lossy(line));
 
-            let (mut stats, (code, comments, blanks)) = rayon::join(
-                move || self.parse_lines(config, LineIter::new(b'\n', rest), stats, syntax),
-                move || {
-                    lines
-                        .par_bridge()
-                        .map(|line| {
-                            // FORTRAN has a rule where it only counts as a comment if it's the
-                            // first character in the column, so removing starting whitespace
-                            // could cause a miscount.
-                            let line = if is_fortran { line } else { line.trim() };
-                            trace!("{}", String::from_utf8_lossy(line));
+                        if line.trim().is_empty() {
+                            (0, 0, 1)
+                        } else if comments.iter().any(|c| line.starts_with(c.as_bytes())) {
+                            (0, 1, 0)
+                        } else {
+                            (1, 0, 0)
+                        }
+                    })
+                .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
+            };
 
-                            if line.trim().is_empty() {
-                                (0, 0, 1)
-                            } else if comments.iter().any(|c| line.starts_with(c.as_bytes())) {
-                                (0, 1, 0)
-                            } else {
-                                (1, 0, 0)
-                            }
-                        })
-                        .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
-                },
-            );
+            let (mut stats, (code, comments, blanks)) = rayon::join(parse_lines, simple_parse);
 
             stats.code += code;
             stats.comments += comments;
@@ -138,27 +137,29 @@ impl LanguageType {
             };
             trace!("{}", String::from_utf8_lossy(line));
 
-            if line.trim().is_empty() {
-                stats.blanks += 1;
-                trace!("Blank No.{}", stats.blanks);
-                continue;
-            } else if syntax.is_plain_mode() && !syntax.shared.important_syntax.is_match(line) {
-                trace!("^ Skippable");
+            if syntax.is_plain_mode() {
+                if line.trim().is_empty() {
+                    stats.blanks += 1;
+                    trace!("Blank No.{}", stats.blanks);
+                    continue;
+                } else if !syntax.shared.important_syntax.is_match(line) {
+                    trace!("^ Skippable");
 
-                if syntax
-                    .shared
-                    .line_comments
-                    .iter()
-                    .any(|c| line.starts_with(c.as_bytes()))
-                {
-                    stats.comments += 1;
-                    trace!("Comment No.{}", stats.comments);
-                } else {
-                    stats.code += 1;
-                    trace!("Code No.{}", stats.code);
+                    if syntax
+                        .shared
+                            .line_comments
+                            .iter()
+                            .any(|c| line.starts_with(c.as_bytes()))
+                    {
+                        stats.comments += 1;
+                        trace!("Comment No.{}", stats.comments);
+                    } else {
+                        stats.code += 1;
+                        trace!("Code No.{}", stats.code);
+                    }
+
+                    continue;
                 }
-
-                continue;
             }
 
             let had_multi_line = !syntax.stack.is_empty();
@@ -219,7 +220,7 @@ impl LanguageType {
                         // with one.
                         syntax.quote.is_some() ||
                         syntax.shared.doc_quotes.iter().any(|(s, _)| line.starts_with(s.as_bytes()))
-                    ) &&
+                ) &&
                     // `Some(true)` is import in order to respect the current
                     // configuration.
                     config.treat_doc_strings_as_comments == Some(true) &&

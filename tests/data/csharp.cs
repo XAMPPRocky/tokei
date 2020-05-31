@@ -1,4 +1,4 @@
-// 26 lines 14 code 7 comments 5 blanks
+// 26 lines 14 code 9 comments 3 blanks
 namespace Ns
 {
     /*
