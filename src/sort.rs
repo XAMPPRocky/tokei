@@ -1,7 +1,7 @@
 use std::{borrow::Cow, str::FromStr};
 
 /// Used for sorting languages.
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Sort {
     /// Sort by number blank lines.
     Blanks,

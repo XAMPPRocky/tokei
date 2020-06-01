@@ -1,6 +1,7 @@
 use std::{env, fs, path::PathBuf};
 
 use crate::language::LanguageType;
+use crate::sort::Sort;
 
 /// A configuration struct for how [`Languages::get_statistics`] searches and
 /// counts languages.
@@ -31,6 +32,8 @@ pub struct Config {
     /// Whether to treat doc strings in languages as comments.  *Default:*
     /// `false`.
     pub treat_doc_strings_as_comments: Option<bool>,
+    /// Sort languages. *Default:* `None`. 
+    pub sort: Option<Sort>,
     /// Filters languages searched to just those provided. E.g. A directory
     /// containing `C`, `Cpp`, and `Rust` with a `Config.types` of `[Cpp, Rust]`
     /// will count only `Cpp` and `Rust`. *Default:* `None`.
@@ -95,6 +98,7 @@ impl Config {
             treat_doc_strings_as_comments: current_dir.treat_doc_strings_as_comments.or(home_dir
                 .treat_doc_strings_as_comments
                 .or(conf_dir.treat_doc_strings_as_comments)),
+            sort: current_dir.sort.or(home_dir.sort.or(conf_dir.sort)),
             types: current_dir.types.or(home_dir.types.or(conf_dir.types)),
             no_ignore: current_dir
                 .no_ignore
