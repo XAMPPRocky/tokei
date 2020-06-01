@@ -1,7 +1,9 @@
 use std::{borrow::Cow, str::FromStr};
 
+use serde::de::{self, Deserialize, Deserializer};
+
 /// Used for sorting languages.
-#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Sort {
     /// Sort by number blank lines.
     Blanks,
@@ -27,6 +29,17 @@ impl FromStr for Sort {
             "lines" => Sort::Lines,
             s => return Err(format!("Unsupported sorting option: {}", s)),
         })
+    }
+}
+
+impl<'de> Deserialize<'de> for Sort {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        String::deserialize(deserializer)?
+          .parse()
+          .map_err(de::Error::custom)
     }
 }
 
