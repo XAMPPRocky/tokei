@@ -607,6 +607,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["julius"]
     },
+	"K": {
+	  "name": "k",
+	  "nested": true,
+	  "line_comment": ["/"],
+	  "quotes": [["\\\"", "\\\""]],
+	  "extensions": ["k"]
+	},	
     "KakouneScript": {
       "name": "Kakoune script",
       "line_comment": ["#"],
@@ -886,6 +893,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["qcl"]
     },
+	"Q": {
+	  "name": "q",
+	  "nested": true,
+	  "line_comment": ["/"],
+	  "quotes": [["\\\"", "\\\""]],
+	  "extensions": ["q"]
+	},
     "Qml": {
       "name": "QML",
       "line_comment": ["//"],
