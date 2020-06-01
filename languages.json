@@ -607,7 +607,7 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["julius"]
     },
-	"K": {
+    "K": {
 	  "name": "k",
 	  "nested": true,
 	  "line_comment": ["/"],
@@ -893,7 +893,7 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["qcl"]
     },
-	"Q": {
+    "Q": {
 	  "name": "q",
 	  "nested": true,
 	  "line_comment": ["/"],
