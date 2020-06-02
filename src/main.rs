@@ -72,7 +72,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     print_header(&mut stdout, &row, columns)?;
 
-    if let Some(sort_category) = cli.sort {
+    if let Some(sort_category) = cli.sort.or(config.sort) {
         for (_, ref mut language) in &mut languages {
             language.sort_by(sort_category)
         }
