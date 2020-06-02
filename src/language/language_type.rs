@@ -10,7 +10,7 @@ use std::{
 use crate::{
     config::Config,
     language::syntax::{Context, SyntaxCounter},
-    stats::Stats,
+    stats::{CodeStats, Stats},
     utils::{ext::SliceExt, fs as fsutils},
 };
 
@@ -40,30 +40,31 @@ impl LanguageType {
             s
         };
 
-        Ok(self.parse_from_slice(path, &text, config))
+        let mut stats = Stats::new(path);
+
+        stats += self.parse_from_slice(&text, config);
+
+        Ok(stats)
     }
 
     /// Parses the text provided. Returns `Stats` on success.
-    pub fn parse_from_str<A: AsRef<str>>(self, path: PathBuf, text: A, config: &Config) -> Stats {
-        self.parse_from_slice(path, text.as_ref().as_bytes(), config)
+    pub fn parse_from_str<A: AsRef<str>>(self, text: A, config: &Config) -> CodeStats {
+        self.parse_from_slice(text.as_ref().as_bytes(), config)
     }
 
     /// Parses the text provided. Returning `Stats` on success.
     pub fn parse_from_slice<A: AsRef<[u8]>>(
         self,
-        path: PathBuf,
         text: A,
         config: &Config,
-    ) -> Stats {
+    ) -> CodeStats {
         let text = text.as_ref();
         let lines = LineIter::new(b'\n', text);
-        let mut stats = Stats::new(path);
+        let mut stats = CodeStats::new();
         let syntax = SyntaxCounter::new(self);
 
         if self.is_blank() {
-            let count = lines.count();
-            stats.lines = count;
-            stats.code = count;
+            stats.code = lines.count();
             stats
         } else if let Some(end) = syntax
             .shared
@@ -84,7 +85,7 @@ impl LanguageType {
             let lines = LineIter::new(b'\n', skippable_text);
             let is_fortran = syntax.shared.is_fortran;
             let comments = syntax.shared.line_comments;
-            let parse_lines = move || self.parse_lines(config, LineIter::new(b'\n', rest), stats, syntax);
+            let parse_lines = move || self.parse_lines(config, rest, stats, syntax);
             let simple_parse = move || {
                 lines
                     .par_bridge()
@@ -94,39 +95,37 @@ impl LanguageType {
                         // could cause a miscount.
                         let line = if is_fortran { line } else { line.trim() };
                         trace!("{}", String::from_utf8_lossy(line));
-
                         if line.trim().is_empty() {
-                            (0, 0, 1)
+                            (1, 0, 0)
                         } else if comments.iter().any(|c| line.starts_with(c.as_bytes())) {
                             (0, 1, 0)
                         } else {
-                            (1, 0, 0)
+                            (0, 0, 1)
                         }
                     })
                 .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
             };
 
-            let (mut stats, (code, comments, blanks)) = rayon::join(parse_lines, simple_parse);
+            let (mut stats, (blanks, comments, code)) = rayon::join(parse_lines, simple_parse);
 
-            stats.code += code;
-            stats.comments += comments;
             stats.blanks += blanks;
-            stats.lines += code + comments + blanks;
+            stats.comments += comments;
+            stats.code += code;
             stats
         } else {
-            self.parse_lines(config, lines, stats, syntax)
+            self.parse_lines(config, text, stats, syntax)
         }
     }
 
     #[inline]
-    fn parse_lines<'a>(
+    fn parse_lines(
         self,
         config: &Config,
-        lines: impl IntoIterator<Item = &'a [u8]>,
-        mut stats: Stats,
+        lines: &[u8],
+        mut stats: CodeStats,
         mut syntax: SyntaxCounter,
-    ) -> Stats {
-        for line in lines {
+    ) -> CodeStats {
+        for line in LineIter::new(b'\n', lines) {
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
@@ -236,7 +235,6 @@ impl LanguageType {
             }
         }
 
-        stats.lines = stats.blanks + stats.code + stats.comments;
         stats
     }
 }

@@ -110,7 +110,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
 
             let stats = language.stats.pop().unwrap();
 
-            assert_eq!(language.lines, stats.lines);
+            assert_eq!(language.lines, stats.lines());
             assert_eq!(language.code, stats.code);
             assert_eq!(language.comments, stats.comments);
             assert_eq!(language.blanks, stats.blanks);

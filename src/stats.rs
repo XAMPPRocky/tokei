@@ -1,6 +1,50 @@
-use std::{collections::BTreeMap, fmt, path::PathBuf};
+use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
 
 use crate::LanguageType;
+
+/// A struct representing stats about a single blob of code.
+#[derive(Clone, Debug, Default, PartialEq)]
+#[non_exhaustive]
+pub struct CodeStats {
+    /// The blank lines in the blob.
+    pub blanks: usize,
+    /// The lines of code in the blob.
+    pub code: usize,
+    /// The lines of comments in the blob.
+    pub comments: usize,
+    /// Languages contained inside the language.
+    pub contexts: BTreeMap<LanguageType, Stats>,
+}
+
+impl CodeStats {
+    /// Creates a new blank `CodeStats`.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Get the total lines in a blob of code.
+    pub fn lines(&self) -> usize {
+        self.blanks + self.code + self.comments
+    }
+}
+
+impl ops::Add for CodeStats {
+    type Output = Self;
+
+    fn add(mut self, rhs: Self) -> Self::Output {
+        self += rhs;
+        self
+    }
+}
+
+impl ops::AddAssign for CodeStats {
+    fn add_assign(&mut self, rhs: Self) {
+        self.blanks += rhs.blanks;
+        self.code += rhs.code;
+        self.comments += rhs.comments;
+    }
+}
+
 
 /// A struct representing the statistics of a file.
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
@@ -13,12 +57,8 @@ pub struct Stats {
     /// Number of comments within the file. (_includes both multi line, and
     /// single line comments_)
     pub comments: usize,
-    /// Total number of lines within the file.
-    pub lines: usize,
     /// File name.
     pub name: PathBuf,
-    /// Languages contained inside the language.
-    pub contexts: BTreeMap<LanguageType, Stats>,
 }
 
 impl Stats {
@@ -30,12 +70,24 @@ impl Stats {
             blanks: 0,
             code: 0,
             comments: 0,
-            lines: 0,
             name,
-            contexts: BTreeMap::new(),
         }
     }
+
+    /// Returns the total number of lines for a given file.
+    pub fn lines(&self) -> usize {
+        self.blanks + self.code + self.comments
+    }
 }
+
+impl ops::AddAssign<CodeStats> for Stats {
+    fn add_assign(&mut self, rhs: CodeStats) {
+        self.blanks += rhs.blanks;
+        self.code += rhs.code;
+        self.comments += rhs.comments;
+    }
+}
+
 
 fn find_char_boundary(s: &str, index: usize) -> usize {
     for i in 0..4 {
@@ -52,7 +104,7 @@ macro_rules! display_stats {
             $f,
             " {: <max$} {:>12} {:>12} {:>12} {:>12}",
             $name,
-            $this.lines,
+            $this.lines(),
             $this.code,
             $this.comments,
             $this.blanks,

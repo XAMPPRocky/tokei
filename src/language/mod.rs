@@ -110,7 +110,7 @@ impl Language {
     /// // Add stats...
     ///
     /// language.sort_by(Sort::Lines);
-    /// assert_eq!(20, language.stats[0].lines);
+    /// assert_eq!(20, language.stats[0].lines());
     ///
     /// language.sort_by(Sort::Code);
     /// assert_eq!(8, language.stats[0].code);
@@ -121,7 +121,7 @@ impl Language {
             Comments => self.stats.sort_by(|a, b| b.comments.cmp(&a.comments)),
             Code => self.stats.sort_by(|a, b| b.code.cmp(&a.code)),
             Files => self.stats.sort_by(|a, b| a.name.cmp(&b.name)),
-            Lines => self.stats.sort_by(|a, b| b.lines.cmp(&a.lines)),
+            Lines => self.stats.sort_by(|a, b| b.lines().cmp(&a.lines())),
         }
     }
 }
