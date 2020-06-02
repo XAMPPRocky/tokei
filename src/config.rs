@@ -40,9 +40,10 @@ pub struct Config {
 }
 
 impl Config {
-    /// Get either `tokei.toml` or `.tokeirc`. `tokei.toml` takes precedence
-    /// over `.tokeirc` as the latter is a hidden file on Unix and not idiomatic
-    /// on Windows.
+    /// Constructs a new `Config` from either `$base/tokei.toml` or 
+    /// `$base/.tokeirc`. `tokei.toml` takes precedence over `.tokeirc`
+    /// as the latter is a hidden file on Unix and not an idiomatic
+    /// filename on Windows.
     fn get_config(base: PathBuf) -> Option<Self> {
         fs::read_to_string(base.join("tokei.toml"))
             .ok()
