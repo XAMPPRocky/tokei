@@ -53,11 +53,7 @@ impl LanguageType {
     }
 
     /// Parses the text provided. Returning `Stats` on success.
-    pub fn parse_from_slice<A: AsRef<[u8]>>(
-        self,
-        text: A,
-        config: &Config,
-    ) -> CodeStats {
+    pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
         let text = text.as_ref();
         let lines = LineIter::new(b'\n', text);
         let mut stats = CodeStats::new();
@@ -98,15 +94,15 @@ impl LanguageType {
                         if line.trim().is_empty() {
                             (1, 0, 0)
                         } else if comments.iter().any(|c| line.starts_with(c.as_bytes())) {
-                            (0, 1, 0)
-                        } else {
                             (0, 0, 1)
+                        } else {
+                            (0, 1, 0)
                         }
                     })
-                .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
+                    .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
             };
 
-            let (mut stats, (blanks, comments, code)) = rayon::join(parse_lines, simple_parse);
+            let (mut stats, (blanks, code, comments)) = rayon::join(parse_lines, simple_parse);
 
             stats.blanks += blanks;
             stats.comments += comments;
@@ -146,9 +142,9 @@ impl LanguageType {
 
                     if syntax
                         .shared
-                            .line_comments
-                            .iter()
-                            .any(|c| line.starts_with(c.as_bytes()))
+                        .line_comments
+                        .iter()
+                        .any(|c| line.starts_with(c.as_bytes()))
                     {
                         stats.comments += 1;
                         trace!("Comment No.{}", stats.comments);

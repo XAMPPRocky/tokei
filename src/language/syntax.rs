@@ -51,7 +51,7 @@ pub enum Context {
     Json {
         path: &'static str,
         default: LanguageType,
-    }
+    },
 }
 
 impl SharedMatchers {

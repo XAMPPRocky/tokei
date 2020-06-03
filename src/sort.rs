@@ -38,8 +38,8 @@ impl<'de> Deserialize<'de> for Sort {
         D: Deserializer<'de>,
     {
         String::deserialize(deserializer)?
-          .parse()
-          .map_err(de::Error::custom)
+            .parse()
+            .map_err(de::Error::custom)
     }
 }
 

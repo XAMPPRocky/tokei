@@ -45,7 +45,6 @@ impl ops::AddAssign for CodeStats {
     }
 }
 
-
 /// A struct representing the statistics of a file.
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 #[non_exhaustive]
@@ -87,7 +86,6 @@ impl ops::AddAssign<CodeStats> for Stats {
         self.comments += rhs.comments;
     }
 }
-
 
 fn find_char_boundary(s: &str, index: usize) -> usize {
     for i in 0..4 {

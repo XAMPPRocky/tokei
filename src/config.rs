@@ -32,7 +32,7 @@ pub struct Config {
     /// Whether to treat doc strings in languages as comments.  *Default:*
     /// `false`.
     pub treat_doc_strings_as_comments: Option<bool>,
-    /// Sort languages. *Default:* `None`. 
+    /// Sort languages. *Default:* `None`.
     pub sort: Option<Sort>,
     /// Filters languages searched to just those provided. E.g. A directory
     /// containing `C`, `Cpp`, and `Rust` with a `Config.types` of `[Cpp, Rust]`
@@ -43,7 +43,7 @@ pub struct Config {
 }
 
 impl Config {
-    /// Constructs a new `Config` from either `$base/tokei.toml` or 
+    /// Constructs a new `Config` from either `$base/tokei.toml` or
     /// `$base/.tokeirc`. `tokei.toml` takes precedence over `.tokeirc`
     /// as the latter is a hidden file on Unix and not an idiomatic
     /// filename on Windows.
