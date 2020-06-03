@@ -60,7 +60,7 @@ impl LanguageType {
         let syntax = SyntaxCounter::new(self);
 
         if self.is_blank() {
-            stats.code = lines.count();
+            stats.code = lines.par_bridge().count();
             stats
         } else if let Some(end) = syntax
             .shared

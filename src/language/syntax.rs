@@ -43,13 +43,10 @@ pub(crate) struct SharedMatchers {
 }
 
 #[derive(Clone, Debug)]
+#[non_exhaustive]
 pub enum Context {
     Html {
         tag: &'static str,
-        default: LanguageType,
-    },
-    Json {
-        path: &'static str,
         default: LanguageType,
     },
 }
@@ -241,10 +238,13 @@ impl SyntaxCounter {
             .map_or(false, |l| window.starts_with(l.as_bytes()))
         {
             let last = self.stack.pop().unwrap();
-            if log_enabled!(Trace) && self.stack.is_empty() {
-                trace!("End {:?}", last);
-            } else {
-                trace!("End {:?}. Still in comments.", last);
+
+            if log_enabled!(Trace) {
+                if self.stack.is_empty() {
+                    trace!("End {:?}", last);
+                } else {
+                    trace!("End {:?}. Still in comments.", last);
+                }
             }
 
             Some(last.len())
