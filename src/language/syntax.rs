@@ -6,7 +6,7 @@ use log::Level::Trace;
 use once_cell::sync::Lazy;
 use regex::bytes::Regex;
 
-use crate::{LanguageType, utils::ext::SliceExt};
+use crate::{utils::ext::SliceExt, LanguageType};
 
 /// Tracks the syntax of the language as well as the current state in the file.
 /// Current has what could be consider three types of mode.
@@ -149,16 +149,25 @@ impl SyntaxCounter {
 
     /// Try to see if we can determine what a line is from examining the whole
     /// line at once. Returns `true` if sucessful.
-    pub(crate) fn can_perform_single_line_analysis(&self, line: &[u8], stats: &mut crate::stats::CodeStats) -> bool {
+    pub(crate) fn can_perform_single_line_analysis(
+        &self,
+        line: &[u8],
+        stats: &mut crate::stats::CodeStats,
+    ) -> bool {
         if self.is_plain_mode() {
             if line.trim().is_empty() {
                 stats.blanks += 1;
                 trace!("Blank No.{}", stats.blanks);
-                return true
+                return true;
             } else if !self.shared.important_syntax.is_match(line) {
                 trace!("^ Skippable");
 
-                if self.shared.is_literate || self.shared.line_comments.iter().any(|c| line.starts_with(c.as_bytes()))
+                if self.shared.is_literate
+                    || self
+                        .shared
+                        .line_comments
+                        .iter()
+                        .any(|c| line.starts_with(c.as_bytes()))
                 {
                     stats.comments += 1;
                     trace!("Comment No.{}", stats.comments);
@@ -167,7 +176,7 @@ impl SyntaxCounter {
                     trace!("Code No.{}", stats.code);
                 }
 
-                return true
+                return true;
             }
         }
 
@@ -222,14 +231,20 @@ impl SyntaxCounter {
         ended_with_comments
     }
 
-    pub(crate) fn line_is_comment(&self, line: &[u8], config: &crate::Config, ended_with_comments: bool, had_multi_line: bool) -> bool {
-            ((!self.stack.is_empty() || ended_with_comments) && had_multi_line)
-                || (
-                    // If we're currently in a comment or we just ended
-                    // with one.
-                    self.shared.any_comments.is_match(line) && self.quote.is_none()
-                )
-                || ((
+    pub(crate) fn line_is_comment(
+        &self,
+        line: &[u8],
+        config: &crate::Config,
+        ended_with_comments: bool,
+        had_multi_line: bool,
+    ) -> bool {
+        ((!self.stack.is_empty() || ended_with_comments) && had_multi_line)
+            || (
+                // If we're currently in a comment or we just ended
+                // with one.
+                self.shared.any_comments.is_match(line) && self.quote.is_none()
+            )
+            || ((
                         // If we're currently in a doc string or we just ended
                         // with one.
                         self.quote.is_some() ||

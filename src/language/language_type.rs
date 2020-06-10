@@ -72,7 +72,6 @@ impl LanguageType {
                     .map(|p| m.start() - p)
             })
         {
-
             let (skippable_text, rest) = text.split_at(end + 1);
             let is_fortran = syntax.shared.is_fortran;
             let is_literate = syntax.shared.is_literate;
@@ -89,7 +88,9 @@ impl LanguageType {
                         trace!("{}", String::from_utf8_lossy(line));
                         if line.trim().is_empty() {
                             (1, 0, 0)
-                        } else if is_literate || comments.iter().any(|c| line.starts_with(c.as_bytes())) {
+                        } else if is_literate
+                            || comments.iter().any(|c| line.starts_with(c.as_bytes()))
+                        {
                             (0, 0, 1)
                         } else {
                             (0, 1, 0)
@@ -139,7 +140,9 @@ impl LanguageType {
             let ended_with_comments = syntax.perform_multi_line_analysis(line);
             trace!("{}", String::from_utf8_lossy(line));
 
-            if syntax.shared.is_literate || syntax.line_is_comment(line, config, ended_with_comments, had_multi_line) {
+            if syntax.shared.is_literate
+                || syntax.line_is_comment(line, config, ended_with_comments, had_multi_line)
+            {
                 stats.comments += 1;
                 trace!("Comment No.{}", stats.comments);
                 trace!("Was the Comment stack empty?: {}", !had_multi_line);
