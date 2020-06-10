@@ -694,7 +694,7 @@
       "filenames": ["makefile"]
     },
     "Markdown": {
-      "blank": true,
+      "literate": true,
       "extensions": ["md", "markdown"]
     },
     "ModuleDef": {

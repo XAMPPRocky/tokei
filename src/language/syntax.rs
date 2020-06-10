@@ -4,8 +4,9 @@ use aho_corasick::{AhoCorasick, AhoCorasickBuilder};
 use dashmap::DashMap;
 use log::Level::Trace;
 use once_cell::sync::Lazy;
+use regex::bytes::Regex;
 
-use super::language_type::LanguageType;
+use crate::{LanguageType, utils::ext::SliceExt};
 
 /// Tracks the syntax of the language as well as the current state in the file.
 /// Current has what could be consider three types of mode.
@@ -25,6 +26,13 @@ pub(crate) struct SyntaxCounter {
     pub(crate) quote_is_doc_quote: bool,
     pub(crate) stack: Vec<&'static str>,
     pub(crate) quote_is_verbatim: bool,
+    pub(crate) contexts: Vec<HtmlContext>,
+}
+
+#[derive(Clone, Debug)]
+pub(crate) struct HtmlContext {
+    pub(crate) closing_tag: &'static str,
+    pub(crate) language: LanguageType,
 }
 
 #[derive(Clone, Debug)]
@@ -34,6 +42,7 @@ pub(crate) struct SharedMatchers {
     pub important_syntax: AhoCorasick<u16>,
     pub any_comments: AhoCorasick<u16>,
     pub is_fortran: bool,
+    pub is_literate: bool,
     pub line_comments: &'static [&'static str],
     pub multi_line_comments: &'static [(&'static str, &'static str)],
     pub nested_comments: &'static [(&'static str, &'static str)],
@@ -46,9 +55,11 @@ pub(crate) struct SharedMatchers {
 #[non_exhaustive]
 pub enum Context {
     Html {
-        tag: &'static str,
+        closing_tag: &'static str,
+        opening_tag: &'static str,
         default: LanguageType,
     },
+    Markdown,
 }
 
 impl SharedMatchers {
@@ -77,6 +88,7 @@ impl SharedMatchers {
             allows_nested: language.allows_nested(),
             doc_quotes: language.doc_quotes(),
             is_fortran: language.is_fortran(),
+            is_literate: language.is_literate(),
             important_syntax: init_corasick(language.important_syntax(), false),
             any_comments: init_corasick(language.start_any_comments(), true),
             line_comments: language.line_comments(),
@@ -97,6 +109,7 @@ impl SyntaxCounter {
             quote_is_verbatim: false,
             stack: Vec::with_capacity(1),
             quote: None,
+            contexts: Vec::new(),
         }
     }
 
@@ -129,6 +142,127 @@ impl SyntaxCounter {
         {
             trace!("Start {:?}", comment);
             return true;
+        }
+
+        false
+    }
+
+    /// Try to see if we can determine what a line is from examining the whole
+    /// line at once. Returns `true` if sucessful.
+    pub(crate) fn can_perform_single_line_analysis(&self, line: &[u8], stats: &mut crate::stats::CodeStats) -> bool {
+        if self.is_plain_mode() {
+            if line.trim().is_empty() {
+                stats.blanks += 1;
+                trace!("Blank No.{}", stats.blanks);
+                return true
+            } else if !self.shared.important_syntax.is_match(line) {
+                trace!("^ Skippable");
+
+                if self.shared.is_literate || self.shared.line_comments.iter().any(|c| line.starts_with(c.as_bytes()))
+                {
+                    stats.comments += 1;
+                    trace!("Comment No.{}", stats.comments);
+                } else {
+                    stats.code += 1;
+                    trace!("Code No.{}", stats.code);
+                }
+
+                return true
+            }
+        }
+
+        false
+    }
+
+    pub(crate) fn perform_multi_line_analysis(&mut self, line: &[u8]) -> bool {
+        let mut ended_with_comments = false;
+        let mut skip = 0;
+        macro_rules! skip {
+            ($skip:expr) => {{
+                skip = $skip - 1;
+            }};
+        }
+
+        for i in 0..line.len() {
+            if skip != 0 {
+                skip -= 1;
+                continue;
+            }
+
+            ended_with_comments = false;
+            let window = &line[i..];
+
+            let is_end_of_quote_or_multi_line = self
+                .parse_end_of_quote(window)
+                .or_else(|| self.parse_end_of_multi_line(window));
+
+            if let Some(skip_amount) = is_end_of_quote_or_multi_line {
+                ended_with_comments = true;
+                skip!(skip_amount);
+                continue;
+            } else if self.quote.is_some() {
+                continue;
+            }
+
+            let is_quote_or_multi_line = self
+                .parse_quote(window)
+                .or_else(|| self.parse_multi_line_comment(window));
+
+            if let Some(skip_amount) = is_quote_or_multi_line {
+                skip!(skip_amount);
+                continue;
+            }
+
+            if self.parse_line_comment(window) {
+                ended_with_comments = true;
+                break;
+            }
+        }
+
+        ended_with_comments
+    }
+
+    pub(crate) fn line_is_comment(&self, line: &[u8], config: &crate::Config, ended_with_comments: bool, had_multi_line: bool) -> bool {
+            ((!self.stack.is_empty() || ended_with_comments) && had_multi_line)
+                || (
+                    // If we're currently in a comment or we just ended
+                    // with one.
+                    self.shared.any_comments.is_match(line) && self.quote.is_none()
+                )
+                || ((
+                        // If we're currently in a doc string or we just ended
+                        // with one.
+                        self.quote.is_some() ||
+                        self.shared.doc_quotes.iter().any(|(s, _)| line.starts_with(s.as_bytes()))
+                ) &&
+                    // `Some(true)` is import in order to respect the current
+                    // configuration.
+                    config.treat_doc_strings_as_comments == Some(true) &&
+                    self.quote_is_doc_quote)
+    }
+
+    #[inline]
+    pub(crate) fn parse_context(&self, window: &[u8]) -> bool {
+        static MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^```\S*"#).unwrap());
+        static TYPE_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"type="(.*)".*>"#).unwrap());
+        if self.quote.is_some() || !self.stack.is_empty() {
+            return false;
+        }
+
+        for context in self.shared.contexts {
+            match context {
+                Context::Markdown => {
+                    if let Some(r#match) = MARKDOWN_REGEX.find(window) {
+                        if r#match.as_bytes().len() != 3 {}
+                    } else {
+                    }
+                }
+                _ => {}
+            }
+            // if window.starts_with(context.closing_tag.as_bytes()) {
+            //     // let _window = &window[tag.as_bytes().len()..];
+            //     let _mime = TYPE_REGEX.captures(window);
+            // }
         }
 
         false

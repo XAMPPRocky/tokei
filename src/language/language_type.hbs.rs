@@ -42,6 +42,16 @@ impl LanguageType {
         self == LanguageType::FortranLegacy
     }
 
+    /// Returns whether the language is "literate", meaning that it considered
+    /// to primarily be comments rather than procedural code.
+    pub(crate) fn is_literate(self) -> bool {
+        match self {
+            {% for key, v in languages -%}
+                {{key}} => {{ v.literate | default(value=false) }},
+            {% endfor %}
+        }
+    }
+
     /// Provides every variant in a Vec
     pub fn list() -> &'static [Self] {
         &[{% for key, _ in languages %}{{key}}, {%- endfor %}]
@@ -191,14 +201,12 @@ impl LanguageType {
                     {% for context in value.contexts | default(value=[])-%}
                     {% if value.kind == "html" %}
                         Context::Html {
-                            tag: "{{context.tag}}",
+                            opening_tag: "<{{context.tag}}",
+                            closing_tag: "</{{context.tag}}>",
                             default: {{context.default}},
                         },
-                    {% elif value.kind == "json" %}
-                        Context::Json {
-                            path: "{{context.path}}",
-                            default: {{context.default}},
-                        },
+                    {% elif value.kind == "markdowns" %}
+                        Context::Markdown,
                     {% endif %}
                     {%- endfor %}
                 ],
@@ -238,6 +246,11 @@ impl LanguageType {
                                    concat(with=starting_multi_line_comments) |
                                    concat(with=starting_nested_comments) -%}
                         "{{item}}",
+                    {%- endfor -%}
+                    {%- for context in value.contexts | default(value=[]) -%}
+                        {% if value.kind == "html" %}
+                            "<{{context.tag}}",
+                        {% endif %}
                     {%- endfor -%}
                 ],
             {% endfor %}
