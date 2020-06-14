@@ -92,10 +92,8 @@ where
 
         //writeln!(sink, "{}", row)?;
         if has_children {
-        //    writeln!(sink, "{}", row)?;
-
+            //    writeln!(sink, "{}", row)?;
         }
-
 
         if has_children {
             writeln!(sink, "{}", row)?;
@@ -107,7 +105,13 @@ where
 
             // writeln!(sink, "{}", row)?;
             for (language_type, stats) in &language.children {
-                print_language_name(sink, columns, language, &language_type.to_string(), Some("| >"))?;
+                print_language_name(
+                    sink,
+                    columns,
+                    language,
+                    &language_type.to_string(),
+                    Some("| >"),
+                )?;
                 let code = stats.iter().map(|r| r.stats.code).sum::<usize>();
                 let comments = stats.iter().map(|r| r.stats.comments).sum::<usize>();
                 let blanks = stats.iter().map(|r| r.stats.blanks).sum::<usize>();
@@ -127,7 +131,7 @@ where
                 subtotal.stats.comments += comments;
                 subtotal.stats.blanks += blanks;
             }
-            writeln!(sink, "|{:1$}", subtotal, path_len-1)?;
+            writeln!(sink, "|{:1$}", subtotal, path_len - 1)?;
             writeln!(sink, "{}", row)?;
         } else {
             print_language(sink, columns, language, name.name(), None)?;

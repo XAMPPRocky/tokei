@@ -6,7 +6,7 @@ use log::Level::Trace;
 use once_cell::sync::Lazy;
 use regex::bytes::Regex;
 
-use crate::{Config, utils::ext::SliceExt, LanguageType};
+use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
 
 /// Tracks the syntax of the language as well as the current state in the file.
 /// Current has what could be consider three types of mode.
@@ -26,7 +26,6 @@ pub(crate) struct SyntaxCounter {
     pub(crate) quote_is_doc_quote: bool,
     pub(crate) stack: Vec<&'static str>,
     pub(crate) quote_is_verbatim: bool,
-    pub(crate) context: Option<FileContext>,
 }
 
 #[derive(Clone, Debug)]
@@ -35,12 +34,11 @@ pub(crate) enum FileContext {
         balanced: bool,
         end: usize,
         language: LanguageType,
-        stats: crate::stats::CodeStats,
     },
     Html {
         closing_tag: &'static str,
         language: LanguageType,
-    }
+    },
 }
 
 #[derive(Clone, Debug)]
@@ -117,7 +115,6 @@ impl SyntaxCounter {
             quote_is_verbatim: false,
             stack: Vec::with_capacity(1),
             quote: None,
-            context: None,
         }
     }
 
@@ -265,11 +262,18 @@ impl SyntaxCounter {
     }
 
     #[inline]
-    pub(crate) fn parse_context(&mut self, lines: &[u8], start: usize, config: &Config) -> Option<FileContext> {
+    pub(crate) fn parse_context(
+        &mut self,
+        lines: &[u8],
+        start: usize,
+        config: &Config,
+    ) -> Option<(FileContext, CodeStats)> {
         use std::str::FromStr;
 
-        static STARTING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^```\S+\r?\n"#).unwrap());
-        static ENDING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\r?\n"#).unwrap());
+        static STARTING_MARKDOWN_REGEX: Lazy<Regex> =
+            Lazy::new(|| Regex::new(r#"^```\S+\r?\n"#).unwrap());
+        static ENDING_MARKDOWN_REGEX: Lazy<Regex> =
+            Lazy::new(|| Regex::new(r#"```\r?\n"#).unwrap());
         // static TYPE_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"type="(.*)".*>"#).unwrap());
         if self.quote.is_some() || !self.stack.is_empty() {
             return None;
@@ -290,11 +294,22 @@ impl SyntaxCounter {
                         .unwrap_or_else(|| lines.len());
                     let balanced = closing_fence.is_some();
 
-                    let language = LanguageType::from_str(&String::from_utf8_lossy(&opening_fence.as_bytes().trim()[3..])).ok()?;
-                    let stats = language.parse_from_slice(&lines[start_of_code..end_of_code], config);
+                    let language = LanguageType::from_str(&String::from_utf8_lossy(
+                        &opening_fence.as_bytes().trim()[3..],
+                    ))
+                    .ok()?;
+                    let stats =
+                        language.parse_from_slice(&lines[start_of_code..end_of_code], config);
                     // dbg!(String::from_utf8_lossy(&lines[end_of_code_block..]));
 
-                    return Some(FileContext::Markdown { balanced, language, stats, end: end_of_code_block });
+                    return Some((
+                        FileContext::Markdown {
+                            balanced,
+                            language,
+                            end: end_of_code_block,
+                        },
+                        stats,
+                    ));
                 }
                 _ => {}
             }

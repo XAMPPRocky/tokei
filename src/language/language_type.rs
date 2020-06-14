@@ -137,7 +137,14 @@ impl LanguageType {
             }
 
             match syntax.parse_context(lines, start, config) {
-                Some(FileContext::Markdown { balanced, language, stats: code_block, end }) => {
+                Some((
+                    FileContext::Markdown {
+                        balanced,
+                        language,
+                        end,
+                    },
+                    code_block,
+                )) => {
                     stats.comments += if balanced { 2 } else { 1 };
                     *stats.contexts.entry(language).or_default() += code_block;
                     stepper = LineStep::new(b'\n', end, lines.len());
@@ -145,7 +152,6 @@ impl LanguageType {
                 }
                 _ => {}
             }
-
 
             let had_multi_line = !syntax.stack.is_empty();
             let ended_with_comments = syntax.perform_multi_line_analysis(line);
@@ -161,7 +167,6 @@ impl LanguageType {
                 stats.code += 1;
                 trace!("Code No.{}", stats.code);
             }
-
         }
 
         stats

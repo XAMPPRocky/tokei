@@ -126,11 +126,17 @@ impl Language {
     /// ```
     pub fn sort_by(&mut self, category: Sort) {
         match category {
-            Blanks => self.reports.sort_by(|a, b| b.stats.blanks.cmp(&a.stats.blanks)),
-            Comments => self.reports.sort_by(|a, b| b.stats.comments.cmp(&a.stats.comments)),
+            Blanks => self
+                .reports
+                .sort_by(|a, b| b.stats.blanks.cmp(&a.stats.blanks)),
+            Comments => self
+                .reports
+                .sort_by(|a, b| b.stats.comments.cmp(&a.stats.comments)),
             Code => self.reports.sort_by(|a, b| b.stats.code.cmp(&a.stats.code)),
             Files => self.reports.sort_by(|a, b| a.name.cmp(&b.name)),
-            Lines => self.reports.sort_by(|a, b| b.stats.lines().cmp(&a.stats.lines())),
+            Lines => self
+                .reports
+                .sort_by(|a, b| b.stats.lines().cmp(&a.stats.lines())),
         }
     }
 }
@@ -141,7 +147,8 @@ impl AddAssign for Language {
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
         self.code += rhs.code;
-        self.reports.extend(mem::replace(&mut rhs.reports, Vec::new()));
+        self.reports
+            .extend(mem::replace(&mut rhs.reports, Vec::new()));
         self.inaccurate |= rhs.inaccurate
     }
 }
