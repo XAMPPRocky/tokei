@@ -198,6 +198,9 @@ impl LanguageType {
         match self {
             {% for key, value in languages -%}
                 {{key}} => &[
+                    {% if key == "Markdown" %}
+                        Context::Markdown,
+                    {% endif %}
                     {% for context in value.contexts | default(value=[])-%}
                     {% if value.kind == "html" %}
                         Context::Html {
@@ -205,7 +208,7 @@ impl LanguageType {
                             closing_tag: "</{{context.tag}}>",
                             default: {{context.default}},
                         },
-                    {% elif value.kind == "markdowns" %}
+                    {% elif key == "Markdown" %}
                         Context::Markdown,
                     {% endif %}
                     {%- endfor %}
@@ -241,6 +244,10 @@ impl LanguageType {
                 {%- set starting_nested_comments = value.nested_comments | default(value=[]) | map(attribute="0") -%}
 
                 {{key}} => &[
+                    {% if key == "Markdown" %}
+                        "{{value.code_fence}}",
+                    {% endif %}
+
                     {%- for item in starting_quotes |
                                    concat(with=starting_doc_quotes) |
                                    concat(with=starting_multi_line_comments) |
@@ -369,9 +376,9 @@ impl FromStr for LanguageType {
     type Err = &'static str;
 
     fn from_str(from: &str) -> Result<Self, Self::Err> {
-        match &*from {
+        match &*from.to_lowercase() {
             {% for key, value in languages %}
-                {% if value.name %}"{{value.name}}"{% else %}"{{key}}"{% endif %}
+                {% if value.name %}"{{value.name | lower}}"{% else %}"{{key | lower}}"{% endif %}
                 => Ok({{key}}),
             {% endfor %}
             _ => Err("Language not found, please use `-l` to see all available\

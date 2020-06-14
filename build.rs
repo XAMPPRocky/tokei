@@ -111,12 +111,12 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
             assert_eq!(get_digit!(BLANKS, contents), language.blanks);
             println!("{{}} BLANKS MATCH", name);
 
-            let stats = language.stats.pop().unwrap();
+            let report = language.reports.pop().unwrap();
 
-            assert_eq!(language.lines, stats.lines());
-            assert_eq!(language.code, stats.code);
-            assert_eq!(language.comments, stats.comments);
-            assert_eq!(language.blanks, stats.blanks);
+            assert_eq!(language.lines, report.stats.lines());
+            assert_eq!(language.code, report.stats.code);
+            assert_eq!(language.comments, report.stats.comments);
+            assert_eq!(language.blanks, report.stats.blanks);
         }}
         "#,
             name,

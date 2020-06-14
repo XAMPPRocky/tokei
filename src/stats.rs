@@ -3,7 +3,7 @@ use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
 use crate::LanguageType;
 
 /// A struct representing stats about a single blob of code.
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 #[non_exhaustive]
 pub struct CodeStats {
     /// The blank lines in the blob.
@@ -13,7 +13,7 @@ pub struct CodeStats {
     /// The lines of comments in the blob.
     pub comments: usize,
     /// Languages contained inside the language.
-    pub contexts: BTreeMap<LanguageType, Stats>,
+    pub contexts: BTreeMap<LanguageType, CodeStats>,
 }
 
 impl CodeStats {
@@ -42,48 +42,38 @@ impl ops::AddAssign for CodeStats {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.comments += rhs.comments;
+
+        for (language, stats) in rhs.contexts {
+            *self.contexts.entry(language).or_default() += stats;
+        }
     }
 }
 
 /// A struct representing the statistics of a file.
-#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, Default, PartialEq)]
 #[non_exhaustive]
-pub struct Stats {
-    /// Number of blank lines within the file.
-    pub blanks: usize,
-    /// Number of lines of code within the file.
-    pub code: usize,
-    /// Number of comments within the file. (_includes both multi line, and
-    /// single line comments_)
-    pub comments: usize,
+pub struct Report {
+    /// The code statistics found in the file.
+    pub stats: CodeStats,
     /// File name.
     pub name: PathBuf,
 }
 
-impl Stats {
-    /// Create a new `Stats` from a [`PathBuf`].
+impl Report {
+    /// Create a new `Report` from a [`PathBuf`].
     ///
     /// [`PathBuf`]: //doc.rust-lang.org/std/path/struct.PathBuf.html
     pub fn new(name: PathBuf) -> Self {
-        Stats {
-            blanks: 0,
-            code: 0,
-            comments: 0,
+        Report {
             name,
+            ..Self::default()
         }
-    }
-
-    /// Returns the total number of lines for a given file.
-    pub fn lines(&self) -> usize {
-        self.blanks + self.code + self.comments
     }
 }
 
-impl ops::AddAssign<CodeStats> for Stats {
+impl ops::AddAssign<CodeStats> for Report {
     fn add_assign(&mut self, rhs: CodeStats) {
-        self.blanks += rhs.blanks;
-        self.code += rhs.code;
-        self.comments += rhs.comments;
+        self.stats += rhs;
     }
 }
 
@@ -102,16 +92,16 @@ macro_rules! display_stats {
             $f,
             " {: <max$} {:>12} {:>12} {:>12} {:>12}",
             $name,
-            $this.lines(),
-            $this.code,
-            $this.comments,
-            $this.blanks,
+            $this.stats.lines(),
+            $this.stats.code,
+            $this.stats.comments,
+            $this.stats.blanks,
             max = $max
         )
     };
 }
 
-impl fmt::Display for Stats {
+impl fmt::Display for Report {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let name = self.name.to_string_lossy();
         let name_length = name.len();

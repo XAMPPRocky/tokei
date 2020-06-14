@@ -2,13 +2,13 @@ pub mod language_type;
 pub mod languages;
 mod syntax;
 
-use std::{mem, ops::AddAssign};
+use std::{collections::BTreeMap, mem, ops::AddAssign};
 
 pub use self::{language_type::*, languages::Languages};
 
 use crate::{
     sort::Sort::{self, *},
-    stats::Stats,
+    stats::Report,
 };
 
 /// A struct representing statistics about a single Language.
@@ -23,7 +23,9 @@ pub struct Language {
     /// The total number of total lines.
     pub lines: usize,
     /// A collection of statistics of individual files.
-    pub stats: Vec<Stats>,
+    pub reports: Vec<Report>,
+    /// A map of any languages found in the reports.
+    pub children: BTreeMap<LanguageType, Vec<Report>>,
     /// Whether this language had problems with file parsing
     pub inaccurate: bool,
 }
@@ -39,10 +41,17 @@ impl Language {
         Self::default()
     }
 
-    /// Add a `Stat` to the Language. This will not update the totals in the
+    /// Add a `Report` to the Language. This will not update the totals in the
     /// Language struct.
-    pub fn add_stat(&mut self, stat: Stats) {
-        self.stats.push(stat);
+    pub fn add_report(&mut self, report: Report) {
+        for (lang, stats) in &report.stats.contexts {
+            let mut new_report = Report::new(report.name.clone());
+            new_report.stats = stats.clone();
+
+            self.children.entry(*lang).or_default().push(new_report);
+        }
+
+        self.reports.push(report);
     }
 
     /// Marks this language as possibly not reflecting correct stats.
@@ -73,10 +82,10 @@ impl Language {
         let mut code = 0;
         let mut comments = 0;
 
-        for stat in &self.stats {
-            blanks += stat.blanks;
-            code += stat.code;
-            comments += stat.comments;
+        for report in &self.reports {
+            blanks += report.stats.blanks;
+            code += report.stats.code;
+            comments += report.stats.comments;
         }
 
         self.blanks = blanks;
@@ -98,7 +107,7 @@ impl Language {
         self.code == 0 && self.comments == 0 && self.blanks == 0 && self.lines == 0
     }
 
-    /// Sorts each of the `Stats` structs contained in the language based
+    /// Sorts each of the `Report`s contained in the language based
     /// on what category is provided.
     ///
     /// ```no_run
@@ -110,18 +119,18 @@ impl Language {
     /// // Add stats...
     ///
     /// language.sort_by(Sort::Lines);
-    /// assert_eq!(20, language.stats[0].lines());
+    /// assert_eq!(20, language.reports[0].stats.lines());
     ///
     /// language.sort_by(Sort::Code);
-    /// assert_eq!(8, language.stats[0].code);
+    /// assert_eq!(8, language.reports[0].stats.code);
     /// ```
     pub fn sort_by(&mut self, category: Sort) {
         match category {
-            Blanks => self.stats.sort_by(|a, b| b.blanks.cmp(&a.blanks)),
-            Comments => self.stats.sort_by(|a, b| b.comments.cmp(&a.comments)),
-            Code => self.stats.sort_by(|a, b| b.code.cmp(&a.code)),
-            Files => self.stats.sort_by(|a, b| a.name.cmp(&b.name)),
-            Lines => self.stats.sort_by(|a, b| b.lines().cmp(&a.lines())),
+            Blanks => self.reports.sort_by(|a, b| b.stats.blanks.cmp(&a.stats.blanks)),
+            Comments => self.reports.sort_by(|a, b| b.stats.comments.cmp(&a.stats.comments)),
+            Code => self.reports.sort_by(|a, b| b.stats.code.cmp(&a.stats.code)),
+            Files => self.reports.sort_by(|a, b| a.name.cmp(&b.name)),
+            Lines => self.reports.sort_by(|a, b| b.stats.lines().cmp(&a.stats.lines())),
         }
     }
 }
@@ -132,7 +141,7 @@ impl AddAssign for Language {
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
         self.code += rhs.code;
-        self.stats.extend(mem::replace(&mut rhs.stats, Vec::new()));
+        self.reports.extend(mem::replace(&mut rhs.reports, Vec::new()));
         self.inaccurate |= rhs.inaccurate
     }
 }

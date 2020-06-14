@@ -695,6 +695,7 @@
     },
     "Markdown": {
       "literate": true,
+      "code_fence": "```",
       "extensions": ["md", "markdown"]
     },
     "ModuleDef": {
@@ -1089,7 +1090,7 @@
     },
     "Text": {
       "name": "Plain Text",
-      "blank": true,
+      "literate": true,
       "extensions": ["text", "txt"]
     },
     "Thrift": {

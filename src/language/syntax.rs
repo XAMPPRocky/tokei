@@ -6,7 +6,7 @@ use log::Level::Trace;
 use once_cell::sync::Lazy;
 use regex::bytes::Regex;
 
-use crate::{utils::ext::SliceExt, LanguageType};
+use crate::{Config, utils::ext::SliceExt, LanguageType};
 
 /// Tracks the syntax of the language as well as the current state in the file.
 /// Current has what could be consider three types of mode.
@@ -26,13 +26,21 @@ pub(crate) struct SyntaxCounter {
     pub(crate) quote_is_doc_quote: bool,
     pub(crate) stack: Vec<&'static str>,
     pub(crate) quote_is_verbatim: bool,
-    pub(crate) contexts: Vec<HtmlContext>,
+    pub(crate) context: Option<FileContext>,
 }
 
 #[derive(Clone, Debug)]
-pub(crate) struct HtmlContext {
-    pub(crate) closing_tag: &'static str,
-    pub(crate) language: LanguageType,
+pub(crate) enum FileContext {
+    Markdown {
+        balanced: bool,
+        end: usize,
+        language: LanguageType,
+        stats: crate::stats::CodeStats,
+    },
+    Html {
+        closing_tag: &'static str,
+        language: LanguageType,
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -109,7 +117,7 @@ impl SyntaxCounter {
             quote_is_verbatim: false,
             stack: Vec::with_capacity(1),
             quote: None,
-            contexts: Vec::new(),
+            context: None,
         }
     }
 
@@ -257,20 +265,36 @@ impl SyntaxCounter {
     }
 
     #[inline]
-    pub(crate) fn parse_context(&self, window: &[u8]) -> bool {
-        static MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^```\S*"#).unwrap());
-        static TYPE_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"type="(.*)".*>"#).unwrap());
+    pub(crate) fn parse_context(&mut self, lines: &[u8], start: usize, config: &Config) -> Option<FileContext> {
+        use std::str::FromStr;
+
+        static STARTING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^```\S+\r?\n"#).unwrap());
+        static ENDING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\r?\n"#).unwrap());
+        // static TYPE_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"type="(.*)".*>"#).unwrap());
         if self.quote.is_some() || !self.stack.is_empty() {
-            return false;
+            return None;
         }
 
         for context in self.shared.contexts {
             match context {
                 Context::Markdown => {
-                    if let Some(r#match) = MARKDOWN_REGEX.find(window) {
-                        if r#match.as_bytes().len() != 3 {}
-                    } else {
-                    }
+                    // dbg!(String::from_utf8_lossy(&lines[start..end]));
+                    let opening_fence = STARTING_MARKDOWN_REGEX.find(&lines[start..])?;
+                    let start_of_code = start + opening_fence.end();
+                    let closing_fence = ENDING_MARKDOWN_REGEX.find(&lines[start_of_code..]);
+                    let end_of_code = closing_fence
+                        .map(|fence| start_of_code + fence.start())
+                        .unwrap_or_else(|| lines.len());
+                    let end_of_code_block = closing_fence
+                        .map(|fence| start_of_code + fence.end())
+                        .unwrap_or_else(|| lines.len());
+                    let balanced = closing_fence.is_some();
+
+                    let language = LanguageType::from_str(&String::from_utf8_lossy(&opening_fence.as_bytes().trim()[3..])).ok()?;
+                    let stats = language.parse_from_slice(&lines[start_of_code..end_of_code], config);
+                    // dbg!(String::from_utf8_lossy(&lines[end_of_code_block..]));
+
+                    return Some(FileContext::Markdown { balanced, language, stats, end: end_of_code_block });
                 }
                 _ => {}
             }
@@ -280,7 +304,7 @@ impl SyntaxCounter {
             // }
         }
 
-        false
+        None
     }
 
     #[inline]

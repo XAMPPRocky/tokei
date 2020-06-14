@@ -94,7 +94,7 @@ pub fn get_all_files<A: AsRef<Path>>(
         let mut lock = languages.lock();
         let entry = lock.entry(language).or_insert_with(Language::new);
         match result {
-            Ok(stats) => entry.add_stat(stats),
+            Ok(stats) => entry.add_report(stats),
             Err((error, path)) => {
                 entry.mark_inaccurate();
                 error!("Error reading {}:\n{}", path.display(), error);

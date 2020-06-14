@@ -58,5 +58,5 @@ pub use self::{
     config::Config,
     language::{Language, LanguageType, Languages},
     sort::Sort,
-    stats::Stats,
+    stats::{CodeStats, Report},
 };

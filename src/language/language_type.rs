@@ -9,8 +9,8 @@ use std::{
 
 use crate::{
     config::Config,
-    language::syntax::{Context, SyntaxCounter},
-    stats::{CodeStats, Stats},
+    language::syntax::{Context, FileContext, SyntaxCounter},
+    stats::{CodeStats, Report},
     utils::{ext::SliceExt, fs as fsutils},
 };
 
@@ -23,9 +23,9 @@ use self::LanguageType::*;
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
 impl LanguageType {
-    /// Parses a given `Path` using the `LanguageType`. Returning `Stats`
+    /// Parses a given `Path` using the `LanguageType`. Returning `Report`
     /// on success and giving back ownership of PathBuf on error.
-    pub fn parse(self, path: PathBuf, config: &Config) -> Result<Stats, (io::Error, PathBuf)> {
+    pub fn parse(self, path: PathBuf, config: &Config) -> Result<Report, (io::Error, PathBuf)> {
         let text = {
             let f = match File::open(&path) {
                 Ok(f) => f,
@@ -40,19 +40,19 @@ impl LanguageType {
             s
         };
 
-        let mut stats = Stats::new(path);
+        let mut stats = Report::new(path);
 
         stats += self.parse_from_slice(&text, config);
 
         Ok(stats)
     }
 
-    /// Parses the text provided. Returns `Stats` on success.
+    /// Parses the text provided as the given `LanguageType`.
     pub fn parse_from_str<A: AsRef<str>>(self, text: A, config: &Config) -> CodeStats {
         self.parse_from_slice(text.as_ref().as_bytes(), config)
     }
 
-    /// Parses the text provided. Returning `Stats` on success.
+    /// Parses the bytes provided as the given `LanguageType`.
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
         let text = text.as_ref();
         let syntax = SyntaxCounter::new(self);
@@ -136,6 +136,17 @@ impl LanguageType {
                 continue;
             }
 
+            match syntax.parse_context(lines, start, config) {
+                Some(FileContext::Markdown { balanced, language, stats: code_block, end }) => {
+                    stats.comments += if balanced { 2 } else { 1 };
+                    *stats.contexts.entry(language).or_default() += code_block;
+                    stepper = LineStep::new(b'\n', end, lines.len());
+                    continue;
+                }
+                _ => {}
+            }
+
+
             let had_multi_line = !syntax.stack.is_empty();
             let ended_with_comments = syntax.perform_multi_line_analysis(line);
             trace!("{}", String::from_utf8_lossy(line));
@@ -150,6 +161,7 @@ impl LanguageType {
                 stats.code += 1;
                 trace!("Code No.{}", stats.code);
             }
+
         }
 
         stats

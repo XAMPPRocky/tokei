@@ -62,7 +62,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         process::exit(0);
     }
 
-    let row = "-".repeat(columns);
+    let row = "=".repeat(columns);
+    let subrow = "-".repeat(columns);
 
     let mut stdout = io::BufWriter::new(io::stdout());
 
@@ -83,13 +84,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Blanks => languages.sort_by(|a, b| b.1.blanks.cmp(&a.1.blanks)),
             Sort::Comments => languages.sort_by(|a, b| b.1.comments.cmp(&a.1.comments)),
             Sort::Code => languages.sort_by(|a, b| b.1.code.cmp(&a.1.code)),
-            Sort::Files => languages.sort_by(|a, b| b.1.stats.len().cmp(&a.1.stats.len())),
+            Sort::Files => languages.sort_by(|a, b| b.1.reports.len().cmp(&a.1.reports.len())),
             Sort::Lines => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
         }
 
-        print_results(&mut stdout, &row, languages.into_iter(), cli.files)?
+        print_results(&mut stdout, &subrow, languages.into_iter(), cli.files)?
     } else {
-        print_results(&mut stdout, &row, languages.iter(), cli.files)?
+        print_results(&mut stdout, &subrow, languages.iter(), cli.files)?
     }
 
     // If we're listing files there's already a trailing row so we don't want an
@@ -104,7 +105,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         total += language;
     }
 
-    print_language(&mut stdout, columns, &total, "Total")?;
+    print_language(&mut stdout, columns, &total, "Total", None)?;
     writeln!(stdout, "{}", row)?;
 
     Ok(())
