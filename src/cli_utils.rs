@@ -108,7 +108,10 @@ where
 
             if list_files {
                 writeln!(sink, "{}", row)?;
-                let (a, b): (Vec<_>, Vec<_>) = language.reports.iter().partition(|r| r.stats.contexts.is_empty());
+                let (a, b): (Vec<_>, Vec<_>) = language
+                    .reports
+                    .iter()
+                    .partition(|r| r.stats.contexts.is_empty());
                 for reports in &[a, b] {
                     for report in reports {
                         writeln!(sink, "{:1$}", report, path_len)?;
