@@ -288,10 +288,9 @@
       "name": "Dream Maker",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
       "nested": true,
       "extensions": ["dm", "dme"],
-      "quotes": [["{\\\"", "\\\"}"], ["'", "'"]]
+      "quotes": [["\\\"", "\\\""], ["{\\\"", "\\\"}"], ["'", "'"]]
     },
     "Dockerfile": {
       "line_comment": ["#"],
@@ -533,7 +532,6 @@
       "extensions": ["hex"]
     },
     "Idris": {
-      "nested": true,
       "line_comment": ["--"],
       "multi_line_comments": [["{-", "-}"]],
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
@@ -578,7 +576,6 @@
     "JavaScript": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["js", "mjs"]
     },
@@ -642,10 +639,9 @@
     },
     "Liquid": {
       "name": "Liquid",
-      "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["liquid"],
-      "multi_line_comments": [["{% comment %}", "{% endcomment %}"]]
+      "multi_line_comments": [["<!--", "-->"], ["{% comment %}", "{% endcomment %}"]]
     },
     "LinkerScript": {
       "name": "LD Script",
@@ -728,7 +724,6 @@
       "extensions": ["nim"]
     },
     "Nix": {
-      "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "line_comment": ["#"],
@@ -835,7 +830,6 @@
       "name": "PostCSS",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["pcss", "sss"]
     },
@@ -1119,10 +1113,9 @@
     },
     "Twig": {
       "name": "Twig",
-      "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["twig"],
-      "multi_line_comments": [["{#", "#}"]]
+      "multi_line_comments": [["<!--", "-->"], ["{#", "#}"]]
     },
     "TypeScript": {
       "line_comment": ["//"],
