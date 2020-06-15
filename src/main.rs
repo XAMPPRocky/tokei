@@ -93,18 +93,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         print_results(&mut stdout, &subrow, languages.iter(), cli.files)?
     }
 
-    // If we're listing files there's already a trailing row so we don't want an
-    // extra one.
-    if !cli.files {
-        writeln!(stdout, "{}", row)?;
-    }
-
     let mut total = Language::new();
 
     for (_, language) in languages {
         total += language;
     }
 
+    writeln!(stdout, "{}", row)?;
     print_language(&mut stdout, columns, &total, "Total", None)?;
     writeln!(stdout, "{}", row)?;
 

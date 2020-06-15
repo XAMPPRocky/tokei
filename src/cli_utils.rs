@@ -8,7 +8,7 @@ use std::{
 use clap::crate_version;
 
 use crate::input::Format;
-use tokei::{Language, LanguageType};
+use tokei::{CodeStats, Language, LanguageType, Report};
 
 pub const FALLBACK_ROW_LEN: usize = 79;
 const NO_LANG_HEADER_ROW_LEN: usize = 67;
@@ -85,64 +85,39 @@ where
     I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     W: Write,
 {
+    let (a, b): (Vec<_>, Vec<_>) = languages
+        .filter(isnt_empty)
+        .partition(|(_, l)| l.children.is_empty());
     let path_len = row.len() - NO_LANG_ROW_LEN_NO_SPACES;
     let columns = row.len();
-    for (name, language) in languages.filter(isnt_empty) {
-        let has_children = !language.children.is_empty();
+    let mut first = true;
 
-        //writeln!(sink, "{}", row)?;
-        if has_children {
-            //    writeln!(sink, "{}", row)?;
-        }
-
-        if has_children {
-            writeln!(sink, "{}", row)?;
-            print_language(sink, columns, language, name.name(), Some("|"))?;
-            let mut subtotal = tokei::Report::new(format!("{} (Total)", name.name()).into());
-            subtotal.stats.code += language.code;
-            subtotal.stats.comments += language.comments;
-            subtotal.stats.blanks += language.blanks;
-
-            // writeln!(sink, "{}", row)?;
-            for (language_type, stats) in &language.children {
-                print_language_name(
-                    sink,
-                    columns,
-                    language,
-                    &language_type.to_string(),
-                    Some("| >"),
-                )?;
-                let code = stats.iter().map(|r| r.stats.code).sum::<usize>();
-                let comments = stats.iter().map(|r| r.stats.comments).sum::<usize>();
-                let blanks = stats.iter().map(|r| r.stats.blanks).sum::<usize>();
-                let lines = code + comments + blanks;
-
-                writeln!(
-                    sink,
-                    " {:>6} {:>12} {:>12} {:>12} {:>12}",
-                    stats.len(),
-                    lines,
-                    code,
-                    comments,
-                    blanks,
-                )?;
-
-                subtotal.stats.code += code;
-                subtotal.stats.comments += comments;
-                subtotal.stats.blanks += blanks;
+    for languages in &[&a, &b] {
+        for &(name, language) in *languages {
+            let has_children = !language.children.is_empty();
+            if first {
+                first = false;
+            } else if has_children || list_files {
+                writeln!(sink, "{}", row)?;
             }
-            writeln!(sink, "|{:1$}", subtotal, path_len - 1)?;
-            writeln!(sink, "{}", row)?;
-        } else {
+
             print_language(sink, columns, language, name.name(), None)?;
-        }
-
-        if list_files {
-            writeln!(sink, "{}", row)?;
-            for stat in &language.reports {
-                writeln!(sink, "{:1$}", stat, path_len)?;
+            if has_children {
+                print_language_total(language, sink, columns, path_len)?;
             }
-            writeln!(sink, "{}", row)?;
+
+            if list_files {
+                writeln!(sink, "{}", row)?;
+                let (a, b): (Vec<_>, Vec<_>) = language.reports.iter().partition(|r| r.stats.contexts.is_empty());
+                for reports in &[a, b] {
+                    for report in reports {
+                        writeln!(sink, "{:1$}", report, path_len)?;
+                        if !report.stats.contexts.is_empty() {
+                            print_report_total(language, &report, sink, columns, path_len)?;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -217,4 +192,100 @@ where
         "Note: results can be inaccurate for languages marked with '{}'",
         IDENT_INACCURATE
     )
+}
+
+fn print_language_total<W: Write>(
+    parent: &Language,
+    sink: &mut W,
+    columns: usize,
+    path_len: usize,
+) -> io::Result<()> {
+    let mut subtotal = tokei::Report::new(format!("(Total)").into());
+    subtotal.stats.code += parent.code;
+    subtotal.stats.comments += parent.comments;
+    subtotal.stats.blanks += parent.blanks;
+
+    // writeln!(sink, "{}", row)?;
+    for (language_type, stats) in &parent.children {
+        print_language_name(
+            sink,
+            columns,
+            parent,
+            &language_type.to_string(),
+            Some(" |-"),
+        )?;
+        let code = stats.iter().map(|r| r.stats.code).sum::<usize>();
+        let comments = stats.iter().map(|r| r.stats.comments).sum::<usize>();
+        let blanks = stats.iter().map(|r| r.stats.blanks).sum::<usize>();
+        let lines = code + comments + blanks;
+
+        writeln!(
+            sink,
+            " {:>6} {:>12} {:>12} {:>12} {:>12}",
+            stats.len(),
+            lines,
+            code,
+            comments,
+            blanks,
+        )?;
+
+        subtotal.stats.code += code;
+        subtotal.stats.comments += comments;
+        subtotal.stats.blanks += blanks;
+    }
+
+    writeln!(sink, "{:1$}", subtotal, path_len)?;
+
+    Ok(())
+}
+
+fn print_report_total<W: Write>(
+    parent: &Language,
+    report: &Report,
+    sink: &mut W,
+    columns: usize,
+    path_len: usize,
+) -> io::Result<()> {
+    let mut subtotal = tokei::Report::new(format!("|- (Total)").into());
+    subtotal.stats.code += report.stats.code;
+    subtotal.stats.comments += report.stats.comments;
+    subtotal.stats.blanks += report.stats.blanks;
+
+    fn print_report<W: Write>(
+        parent: &Language,
+        language_type: LanguageType,
+        stats: &CodeStats,
+        sink: &mut W,
+        columns: usize,
+    ) -> io::Result<()> {
+        print_language_name(
+            sink,
+            columns,
+            parent,
+            &language_type.to_string(),
+            Some(" |-"),
+        )?;
+
+        writeln!(
+            sink,
+            " {:>6} {:>12} {:>12} {:>12} {:>12}",
+            " ",
+            stats.lines(),
+            stats.code,
+            stats.comments,
+            stats.blanks,
+        )
+    }
+
+    // writeln!(sink, "{}", row)?;
+    for (language_type, stats) in &report.stats.contexts {
+        print_report(parent, *language_type, stats, sink, columns)?;
+        subtotal.stats.code += stats.code;
+        subtotal.stats.comments += stats.comments;
+        subtotal.stats.blanks += stats.blanks;
+    }
+
+    writeln!(sink, "{:1$}", subtotal, path_len)?;
+
+    Ok(())
 }

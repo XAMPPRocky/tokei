@@ -145,8 +145,11 @@ impl LanguageType {
                     },
                     code_block,
                 )) => {
+                    // Add the lines for the code fences.
                     stats.comments += if balanced { 2 } else { 1 };
+                    // Add the code inside the fence to the stats.
                     *stats.contexts.entry(language).or_default() += code_block;
+                    // Advance to after the code fence.
                     stepper = LineStep::new(b'\n', end, lines.len());
                     continue;
                 }
