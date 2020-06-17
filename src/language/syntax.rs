@@ -136,20 +136,18 @@ impl SyntaxCounter {
     #[inline]
     pub(crate) fn parse_line_comment(&self, window: &[u8]) -> bool {
         if self.quote.is_some() || !self.stack.is_empty() {
-            return false;
-        }
-
-        if let Some(comment) = self
+            false
+        } else if let Some(comment) = self
             .shared
             .line_comments
             .iter()
             .find(|c| window.starts_with(c.as_bytes()))
         {
             trace!("Start {:?}", comment);
-            return true;
+            true
+        } else {
+            false
         }
-
-        false
     }
 
     /// Try to see if we can determine what a line is from examining the whole
