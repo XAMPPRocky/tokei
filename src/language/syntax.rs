@@ -43,6 +43,7 @@ pub(crate) enum FileContext {
 
 #[derive(Clone, Debug)]
 pub(crate) struct SharedMatchers {
+    pub language: LanguageType,
     pub allows_nested: bool,
     pub doc_quotes: &'static [(&'static str, &'static str)],
     pub important_syntax: AhoCorasick<u16>,
@@ -91,6 +92,7 @@ impl SharedMatchers {
         }
 
         Self {
+            language,
             allows_nested: language.allows_nested(),
             doc_quotes: language.doc_quotes(),
             is_fortran: language.is_fortran(),
@@ -277,45 +279,43 @@ impl SyntaxCounter {
             return None;
         }
 
-        for context in self.shared.contexts {
-            match context {
-                Context::Markdown => {
-                    // dbg!(String::from_utf8_lossy(&lines[start..end]));
-                    let opening_fence = STARTING_MARKDOWN_REGEX.find(&lines[start..])?;
-                    let start_of_code = start + opening_fence.end();
-                    let closing_fence = ENDING_MARKDOWN_REGEX.find(&lines[start_of_code..]);
-                    let end_of_code = closing_fence
-                        .map(|fence| start_of_code + fence.start())
-                        .unwrap_or_else(|| lines.len());
-                    let end_of_code_block = closing_fence
-                        .map(|fence| start_of_code + fence.end())
-                        .unwrap_or_else(|| lines.len());
-                    let balanced = closing_fence.is_some();
+        match self.shared.language {
+            LanguageType::Markdown => {
+                // dbg!(String::from_utf8_lossy(&lines[start..end]));
+                let opening_fence = STARTING_MARKDOWN_REGEX.find(&lines[start..])?;
+                let start_of_code = start + opening_fence.end();
+                let closing_fence = ENDING_MARKDOWN_REGEX.find(&lines[start_of_code..]);
+                let end_of_code = closing_fence
+                    .map(|fence| start_of_code + fence.start())
+                    .unwrap_or_else(|| lines.len());
+                let end_of_code_block = closing_fence
+                    .map(|fence| start_of_code + fence.end())
+                    .unwrap_or_else(|| lines.len());
+                let balanced = closing_fence.is_some();
 
-                    let language = LanguageType::from_str(&String::from_utf8_lossy(
+                let language = LanguageType::from_str(&String::from_utf8_lossy(
                         &opening_fence.as_bytes().trim()[3..],
-                    ))
+                ))
                     .ok()?;
-                    let stats =
-                        language.parse_from_slice(&lines[start_of_code..end_of_code], config);
-                    // dbg!(String::from_utf8_lossy(&lines[end_of_code_block..]));
+                let stats =
+                    language.parse_from_slice(&lines[start_of_code..end_of_code], config);
+                // dbg!(String::from_utf8_lossy(&lines[end_of_code_block..]));
 
-                    return Some((
+                return Some((
                         FileContext::Markdown {
                             balanced,
                             language,
                             end: end_of_code_block,
                         },
                         stats,
-                    ));
-                }
-                _ => {}
+                ));
             }
-            // if window.starts_with(context.closing_tag.as_bytes()) {
-            //     // let _window = &window[tag.as_bytes().len()..];
-            //     let _mime = TYPE_REGEX.captures(window);
-            // }
+            _ => {}
         }
+        // if window.starts_with(context.closing_tag.as_bytes()) {
+        //     // let _window = &window[tag.as_bytes().len()..];
+        //     let _mime = TYPE_REGEX.captures(window);
+        // }
 
         None
     }
