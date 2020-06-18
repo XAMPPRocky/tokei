@@ -46,7 +46,7 @@ fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
 
     let output_path = Path::new(&out_dir).join("language_type.rs");
     let rust_code = tera.render_str(
-        &std::fs::read_to_string("src/language/language_type.hbs.rs")?,
+        &std::fs::read_to_string("src/language/language_type.tera.rs")?,
         &tera::Context::from_value(json)?,
     )?;
     std::fs::write(output_path, rust_code)?;
