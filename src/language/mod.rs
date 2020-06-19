@@ -72,15 +72,11 @@ impl Language {
     pub fn summarise(&self) -> Language {
         let mut summary = self.clone();
 
-        for (language, reports) in &self.children {
-            for stats in  reports.iter().map(|r| r.stats.summarise()) {
-                let lines = stats.code + stats.comments;
+        for reports in self.children.values() {
+            for stats in reports.iter().map(|r| r.stats.summarise()) {
+                summary.comments += stats.comments;
+                summary.code += stats.code;
                 summary.blanks += stats.blanks;
-                if language.is_literate() {
-                    summary.comments += lines;
-                } else {
-                    summary.code += lines;
-                }
             }
         }
 

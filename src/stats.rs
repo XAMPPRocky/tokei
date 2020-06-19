@@ -32,16 +32,12 @@ impl CodeStats {
     pub fn summarise(&self) -> Self {
         let mut summary = self.clone();
 
-        for (language, stats) in std::mem::replace(&mut summary.contexts, BTreeMap::new()) {
+        for (_, stats) in std::mem::replace(&mut summary.contexts, BTreeMap::new()) {
             let child_summary = stats.summarise();
-            let non_blanks = child_summary.code + child_summary.comments;
 
             summary.blanks += child_summary.blanks;
-            if language.is_literate() {
-                summary.comments += non_blanks;
-            } else {
-                summary.code += non_blanks;
-            }
+            summary.comments += child_summary.comments;
+            summary.code += child_summary.code;
         }
 
         summary

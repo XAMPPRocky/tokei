@@ -106,11 +106,11 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_language(&mut self, language: &Language, name: &str, prefix: Option<&str>) -> io::Result<()>
+    pub fn print_language(&mut self, language: &Language, name: &str) -> io::Result<()>
     where
         W: Write,
     {
-        self.print_language_name(language, name, prefix)?;
+        self.print_language_name(language.inaccurate, name, None)?;
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
@@ -123,10 +123,10 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_language_name(&mut self, language: &Language, name: &str, prefix: Option<&str>) -> io::Result<()>
+    pub fn print_language_name(&mut self, inaccurate: bool, name: &str, prefix: Option<&str>) -> io::Result<()>
     {
         let mut lang_section_len = self.columns - NO_LANG_ROW_LEN - prefix.as_deref().map_or(0, str::len);
-        if language.inaccurate {
+        if inaccurate {
             lang_section_len -= IDENT_INACCURATE.len();
         }
 
@@ -140,45 +140,53 @@ impl<W: Write> Printer<W> {
         } else {
             write!(self.writer, " {:<len$}", name, len = lang_section_len)?;
         }
-        if language.inaccurate {
+        if inaccurate {
             write!(self.writer, "{}", IDENT_INACCURATE)?;
         };
 
         Ok(())
     }
 
-    fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
-        let mut subtotal = tokei::Report::new(format!("(Total)").into());
-        subtotal.stats.code += parent.code;
-        subtotal.stats.comments += parent.comments;
-        subtotal.stats.blanks += parent.blanks;
+    fn print_code_stats<'a, 'b>(&mut self, language_type: LanguageType, stats: &[CodeStats]) -> io::Result<()> {
+        self.print_language_name(
+            false,
+            &language_type.to_string(),
+            Some(&(" |-")),
+        )?;
+        let mut code = 0;
+        let mut comments = 0;
+        let mut blanks = 0;
 
-        for (language_type, stats) in &parent.children {
-            self.print_language_name(
-                parent,
-                &language_type.to_string(),
-                Some(" |-"),
-            )?;
-            let code = stats.iter().map(|r| r.stats.code).sum::<usize>();
-            let comments = stats.iter().map(|r| r.stats.comments).sum::<usize>();
-            let blanks = stats.iter().map(|r| r.stats.blanks).sum::<usize>();
-            let lines = code + comments + blanks;
+        for stats in stats.iter().map(|s| s.summarise()) {
+            code += stats.code;
+            comments += stats.comments;
+            blanks += stats.blanks;
+        }
 
+        if !stats.is_empty() {
             writeln!(
                 self.writer,
                 " {:>6} {:>12} {:>12} {:>12} {:>12}",
                 stats.len(),
-                lines,
+                code + comments + blanks,
                 code,
                 comments,
                 blanks,
-            )?;
-
-            subtotal.stats.code += code;
-            subtotal.stats.comments += comments;
-            subtotal.stats.blanks += blanks;
+            )
+        } else {
+            Ok(())
         }
+    }
 
+    fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
+        for (language, reports) in &parent.children {
+            self.print_code_stats(*language, &reports.iter().map(|r| r.stats.summarise()).collect::<Vec<_>>())?;
+        }
+        let mut subtotal = tokei::Report::new(format!("(Total)").into());
+        let summary = parent.summarise();
+        subtotal.stats.code += summary.code;
+        subtotal.stats.comments += summary.comments;
+        subtotal.stats.blanks += summary.blanks;
         writeln!(self.writer, "{:1$}", subtotal, self.path_length)?;
 
         Ok(())
@@ -206,7 +214,7 @@ impl<W: Write> Printer<W> {
                     self.print_subrow()?;
                 }
 
-                self.print_language(language, name.name(), None)?;
+                self.print_language(language, name.name())?;
                 if has_children {
                     self.print_language_total(language)?;
                 }
@@ -221,7 +229,7 @@ impl<W: Write> Printer<W> {
                         for report in reports {
                             writeln!(self.writer, "{:1$}", report, self.path_length)?;
                             if !report.stats.contexts.is_empty() {
-                                self.print_report_total(language, &report)?;
+                                self.print_report_total(&report, language.inaccurate)?;
                             }
                         }
                     }
@@ -242,12 +250,12 @@ impl<W: Write> Printer<W> {
 
     fn print_report(
         &mut self,
-        parent: &Language,
         language_type: LanguageType,
         stats: &CodeStats,
+        inaccurate: bool,
     ) -> io::Result<()> {
         self.print_language_name(
-            parent,
+            inaccurate,
             &language_type.to_string(),
             Some(" |-"),
         )?;
@@ -265,9 +273,13 @@ impl<W: Write> Printer<W> {
 
     fn print_report_total(
         &mut self,
-        parent: &Language,
         report: &Report,
+        inaccurate: bool,
     ) -> io::Result<()> {
+        if report.stats.contexts.is_empty() {
+            return Ok(())
+        }
+
         let mut subtotal = tokei::Report::new(format!("|- (Total)").into());
         subtotal.stats.code += report.stats.code;
         subtotal.stats.comments += report.stats.comments;
@@ -275,17 +287,8 @@ impl<W: Write> Printer<W> {
 
         // writeln!(sink, "{}", row)?;
         for (language_type, stats) in &report.stats.contexts {
-            self.print_report(parent, *language_type, stats)?;
-            subtotal.stats.code += stats.code;
-            subtotal.stats.comments += stats.comments;
-            subtotal.stats.blanks += stats.blanks;
-
-            for (language_type, stats) in dbg!(&stats.contexts) {
-                self.print_report(parent, *language_type, stats)?;
-                subtotal.stats.code += stats.code;
-                subtotal.stats.comments += stats.comments;
-                subtotal.stats.blanks += stats.blanks;
-            }
+            self.print_report(*language_type, stats, inaccurate)?;
+            subtotal.stats += stats.summarise();
         }
 
         writeln!(self.writer, "{:1$}", subtotal, self.path_length)?;
@@ -301,7 +304,7 @@ impl<W: Write> Printer<W> {
         }
 
         self.print_row()?;
-        self.print_language(&total, "Total", None)?;
+        self.print_language(&total, "Total")?;
         self.print_row()
     }
 }

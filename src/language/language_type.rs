@@ -55,7 +55,7 @@ impl LanguageType {
     /// Parses the bytes provided as the given `LanguageType`.
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
         let text = text.as_ref();
-        let syntax = SyntaxCounter::new(dbg!(self));
+        let syntax = SyntaxCounter::new(self);
 
         if let Some(end) = syntax
             .shared
