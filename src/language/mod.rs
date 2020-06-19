@@ -39,7 +39,6 @@ impl Language {
         Self::default()
     }
 
-
     /// Returns the total number of lines.
     #[inline]
     pub fn lines(&self) -> usize {
@@ -173,6 +172,5 @@ impl AddAssign for Language {
         self.children
             .extend(mem::replace(&mut rhs.children, BTreeMap::new()));
         self.inaccurate |= rhs.inaccurate
-
     }
 }

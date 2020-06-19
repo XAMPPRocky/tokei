@@ -31,9 +31,9 @@ pub(crate) struct SyntaxCounter {
 
 #[derive(Clone, Debug)]
 pub(crate) struct FileContext {
-    pub (crate) language: LanguageContext,
-    pub (crate) stats: CodeStats,
-    pub (crate) end: usize,
+    pub(crate) language: LanguageContext,
+    pub(crate) stats: CodeStats,
+    pub(crate) end: usize,
 }
 
 impl FileContext {
@@ -301,7 +301,11 @@ impl SyntaxCounter {
                 let stats = language.parse_from_slice(&lines[start_of_code..end_of_code], config);
                 // dbg!(String::from_utf8_lossy(&lines[end_of_code_block..]));
 
-                Some(FileContext::new(LanguageContext::Markdown { balanced, language }, end_of_code_block, stats))
+                Some(FileContext::new(
+                    LanguageContext::Markdown { balanced, language },
+                    end_of_code_block,
+                    stats,
+                ))
             }
             LanguageType::Rust => {
                 let rest = &lines[start..];
@@ -325,14 +329,18 @@ impl SyntaxCounter {
                         end_of_block = end;
                     } else {
                         end_of_block = start;
-                        break
+                        break;
                     }
                 }
 
                 //dbg!(String::from_utf8_lossy(&lines[end_of_block..]));
                 let doc_block = LanguageType::Markdown.parse_from_slice(&markdown, config);
 
-                Some(FileContext::new(LanguageContext::Rust, end_of_block, doc_block))
+                Some(FileContext::new(
+                    LanguageContext::Rust,
+                    end_of_block,
+                    doc_block,
+                ))
             }
             _ => None,
         }

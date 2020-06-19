@@ -97,8 +97,7 @@ impl<W: Write> Printer<W> {
         self.print_row()
     }
 
-    pub fn print_inaccuracy_warning(&mut self) -> io::Result<()>
-    {
+    pub fn print_inaccuracy_warning(&mut self) -> io::Result<()> {
         writeln!(
             self.writer,
             "Note: results can be inaccurate for languages marked with '{}'",
@@ -123,9 +122,14 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_language_name(&mut self, inaccurate: bool, name: &str, prefix: Option<&str>) -> io::Result<()>
-    {
-        let mut lang_section_len = self.columns - NO_LANG_ROW_LEN - prefix.as_deref().map_or(0, str::len);
+    pub fn print_language_name(
+        &mut self,
+        inaccurate: bool,
+        name: &str,
+        prefix: Option<&str>,
+    ) -> io::Result<()> {
+        let mut lang_section_len =
+            self.columns - NO_LANG_ROW_LEN - prefix.as_deref().map_or(0, str::len);
         if inaccurate {
             lang_section_len -= IDENT_INACCURATE.len();
         }
@@ -147,12 +151,12 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    fn print_code_stats<'a, 'b>(&mut self, language_type: LanguageType, stats: &[CodeStats]) -> io::Result<()> {
-        self.print_language_name(
-            false,
-            &language_type.to_string(),
-            Some(&(" |-")),
-        )?;
+    fn print_code_stats<'a, 'b>(
+        &mut self,
+        language_type: LanguageType,
+        stats: &[CodeStats],
+    ) -> io::Result<()> {
+        self.print_language_name(false, &language_type.to_string(), Some(&(" |-")))?;
         let mut code = 0;
         let mut comments = 0;
         let mut blanks = 0;
@@ -180,7 +184,13 @@ impl<W: Write> Printer<W> {
 
     fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
         for (language, reports) in &parent.children {
-            self.print_code_stats(*language, &reports.iter().map(|r| r.stats.summarise()).collect::<Vec<_>>())?;
+            self.print_code_stats(
+                *language,
+                &reports
+                    .iter()
+                    .map(|r| r.stats.summarise())
+                    .collect::<Vec<_>>(),
+            )?;
         }
         let mut subtotal = tokei::Report::new(format!("(Total)").into());
         let summary = parent.summarise();
@@ -192,17 +202,13 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-
-    pub fn print_results<'a, I>(
-        &mut self,
-        languages: I,
-    ) -> io::Result<()>
+    pub fn print_results<'a, I>(&mut self, languages: I) -> io::Result<()>
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     {
         let (a, b): (Vec<_>, Vec<_>) = languages
-                     .filter(|(_, v)| !v.is_empty())
-                     .partition(|(_, l)| l.children.is_empty());
+            .filter(|(_, v)| !v.is_empty())
+            .partition(|(_, l)| l.children.is_empty());
         let mut first = true;
 
         for languages in &[&a, &b] {
@@ -222,9 +228,9 @@ impl<W: Write> Printer<W> {
                 if self.list_files {
                     self.print_subrow()?;
                     let (a, b): (Vec<_>, Vec<_>) = language
-                                 .reports
-                                 .iter()
-                                 .partition(|r| r.stats.contexts.is_empty());
+                        .reports
+                        .iter()
+                        .partition(|r| r.stats.contexts.is_empty());
                     for reports in &[a, b] {
                         for report in reports {
                             writeln!(self.writer, "{:1$}", report, self.path_length)?;
@@ -254,11 +260,7 @@ impl<W: Write> Printer<W> {
         stats: &CodeStats,
         inaccurate: bool,
     ) -> io::Result<()> {
-        self.print_language_name(
-            inaccurate,
-            &language_type.to_string(),
-            Some(" |-"),
-        )?;
+        self.print_language_name(inaccurate, &language_type.to_string(), Some(" |-"))?;
 
         writeln!(
             self.writer,
@@ -271,13 +273,9 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    fn print_report_total(
-        &mut self,
-        report: &Report,
-        inaccurate: bool,
-    ) -> io::Result<()> {
+    fn print_report_total(&mut self, report: &Report, inaccurate: bool) -> io::Result<()> {
         if report.stats.contexts.is_empty() {
-            return Ok(())
+            return Ok(());
         }
 
         let mut subtotal = tokei::Report::new(format!("|- (Total)").into());

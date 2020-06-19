@@ -5,11 +5,7 @@ mod cli;
 mod cli_utils;
 mod input;
 
-use std::{
-    error::Error,
-    io,
-    process,
-};
+use std::{error::Error, io, process};
 
 use tokei::{Config, Languages, Sort};
 

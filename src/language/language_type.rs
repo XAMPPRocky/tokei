@@ -136,9 +136,14 @@ impl LanguageType {
                 continue;
             }
 
-            if let Some(FileContext { language, end, stats: blob }) = syntax.parse_context(lines, start, config) {
+            if let Some(FileContext {
+                language,
+                end,
+                stats: blob,
+            }) = syntax.parse_context(lines, start, config)
+            {
                 match language {
-                    LanguageContext::Markdown { balanced, language }=> {
+                    LanguageContext::Markdown { balanced, language } => {
                         // Add the lines for the code fences.
                         stats.comments += if balanced { 2 } else { 1 };
                         // Add the code inside the fence to the stats.
