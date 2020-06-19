@@ -43,8 +43,9 @@ impl LanguageType {
     }
 
     /// Returns whether the language is "literate", meaning that it considered
-    /// to primarily be comments rather than procedural code.
-    pub(crate) fn is_literate(self) -> bool {
+    /// to primarily be documentation and is counted primarily as comments
+    /// rather than procedural code.
+    pub fn is_literate(self) -> bool {
         match self {
             {% for key, v in languages -%}
                 {{key}} => {{ v.literate | default(value=false) }},
@@ -193,31 +194,6 @@ impl LanguageType {
         }
     }
 
-    /// Returns the different language contexts the language can contain.
-    pub(crate) fn contexts(self) -> &'static [Context] {
-        match self {
-            {% for key, value in languages -%}
-                {{key}} => &[
-                    {% if key == "Markdown" %}
-                        Context::Markdown,
-                    {% endif %}
-                    {% for context in value.contexts | default(value=[])-%}
-                    {% if value.kind == "html" %}
-                        Context::Html {
-                            opening_tag: "<{{context.tag}}",
-                            closing_tag: "</{{context.tag}}>",
-                            default: {{context.default}},
-                        },
-                    {% elif key == "Markdown" %}
-                        Context::Markdown,
-                    {% endif %}
-                    {%- endfor %}
-                ],
-            {%- endfor %}
-        }
-    }
-
-
     pub(crate) fn start_any_comments(self) -> &'static [&'static str] {
         match self {
             {% for key, value in languages -%}
@@ -246,6 +222,9 @@ impl LanguageType {
                 {{key}} => &[
                     {% if key == "Markdown" %}
                         "{{value.code_fence}}",
+                    {% elif key == "Rust" %}
+                        "///",
+                        "//!",
                     {% endif %}
 
                     {%- for item in starting_quotes |

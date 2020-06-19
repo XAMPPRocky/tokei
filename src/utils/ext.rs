@@ -11,11 +11,27 @@ impl AsciiExt for u8 {
 }
 
 pub(crate) trait SliceExt {
+    fn trim_start(&self) -> &Self;
     fn trim(&self) -> &Self;
     fn contains_slice(&self, needle: &Self) -> bool;
 }
 
 impl SliceExt for [u8] {
+    fn trim_start(&self) -> &Self {
+        let length = self.len();
+
+        if length == 0 {
+            return &self;
+        }
+
+        let start = match self.iter().position(|c| !c.is_whitespace()) {
+            Some(start) => start,
+            None => return &[],
+        };
+
+        &self[start..]
+    }
+
     fn trim(&self) -> &Self {
         let length = self.len();
 

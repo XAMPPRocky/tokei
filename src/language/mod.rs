@@ -20,8 +20,6 @@ pub struct Language {
     pub code: usize,
     /// The total number of comments(both single, and multi-line)
     pub comments: usize,
-    /// The total number of total lines.
-    pub lines: usize,
     /// A collection of statistics of individual files.
     pub reports: Vec<Report>,
     /// A map of any languages found in the reports.
@@ -39,6 +37,13 @@ impl Language {
     /// ```
     pub fn new() -> Self {
         Self::default()
+    }
+
+
+    /// Returns the total number of lines.
+    #[inline]
+    pub fn lines(&self) -> usize {
+        self.blanks + self.code + self.comments
     }
 
     /// Add a `Report` to the Language. This will not update the totals in the
@@ -60,6 +65,28 @@ impl Language {
         self.inaccurate = true;
     }
 
+    /// Creates a new `Language` from `self`, which is a summarised version
+    /// of the language that doesn't contain any children. It will count
+    /// non-blank lines in child languages as code unless the child language is
+    /// considered "literate" then it will be counted as comments.
+    pub fn summarise(&self) -> Language {
+        let mut summary = self.clone();
+
+        for (language, reports) in &self.children {
+            for stats in  reports.iter().map(|r| r.stats.summarise()) {
+                let lines = stats.code + stats.comments;
+                summary.blanks += stats.blanks;
+                if language.is_literate() {
+                    summary.comments += lines;
+                } else {
+                    summary.code += lines;
+                }
+            }
+        }
+
+        summary
+    }
+
     /// Totals up the statistics of the `Stat` structs currently contained in
     /// the language.
     ///
@@ -71,11 +98,11 @@ impl Language {
     ///
     /// // Add stats...
     ///
-    /// assert_eq!(0, language.lines);
+    /// assert_eq!(0, language.lines());
     ///
     /// language.total();
     ///
-    /// assert_eq!(10, language.lines);
+    /// assert_eq!(10, language.lines());
     /// ```
     pub fn total(&mut self) {
         let mut blanks = 0;
@@ -91,7 +118,6 @@ impl Language {
         self.blanks = blanks;
         self.code = code;
         self.comments = comments;
-        self.lines = blanks + code + comments;
     }
 
     /// Checks if the language is empty. Empty meaning it doesn't have any
@@ -104,7 +130,7 @@ impl Language {
     /// assert!(rust.is_empty());
     /// ```
     pub fn is_empty(&self) -> bool {
-        self.code == 0 && self.comments == 0 && self.blanks == 0 && self.lines == 0
+        self.code == 0 && self.comments == 0 && self.blanks == 0
     }
 
     /// Sorts each of the `Report`s contained in the language based
@@ -143,12 +169,14 @@ impl Language {
 
 impl AddAssign for Language {
     fn add_assign(&mut self, mut rhs: Self) {
-        self.lines += rhs.lines;
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.reports
             .extend(mem::replace(&mut rhs.reports, Vec::new()));
+        self.children
+            .extend(mem::replace(&mut rhs.children, BTreeMap::new()));
         self.inaccurate |= rhs.inaccurate
+
     }
 }

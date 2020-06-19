@@ -133,8 +133,8 @@ NUM lines NUM code NUM comments NUM blanks
 
 ### Example
 
-```
-// 39 lines 32 code 2 comments 5 blanks
+```rust
+//! 39 lines 32 code 2 comments 5 blanks
 ```
 
 The comment should use the syntax of the language you're testing.

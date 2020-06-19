@@ -78,7 +78,7 @@ mod config {
 
         let (_, language) = languages.into_iter().next().unwrap();
 
-        assert_eq!(language.lines, 15);
+        assert_eq!(language.lines(), 15);
         assert_eq!(language.code, 5);
         assert_eq!(language.comments, 7);
         assert_eq!(language.blanks, 3);

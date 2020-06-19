@@ -1,4 +1,4 @@
-//! # Tokei: Easily count code.
+//! # Tokei: Count your code quickly.
 //!
 //! A simple, efficient library for counting code in directories. This
 //! functionality is also provided as a

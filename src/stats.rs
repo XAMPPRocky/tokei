@@ -26,6 +26,26 @@ impl CodeStats {
     pub fn lines(&self) -> usize {
         self.blanks + self.code + self.comments
     }
+
+    /// Creates a new `CodeStats` from an existing one with all of the child
+    /// contexts merged.
+    pub fn summarise(&self) -> Self {
+        let mut summary = self.clone();
+
+        for (language, stats) in std::mem::replace(&mut summary.contexts, BTreeMap::new()) {
+            let child_summary = stats.summarise();
+            let non_blanks = child_summary.code + child_summary.comments;
+
+            summary.blanks += child_summary.blanks;
+            if language.is_literate() {
+                summary.comments += non_blanks;
+            } else {
+                summary.code += non_blanks;
+            }
+        }
+
+        summary
+    }
 }
 
 impl ops::Add for CodeStats {

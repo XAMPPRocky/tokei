@@ -58,219 +58,202 @@ where
     })
 }
 
-pub fn print_header<W: Write>(sink: &mut W, row: &str, columns: usize) -> io::Result<()> {
-    writeln!(sink, "{}", row)?;
-    writeln!(
-        sink,
-        " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
-        "Language",
-        "Files",
-        "Lines",
-        "Code",
-        "Comments",
-        "Blanks",
-        columns - NO_LANG_HEADER_ROW_LEN
-    )?;
-
-    writeln!(sink, "{}", row)
+pub struct Printer<W> {
+    writer: W,
+    columns: usize,
+    path_length: usize,
+    row: String,
+    subrow: String,
+    list_files: bool,
 }
 
-pub fn print_results<'a, I, W>(
-    sink: &mut W,
-    row: &str,
-    languages: I,
-    list_files: bool,
-) -> io::Result<()>
-where
-    I: Iterator<Item = (&'a LanguageType, &'a Language)>,
-    W: Write,
-{
-    let (a, b): (Vec<_>, Vec<_>) = languages
-        .filter(isnt_empty)
-        .partition(|(_, l)| l.children.is_empty());
-    let path_len = row.len() - NO_LANG_ROW_LEN_NO_SPACES;
-    let columns = row.len();
-    let mut first = true;
+impl<W> Printer<W> {
+    pub fn new(columns: usize, list_files: bool, writer: W) -> Self {
+        Self {
+            columns,
+            list_files,
+            path_length: columns - NO_LANG_ROW_LEN_NO_SPACES,
+            writer,
+            row: "=".repeat(columns),
+            subrow: "-".repeat(columns),
+        }
+    }
+}
 
-    for languages in &[&a, &b] {
-        for &(name, language) in *languages {
-            let has_children = !language.children.is_empty();
-            if first {
-                first = false;
-            } else if has_children || list_files {
-                writeln!(sink, "{}", row)?;
-            }
+impl<W: Write> Printer<W> {
+    pub fn print_header(&mut self) -> io::Result<()> {
+        self.print_row()?;
+        writeln!(
+            self.writer,
+            " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
+            "Language",
+            "Files",
+            "Lines",
+            "Code",
+            "Comments",
+            "Blanks",
+            self.columns - NO_LANG_HEADER_ROW_LEN
+        )?;
+        self.print_row()
+    }
 
-            print_language(sink, columns, language, name.name(), None)?;
-            if has_children {
-                print_language_total(language, sink, columns, path_len)?;
-            }
+    pub fn print_inaccuracy_warning(&mut self) -> io::Result<()>
+    {
+        writeln!(
+            self.writer,
+            "Note: results can be inaccurate for languages marked with '{}'",
+            IDENT_INACCURATE
+        )
+    }
 
-            if list_files {
-                writeln!(sink, "{}", row)?;
-                let (a, b): (Vec<_>, Vec<_>) = language
-                    .reports
-                    .iter()
-                    .partition(|r| r.stats.contexts.is_empty());
-                for reports in &[a, b] {
-                    for report in reports {
-                        writeln!(sink, "{:1$}", report, path_len)?;
-                        if !report.stats.contexts.is_empty() {
-                            print_report_total(language, &report, sink, columns, path_len)?;
+    pub fn print_language(&mut self, language: &Language, name: &str, prefix: Option<&str>) -> io::Result<()>
+    where
+        W: Write,
+    {
+        self.print_language_name(language, name, prefix)?;
+        write!(self.writer, " ")?;
+        writeln!(
+            self.writer,
+            "{:>6} {:>12} {:>12} {:>12} {:>12}",
+            language.reports.len(),
+            language.lines(),
+            language.code,
+            language.comments,
+            language.blanks
+        )
+    }
+
+    pub fn print_language_name(&mut self, language: &Language, name: &str, prefix: Option<&str>) -> io::Result<()>
+    {
+        let mut lang_section_len = self.columns - NO_LANG_ROW_LEN - prefix.as_deref().map_or(0, str::len);
+        if language.inaccurate {
+            lang_section_len -= IDENT_INACCURATE.len();
+        }
+
+        if let Some(prefix) = prefix {
+            write!(self.writer, "{}", prefix)?;
+        }
+        // truncate and replace the last char with a `|` if the name is too long
+        if lang_section_len < name.len() {
+            write!(self.writer, " {:.len$}", name, len = lang_section_len - 1)?;
+            write!(self.writer, "|")?;
+        } else {
+            write!(self.writer, " {:<len$}", name, len = lang_section_len)?;
+        }
+        if language.inaccurate {
+            write!(self.writer, "{}", IDENT_INACCURATE)?;
+        };
+
+        Ok(())
+    }
+
+    fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
+        let mut subtotal = tokei::Report::new(format!("(Total)").into());
+        subtotal.stats.code += parent.code;
+        subtotal.stats.comments += parent.comments;
+        subtotal.stats.blanks += parent.blanks;
+
+        for (language_type, stats) in &parent.children {
+            self.print_language_name(
+                parent,
+                &language_type.to_string(),
+                Some(" |-"),
+            )?;
+            let code = stats.iter().map(|r| r.stats.code).sum::<usize>();
+            let comments = stats.iter().map(|r| r.stats.comments).sum::<usize>();
+            let blanks = stats.iter().map(|r| r.stats.blanks).sum::<usize>();
+            let lines = code + comments + blanks;
+
+            writeln!(
+                self.writer,
+                " {:>6} {:>12} {:>12} {:>12} {:>12}",
+                stats.len(),
+                lines,
+                code,
+                comments,
+                blanks,
+            )?;
+
+            subtotal.stats.code += code;
+            subtotal.stats.comments += comments;
+            subtotal.stats.blanks += blanks;
+        }
+
+        writeln!(self.writer, "{:1$}", subtotal, self.path_length)?;
+
+        Ok(())
+    }
+
+
+    pub fn print_results<'a, I>(
+        &mut self,
+        languages: I,
+    ) -> io::Result<()>
+    where
+        I: Iterator<Item = (&'a LanguageType, &'a Language)>,
+    {
+        let (a, b): (Vec<_>, Vec<_>) = languages
+                     .filter(|(_, v)| !v.is_empty())
+                     .partition(|(_, l)| l.children.is_empty());
+        let mut first = true;
+
+        for languages in &[&a, &b] {
+            for &(name, language) in *languages {
+                let has_children = !language.children.is_empty();
+                if first {
+                    first = false;
+                } else if has_children || self.list_files {
+                    self.print_subrow()?;
+                }
+
+                self.print_language(language, name.name(), None)?;
+                if has_children {
+                    self.print_language_total(language)?;
+                }
+
+                if self.list_files {
+                    self.print_subrow()?;
+                    let (a, b): (Vec<_>, Vec<_>) = language
+                                 .reports
+                                 .iter()
+                                 .partition(|r| r.stats.contexts.is_empty());
+                    for reports in &[a, b] {
+                        for report in reports {
+                            writeln!(self.writer, "{:1$}", report, self.path_length)?;
+                            if !report.stats.contexts.is_empty() {
+                                self.print_report_total(language, &report)?;
+                            }
                         }
                     }
                 }
             }
         }
+
+        Ok(())
     }
 
-    Ok(())
-}
-
-pub fn isnt_empty(&(_, language): &(&LanguageType, &Language)) -> bool {
-    !language.is_empty()
-}
-
-pub fn print_language_name<W>(
-    sink: &mut W,
-    columns: usize,
-    language: &Language,
-    name: &str,
-    prefix: Option<&str>,
-) -> io::Result<()>
-where
-    W: Write,
-{
-    let mut lang_section_len = columns - NO_LANG_ROW_LEN - prefix.as_deref().map_or(0, str::len);
-    if language.inaccurate {
-        lang_section_len -= IDENT_INACCURATE.len();
+    fn print_row(&mut self) -> io::Result<()> {
+        writeln!(self.writer, "{}", self.row)
     }
 
-    if let Some(prefix) = prefix {
-        write!(sink, "{}", prefix)?;
-    }
-    // truncate and replace the last char with a `|` if the name is too long
-    if lang_section_len < name.len() {
-        write!(sink, " {:.len$}", name, len = lang_section_len - 1)?;
-        write!(sink, "|")?;
-    } else {
-        write!(sink, " {:<len$}", name, len = lang_section_len)?;
-    }
-    if language.inaccurate {
-        write!(sink, "{}", IDENT_INACCURATE)?;
-    };
-
-    Ok(())
-}
-
-pub fn print_language<W>(
-    sink: &mut W,
-    columns: usize,
-    language: &Language,
-    name: &str,
-    prefix: Option<&str>,
-) -> io::Result<()>
-where
-    W: Write,
-{
-    print_language_name(sink, columns, language, name, prefix)?;
-    write!(sink, " ")?;
-    writeln!(
-        sink,
-        "{:>6} {:>12} {:>12} {:>12} {:>12}",
-        language.reports.len(),
-        language.lines,
-        language.code,
-        language.comments,
-        language.blanks
-    )
-}
-
-pub fn print_inaccuracy_warning<W>(sink: &mut W) -> io::Result<()>
-where
-    W: Write,
-{
-    writeln!(
-        sink,
-        "Note: results can be inaccurate for languages marked with '{}'",
-        IDENT_INACCURATE
-    )
-}
-
-fn print_language_total<W: Write>(
-    parent: &Language,
-    sink: &mut W,
-    columns: usize,
-    path_len: usize,
-) -> io::Result<()> {
-    let mut subtotal = tokei::Report::new(format!("(Total)").into());
-    subtotal.stats.code += parent.code;
-    subtotal.stats.comments += parent.comments;
-    subtotal.stats.blanks += parent.blanks;
-
-    // writeln!(sink, "{}", row)?;
-    for (language_type, stats) in &parent.children {
-        print_language_name(
-            sink,
-            columns,
-            parent,
-            &language_type.to_string(),
-            Some(" |-"),
-        )?;
-        let code = stats.iter().map(|r| r.stats.code).sum::<usize>();
-        let comments = stats.iter().map(|r| r.stats.comments).sum::<usize>();
-        let blanks = stats.iter().map(|r| r.stats.blanks).sum::<usize>();
-        let lines = code + comments + blanks;
-
-        writeln!(
-            sink,
-            " {:>6} {:>12} {:>12} {:>12} {:>12}",
-            stats.len(),
-            lines,
-            code,
-            comments,
-            blanks,
-        )?;
-
-        subtotal.stats.code += code;
-        subtotal.stats.comments += comments;
-        subtotal.stats.blanks += blanks;
+    fn print_subrow(&mut self) -> io::Result<()> {
+        writeln!(self.writer, "{}", self.subrow)
     }
 
-    writeln!(sink, "{:1$}", subtotal, path_len)?;
-
-    Ok(())
-}
-
-fn print_report_total<W: Write>(
-    parent: &Language,
-    report: &Report,
-    sink: &mut W,
-    columns: usize,
-    path_len: usize,
-) -> io::Result<()> {
-    let mut subtotal = tokei::Report::new(format!("|- (Total)").into());
-    subtotal.stats.code += report.stats.code;
-    subtotal.stats.comments += report.stats.comments;
-    subtotal.stats.blanks += report.stats.blanks;
-
-    fn print_report<W: Write>(
+    fn print_report(
+        &mut self,
         parent: &Language,
         language_type: LanguageType,
         stats: &CodeStats,
-        sink: &mut W,
-        columns: usize,
     ) -> io::Result<()> {
-        print_language_name(
-            sink,
-            columns,
+        self.print_language_name(
             parent,
             &language_type.to_string(),
             Some(" |-"),
         )?;
 
         writeln!(
-            sink,
+            self.writer,
             " {:>6} {:>12} {:>12} {:>12} {:>12}",
             " ",
             stats.lines(),
@@ -280,15 +263,45 @@ fn print_report_total<W: Write>(
         )
     }
 
-    // writeln!(sink, "{}", row)?;
-    for (language_type, stats) in &report.stats.contexts {
-        print_report(parent, *language_type, stats, sink, columns)?;
-        subtotal.stats.code += stats.code;
-        subtotal.stats.comments += stats.comments;
-        subtotal.stats.blanks += stats.blanks;
+    fn print_report_total(
+        &mut self,
+        parent: &Language,
+        report: &Report,
+    ) -> io::Result<()> {
+        let mut subtotal = tokei::Report::new(format!("|- (Total)").into());
+        subtotal.stats.code += report.stats.code;
+        subtotal.stats.comments += report.stats.comments;
+        subtotal.stats.blanks += report.stats.blanks;
+
+        // writeln!(sink, "{}", row)?;
+        for (language_type, stats) in &report.stats.contexts {
+            self.print_report(parent, *language_type, stats)?;
+            subtotal.stats.code += stats.code;
+            subtotal.stats.comments += stats.comments;
+            subtotal.stats.blanks += stats.blanks;
+
+            for (language_type, stats) in dbg!(&stats.contexts) {
+                self.print_report(parent, *language_type, stats)?;
+                subtotal.stats.code += stats.code;
+                subtotal.stats.comments += stats.comments;
+                subtotal.stats.blanks += stats.blanks;
+            }
+        }
+
+        writeln!(self.writer, "{:1$}", subtotal, self.path_length)?;
+
+        Ok(())
     }
 
-    writeln!(sink, "{:1$}", subtotal, path_len)?;
+    pub fn print_total(&mut self, languages: tokei::Languages) -> io::Result<()> {
+        let mut total = Language::new();
 
-    Ok(())
+        for (_, language) in languages {
+            total += language.summarise();
+        }
+
+        self.print_row()?;
+        self.print_language(&total, "Total", None)?;
+        self.print_row()
+    }
 }

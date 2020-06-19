@@ -80,7 +80,7 @@ impl Languages {
     /// Constructs a new, Languages struct. Languages is always empty and does
     /// not allocate.
     ///
-    /// ```
+    /// ```rust
     /// # use tokei::*;
     /// let languages = Languages::new();
     /// ```

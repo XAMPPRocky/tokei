@@ -1,4 +1,11 @@
-// 41 lines 33 code 3 comments 5 blanks
+//! 48 lines 33 code 9 comments 6 blanks
+//! ```rust
+//! fn main () {
+//!     // Comment
+//!
+//!     println!("Hello World!");
+//! }
+//! ```
 
 /* /**/ */
 fn main() {

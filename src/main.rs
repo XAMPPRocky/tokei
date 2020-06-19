@@ -7,11 +7,11 @@ mod input;
 
 use std::{
     error::Error,
-    io::{self, Write},
+    io,
     process,
 };
 
-use tokei::{Config, Language, Languages, Sort};
+use tokei::{Config, Languages, Sort};
 
 use crate::{cli::Cli, cli_utils::*, input::*};
 
@@ -62,16 +62,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         process::exit(0);
     }
 
-    let row = "=".repeat(columns);
-    let subrow = "-".repeat(columns);
-
-    let mut stdout = io::BufWriter::new(io::stdout());
+    let mut printer = Printer::new(columns, cli.files, io::BufWriter::new(io::stdout()));
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
-        print_inaccuracy_warning(&mut stdout)?;
+        printer.print_inaccuracy_warning()?;
     }
 
-    print_header(&mut stdout, &row, columns)?;
+    printer.print_header()?;
 
     if let Some(sort_category) = cli.sort.or(config.sort) {
         for (_, ref mut language) in &mut languages {
@@ -85,23 +82,15 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Comments => languages.sort_by(|a, b| b.1.comments.cmp(&a.1.comments)),
             Sort::Code => languages.sort_by(|a, b| b.1.code.cmp(&a.1.code)),
             Sort::Files => languages.sort_by(|a, b| b.1.reports.len().cmp(&a.1.reports.len())),
-            Sort::Lines => languages.sort_by(|a, b| b.1.lines.cmp(&a.1.lines)),
+            Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
 
-        print_results(&mut stdout, &subrow, languages.into_iter(), cli.files)?
+        printer.print_results(languages.into_iter())?
     } else {
-        print_results(&mut stdout, &subrow, languages.iter(), cli.files)?
+        printer.print_results(languages.iter())?
     }
 
-    let mut total = Language::new();
-
-    for (_, language) in languages {
-        total += language;
-    }
-
-    writeln!(stdout, "{}", row)?;
-    print_language(&mut stdout, columns, &total, "Total", None)?;
-    writeln!(stdout, "{}", row)?;
+    printer.print_total(languages)?;
 
     Ok(())
 }

@@ -9,7 +9,7 @@ use std::{
 
 use crate::{
     config::Config,
-    language::syntax::{Context, FileContext, SyntaxCounter},
+    language::syntax::{FileContext, LanguageContext, SyntaxCounter},
     stats::{CodeStats, Report},
     utils::{ext::SliceExt, fs as fsutils},
 };
@@ -55,7 +55,7 @@ impl LanguageType {
     /// Parses the bytes provided as the given `LanguageType`.
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
         let text = text.as_ref();
-        let syntax = SyntaxCounter::new(self);
+        let syntax = SyntaxCounter::new(dbg!(self));
 
         if let Some(end) = syntax
             .shared
@@ -136,24 +136,23 @@ impl LanguageType {
                 continue;
             }
 
-            match syntax.parse_context(lines, start, config) {
-                Some((
-                    FileContext::Markdown {
-                        balanced,
-                        language,
-                        end,
-                    },
-                    code_block,
-                )) => {
-                    // Add the lines for the code fences.
-                    stats.comments += if balanced { 2 } else { 1 };
-                    // Add the code inside the fence to the stats.
-                    *stats.contexts.entry(language).or_default() += code_block;
-                    // Advance to after the code fence.
-                    stepper = LineStep::new(b'\n', end, lines.len());
-                    continue;
+            if let Some(FileContext { language, end, stats: blob }) = syntax.parse_context(lines, start, config) {
+                match language {
+                    LanguageContext::Markdown { balanced, language }=> {
+                        // Add the lines for the code fences.
+                        stats.comments += if balanced { 2 } else { 1 };
+                        // Add the code inside the fence to the stats.
+                        *stats.contexts.entry(language).or_default() += blob;
+                    }
+                    LanguageContext::Rust => {
+                        // Add all the markdown blobs.
+                        *stats.contexts.entry(LanguageType::Markdown).or_default() += blob;
+                    }
                 }
-                _ => {}
+
+                // Advance to after the language code and the delimiter..
+                stepper = LineStep::new(b'\n', end, lines.len());
+                continue;
             }
 
             let had_multi_line = !syntax.stack.is_empty();
