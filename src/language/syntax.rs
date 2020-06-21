@@ -359,11 +359,11 @@ impl SyntaxCounter {
         }
 
         match self.shared.language {
-            LanguageType::Markdown => {
+            LanguageType::Markdown | LanguageType::UnrealDeveloperMarkdown => {
                 static STARTING_MARKDOWN_REGEX: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"^```\S+\r?\n"#).unwrap());
+                    Lazy::new(|| Regex::new(r#"^```\S+\s"#).unwrap());
                 static ENDING_MARKDOWN_REGEX: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"```(?:\r?\n)?"#).unwrap());
+                    Lazy::new(|| Regex::new(r#"```\s?"#).unwrap());
 
                 if !lines[start..end].contains_slice(b"```") {
                     return None;
@@ -437,31 +437,73 @@ impl SyntaxCounter {
                     doc_block,
                 ))
             }
-            LanguageType::Html => {
+            LanguageType::Html | LanguageType::Vue => {
                 static START_SCRIPT: Lazy<Regex> =
                     Lazy::new(|| Regex::new(r#"^<script(?:.*type="(.*)")?.*?>"#).unwrap());
                 static END_SCRIPT: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</script>"#).unwrap());
+                static START_STYLE: Lazy<Regex> =
+                    Lazy::new(|| Regex::new(r#"^<style(?:.*lang="(.*)")?.*?>"#).unwrap());
+                static END_STYLE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</style>"#).unwrap());
+                static START_TEMPLATE: Lazy<Regex> =
+                    Lazy::new(|| Regex::new(r#"^<template(?:.*lang="(.*)")?.*?>"#).unwrap());
+                static END_TEMPLATE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</template>"#).unwrap());
 
-                let opening_tag = START_SCRIPT.find(&lines[start..end])?;
-                let captures = START_SCRIPT.captures(&lines[start..end])?;
-                let start_of_code = start + opening_tag.end();
-                let closing_tag = END_SCRIPT.find(&lines[start_of_code..])?;
-                let end_of_code = start_of_code + closing_tag.start();
-
-                let language = captures
-                    .get(1)
-                    .and_then(|m| {
-                        LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
-                    })
+                if let Some(captures) = START_SCRIPT.captures(&lines[start..end]) {
+                    let start_of_code = start + captures.get(0).unwrap().end();
+                    let closing_tag = END_SCRIPT.find(&lines[start_of_code..])?;
+                    let end_of_code = start_of_code + closing_tag.start();
+                    let language = captures
+                        .get(1)
+                        .and_then(|m| {
+                            LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
+                        })
                     .unwrap_or(LanguageType::JavaScript);
-                let stats =
-                    language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    let stats =
+                        language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    Some(FileContext::new(
+                            LanguageContext::Html { language },
+                            end_of_code,
+                            stats,
+                    ))
+                } else if let Some(captures) = START_STYLE.captures(&lines[start..end]) {
+                    let start_of_code = start + captures.get(0).unwrap().end();
+                    let closing_tag = END_STYLE.find(&lines[start_of_code..])?;
+                    let end_of_code = start_of_code + closing_tag.start();
+                    let language = captures
+                        .get(1)
+                        .and_then(|m| {
+                            LanguageType::from_str(&String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase()).ok()
+                        })
+                    .unwrap_or(LanguageType::Css);
+                    let stats =
+                        language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    Some(FileContext::new(
+                            LanguageContext::Html { language },
+                            end_of_code,
+                            stats,
+                    ))
 
-                Some(FileContext::new(
-                    LanguageContext::Html { language },
-                    start_of_code + closing_tag.end(),
-                    stats,
-                ))
+                } else if let Some(captures) = START_TEMPLATE.captures(&lines[start..end]) {
+                    let start_of_code = start + captures.get(0).unwrap().end();
+                    let closing_tag = END_TEMPLATE.find(&lines[start_of_code..])?;
+                    let end_of_code = start_of_code + closing_tag.start();
+                    let language = captures
+                        .get(1)
+                        .and_then(|m| {
+                            LanguageType::from_str(&String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase()).ok()
+                        })
+                    .unwrap_or(LanguageType::Html);
+                    let stats =
+                        language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    Some(FileContext::new(
+                            LanguageContext::Html { language },
+                            end_of_code,
+                            stats,
+                    ))
+
+                } else {
+                    None
+                }
             }
             _ => None,
         }

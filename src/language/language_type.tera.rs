@@ -236,23 +236,14 @@ impl LanguageType {
                 {%- set starting_doc_quotes = value.doc_quotes | default(value=[]) | map(attribute="0") -%}
                 {%- set starting_multi_line_comments = value.multi_line_comments | default(value=[]) | map(attribute="0") -%}
                 {%- set starting_nested_comments = value.nested_comments | default(value=[]) | map(attribute="0") -%}
+                {%- set important_syntax = value.important_syntax | default(value=[]) -%}
 
                 {{key}} => &[
-                    {% if key == "Markdown" %}
-                        "{{value.code_fence}}",
-                    {% elif key == "Html" %}
-                        "<script",
-                        "<style",
-                        "<template",
-                    {% elif key == "Rust" %}
-                        "///",
-                        "//!",
-                    {% endif %}
-
                     {%- for item in starting_quotes |
                                    concat(with=starting_doc_quotes) |
                                    concat(with=starting_multi_line_comments) |
-                                   concat(with=starting_nested_comments) -%}
+                                   concat(with=starting_nested_comments) |
+                                   concat(with=important_syntax) -%}
                         "{{item}}",
                     {%- endfor -%}
                     {%- for context in value.contexts | default(value=[]) -%}

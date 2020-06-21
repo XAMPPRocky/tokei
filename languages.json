@@ -510,10 +510,7 @@
       "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "kind": "html",
-      "contexts": [
-          { "tag": "script", "default": "JavaScript" },
-          { "tag": "style", "default": "Css" }
-      ],
+      "important_syntax": ["<script", "<style"],
       "mime": ["text/html"],
       "extensions": ["html", "htm"]
     },
@@ -712,7 +709,7 @@
     },
     "Markdown": {
       "literate": true,
-      "code_fence": "```",
+      "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
     "ModuleDef": {
@@ -981,6 +978,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "nested": true,
+      "important_syntax": ["///", "//!"],
       "extensions": ["rs"],
       "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
       "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
@@ -1180,7 +1178,7 @@
     },
     "UnrealDeveloperMarkdown": {
       "name": "Unreal Markdown",
-      "blank": true,
+      "important_syntax": ["```"],
       "extensions": ["udn"]
     },
     "UrWeb": {
@@ -1260,6 +1258,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "important_syntax": ["<script", "<style", "<template"],
       "extensions": ["vue"]
     },
     "WebAssembly": {
