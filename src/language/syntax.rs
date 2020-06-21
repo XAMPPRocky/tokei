@@ -264,7 +264,6 @@ impl SyntaxCounter {
         AnalysisReport::Normal(ended_with_comments)
     }
 
-
     /// Performs a set of heuristics to determine whether a line is a comment or
     /// not. The procedure is as follows.
     ///
@@ -446,7 +445,8 @@ impl SyntaxCounter {
                 static END_STYLE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</style>"#).unwrap());
                 static START_TEMPLATE: Lazy<Regex> =
                     Lazy::new(|| Regex::new(r#"^<template(?:.*lang="(.*)")?.*?>"#).unwrap());
-                static END_TEMPLATE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</template>"#).unwrap());
+                static END_TEMPLATE: Lazy<Regex> =
+                    Lazy::new(|| Regex::new(r#"</template>"#).unwrap());
 
                 if let Some(captures) = START_SCRIPT.captures(&lines[start..end]) {
                     let start_of_code = start + captures.get(0).unwrap().end();
@@ -457,13 +457,13 @@ impl SyntaxCounter {
                         .and_then(|m| {
                             LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
                         })
-                    .unwrap_or(LanguageType::JavaScript);
-                    let stats =
-                        language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                        .unwrap_or(LanguageType::JavaScript);
+                    let stats = language
+                        .parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
                     Some(FileContext::new(
-                            LanguageContext::Html { language },
-                            end_of_code,
-                            stats,
+                        LanguageContext::Html { language },
+                        end_of_code,
+                        stats,
                     ))
                 } else if let Some(captures) = START_STYLE.captures(&lines[start..end]) {
                     let start_of_code = start + captures.get(0).unwrap().end();
@@ -472,17 +472,19 @@ impl SyntaxCounter {
                     let language = captures
                         .get(1)
                         .and_then(|m| {
-                            LanguageType::from_str(&String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase()).ok()
+                            LanguageType::from_str(
+                                &String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase(),
+                            )
+                            .ok()
                         })
-                    .unwrap_or(LanguageType::Css);
-                    let stats =
-                        language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                        .unwrap_or(LanguageType::Css);
+                    let stats = language
+                        .parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
                     Some(FileContext::new(
-                            LanguageContext::Html { language },
-                            end_of_code,
-                            stats,
+                        LanguageContext::Html { language },
+                        end_of_code,
+                        stats,
                     ))
-
                 } else if let Some(captures) = START_TEMPLATE.captures(&lines[start..end]) {
                     let start_of_code = start + captures.get(0).unwrap().end();
                     let closing_tag = END_TEMPLATE.find(&lines[start_of_code..])?;
@@ -490,17 +492,19 @@ impl SyntaxCounter {
                     let language = captures
                         .get(1)
                         .and_then(|m| {
-                            LanguageType::from_str(&String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase()).ok()
+                            LanguageType::from_str(
+                                &String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase(),
+                            )
+                            .ok()
                         })
-                    .unwrap_or(LanguageType::Html);
-                    let stats =
-                        language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                        .unwrap_or(LanguageType::Html);
+                    let stats = language
+                        .parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
                     Some(FileContext::new(
-                            LanguageContext::Html { language },
-                            end_of_code,
-                            stats,
+                        LanguageContext::Html { language },
+                        end_of_code,
+                        stats,
                     ))
-
                 } else {
                     None
                 }

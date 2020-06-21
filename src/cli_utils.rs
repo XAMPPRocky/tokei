@@ -239,11 +239,25 @@ impl<W: Write> Printer<W> {
                                     writeln!(self.writer, " {}", report.name.display())?;
                                     first = false;
                                 } else {
-                                    writeln!(self.writer, " {} {}", report.name.display(), "-".repeat(self.columns-2-report.name.display().to_string().len()))?;
+                                    writeln!(
+                                        self.writer,
+                                        " {} {}",
+                                        report.name.display(),
+                                        "-".repeat(
+                                            self.columns
+                                                - 2
+                                                - report.name.display().to_string().len()
+                                        )
+                                    )?;
                                 }
                                 let mut new_report = (*report).clone();
                                 new_report.name = name.to_string().into();
-                                writeln!(self.writer, " |-{:1$}", new_report, self.path_length-3)?;
+                                writeln!(
+                                    self.writer,
+                                    " |-{:1$}",
+                                    new_report,
+                                    self.path_length - 3
+                                )?;
                                 self.print_report_total(&report, language.inaccurate)?;
                             } else {
                                 writeln!(self.writer, "{:1$}", report, self.path_length)?;

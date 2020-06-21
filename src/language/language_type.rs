@@ -11,10 +11,7 @@ use crate::{
     config::Config,
     language::syntax::{FileContext, LanguageContext, SyntaxCounter},
     stats::{CodeStats, Report},
-    utils::{
-        ext::SliceExt,
-        fs as fsutils,
-    },
+    utils::{ext::SliceExt, fs as fsutils},
 };
 
 use encoding_rs_io::DecodeReaderBytesBuilder;
