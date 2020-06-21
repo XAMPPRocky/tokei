@@ -231,11 +231,22 @@ impl<W: Write> Printer<W> {
                         .reports
                         .iter()
                         .partition(|r| r.stats.contexts.is_empty());
-                    for reports in &[a, b] {
-                        for report in reports {
-                            writeln!(self.writer, "{:1$}", report, self.path_length)?;
+                    for reports in &[&a, &b] {
+                        let mut first = true;
+                        for report in reports.iter() {
                             if !report.stats.contexts.is_empty() {
+                                if first && a.is_empty() {
+                                    writeln!(self.writer, " {}", report.name.display())?;
+                                    first = false;
+                                } else {
+                                    writeln!(self.writer, " {} {}", report.name.display(), "-".repeat(self.columns-2-report.name.display().to_string().len()))?;
+                                }
+                                let mut new_report = (*report).clone();
+                                new_report.name = name.to_string().into();
+                                writeln!(self.writer, " |-{:1$}", new_report, self.path_length-3)?;
                                 self.print_report_total(&report, language.inaccurate)?;
+                            } else {
+                                writeln!(self.writer, "{:1$}", report, self.path_length)?;
                             }
                         }
                     }
