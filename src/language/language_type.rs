@@ -244,8 +244,7 @@ impl LanguageType {
             })
             .unwrap_or(LanguageType::Python);
 
-        for cell in jupyter.cells {
-            let (language, stats) = match cell.cell_type {
+        let iter = jupyter.cells.par_iter().map(|cell| match cell.cell_type {
                 CellType::Markdown => (
                     LanguageType::Markdown,
                     LanguageType::Markdown.parse_from_str(cell.source.join(""), config),
@@ -254,8 +253,9 @@ impl LanguageType {
                     language,
                     language.parse_from_str(cell.source.join(""), config),
                 ),
-            };
+            }).collect::<Vec<_>>();
 
+        for (language, stats) in iter {
             *jupyter_stats.blobs.entry(language).or_default() += stats;
         }
 
