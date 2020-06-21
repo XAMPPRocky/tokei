@@ -48,7 +48,7 @@ impl Language {
     /// Add a `Report` to the Language. This will not update the totals in the
     /// Language struct.
     pub fn add_report(&mut self, report: Report) {
-        for (lang, stats) in &report.stats.contexts {
+        for (lang, stats) in &report.stats.blobs {
             let mut new_report = Report::new(report.name.clone());
             new_report.stats = stats.clone();
 

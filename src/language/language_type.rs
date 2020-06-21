@@ -161,16 +161,16 @@ impl LanguageType {
                                 // Add the lines for the code fences.
                                 stats.comments += if balanced { 2 } else { 1 };
                                 // Add the code inside the fence to the stats.
-                                *stats.contexts.entry(language).or_default() += blob;
+                                *stats.blobs.entry(language).or_default() += blob;
                             }
                             LanguageContext::Rust => {
                                 // Add all the markdown blobs.
-                                *stats.contexts.entry(LanguageType::Markdown).or_default() += blob;
+                                *stats.blobs.entry(LanguageType::Markdown).or_default() += blob;
                             }
                             LanguageContext::Html { language } => {
                                 stats.code += 1;
                                 // Add all the markdown blobs.
-                                *stats.contexts.entry(language).or_default() += blob;
+                                *stats.blobs.entry(language).or_default() += blob;
                             }
                         }
 
@@ -242,7 +242,7 @@ impl LanguageType {
                 CellType::Code => (language, language.parse_from_str(cell.source.join(""), config)),
             };
 
-            *jupyter_stats.contexts.entry(language).or_default() += stats;
+            *jupyter_stats.blobs.entry(language).or_default() += stats;
         }
 
         Some(jupyter_stats)

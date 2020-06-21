@@ -12,8 +12,8 @@ pub struct CodeStats {
     pub code: usize,
     /// The lines of comments in the blob.
     pub comments: usize,
-    /// Languages contained inside the language.
-    pub contexts: BTreeMap<LanguageType, CodeStats>,
+    /// Language blobs that were contained inside this blob.
+    pub blobs: BTreeMap<LanguageType, CodeStats>,
 }
 
 impl CodeStats {
@@ -28,11 +28,11 @@ impl CodeStats {
     }
 
     /// Creates a new `CodeStats` from an existing one with all of the child
-    /// contexts merged.
+    /// blobs merged.
     pub fn summarise(&self) -> Self {
         let mut summary = self.clone();
 
-        for (_, stats) in std::mem::replace(&mut summary.contexts, BTreeMap::new()) {
+        for (_, stats) in std::mem::replace(&mut summary.blobs, BTreeMap::new()) {
             let child_summary = stats.summarise();
 
             summary.blanks += child_summary.blanks;
@@ -59,8 +59,8 @@ impl ops::AddAssign for CodeStats {
         self.code += rhs.code;
         self.comments += rhs.comments;
 
-        for (language, stats) in rhs.contexts {
-            *self.contexts.entry(language).or_default() += stats;
+        for (language, stats) in rhs.blobs {
+            *self.blobs.entry(language).or_default() += stats;
         }
     }
 }

@@ -230,11 +230,11 @@ impl<W: Write> Printer<W> {
                     let (a, b): (Vec<_>, Vec<_>) = language
                         .reports
                         .iter()
-                        .partition(|r| r.stats.contexts.is_empty());
+                        .partition(|r| r.stats.blobs.is_empty());
                     for reports in &[&a, &b] {
                         let mut first = true;
                         for report in reports.iter() {
-                            if !report.stats.contexts.is_empty() {
+                            if !report.stats.blobs.is_empty() {
                                 if first && a.is_empty() {
                                     writeln!(self.writer, " {}", report.name.display())?;
                                     first = false;
@@ -299,7 +299,7 @@ impl<W: Write> Printer<W> {
     }
 
     fn print_report_total(&mut self, report: &Report, inaccurate: bool) -> io::Result<()> {
-        if report.stats.contexts.is_empty() {
+        if report.stats.blobs.is_empty() {
             return Ok(());
         }
 
@@ -309,7 +309,7 @@ impl<W: Write> Printer<W> {
         subtotal.stats.blanks += report.stats.blanks;
 
         // writeln!(sink, "{}", row)?;
-        for (language_type, stats) in &report.stats.contexts {
+        for (language_type, stats) in &report.stats.blobs {
             self.print_report(*language_type, stats, inaccurate)?;
             subtotal.stats += stats.summarise();
         }
