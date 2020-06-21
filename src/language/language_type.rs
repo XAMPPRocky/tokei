@@ -57,7 +57,9 @@ impl LanguageType {
         let text = text.as_ref();
 
         if self == LanguageType::Jupyter {
-            return self.parse_jupyter(text.as_ref(), config).unwrap_or_else(CodeStats::new);
+            return self
+                .parse_jupyter(text.as_ref(), config)
+                .unwrap_or_else(CodeStats::new);
         }
 
         let syntax = SyntaxCounter::new(self);
@@ -204,7 +206,7 @@ impl LanguageType {
         }
 
         #[derive(Clone, Copy, Deserialize, PartialEq, Eq)]
-        #[serde(rename_all="lowercase")]
+        #[serde(rename_all = "lowercase")]
         enum CellType {
             Markdown,
             Code,
@@ -226,20 +228,32 @@ impl LanguageType {
 
         let mut jupyter_stats = CodeStats::new();
 
-        let language = jupyter.metadata.kernelspec.get("language")
+        let language = jupyter
+            .metadata
+            .kernelspec
+            .get("language")
             .and_then(serde_json::Value::as_str)
             .and_then(|v| LanguageType::from_str(v).ok())
             .or_else(|| {
-                jupyter.metadata.language_info.get("file_extension")
-                .and_then(serde_json::Value::as_str)
-                .and_then(LanguageType::from_file_extension)
+                jupyter
+                    .metadata
+                    .language_info
+                    .get("file_extension")
+                    .and_then(serde_json::Value::as_str)
+                    .and_then(LanguageType::from_file_extension)
             })
             .unwrap_or(LanguageType::Python);
 
         for cell in jupyter.cells {
             let (language, stats) = match cell.cell_type {
-                CellType::Markdown => (LanguageType::Markdown, LanguageType::Markdown.parse_from_str(cell.source.join(""), config)),
-                CellType::Code => (language, language.parse_from_str(cell.source.join(""), config)),
+                CellType::Markdown => (
+                    LanguageType::Markdown,
+                    LanguageType::Markdown.parse_from_str(cell.source.join(""), config),
+                ),
+                CellType::Code => (
+                    language,
+                    language.parse_from_str(cell.source.join(""), config),
+                ),
             };
 
             *jupyter_stats.blobs.entry(language).or_default() += stats;
