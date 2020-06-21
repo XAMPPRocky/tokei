@@ -241,11 +241,11 @@ impl<W: Write> Printer<W> {
                                 } else {
                                     writeln!(
                                         self.writer,
-                                        " {} {}",
+                                        "-- {} {}",
                                         report.name.display(),
                                         "-".repeat(
                                             self.columns
-                                                - 3
+                                                - 4
                                                 - report.name.display().to_string().len()
                                         )
                                     )?;
