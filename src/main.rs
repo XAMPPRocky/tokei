@@ -54,7 +54,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     languages.get_statistics(&input, &cli.ignored_directories(), &config);
 
     if let Some(format) = cli.output {
-        print!("{}", format.print(languages).unwrap());
+        print!("{}", format.print(&languages).unwrap());
         process::exit(0);
     }
 

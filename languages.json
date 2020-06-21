@@ -622,6 +622,10 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["julius"]
     },
+    "Jupyter": {
+      "name": "Jupyter Notebooks",
+      "extensions": ["ipynb"]
+    },
     "K": {
 	  "name": "K",
 	  "nested": true,

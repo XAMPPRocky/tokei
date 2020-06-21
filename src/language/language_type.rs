@@ -55,6 +55,11 @@ impl LanguageType {
     /// Parses the bytes provided as the given `LanguageType`.
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
         let text = text.as_ref();
+
+        if self == LanguageType::Jupyter {
+            return self.parse_jupyter(text.as_ref(), config).unwrap_or_else(CodeStats::new);
+        }
+
         let syntax = SyntaxCounter::new(self);
 
         if let Some(end) = syntax
@@ -189,6 +194,58 @@ impl LanguageType {
         }
 
         stats
+    }
+
+    fn parse_jupyter(&self, json: &[u8], config: &Config) -> Option<CodeStats> {
+        #[derive(Deserialize)]
+        struct Jupyter {
+            cells: Vec<JupyterCell>,
+            metadata: JupyterMetadata,
+        }
+
+        #[derive(Clone, Copy, Deserialize, PartialEq, Eq)]
+        #[serde(rename_all="lowercase")]
+        enum CellType {
+            Markdown,
+            Code,
+        }
+
+        #[derive(Deserialize)]
+        struct JupyterCell {
+            cell_type: CellType,
+            source: Vec<String>,
+        }
+
+        #[derive(Deserialize)]
+        struct JupyterMetadata {
+            kernelspec: serde_json::Value,
+            language_info: serde_json::Value,
+        }
+
+        let jupyter: Jupyter = serde_json::from_slice(json).ok()?;
+
+        let mut jupyter_stats = CodeStats::new();
+
+        let language = jupyter.metadata.kernelspec.get("language")
+            .and_then(serde_json::Value::as_str)
+            .and_then(|v| LanguageType::from_str(v).ok())
+            .or_else(|| {
+                jupyter.metadata.language_info.get("file_extension")
+                .and_then(serde_json::Value::as_str)
+                .and_then(LanguageType::from_file_extension)
+            })
+            .unwrap_or(LanguageType::Python);
+
+        for cell in jupyter.cells {
+            let (language, stats) = match cell.cell_type {
+                CellType::Markdown => (LanguageType::Markdown, LanguageType::Markdown.parse_from_str(cell.source.join(""), config)),
+                CellType::Code => (language, language.parse_from_str(cell.source.join(""), config)),
+            };
+
+            *jupyter_stats.contexts.entry(language).or_default() += stats;
+        }
+
+        Some(jupyter_stats)
     }
 }
 

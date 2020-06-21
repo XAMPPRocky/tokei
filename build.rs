@@ -87,6 +87,10 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
 
         let name = path.file_stem().unwrap().to_str().unwrap().to_lowercase();
 
+        if name == "jupyter" {
+            continue;
+        }
+
         string.push_str(&format!(
             r#"
         #[test]

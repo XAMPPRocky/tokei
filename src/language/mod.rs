@@ -125,7 +125,7 @@ impl Language {
     /// assert!(rust.is_empty());
     /// ```
     pub fn is_empty(&self) -> bool {
-        self.code == 0 && self.comments == 0 && self.blanks == 0
+        self.code == 0 && self.comments == 0 && self.blanks == 0 && self.children.is_empty()
     }
 
     /// Sorts each of the `Report`s contained in the language based

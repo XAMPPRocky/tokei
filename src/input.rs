@@ -21,16 +21,17 @@ macro_rules! supported_formats {
         /// To enable all formats compile with the `all` feature.
         #[derive(Debug)]
         pub enum Format {
+            Json,
             $(
                 #[cfg(feature = $feature)] $variant
             ),+
-
             // TODO: Allow adding format at runtime when used as a lib?
         }
 
         impl Format {
             pub fn supported() -> &'static [&'static str] {
                 &[
+                    "json",
                     $(
                         #[cfg(feature = $feature)] stringify!($name)
                     ),+
@@ -39,6 +40,7 @@ macro_rules! supported_formats {
 
             pub fn all() -> &'static [&'static str] {
                 &[
+                    "json",
                     $( stringify!($name) ),+
                 ]
             }
@@ -61,6 +63,9 @@ macro_rules! supported_formats {
                 if input.is_empty() {
                     return None
                 }
+                if let Ok(result) = serde_json::from_str(input) {
+                    return Some(result)
+                }
 
                 $(
                     // attributes are not yet allowed on `if` expressions
@@ -78,12 +83,13 @@ macro_rules! supported_formats {
                 None
             }
 
-            pub fn print(&self, _languages: Languages) -> Result<String, Box<dyn Error>> {
+            pub fn print(&self, languages: &Languages) -> Result<String, Box<dyn Error>> {
                 match *self {
+                    Format::Json => Ok(serde_json::to_string(languages)?),
                     $(
                         #[cfg(feature = $feature)] Format::$variant => {
                             let print= &{ $print_kode };
-                            Ok(print(&_languages)?)
+                            Ok(print(languages)?)
                         }
                     ),+
                 }
@@ -95,6 +101,7 @@ macro_rules! supported_formats {
 
             fn from_str(format: &str) -> Result<Self, Self::Err> {
                 match format {
+                    "json" => Ok(Format::Json),
                     $(
                         stringify!($name) => {
                             #[cfg(feature = $feature)]
