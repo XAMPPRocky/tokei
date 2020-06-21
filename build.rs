@@ -130,7 +130,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
         "#,
             name,
             path.display(),
-            root.join(path).display(),
+            std::fs::canonicalize(root.join(path)).unwrap().display(),
         ));
     }
 
