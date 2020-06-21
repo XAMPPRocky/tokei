@@ -245,7 +245,7 @@ impl<W: Write> Printer<W> {
                                         report.name.display(),
                                         "-".repeat(
                                             self.columns
-                                                - 2
+                                                - 3
                                                 - report.name.display().to_string().len()
                                         )
                                     )?;
