@@ -92,10 +92,10 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
         }
 
         string.push_str(&format!(
-            r#"
+            r####"
         #[test]
         fn {0}() {{
-            const _: &str = include_str!("{2}");
+            const _: &str = include_str!(r###"{2}"###);
             let mut languages = Languages::new();
             languages.get_statistics(&["{1}"], &[], &Config::default());
 
@@ -127,7 +127,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
             assert_eq!(language.comments, stats.comments);
             assert_eq!(language.blanks, stats.blanks);
         }}
-        "#,
+        "####,
             name,
             path.display(),
             std::fs::canonicalize(root.join(path)).unwrap().display(),
