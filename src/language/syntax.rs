@@ -48,6 +48,9 @@ impl FileContext {
 
 #[derive(Clone, Debug)]
 pub(crate) enum LanguageContext {
+    Html {
+        language: LanguageType,
+    },
     Markdown {
         balanced: bool,
         language: LanguageType,
@@ -61,10 +64,11 @@ pub(crate) struct SharedMatchers {
     pub allows_nested: bool,
     pub doc_quotes: &'static [(&'static str, &'static str)],
     pub important_syntax: AhoCorasick<u16>,
-    pub any_comments: AhoCorasick<u16>,
+    pub any_comments: &'static [&'static str],
     pub is_fortran: bool,
     pub is_literate: bool,
     pub line_comments: &'static [&'static str],
+    pub any_multi_line_comments: &'static [(&'static str, &'static str)],
     pub multi_line_comments: &'static [(&'static str, &'static str)],
     pub nested_comments: &'static [(&'static str, &'static str)],
     pub string_literals: &'static [(&'static str, &'static str)],
@@ -100,14 +104,23 @@ impl SharedMatchers {
             is_fortran: language.is_fortran(),
             is_literate: language.is_literate(),
             important_syntax: init_corasick(language.important_syntax(), false),
-            any_comments: init_corasick(language.start_any_comments(), true),
+            any_comments: language.any_comments(),
             line_comments: language.line_comments(),
             multi_line_comments: language.multi_line_comments(),
+            any_multi_line_comments: language.any_multi_line_comments(),
             nested_comments: language.nested_comments(),
             string_literals: language.quotes(),
             verbatim_string_literals: language.verbatim_quotes(),
         }
     }
+}
+
+#[derive(Debug)]
+pub(crate) enum AnalysisReport {
+    /// No child languages were found, contains a boolean representing whether
+    /// the line ended with comments or not.
+    Normal(bool),
+    ChildLanguage(FileContext),
 }
 
 impl SyntaxCounter {
@@ -189,7 +202,13 @@ impl SyntaxCounter {
         false
     }
 
-    pub(crate) fn perform_multi_line_analysis(&mut self, line: &[u8]) -> bool {
+    pub(crate) fn perform_multi_line_analysis(
+        &mut self,
+        lines: &[u8],
+        start: usize,
+        end: usize,
+        config: &Config,
+    ) -> AnalysisReport {
         let mut ended_with_comments = false;
         let mut skip = 0;
         macro_rules! skip {
@@ -198,15 +217,19 @@ impl SyntaxCounter {
             }};
         }
 
-        for i in 0..line.len() {
+        for i in start..end {
             if skip != 0 {
                 skip -= 1;
                 continue;
             }
 
-            ended_with_comments = false;
-            let window = &line[i..];
+            let window = &lines[i..];
 
+            if window.trim().is_empty() {
+                break;
+            }
+
+            ended_with_comments = false;
             let is_end_of_quote_or_multi_line = self
                 .parse_end_of_quote(window)
                 .or_else(|| self.parse_end_of_multi_line(window));
@@ -217,6 +240,10 @@ impl SyntaxCounter {
                 continue;
             } else if self.quote.is_some() {
                 continue;
+            }
+
+            if let Some(child) = self.parse_context(lines, i, end, config) {
+                return AnalysisReport::ChildLanguage(child);
             }
 
             let is_quote_or_multi_line = self
@@ -234,32 +261,67 @@ impl SyntaxCounter {
             }
         }
 
-        ended_with_comments
+        AnalysisReport::Normal(ended_with_comments)
     }
 
     pub(crate) fn line_is_comment(
         &self,
         line: &[u8],
         config: &crate::Config,
-        ended_with_comments: bool,
-        had_multi_line: bool,
+        _ended_with_comments: bool,
+        started_in_comments: bool,
     ) -> bool {
-        ((!self.stack.is_empty() || ended_with_comments) && had_multi_line)
-            || (
-                // If we're currently in a comment or we just ended
-                // with one.
-                self.shared.any_comments.is_match(line) && self.quote.is_none()
-            )
-            || ((
-                        // If we're currently in a doc string or we just ended
-                        // with one.
-                        self.quote.is_some() ||
-                        self.shared.doc_quotes.iter().any(|(s, _)| line.starts_with(s.as_bytes()))
-                ) &&
-                    // `Some(true)` is import in order to respect the current
-                    // configuration.
-                    config.treat_doc_strings_as_comments == Some(true) &&
-                    self.quote_is_doc_quote)
+        let trimmed = line.trim();
+        let whole_line_is_comment = || {
+            self.shared
+                .line_comments
+                .iter()
+                .any(|c| trimmed.starts_with(c.as_bytes()))
+                || self
+                    .shared
+                    .any_multi_line_comments
+                    .iter()
+                    .any(|(start, end)| {
+                        trimmed.starts_with(start.as_bytes()) && trimmed.ends_with(end.as_bytes())
+                    })
+        };
+        let starts_with_comment = || {
+            let quote = match self.stack.last() {
+                Some(q) => q,
+                _ => return false,
+            };
+
+            self.shared
+                .any_multi_line_comments
+                .iter()
+                .any(|(start, end)| end == quote && trimmed.starts_with(start.as_bytes()))
+        };
+
+        // `Some(true)` in order to respect the current configuration.
+        if self.quote.is_some() {
+            if self.quote_is_doc_quote && config.treat_doc_strings_as_comments == Some(true) {
+                self.quote.map_or(false, |q| line.starts_with(q.as_bytes()))
+                    || (self.quote.is_some())
+            } else {
+                false
+            }
+        } else if self
+            .shared
+            .doc_quotes
+            .iter()
+            .any(|(_, e)| line.contains_slice(e.as_bytes()))
+            && started_in_comments
+        {
+            true
+        } else if (whole_line_is_comment)() {
+            true
+        } else if started_in_comments {
+            true
+        } else if (starts_with_comment)() {
+            true
+        } else {
+            false
+        }
     }
 
     #[inline]
@@ -267,6 +329,7 @@ impl SyntaxCounter {
         &mut self,
         lines: &[u8],
         start: usize,
+        end: usize,
         config: &Config,
     ) -> Option<FileContext> {
         use std::str::FromStr;
@@ -281,11 +344,18 @@ impl SyntaxCounter {
                 static STARTING_MARKDOWN_REGEX: Lazy<Regex> =
                     Lazy::new(|| Regex::new(r#"^```\S+\r?\n"#).unwrap());
                 static ENDING_MARKDOWN_REGEX: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"```\r?\n"#).unwrap());
-                // dbg!(String::from_utf8_lossy(&lines[start..end]));
-                let opening_fence = STARTING_MARKDOWN_REGEX.find(&lines[start..])?;
+                    Lazy::new(|| Regex::new(r#"```(?:\r?\n)?"#).unwrap());
+
+                if !lines[start..end].contains_slice(b"```") {
+                    return None;
+                }
+
+                let opening_fence = STARTING_MARKDOWN_REGEX.find(&lines[start..end])?;
                 let start_of_code = start + opening_fence.end();
                 let closing_fence = ENDING_MARKDOWN_REGEX.find(&lines[start_of_code..]);
+                if let Some(m) = &closing_fence {
+                    trace!("{:?}", String::from_utf8_lossy(m.as_bytes()))
+                }
                 let end_of_code = closing_fence
                     .map(|fence| start_of_code + fence.start())
                     .unwrap_or_else(|| lines.len());
@@ -298,8 +368,13 @@ impl SyntaxCounter {
                     &opening_fence.as_bytes().trim()[3..],
                 ))
                 .ok()?;
-                let stats = language.parse_from_slice(&lines[start_of_code..end_of_code], config);
-                // dbg!(String::from_utf8_lossy(&lines[end_of_code_block..]));
+                trace!(
+                    "{} BLOCK: {:?}",
+                    language,
+                    String::from_utf8_lossy(&lines[start_of_code..end_of_code])
+                );
+                let stats =
+                    language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
 
                 Some(FileContext::new(
                     LanguageContext::Markdown { balanced, language },
@@ -323,6 +398,7 @@ impl SyntaxCounter {
 
                 while let Some((start, end)) = stepper.next(lines) {
                     if lines[start..].trim().starts_with(comment_syntax) {
+                        trace!("{}", String::from_utf8_lossy(&lines[start..end]));
                         let line = lines[start..end].trim_start();
                         let stripped_line = &line[3.min(line.len())..];
                         markdown.extend_from_slice(stripped_line);
@@ -333,13 +409,39 @@ impl SyntaxCounter {
                     }
                 }
 
-                //dbg!(String::from_utf8_lossy(&lines[end_of_block..]));
-                let doc_block = LanguageType::Markdown.parse_from_slice(&markdown, config);
+                trace!("Markdown found: {:?}", String::from_utf8_lossy(&markdown));
+                let doc_block = LanguageType::Markdown.parse_from_slice(markdown.trim(), config);
 
                 Some(FileContext::new(
                     LanguageContext::Rust,
                     end_of_block,
                     doc_block,
+                ))
+            }
+            LanguageType::Html => {
+                static START_SCRIPT: Lazy<Regex> =
+                    Lazy::new(|| Regex::new(r#"^<script(?:.*type="(.*)")?.*?>"#).unwrap());
+                static END_SCRIPT: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</script>"#).unwrap());
+
+                let opening_tag = START_SCRIPT.find(&lines[start..end])?;
+                let captures = START_SCRIPT.captures(&lines[start..end])?;
+                let start_of_code = start + opening_tag.end();
+                let closing_tag = END_SCRIPT.find(&lines[start_of_code..])?;
+                let end_of_code = start_of_code + closing_tag.start();
+
+                let language = captures
+                    .get(1)
+                    .and_then(|m| {
+                        LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
+                    })
+                    .unwrap_or(LanguageType::JavaScript);
+                let stats =
+                    language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+
+                Some(FileContext::new(
+                    LanguageContext::Html { language },
+                    start_of_code + closing_tag.end(),
+                    stats,
                 ))
             }
             _ => None,
@@ -396,11 +498,18 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
-        if window.starts_with(self.quote?.as_bytes()) {
+        if self._is_string_mode() && window.starts_with(self.quote?.as_bytes()) {
             let quote = self.quote.take().unwrap();
             trace!("End {:?}", quote);
             Some(quote.len())
-        } else if window.starts_with(br"\") && !self.quote_is_verbatim {
+        } else if !self.quote_is_verbatim
+            && window.starts_with(br"\")
+            && self
+                .shared
+                .string_literals
+                .iter()
+                .any(|(start, _)| window[1..].starts_with(start.as_bytes()))
+        {
             // Tell the state machine to skip the next character because it
             // has been escaped if the string isn't a verbatim string.
             Some(2)

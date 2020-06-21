@@ -250,6 +250,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "mime": ["text/css"],
       "extensions": ["css"]
     },
     "D": {
@@ -513,6 +514,7 @@
           { "tag": "script", "default": "JavaScript" },
           { "tag": "style", "default": "Css" }
       ],
+      "mime": ["text/html"],
       "extensions": ["html", "htm"]
     },
     "Hamlet": {
@@ -577,11 +579,30 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "mime": [
+          "application/javascript",
+          "application/ecmascript",
+          "application/x-ecmascript",
+          "application/x-javascript",
+          "text/javascript",
+          "text/ecmascript",
+          "text/javascript1.0",
+          "text/javascript1.1",
+          "text/javascript1.2",
+          "text/javascript1.3",
+          "text/javascript1.4",
+          "text/javascript1.5",
+          "text/jscript",
+          "text/livescript",
+          "text/x-ecmascript",
+          "text/x-javascript"
+      ],
       "extensions": ["js", "mjs"]
     },
     "Json": {
       "name": "JSON",
       "blank": true,
+      "mime": ["application/json", "application/manifest+json"],
       "extensions": ["json"]
     },
     "Jsx": {
@@ -879,6 +900,7 @@
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "env": ["python", "python2", "python3"],
+      "mime": ["text/x-python"],
       "extensions": ["py", "pyw"]
     },
     "Qcl": {
@@ -1048,6 +1070,7 @@
       "name": "SVG",
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "mime": ["image/svg+xml"],
       "extensions": ["svg"]
     },
     "Swift": {
@@ -1085,6 +1108,7 @@
     "Text": {
       "name": "Plain Text",
       "literate": true,
+      "mime": ["text/plain"],
       "extensions": ["text", "txt"]
     },
     "Thrift": {

@@ -83,6 +83,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
     for path in walker {
         let path = path?;
         let path = path.path();
+        let root = std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
 
         let name = path.file_stem().unwrap().to_str().unwrap().to_lowercase();
 
@@ -90,6 +91,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
             r#"
         #[test]
         fn {0}() {{
+            const _: &str = include_str!("{2}");
             let mut languages = Languages::new();
             languages.get_statistics(&["{1}"], &[], &Config::default());
 
@@ -103,6 +105,7 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
 
             let contents = fs::read_to_string("{1}").unwrap();
 
+            println!("{{}} {1}", name);
             assert_eq!(get_digit!(LINES, contents), language.lines());
             println!("{{}} LINES MATCH", name);
             assert_eq!(get_digit!(CODE, contents), language.code);
@@ -122,7 +125,8 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
         }}
         "#,
             name,
-            path.display()
+            path.display(),
+            root.join(path).display(),
         ));
     }
 

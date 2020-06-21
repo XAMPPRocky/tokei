@@ -29,7 +29,7 @@ impl LanguageType {
         }
     }
 
-    pub(crate) fn is_blank(self) -> bool {
+    pub(crate) fn _is_blank(self) -> bool {
         match self {
             {% for key, v in languages -%}
                 {{key}} => {{ v.blank | default(value=false) }},
@@ -194,14 +194,32 @@ impl LanguageType {
         }
     }
 
-    pub(crate) fn start_any_comments(self) -> &'static [&'static str] {
+    pub(crate) fn any_multi_line_comments(self) -> &'static [(&'static str, &'static str)] {
         match self {
             {% for key, value in languages -%}
-                {%- set starting_multi_line_comments = value.multi_line_comments | default(value=[]) | map(attribute="0") -%}
-                {%- set starting_nested_comments = value.nested_comments | default(value=[]) | map(attribute="0") -%}
-
                 {{key}} => &[
-                    {%- for item in value.line_comment | default(value=[]) | concat(with=starting_multi_line_comments) | concat(with=starting_nested_comments) -%}
+                {%- set starting_multi_line_comments = value.multi_line_comments | default(value=[]) -%}
+                {%- set starting_nested_comments = value.nested_comments | default(value=[]) -%}
+                    {%- for item in starting_multi_line_comments | concat(with=starting_nested_comments) -%}
+                        ("{{item.0}}", "{{item.1}}"),
+                    {%- endfor -%}
+                ],
+            {% endfor %}
+        }
+    }
+
+    pub(crate) fn any_comments(self) -> &'static [&'static str] {
+        match self {
+            {% for key, value in languages -%}
+                {{key}} => &[
+                {%- set starting_multi_line_comments = value.multi_line_comments | default(value=[]) -%}
+                {%- set starting_nested_comments = value.nested_comments | default(value=[]) -%}
+
+                    {%- for item in starting_multi_line_comments | concat(with=starting_nested_comments) -%}
+                        "{{item.0}}",
+                        "{{item.1}}",
+                    {%- endfor -%}
+                    {%- for item in value.line_comment | default(value=[]) -%}
                         "{{item}}",
                     {%- endfor -%}
                 ],
@@ -222,6 +240,10 @@ impl LanguageType {
                 {{key}} => &[
                     {% if key == "Markdown" %}
                         "{{value.code_fence}}",
+                    {% elif key == "Html" %}
+                        "<script",
+                        "<style",
+                        "<template",
                     {% elif key == "Rust" %}
                         "///",
                         "//!",
@@ -295,6 +317,29 @@ impl LanguageType {
             {%- endfor %}
             extension => {
                 warn!("Unknown extension: {}", extension);
+                None
+            },
+        }
+    }
+
+    /// Get language from its MIME type if available.
+    ///
+    /// ```no_run
+    /// use tokei::LanguageType;
+    ///
+    /// let lang = LanguageType::from_mime("application/javascript");
+    ///
+    /// assert_eq!(lang, Some(LanguageType::JavaScript));
+    /// ```
+    pub fn from_mime(mime: &str) -> Option<Self> {
+        match mime {
+            {% for key, value in languages -%}
+                {%- if value.mime -%}
+                    {%- for item in value.mime  %}| "{{item}}" {% endfor %}=> Some({{key}}),
+                {% endif -%}
+            {%- endfor %}
+            _ => {
+                warn!("Unknown MIME: {}", mime);
                 None
             },
         }
