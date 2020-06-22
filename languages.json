@@ -506,9 +506,8 @@
     },
     "Html": {
       "name": "HTML",
-      "line_comment": ["//"],
-      "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "kind": "html",
       "important_syntax": ["<script", "<style"],
       "mime": ["text/html"],
@@ -975,6 +974,7 @@
     "RubyHtml": {
       "name": "Ruby HTML",
       "multi_line_comments": [["<!--", "-->"]],
+      "important_syntax": ["<script", "<style"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["rhtml", "erb"]
     },
@@ -1063,9 +1063,9 @@
       "extensions": ["str"]
     },
     "Svelte": {
-      "line_comment": ["//"],
-      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
-      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "multi_line_comments": [["<!--", "-->"]],
+      "important_syntax": ["<script", "<style"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["svelte"]
     },
     "Svg": {

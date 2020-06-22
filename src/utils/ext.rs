@@ -3,6 +3,7 @@
 pub(crate) trait AsciiExt {
     fn is_whitespace(self) -> bool;
     fn is_not_line_ending_whitespace(self) -> bool;
+    fn is_line_ending_whitespace(self) -> bool;
 }
 
 impl AsciiExt for u8 {
@@ -11,17 +12,36 @@ impl AsciiExt for u8 {
     }
 
     fn is_not_line_ending_whitespace(self) -> bool {
-        self.is_whitespace() && self != b'\r' && self != b'\n'
+        self.is_whitespace() && !self.is_line_ending_whitespace()
+    }
+
+    fn is_line_ending_whitespace(self) -> bool {
+        self == b'\r' || self == b'\n'
     }
 }
 
 pub(crate) trait SliceExt {
+    fn trim_first_and_last_line_of_whitespace(&self) -> &Self;
     fn trim_start(&self) -> &Self;
     fn trim(&self) -> &Self;
     fn contains_slice(&self, needle: &Self) -> bool;
 }
 
 impl SliceExt for [u8] {
+    fn trim_first_and_last_line_of_whitespace(&self) -> &Self {
+        let start = self
+            .iter()
+            .position(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
+            .map_or(0, |i| (i + 1).min(self.len()));
+
+        let end = self
+            .iter()
+            .rposition(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
+            .unwrap_or_else(|| self.len());
+
+        &self[start..=end]
+    }
+
     fn trim_start(&self) -> &Self {
         let length = self.len();
 

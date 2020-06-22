@@ -436,7 +436,7 @@ impl SyntaxCounter {
                     doc_block,
                 ))
             }
-            LanguageType::Html | LanguageType::Vue => {
+            LanguageType::Html |LanguageType::RubyHtml | LanguageType::Svelte | LanguageType::Vue => {
                 static START_SCRIPT: Lazy<Regex> =
                     Lazy::new(|| Regex::new(r#"^<script(?:.*type="(.*)")?.*?>"#).unwrap());
                 static END_SCRIPT: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</script>"#).unwrap());
@@ -458,8 +458,10 @@ impl SyntaxCounter {
                             LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
                         })
                         .unwrap_or(LanguageType::JavaScript);
-                    let stats = language
-                        .parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    let stats = language.parse_from_slice(
+                        &lines[start_of_code..end_of_code].trim_first_and_last_line_of_whitespace(),
+                        config,
+                    );
                     Some(FileContext::new(
                         LanguageContext::Html { language },
                         end_of_code,
@@ -478,8 +480,10 @@ impl SyntaxCounter {
                             .ok()
                         })
                         .unwrap_or(LanguageType::Css);
-                    let stats = language
-                        .parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    let stats = language.parse_from_slice(
+                        &lines[start_of_code..end_of_code].trim_first_and_last_line_of_whitespace(),
+                        config,
+                    );
                     Some(FileContext::new(
                         LanguageContext::Html { language },
                         end_of_code,
@@ -498,8 +502,10 @@ impl SyntaxCounter {
                             .ok()
                         })
                         .unwrap_or(LanguageType::Html);
-                    let stats = language
-                        .parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    let stats = language.parse_from_slice(
+                        &lines[start_of_code..end_of_code].trim_first_and_last_line_of_whitespace(),
+                        config,
+                    );
                     Some(FileContext::new(
                         LanguageContext::Html { language },
                         end_of_code,
