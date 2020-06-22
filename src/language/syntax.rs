@@ -461,8 +461,13 @@ impl SyntaxCounter {
                             LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
                         })
                         .unwrap_or(LanguageType::JavaScript);
+                    let script_contents = &lines[start_of_code..end_of_code];
+                    if script_contents.trim().is_empty() {
+                        return None
+                    }
+
                     let stats = language.parse_from_slice(
-                        &lines[start_of_code..end_of_code].trim_first_and_last_line_of_whitespace(),
+                        script_contents.trim_first_and_last_line_of_whitespace(),
                         config,
                     );
                     Some(FileContext::new(
