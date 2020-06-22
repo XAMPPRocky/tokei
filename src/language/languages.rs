@@ -17,9 +17,18 @@ use crate::{
 /// directory.
 /// ([_List of
 /// Languages_](https://github.com/XAMPPRocky/tokei#supported-languages))
-#[derive(Debug, Default, Serialize)]
+#[derive(Debug, Default)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
+}
+
+impl serde::Serialize for Languages {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.inner.serialize(serializer)
+    }
 }
 
 impl<'de> serde::Deserialize<'de> for Languages {
