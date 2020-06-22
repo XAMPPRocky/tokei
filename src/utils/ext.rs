@@ -16,7 +16,7 @@ impl AsciiExt for u8 {
     }
 
     fn is_line_ending_whitespace(self) -> bool {
-        self == b'\r' || self == b'\n'
+        self == b'\n'
     }
 }
 
@@ -37,7 +37,13 @@ impl SliceExt for [u8] {
         let end = self
             .iter()
             .rposition(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
-            .unwrap_or_else(|| self.len());
+            .map_or_else(|| self.len(), |i| {
+                if self[i.saturating_sub(1)] == b'\r' {
+                    i-1
+                } else {
+                    i
+                }
+            });
 
         &self[start..=end]
     }
