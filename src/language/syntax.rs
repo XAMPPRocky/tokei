@@ -436,7 +436,10 @@ impl SyntaxCounter {
                     doc_block,
                 ))
             }
-            LanguageType::Html |LanguageType::RubyHtml | LanguageType::Svelte | LanguageType::Vue => {
+            LanguageType::Html
+            | LanguageType::RubyHtml
+            | LanguageType::Svelte
+            | LanguageType::Vue => {
                 static START_SCRIPT: Lazy<Regex> =
                     Lazy::new(|| Regex::new(r#"^<script(?:.*type="(.*)")?.*?>"#).unwrap());
                 static END_SCRIPT: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</script>"#).unwrap());
