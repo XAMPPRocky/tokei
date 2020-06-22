@@ -1,3 +1,128 @@
+# 12.0.0
+
+## Introduction
+Tokei is a fast and accurate code analysis CLI tool and library, allowing you to
+easily and quickly see how many blank lines, comments, and lines of code are in
+your codebase. All releases and work on Tokei and tokei.rs ([the free companion
+badge service][rs-info]) are [funded by the community through
+GitHub Sponsors][sponsor].
+
+You can always download the latest version of tokei through GitHub Releases or
+Cargo. Tokei is also available through other [package managers][pkg], though
+they may not always contain the latest release.
+
+```
+cargo install tokei
+```
+
+[pkg]: https://github.com/XAMPPRocky/tokei#package-managers
+[rs-info]: https://github.com/XAMPPRocky/tokei/blob/master/README.md#Badges
+[sponsor]: https://github.com/sponsors/XAMPPRocky
+
+## What's New? 
+Tokei 12 comes with some of the biggest user facing changes since 1.0, now in
+the latest version tokei will now **analyse and count multiple languages
+embedded in your source code** as well as adding support for
+**Jupyter Notebooks**. Now for the first time is able to handle and display
+different languages contained in a single source file. This currently available
+for a limited set of languages, with plans to add more support for more in the
+future. The currently supported languages are;
+
+### HTML + Siblings (Vue, Svelte, Etc...)
+Tokei will now analyse and report the source code contained in `<script>`,
+`<style>`, and `<template>` tags in HTML and other similar languages. Tokei will
+read the value of the`type` attribute from the `<script>` tag and detects the
+appropriate language based on its mime type or JavaScript if not present. Tokei
+will do the same for `<style>` and `<template>` except reading the `lang`
+attribute instead of `type` and defaulting to CSS and HTML each respectively.
+
+### Jupyter Notebooks
+Tokei will now read Jupyter Notebook files (`.ipynb`) and will read the source
+code and markdown from Jupyter's JSON and output the analysed result.
+
+### Markdown
+Tokei will now detect any code blocks marked with specified source language and
+count each as their respective languages or as Markdown if not present or not
+found. Now you can easily see how many code examples are included in
+your documentation.
+
+### Rust
+Tokei will now detect blocks of rustdoc documentation  (e.g. `///`/`//!`) and
+parse them as markdown.
+
+### Verbatim Strings
+Tokei is now also capable of handling "verbatim" strings, which are strings that
+do not accept escape sequences like `\`. Thanks to @NickHackman for providing
+the implementation! This is initially supported for C++, C#, F#, and Rust.
+
+## New Look
+To be able to show these new features, tokei's output has been changed to look
+like below. For brevity the CLI only displays one level deep in each language,
+however the library's parser is fully recursive and you can get access to the
+complete report using the library or by outputting the JSON format.
+
+```
+===============================================================================
+ Language            Files        Lines         Code     Comments       Blanks
+===============================================================================
+ BASH                    4           49           30           10            9
+ JSON                    1         1332         1332            0            0
+ Shell                   1           49           38            1           10
+ TOML                    2           77           64            4            9
+-------------------------------------------------------------------------------
+ Markdown                5         1230            0          965          265
+ |- JSON                 1           41           41            0            0
+ |- Rust                 2           53           42            6            5
+ |- Shell                1           22           18            0            4
+ (Total)                           1346          101          971          274
+-------------------------------------------------------------------------------
+ Rust                   19         3349         2782          116          451
+ |- Markdown            12          351            5          295           51
+ (Total)                           3700         2787          411          502
+===============================================================================
+ Total                  32         6553         4352         1397          804
+===============================================================================
+```
+
+This feature is not just limited to the default output of tokei. You can see it
+broken down by each file with the `--files` option.
+
+```
+===============================================================================
+ Language            Files        Lines         Code     Comments       Blanks
+===============================================================================
+ Markdown                5         1230            0          965          265
+ |- JSON                 1           41           41            0            0
+ |- Rust                 2           53           42            6            5
+ |- Shell                1           22           18            0            4
+ (Total)                           1346          101          971          274
+-------------------------------------------------------------------------------
+ ./CODE_OF_CONDUCT.md                46            0           28           18
+ ./CHANGELOG.md                     570            0          434          136
+-- ./markdown.md --------------------------------------------------------------
+ |- Markdown                          4            0            3            1
+ |- Rust                              6            4            1            1
+ |- (Total)                          10            4            4            2
+-- ./README.md ----------------------------------------------------------------
+ |- Markdown                        498            0          421           77
+ |- Shell                            22           18            0            4
+ |- (Total)                         520           18          421           81
+-- ./CONTRIBUTING.md ----------------------------------------------------------
+ |- Markdown                        112            0           79           33
+ |- JSON                             41           41            0            0
+ |- Rust                             46           38            4            4
+ |- (Total)                         200           79           84           37
+===============================================================================
+ Total                   5         1346          101          971          274
+===============================================================================
+```
+
+## Breaking Changes
+- The JSON Output and format of `Languages` has changed.
+- The JSON feature has been removed and is now included by default.
+- `Stats` has been split into `Report` and `CodeStats` to better represent the
+  separation between analysing a file versus a blob of code.
+
 # 11.2.0
 
 - @alexmaco Added shebang and env detection for Crystal.
