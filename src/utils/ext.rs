@@ -32,7 +32,7 @@ impl SliceExt for [u8] {
         let start = self
             .iter()
             .position(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
-            .map_or(0, |i| (i + 1).min(self.len()));
+            .map_or(0, |i| (i + 1).min(self.len().saturating_sub(1)));
 
         let end = self
             .iter()
