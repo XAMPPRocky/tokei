@@ -48,6 +48,10 @@ impl SliceExt for [u8] {
                 },
             );
 
+        if self[start..].is_empty() {
+            return &[]
+        }
+
         &self[start..=end]
     }
 
