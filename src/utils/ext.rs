@@ -37,13 +37,16 @@ impl SliceExt for [u8] {
         let end = self
             .iter()
             .rposition(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
-            .map_or_else(|| self.len(), |i| {
-                if self[i.saturating_sub(1)] == b'\r' {
-                    i-1
-                } else {
-                    i
-                }
-            });
+            .map_or_else(
+                || self.len(),
+                |i| {
+                    if self[i.saturating_sub(1)] == b'\r' {
+                        i - 1
+                    } else {
+                        i
+                    }
+                },
+            );
 
         &self[start..=end]
     }
