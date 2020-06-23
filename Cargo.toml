@@ -29,7 +29,7 @@ ignore = "0.4.16"
 serde_json = "1.0.55"
 
 [dependencies]
-aho-corasick = "0.7.10"
+aho-corasick = "0.7.12"
 clap = "2.33.1"
 crossbeam-channel = "0.4.2"
 dirs = "2.0.2"
