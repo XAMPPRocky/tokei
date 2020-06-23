@@ -595,6 +595,11 @@
       ],
       "extensions": ["js", "mjs"]
     },
+    "Jinja": {
+      "line_comment": ["#"],
+      "multi_line_comments": [["{#", "#}"]],
+      "extensions": ["jinja"]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
@@ -990,6 +995,11 @@
     "ReStructuredText": {
       "blank": true,
       "extensions": ["rst"]
+    },
+    "SaltStack": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["sls"]
     },
     "Sass": {
       "line_comment": ["//"],
