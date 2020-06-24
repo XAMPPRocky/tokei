@@ -3,7 +3,7 @@ Sit dicta esse doloremque officia iusto? Assumenda alias aperiam id quis
 pariatur? Libero modi harum iusto modi magni? Sit temporibus fugit facere
 nostrum culpa ipsum totam! Reprehenderit praesentium obcaecati nemo.
 
-```rust
+```rust,ignore
 use std::println;
 
 fn main () {

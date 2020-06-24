@@ -381,11 +381,12 @@ impl SyntaxCounter {
                     .map(|fence| start_of_code + fence.end())
                     .unwrap_or_else(|| lines.len());
                 let balanced = closing_fence.is_some();
+                let identifier = &opening_fence.as_bytes().trim()[3..];
 
-                let language = LanguageType::from_str(&String::from_utf8_lossy(
-                    &opening_fence.as_bytes().trim()[3..],
-                ))
-                .ok()?;
+                let language = identifier
+                    .split(|&b| b == b',')
+                    .filter_map(|s| LanguageType::from_str(&String::from_utf8_lossy(s)).ok())
+                    .next()?;
                 trace!(
                     "{} BLOCK: {:?}",
                     language,
@@ -463,7 +464,7 @@ impl SyntaxCounter {
                         .unwrap_or(LanguageType::JavaScript);
                     let script_contents = &lines[start_of_code..end_of_code];
                     if script_contents.trim().is_empty() {
-                        return None
+                        return None;
                     }
 
                     let stats = language.parse_from_slice(
@@ -488,8 +489,13 @@ impl SyntaxCounter {
                             .ok()
                         })
                         .unwrap_or(LanguageType::Css);
+                    let style_contents = &lines[start_of_code..end_of_code];
+                    if style_contents.trim().is_empty() {
+                        return None;
+                    }
+
                     let stats = language.parse_from_slice(
-                        &lines[start_of_code..end_of_code].trim_first_and_last_line_of_whitespace(),
+                        style_contents.trim_first_and_last_line_of_whitespace(),
                         config,
                     );
                     Some(FileContext::new(
@@ -510,8 +516,13 @@ impl SyntaxCounter {
                             .ok()
                         })
                         .unwrap_or(LanguageType::Html);
+
+                    let template_contents = &lines[start_of_code..end_of_code];
+                    if template_contents.trim().is_empty() {
+                        return None;
+                    }
                     let stats = language.parse_from_slice(
-                        &lines[start_of_code..end_of_code].trim_first_and_last_line_of_whitespace(),
+                        template_contents.trim_first_and_last_line_of_whitespace(),
                         config,
                     );
                     Some(FileContext::new(
