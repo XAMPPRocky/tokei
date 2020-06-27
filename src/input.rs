@@ -40,7 +40,6 @@ macro_rules! supported_formats {
 
             pub fn all() -> &'static [&'static str] {
                 &[
-                    "json",
                     $( stringify!($name) ),+
                 ]
             }
