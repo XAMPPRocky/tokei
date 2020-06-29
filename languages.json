@@ -5,6 +5,10 @@
       "line_comment": ["*", "\\\""],
       "extensions": ["abap"]
     },
+    "ABNF": {
+      "line_comment": [";"],
+      "extensions": ["abnf"]
+    },
     "ActionScript": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],

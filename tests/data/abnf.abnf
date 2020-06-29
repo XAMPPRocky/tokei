@@ -1,0 +1,11 @@
+; 11 lines 3 code 5 comments 3 blanks
+; comment line 0
+; comment line 1
+
+ALPHA          =  %x41-5A / %x61-7A   ; A-Z / a-z
+
+BIT            =  "0" / "1"
+
+CHAR           =  %x01-7F
+                    ; any 7-bit US-ASCII character,
+                    ;  excluding NUL
