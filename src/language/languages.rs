@@ -96,6 +96,15 @@ impl Languages {
     pub fn new() -> Self {
         Languages::default()
     }
+
+    /// Summary of the Languages struct.
+    pub fn total(self: &Languages) -> Language {
+        let mut total = Language::new();
+        for (_, language) in self {
+            total += language.summarise();
+        }
+        total
+    }
 }
 
 impl IntoIterator for Languages {

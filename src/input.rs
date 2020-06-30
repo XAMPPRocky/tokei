@@ -1,4 +1,5 @@
 use std::{collections::BTreeMap, error::Error, str::FromStr};
+use serde_json::{json, Map};
 
 use tokei::{Language, LanguageType, Languages};
 
@@ -83,12 +84,19 @@ macro_rules! supported_formats {
             }
 
             pub fn print(&self, languages: &Languages) -> Result<String, Box<dyn Error>> {
+                // To serde_json Map and add summary
+                let mut map = Map::new();
+                for (language_type, language) in languages.into_iter() {
+                    map.insert(language_type.to_string(), json!(language));
+                }
+                map.insert(String::from("Total"), json!(languages.total()));
+
                 match *self {
-                    Format::Json => Ok(serde_json::to_string(languages)?),
+                    Format::Json => Ok(serde_json::to_string(&map)?),
                     $(
                         #[cfg(feature = $feature)] Format::$variant => {
                             let print= &{ $print_kode };
-                            Ok(print(languages)?)
+                            Ok(print(&map)?)
                         }
                     ),+
                 }

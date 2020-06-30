@@ -429,12 +429,7 @@ impl<W: Write> Printer<W> {
     }
 
     pub fn print_total(&mut self, languages: tokei::Languages) -> io::Result<()> {
-        let mut total = Language::new();
-
-        for (_, language) in languages {
-            total += language.summarise();
-        }
-
+        let total = languages.total();
         self.print_row()?;
         self.print_language(&total, "Total")?;
         self.print_row()
