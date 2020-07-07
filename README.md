@@ -228,9 +228,12 @@ FLAGS:
     -h, --help                Prints help information
         --hidden              Count hidden files.
     -l, --languages           Prints out supported languages and their extensions.
-        --no-ignore           Don't respect ignore files.
-        --no-ignore-parent    Don't respect ignore files in parent directories.
-        --no-ignore-vcs       Don't respect VCS ignore files.
+        --no-ignore           Don't respect ignore files (.gitignore, .ignore, etc.). This implies --no-ignore-parent,
+                              --no-ignore-dot, and --no-ignore-vcs.
+        --no-ignore-dot       Don't respect .ignore and .tokeignore files, including those in parent directories.
+        --no-ignore-parent    Don't respect ignore files (.gitignore, .ignore, etc.) in parent directories.
+        --no-ignore-vcs       Don't respect VCS ignore files (.gitignore, .hgignore, etc.), including those in parent
+                              directories.
     -V, --version             Prints version information
     -v, --verbose             Set log output level:
                                           1: to show unknown file extensions,

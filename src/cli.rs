@@ -14,6 +14,7 @@ pub struct Cli<'a> {
     pub hidden: bool,
     pub no_ignore: bool,
     pub no_ignore_parent: bool,
+    pub no_ignore_dot: bool,
     pub no_ignore_vcs: bool,
     pub output: Option<Format>,
     pub print_languages: bool,
@@ -57,11 +58,17 @@ impl<'a> Cli<'a> {
                 conflicts_with[input]
                 "Prints out supported languages and their extensions.")
             (@arg no_ignore: --("no-ignore")
-                "Don't respect ignore files.")
+                "Don't respect ignore files (.gitignore, .ignore, etc.). This implies \
+                --no-ignore-parent, --no-ignore-dot, and --no-ignore-vcs.")
             (@arg no_ignore_parent: --("no-ignore-parent")
-                "Don't respect ignore files in parent directories.")
+                "Don't respect ignore files (.gitignore, .ignore, etc.) in parent \
+                directories.")
+            (@arg no_ignore_dot: --("no-ignore-dot")
+                "Don't respect .ignore and .tokeignore files, including those in \
+                parent directories.")
             (@arg no_ignore_vcs: --("no-ignore-vcs")
-                "Don't respect VCS (.gitignore, .hgignore, etc) ignore files.")
+                "Don't respect VCS ignore files (.gitignore, .hgignore, etc.), including \
+                those in parent directories.")
             (@arg output: -o --output
                 // `all` is used so to fail later with a better error
                 possible_values(Format::all())
@@ -95,6 +102,7 @@ impl<'a> Cli<'a> {
         let hidden = matches.is_present("hidden");
         let no_ignore = matches.is_present("no_ignore");
         let no_ignore_parent = matches.is_present("no_ignore_parent");
+        let no_ignore_dot = matches.is_present("no_ignore_dot");
         let no_ignore_vcs = matches.is_present("no_ignore_vcs");
         let print_languages = matches.is_present("languages");
         let verbose = matches.occurrences_of("verbose");
@@ -135,6 +143,7 @@ impl<'a> Cli<'a> {
             matches,
             no_ignore,
             no_ignore_parent,
+            no_ignore_dot,
             no_ignore_vcs,
             output,
             print_languages,
@@ -181,6 +190,7 @@ impl<'a> Cli<'a> {
     /// #### Shared options
     /// * `no_ignore`
     /// * `no_ignore_parent`
+    /// * `no_ignore_dot`
     /// * `no_ignore_vcs`
     /// * `types`
     pub fn override_config(&mut self, mut config: Config) -> Config {
@@ -200,6 +210,12 @@ impl<'a> Cli<'a> {
             Some(true)
         } else {
             config.no_ignore_parent
+        };
+
+        config.no_ignore_dot = if self.no_ignore_dot {
+            Some(true)
+        } else {
+            config.no_ignore_dot
         };
 
         config.no_ignore_vcs = if self.no_ignore_vcs {

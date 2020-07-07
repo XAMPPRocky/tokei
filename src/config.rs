@@ -23,11 +23,17 @@ pub struct Config {
     pub columns: Option<usize>,
     /// Count hidden files and directories. *Default:* `false`.
     pub hidden: Option<bool>,
-    /// Don't respect ignore files. *Default:* `false`.
+    /// Don't respect ignore files (.gitignore, .ignore, etc.). This implies --no-ignore-parent,
+    /// --no-ignore-dot, and --no-ignore-vcs. *Default:* `false`.
     pub no_ignore: Option<bool>,
-    /// Don't respect ignore files in parent directories. *Default:* `false`.
+    /// Don't respect ignore files (.gitignore, .ignore, etc.) in parent directories.
+    /// *Default:* `false`.
     pub no_ignore_parent: Option<bool>,
-    /// Don't respect VCS ignore files. *Default:* `false`.
+    /// Don't respect .ignore and .tokeignore files, including those in parent directories.
+    /// *Default:* `false`.
+    pub no_ignore_dot: Option<bool>,
+    /// Don't respect VCS ignore files (.gitignore, .hgignore, etc.), including those in
+    /// parent directories. *Default:* `false`.
     pub no_ignore_vcs: Option<bool>,
     /// Whether to treat doc strings in languages as comments.  *Default:*
     /// `false`.
@@ -107,6 +113,9 @@ impl Config {
             no_ignore_parent: current_dir
                 .no_ignore_parent
                 .or(home_dir.no_ignore_parent.or(conf_dir.no_ignore_parent)),
+            no_ignore_dot: current_dir
+                .no_ignore_dot
+                .or(home_dir.no_ignore_dot.or(conf_dir.no_ignore_dot)),
             no_ignore_vcs: current_dir
                 .no_ignore_vcs
                 .or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
