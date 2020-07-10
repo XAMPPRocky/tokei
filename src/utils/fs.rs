@@ -246,7 +246,7 @@ mod tests {
 
     #[test]
     fn no_ignore_parent() {
-        let parent_dir = TempDir::new().expect("Couldn't create temp dir");
+        let parent_dir = TempDir::new().expect("Couldn't create temp dir.");
         let child_dir = parent_dir.path().join("child/");
         let mut config = Config::default();
         let mut languages = Languages::new();
@@ -264,7 +264,7 @@ mod tests {
             &config,
         );
 
-        assert_eq!(None, languages.get(&LanguageType::Rust));
+        assert!(languages.get(LANGUAGE).is_none());
 
         config.no_ignore_parent = Some(true);
 
@@ -275,7 +275,7 @@ mod tests {
             &config,
         );
 
-        assert!(languages.get(&LanguageType::Rust).is_some());
+        assert!(languages.get(LANGUAGE).is_some());
     }
 
     #[test]
