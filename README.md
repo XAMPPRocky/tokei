@@ -242,7 +242,7 @@ FLAGS:
 
 OPTIONS:
     -c, --columns <columns>       Sets a strict column width of the output, only available for terminal output.
-    -e, --exclude <exclude>...    Ignore all files & directories containing the word.
+    -e, --exclude <exclude>...    Ignore all files & directories matching the pattern.
     -i, --input <file_input>      Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to
                                   read from stdin.
     -o, --output <output>         Outputs Tokei in a specific format. Compile with additional features for more format
@@ -251,7 +251,7 @@ OPTIONS:
     -t, --type <types>            Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown
 
 ARGS:
-    <input>...    The input file(s)/directory(ies) to be counted.
+    <input>...    The path(s) to the file or directory to be counted.
 ```
 
 ## Badges
