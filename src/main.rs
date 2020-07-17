@@ -58,7 +58,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         process::exit(0);
     }
 
-    let mut printer = Printer::new(columns, cli.files, io::BufWriter::new(io::stdout()));
+    let mut printer = Printer::new(
+        columns,
+        cli.files,
+        io::BufWriter::new(io::stdout()),
+        cli.number_format,
+    );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
         printer.print_inaccuracy_warning()?;
