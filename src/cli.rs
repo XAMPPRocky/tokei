@@ -80,8 +80,8 @@ impl<'a> Cli<'a> {
                 possible_values(NumberFormatStyle::all())
                 conflicts_with[output]
                 +takes_value
-                "Format of printed numbers, i.e. plain (1234, default), commas (1,234), or dots \
-                 (1.234). Cannot be used with --output.")
+                "Format of printed numbers, i.e. plain (1234, default), commas (1,234), dots \
+                 (1.234), or underscores (1_234). Cannot be used with --output.")
             (@arg verbose: -v --verbose ...
             "Set log output level:
             1: to show unknown file extensions,
@@ -108,7 +108,7 @@ impl<'a> Cli<'a> {
         let num_format_style: NumberFormatStyle = matches
             .value_of("num_format_style")
             .map(parse_or_exit::<NumberFormatStyle>)
-            .unwrap_or(NumberFormatStyle::Plain);
+            .unwrap_or_default();
 
         let number_format = match num_format_style.get_format() {
             Ok(format) => format,
