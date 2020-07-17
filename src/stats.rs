@@ -93,7 +93,8 @@ impl ops::AddAssign<CodeStats> for Report {
     }
 }
 
-fn find_char_boundary(s: &str, index: usize) -> usize {
+#[doc(hidden)]
+pub fn find_char_boundary(s: &str, index: usize) -> usize {
     for i in 0..4 {
         if s.is_char_boundary(index + i) {
             return index + i;
