@@ -6,6 +6,7 @@ use std::{
 };
 
 use clap::crate_version;
+use num_format::ToFormattedString;
 
 use crate::input::Format;
 use tokei::{CodeStats, Language, LanguageType, Report};
@@ -58,6 +59,54 @@ where
     })
 }
 
+#[non_exhaustive]
+#[derive(Debug, Copy, Clone)]
+pub enum NumberFormatStyle {
+    // 1234 (Default)
+    Plain,
+    // 1,234
+    Commas,
+    // 1.234
+    Dots,
+}
+
+impl FromStr for NumberFormatStyle {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "plain" => Ok(Self::Plain),
+            "commas" => Ok(Self::Commas),
+            "dots" => Ok(Self::Dots),
+            _ => Err(format!(
+                "Expected 'plain', 'commas', or 'dots' for num-format, but got '{}'",
+                s,
+            )),
+        }
+    }
+}
+
+impl NumberFormatStyle {
+    fn separator(self) -> &'static str {
+        match self {
+            Self::Plain => "",
+            Self::Commas => ",",
+            Self::Dots => ".",
+        }
+    }
+
+    pub fn all() -> &'static [&'static str] {
+        &["plain", "commas", "dots"]
+    }
+
+    pub fn get_format(self) -> Result<num_format::CustomFormat, num_format::Error> {
+        num_format::CustomFormat::builder()
+            .grouping(num_format::Grouping::Standard)
+            .separator(self.separator())
+            .build()
+    }
+}
+
 pub struct Printer<W> {
     writer: W,
     columns: usize,
@@ -65,10 +114,16 @@ pub struct Printer<W> {
     row: String,
     subrow: String,
     list_files: bool,
+    number_format: num_format::CustomFormat,
 }
 
 impl<W> Printer<W> {
-    pub fn new(columns: usize, list_files: bool, writer: W) -> Self {
+    pub fn new(
+        columns: usize,
+        list_files: bool,
+        writer: W,
+        number_format: num_format::CustomFormat,
+    ) -> Self {
         Self {
             columns,
             list_files,
@@ -76,6 +131,7 @@ impl<W> Printer<W> {
             writer,
             row: "=".repeat(columns),
             subrow: "-".repeat(columns),
+            number_format,
         }
     }
 }
@@ -114,11 +170,14 @@ impl<W: Write> Printer<W> {
         writeln!(
             self.writer,
             "{:>6} {:>12} {:>12} {:>12} {:>12}",
-            language.reports.len(),
-            language.lines(),
-            language.code,
-            language.comments,
-            language.blanks
+            language
+                .reports
+                .len()
+                .to_formatted_string(&self.number_format),
+            language.lines().to_formatted_string(&self.number_format),
+            language.code.to_formatted_string(&self.number_format),
+            language.comments.to_formatted_string(&self.number_format),
+            language.blanks.to_formatted_string(&self.number_format),
         )
     }
 
@@ -171,11 +230,11 @@ impl<W: Write> Printer<W> {
             writeln!(
                 self.writer,
                 " {:>6} {:>12} {:>12} {:>12} {:>12}",
-                stats.len(),
-                code + comments + blanks,
-                code,
-                comments,
-                blanks,
+                stats.len().to_formatted_string(&self.number_format),
+                (code + comments + blanks).to_formatted_string(&self.number_format),
+                code.to_formatted_string(&self.number_format),
+                comments.to_formatted_string(&self.number_format),
+                blanks.to_formatted_string(&self.number_format),
             )
         } else {
             Ok(())
@@ -197,7 +256,7 @@ impl<W: Write> Printer<W> {
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
         subtotal.stats.blanks += summary.blanks;
-        writeln!(self.writer, "{:1$}", subtotal, self.path_length)?;
+        self.print_report_with_name(&subtotal)?;
 
         Ok(())
     }
@@ -291,10 +350,10 @@ impl<W: Write> Printer<W> {
             self.writer,
             " {:>6} {:>12} {:>12} {:>12} {:>12}",
             " ",
-            stats.lines(),
-            stats.code,
-            stats.comments,
-            stats.blanks,
+            stats.lines().to_formatted_string(&self.number_format),
+            stats.code.to_formatted_string(&self.number_format),
+            stats.comments.to_formatted_string(&self.number_format),
+            stats.blanks.to_formatted_string(&self.number_format),
         )
     }
 
@@ -308,15 +367,55 @@ impl<W: Write> Printer<W> {
         subtotal.stats.comments += report.stats.comments;
         subtotal.stats.blanks += report.stats.blanks;
 
-        // writeln!(sink, "{}", row)?;
         for (language_type, stats) in &report.stats.blobs {
             self.print_report(*language_type, stats, inaccurate)?;
             subtotal.stats += stats.summarise();
         }
 
-        writeln!(self.writer, "{:1$}", subtotal, self.path_length)?;
+        self.print_report_with_name(&report)?;
 
         Ok(())
+    }
+
+    fn print_report_with_name(&mut self, report: &Report) -> io::Result<()> {
+        let name = report.name.to_string_lossy();
+        let name_length = name.len();
+
+        if name_length <= self.path_length {
+            self.print_report_total_formatted(name, self.path_length, report)?;
+        } else {
+            let mut formatted = String::from("|");
+            // Add 1 to the index to account for the '|' we add to the output string
+            let from = find_char_boundary(&name, name_length + 1 - self.path_length);
+            formatted.push_str(&name[from..]);
+            self.print_report_total_formatted(name, self.path_length, report)?;
+        }
+
+        Ok(())
+    }
+
+    fn print_report_total_formatted(
+        &mut self,
+        name: std::borrow::Cow<'_, str>,
+        max_len: usize,
+        report: &Report,
+    ) -> io::Result<()> {
+        writeln!(
+            self.writer,
+            " {: <max$} {:>12} {:>12} {:>12} {:>12}",
+            name,
+            report
+                .stats
+                .lines()
+                .to_formatted_string(&self.number_format),
+            report.stats.code.to_formatted_string(&self.number_format),
+            report
+                .stats
+                .comments
+                .to_formatted_string(&self.number_format),
+            report.stats.blanks.to_formatted_string(&self.number_format),
+            max = max_len
+        )
     }
 
     pub fn print_total(&mut self, languages: tokei::Languages) -> io::Result<()> {
@@ -330,4 +429,13 @@ impl<W: Write> Printer<W> {
         self.print_language(&total, "Total")?;
         self.print_row()
     }
+}
+
+fn find_char_boundary(s: &str, index: usize) -> usize {
+    for i in 0..4 {
+        if s.is_char_boundary(index + i) {
+            return index + i;
+        }
+    }
+    unreachable!();
 }
