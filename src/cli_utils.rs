@@ -9,7 +9,7 @@ use clap::crate_version;
 use num_format::ToFormattedString;
 
 use crate::input::Format;
-use tokei::{CodeStats, Language, LanguageType, Report};
+use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
 
 pub const FALLBACK_ROW_LEN: usize = 79;
 const NO_LANG_HEADER_ROW_LEN: usize = 67;
@@ -68,6 +68,14 @@ pub enum NumberFormatStyle {
     Commas,
     // 1.234
     Dots,
+    // 1_234
+    Underscores,
+}
+
+impl Default for NumberFormatStyle {
+    fn default() -> Self {
+        Self::Plain
+    }
 }
 
 impl FromStr for NumberFormatStyle {
@@ -78,8 +86,9 @@ impl FromStr for NumberFormatStyle {
             "plain" => Ok(Self::Plain),
             "commas" => Ok(Self::Commas),
             "dots" => Ok(Self::Dots),
+            "underscores" => Ok(Self::Underscores),
             _ => Err(format!(
-                "Expected 'plain', 'commas', or 'dots' for num-format, but got '{}'",
+                "Expected 'plain', 'commas', 'underscores', or 'dots' for num-format, but got '{}'",
                 s,
             )),
         }
@@ -92,11 +101,12 @@ impl NumberFormatStyle {
             Self::Plain => "",
             Self::Commas => ",",
             Self::Dots => ".",
+            Self::Underscores => "_",
         }
     }
 
     pub fn all() -> &'static [&'static str] {
-        &["plain", "commas", "dots"]
+        &["commas", "dots", "plain", "underscores"]
     }
 
     pub fn get_format(self) -> Result<num_format::CustomFormat, num_format::Error> {
@@ -429,13 +439,4 @@ impl<W: Write> Printer<W> {
         self.print_language(&total, "Total")?;
         self.print_row()
     }
-}
-
-fn find_char_boundary(s: &str, index: usize) -> usize {
-    for i in 0..4 {
-        if s.is_char_boundary(index + i) {
-            return index + i;
-        }
-    }
-    unreachable!();
 }
