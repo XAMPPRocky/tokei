@@ -55,7 +55,8 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ## Features
 
-- Tokei is **very fast**, check out our [latest release](https://github.com/XAMPPRocky/tokei/releases/latest)
+- Tokei is **very fast**, annd is able to count millions of lines of code in seconds.
+  Check out our [latest release](https://github.com/XAMPPRocky/tokei/releases/latest)
   to see how Tokei's speed compares to others.
 
 - Tokei is **accurate**, Tokei correctly handles multi line comments,
