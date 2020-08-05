@@ -185,6 +185,12 @@
       "line_comment": ["*"],
       "extensions": ["cob", "cbl", "ccp", "cobol", "cpy"]
     },
+    "CodeQL": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["ql", "qll"]
+    },
     "CoffeeScript": {
       "line_comment": ["#"],
       "multi_line_comments": [["###", "###"]],
