@@ -51,7 +51,7 @@ pub fn get_all_files<A: AsRef<Path>>(
         .git_exclude(ignore_vcs)
         .git_global(ignore_vcs)
         .git_ignore(ignore_vcs)
-        .hidden(ignore && config.hidden.map(|b| !b).unwrap_or(true))
+        .hidden(config.hidden.map(|b| !b).unwrap_or(true))
         .ignore(ignore_dot)
         .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true));
 
