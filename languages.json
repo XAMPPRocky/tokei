@@ -687,6 +687,12 @@
       "nested": true,
       "extensions": ["lisp", "lsp"]
     },
+    "LiveScript": {
+      "line_comment": ["#"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["ls"]
+    },
     "LLVM": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
