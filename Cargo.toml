@@ -30,7 +30,7 @@ serde_json = "1.0.57"
 
 [dependencies]
 aho-corasick = "0.7.13"
-clap = "2.33.2"
+clap = "2.33.3"
 crossbeam-channel = "0.4.2"
 dirs = "2.0.2"
 encoding_rs_io = "0.1.7"
