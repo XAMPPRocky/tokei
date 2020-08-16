@@ -45,6 +45,8 @@ jobs:
           # - x86_64-pc-windows-gnu
     steps:
       - uses: actions/checkout@v2
+      # FIXME: Hack around thinLTO being broken.
+      - run: echo "::set-env name=RUSTFLAGS::-Clto=fat"
       - run: bash ci/set_rust_version.bash stable ${{ matrix.target }}
       - run: bash ci/build.bash cargo ${{ matrix.target }} RELEASE
         # We're using using a fork of `actions/create-release` that detects
