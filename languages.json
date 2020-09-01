@@ -1078,6 +1078,12 @@
       "quotes": [["\\\"", "\\\""], ["$[", "]"], ["$<", ">"], ["${", "}"]],
       "extensions": ["str"]
     },
+    "Stylus": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["styl"]
+    },
     "Svelte": {
       "multi_line_comments": [["<!--", "-->"]],
       "important_syntax": ["<script", "<style"],
