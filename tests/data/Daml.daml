@@ -1,4 +1,4 @@
--- ! 41 lines 22 code 11 comments 8 blanks
+-- ! 43 lines 24 code 11 comments 8 blanks
 -- Copyright (c) 2018-2020, Digital Asset (Switzerland) GmbH and/or its affiliates.
 -- All rights reserved.
 
@@ -28,6 +28,9 @@ rejectTrigger : Trigger () = Trigger with
   rule = rejectRule
   registeredTemplates = AllInDar
   heartbeat = None
+  testNotAComment = 1
+    --$ 2 == "Not a comment"
+  
 
 rejectRule : Party -> ACS -> Time -> Map CommandId [Command] -> () -> TriggerA ()
 rejectRule p acs _ _ _ = do
