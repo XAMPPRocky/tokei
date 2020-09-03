@@ -1,9 +1,13 @@
-//! 33 lines 20 code 6 comments 7 blanks
+//! 38 lines 20 code 10 comments 8 blanks
 -- Copyright (c) 2018-2020, Digital Asset (Switzerland) GmbH and/or its affiliates.
 -- All rights reserved.
 
 {-
 This code is derived from https://github.com/digital-asset/ex-secure-daml-infra/blob/master/daml/BobTrigger.daml
+-- Haskell/DAML support nested comments
+{- including nested 
+block comments
+-}
 -}
 
 
