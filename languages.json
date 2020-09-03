@@ -273,7 +273,7 @@
     "Daml": {
       "name": "DAML",
       "nested": true,
-      "line_comment": ["--"],
+      "line_comment": ["-- "],
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["daml"]
     },
