@@ -328,6 +328,7 @@ CSharp
 CShell
 Css
 D
+DAML
 Dart
 DeviceTree
 Dhall
