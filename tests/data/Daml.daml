@@ -1,4 +1,4 @@
-//! 38 lines 20 code 10 comments 8 blanks
+//! 42 lines 22 code 10 comments 9 blanks
 -- Copyright (c) 2018-2020, Digital Asset (Switzerland) GmbH and/or its affiliates.
 -- All rights reserved.
 
@@ -18,6 +18,9 @@ import DA.Foldable
 import DA.Next.Map (Map)
 import Daml.Trigger
 import Main
+
+(--$) :: a -> b -> String
+a --$ b = "Not a comment"
 
 rejectTrigger : Trigger () = Trigger with
   initialize = \_ -> ()
