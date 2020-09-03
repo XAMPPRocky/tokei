@@ -1159,6 +1159,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["tsx"]
     },
+    "Ttcn": {
+      "name": "TTCN-3",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["ttcn", "ttcn3", "ttcnpp"]
+    },
     "Twig": {
       "name": "Twig",
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
