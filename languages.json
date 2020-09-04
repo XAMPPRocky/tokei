@@ -270,6 +270,13 @@
       "nested_comments": [["/+", "+/"]],
       "extensions": ["d"]
     },
+    "Daml": {
+      "name": "DAML",
+      "nested": true,
+      "line_comment": ["-- "],
+      "multi_line_comments": [["{-", "-}"]],
+      "extensions": ["daml"]
+    },
     "Dart": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],

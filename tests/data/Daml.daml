@@ -1,0 +1,42 @@
+-- ! 42 lines 24 code 9 comments 9 blanks
+
+{-
+This code is derived from https://github.com/digital-asset/ex-secure-daml-infra/blob/master/daml/BobTrigger.daml
+-- Haskell/DAML support nested comments
+{- including nested 
+block comments
+-}
+-}
+
+
+module BobTrigger where
+
+-- import DA.Action
+import DA.Foldable
+import DA.Next.Map (Map)
+import Daml.Trigger
+import Main
+
+(--$) :: a -> b -> String
+a --$ b = "Not a comment"
+
+rejectTrigger : Trigger () = Trigger with
+  initialize = \_ -> ()
+  updateState = \_ _ () -> ()
+  rule = rejectRule
+  registeredTemplates = AllInDar
+  heartbeat = None
+  testNotAComment = 1
+    --$ 2 == "Not a comment"
+  
+
+rejectRule : Party -> ACS -> Time -> Map CommandId [Command] -> () -> TriggerA ()
+rejectRule p acs _ _ _ = do
+  let assets = getContracts @Asset acs
+  let bobAssets = filter (\(_,a) -> a.owner == p) assets
+  let configs = getContracts @DonorConfig acs
+  let Some (_,bobConfig) = find (\(_,c) -> c.owner == p) configs
+
+  forA_ bobAssets $ \(_cid, c) -> do
+    debug "Ran rejectRule"
+    emitCommands [exerciseCmd _cid Give with newOwner = bobConfig.donateTo] [toAnyContractId _cid]
