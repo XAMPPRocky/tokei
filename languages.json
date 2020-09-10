@@ -738,6 +738,11 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Matlab/GNU Octave": {
+      "name": "Matlab/GNU Octave",
+      "line_comment" : ["%"],
+      "extensions": ["m", "mat", "mlapp"]
+    },
     "ModuleDef": {
       "name": "Module-Definition",
       "extensions": ["def"],
