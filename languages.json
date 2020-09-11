@@ -738,13 +738,8 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
-<<<<<<< HEAD
     "Matlab": {
       "name": "Matlab",
-=======
-    "Matlab/GNU Octave": {
-      "name": "Matlab/GNU Octave",
->>>>>>> 387664c5f3c2d1a90223f304c22952d7d3a825d2
       "line_comment" : ["%"],
       "extensions": ["m", "mat", "mlapp"]
     },
