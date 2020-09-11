@@ -738,8 +738,13 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+<<<<<<< HEAD
+    "Matlab": {
+      "name": "Matlab",
+=======
     "Matlab/GNU Octave": {
       "name": "Matlab/GNU Octave",
+>>>>>>> 387664c5f3c2d1a90223f304c22952d7d3a825d2
       "line_comment" : ["%"],
       "extensions": ["m", "mat", "mlapp"]
     },
@@ -778,15 +783,8 @@
       "line_comment": ["#"],
       "extensions": ["nix"]
     },
-    "ObjectiveC": {
+    "ObjectiveCCpp": {
       "name": "Objective-C",
-      "line_comment": ["//"],
-      "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
-      "extensions": ["m"]
-    },
-    "ObjectiveCpp": {
-      "name": "Objective-C++",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
@@ -1030,6 +1028,10 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["sc", "scala"]
+    },
+    "Scilab": {
+      "line_comment": ["//"],
+      "extensions": ["sce"]
     },
     "Scheme": {
       "line_comment": [";"],
