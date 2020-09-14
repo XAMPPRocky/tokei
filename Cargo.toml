@@ -36,7 +36,7 @@ dirs = "2.0.2"
 encoding_rs_io = "0.1.7"
 grep-searcher = "0.1.7"
 ignore = "0.4.16"
-log = "0.4.6"
+log = "0.4.11"
 rayon = "1.4.0"
 serde = { version = "1.0.116", features = ["derive", "rc"] }
 term_size = "0.3.2"
