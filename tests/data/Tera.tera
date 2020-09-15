@@ -1,0 +1,42 @@
+{# 42 lines 26 code 11 comments 5 blanks #}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title></title>
+        link
+        <style>
+body {
+    background-color: pink;
+}
+        </style>{# #}
+        {# comment #}
+    </head>
+    <body>
+        body
+    </body>
+    <!-- Normal Comment-->
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+        <div id="modalSearch" class="modal fade" role="dialog"> </div>
+    </nav>
+
+    <!--
+        document.write("Multi-line and Code comment!");{# comment #}
+        //-->
+
+        <!--[if IE 8]>
+            IE Special comment
+        <![endif]-->
+        <script>
+let x = 5;
+        </script>
+        {#
+        multi-line-comment #}
+        
+          {% if error %}
+          <div class="flash {{ error.category }}">{{ error.content }}</div>{# comment #}
+          {% endif %}
+
+</html>
