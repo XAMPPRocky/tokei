@@ -1,4 +1,4 @@
-{# 40 lines 26 code 8 comments 5 blanks #}
+{# 42 lines 26 code 13 comments 5 blanks #}
 <!DOCTYPE html>
 <html>
     <head>
@@ -32,6 +32,8 @@ body {
         <script>
 let x = 5;
         </script>
+        {#
+        multi-line-comment #}
         
           {% if error %}
           <div class="flash {{ error.category }}">{{ error.content }}</div>{# comment #}
