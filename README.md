@@ -229,9 +229,12 @@ FLAGS:
     -h, --help                Prints help information
         --hidden              Count hidden files.
     -l, --languages           Prints out supported languages and their extensions.
-        --no-ignore           Don't respect ignore files.
-        --no-ignore-parent    Don't respect ignore files in parent directories.
-        --no-ignore-vcs       Don't respect VCS ignore files.
+        --no-ignore           Don't respect ignore files (.gitignore, .ignore, etc.). This implies --no-ignore-parent,
+                              --no-ignore-dot, and --no-ignore-vcs.
+        --no-ignore-dot       Don't respect .ignore and .tokeignore files, including those in parent directories.
+        --no-ignore-parent    Don't respect ignore files (.gitignore, .ignore, etc.) in parent directories.
+        --no-ignore-vcs       Don't respect VCS ignore files (.gitignore, .hgignore, etc.), including those in parent
+                              directories.
     -V, --version             Prints version information
     -v, --verbose             Set log output level:
                                           1: to show unknown file extensions,
@@ -240,7 +243,7 @@ FLAGS:
 
 OPTIONS:
     -c, --columns <columns>       Sets a strict column width of the output, only available for terminal output.
-    -e, --exclude <exclude>...    Ignore all files & directories containing the word.
+    -e, --exclude <exclude>...    Ignore all files & directories matching the pattern.
     -i, --input <file_input>      Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to
                                   read from stdin.
     -o, --output <output>         Outputs Tokei in a specific format. Compile with additional features for more format
@@ -249,7 +252,7 @@ OPTIONS:
     -t, --type <types>            Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown
 
 ARGS:
-    <input>...    The input file(s)/directory(ies) to be counted.
+    <input>...    The path(s) to the file or directory to be counted.
 ```
 
 ## Badges

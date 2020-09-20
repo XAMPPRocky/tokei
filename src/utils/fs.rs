@@ -37,22 +37,23 @@ pub fn get_all_files<A: AsRef<Path>>(
         walker.overrides(overrides.build().expect("Excludes provided were invalid"));
     }
 
-    // Flip the booleans as ignore's semantics are the opposite of our options.
-    let no_ignore_vcs = config.no_ignore_vcs.map(|b| !b).unwrap_or(true);
+    let ignore = config.no_ignore.map(|b| !b).unwrap_or(true);
+    let ignore_dot = ignore && config.no_ignore_dot.map(|b| !b).unwrap_or(true);
+    let ignore_vcs = ignore && config.no_ignore_vcs.map(|b| !b).unwrap_or(true);
 
     // Custom ignore files always work even if the `ignore` option is false,
     // so we only add if that option is not present.
-    if !config.no_ignore.unwrap_or(false) {
+    if ignore_dot {
         walker.add_custom_ignore_filename(IGNORE_FILE);
     }
 
     walker
-        .git_exclude(no_ignore_vcs)
-        .git_global(no_ignore_vcs)
-        .git_ignore(no_ignore_vcs)
+        .git_exclude(ignore_vcs)
+        .git_global(ignore_vcs)
+        .git_ignore(ignore_vcs)
         .hidden(config.hidden.map(|b| !b).unwrap_or(true))
-        .ignore(config.no_ignore.map(|b| !b).unwrap_or(true))
-        .parents(config.no_ignore_parent.map(|b| !b).unwrap_or(true));
+        .ignore(ignore_dot)
+        .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true));
 
     walker.build_parallel().run(move || {
         let tx = tx.clone();
@@ -182,12 +183,10 @@ mod tests {
     }
 
     #[test]
-    fn no_ignore() {
+    fn no_ignore_implies_dot() {
         let dir = TempDir::new().expect("Couldn't create temp dir.");
         let mut config = Config::default();
         let mut languages = Languages::new();
-
-        //git2::Repository::init(dir.path()).expect("Couldn't create git repo.");
 
         fs::write(dir.path().join(".ignore"), IGNORE_PATTERN).unwrap();
         fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
@@ -214,8 +213,40 @@ mod tests {
     }
 
     #[test]
+    fn no_ignore_implies_vcs_gitignore() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        git2::Repository::init(dir.path()).expect("Couldn't create git repo.");
+
+        fs::write(dir.path().join(".gitignore"), IGNORE_PATTERN).unwrap();
+        fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_none());
+
+        config.no_ignore = Some(true);
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
     fn no_ignore_parent() {
-        let parent_dir = TempDir::new().expect("Couldn't create temp dir");
+        let parent_dir = TempDir::new().expect("Couldn't create temp dir.");
         let child_dir = parent_dir.path().join("child/");
         let mut config = Config::default();
         let mut languages = Languages::new();
@@ -233,7 +264,7 @@ mod tests {
             &config,
         );
 
-        assert_eq!(None, languages.get(&LanguageType::Rust));
+        assert!(languages.get(LANGUAGE).is_none());
 
         config.no_ignore_parent = Some(true);
 
@@ -244,7 +275,90 @@ mod tests {
             &config,
         );
 
-        assert!(languages.get(&LanguageType::Rust).is_some());
+        assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn no_ignore_dot() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        fs::write(dir.path().join(".ignore"), IGNORE_PATTERN).unwrap();
+        fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_none());
+
+        config.no_ignore_dot = Some(true);
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn no_ignore_dot_still_vcs_gitignore() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        git2::Repository::init(dir.path()).expect("Couldn't create git repo.");
+
+        fs::write(dir.path().join(".gitignore"), IGNORE_PATTERN).unwrap();
+        fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        config.no_ignore_dot = Some(true);
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_none());
+    }
+
+    #[test]
+    fn no_ignore_dot_includes_custom_ignore() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        fs::write(dir.path().join(IGNORE_FILE), IGNORE_PATTERN).unwrap();
+        fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_none());
+
+        config.no_ignore_dot = Some(true);
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_some());
     }
 
     #[test]
@@ -277,6 +391,27 @@ mod tests {
         );
 
         assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn no_ignore_vcs_gitignore_still_dot() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        fs::write(dir.path().join(".ignore"), IGNORE_PATTERN).unwrap();
+        fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        config.no_ignore_vcs = Some(true);
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_none());
     }
 
     #[test]
