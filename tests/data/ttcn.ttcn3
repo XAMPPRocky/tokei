@@ -1,0 +1,16 @@
+// 16 lines 7 code 6 comments 3 blanks
+/**
+ * @description A TTCN-3 demo module
+ * @author John Doe
+ */
+
+module demo {
+    import from definitions all;
+
+    control {
+        log("Hello world!"); // write something to log
+
+        // execute(altstepWithTimeout());
+        execute(test(), 5.0); /* terminate after 5s */
+    }
+}
