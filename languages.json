@@ -648,7 +648,7 @@
 	  "line_comment": ["/"],
 	  "quotes": [["\\\"", "\\\""]],
 	  "extensions": ["k"]
-	},	
+	  },
     "KakouneScript": {
       "name": "Kakoune script",
       "line_comment": ["#"],
@@ -939,7 +939,7 @@
 	  "line_comment": ["/"],
 	  "quotes": [["\\\"", "\\\""]],
 	  "extensions": ["q"]
-	},
+	  },
     "Qml": {
       "name": "QML",
       "line_comment": ["//"],
