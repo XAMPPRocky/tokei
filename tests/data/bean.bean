@@ -1,0 +1,27 @@
+; 27 lines 13 code 6 comments 8 blanks
+
+option "operating_currency" "EUR"
+
+2002-01-01 commodity EUR
+    name: "Euro"
+    asset-class: "cash"
+
+
+; open accounts initially
+2020-09-01 open Equity:Opening-Balances
+2020-09-01 open Assets:Cash                 EUR
+2020-09-01 open Expenses:Food               EUR
+
+; put initial money on account
+2020-09-01 pad Assets:Cash Equity:Opening-Balances
+
+; verifying starting balance
+2020-09-02 balance Assets:Cash  81.7 EUR
+
+; transfering money
+2020-09-03 * "transfer of money"
+  Assets:Cash   -17.7 EUR
+  Expenses:Food
+
+; validating changed balance
+2020-09-04 balance  Assets:Cash  64 EUR
