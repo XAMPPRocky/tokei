@@ -1095,6 +1095,12 @@
       "line_comment": [";;"],
       "extensions": ["srt"]
     },
+    "Stan": {
+      "line_comment": ["//", "#"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["stan"]
+    },
     "Stratego": {
       "name": "Stratego/XT",
       "line_comment": ["//"],
