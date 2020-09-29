@@ -648,12 +648,12 @@
       "extensions": ["ipynb"]
     },
     "K": {
-	  "name": "K",
-	  "nested": true,
-	  "line_comment": ["/"],
-	  "quotes": [["\\\"", "\\\""]],
-	  "extensions": ["k"]
-	},	
+      "name": "K",
+      "nested": true,
+      "line_comment": ["/"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["k"]
+    },
     "KakouneScript": {
       "name": "Kakoune script",
       "line_comment": ["#"],
@@ -939,12 +939,12 @@
       "extensions": ["qcl"]
     },
     "Q": {
-	  "name": "Q",
-	  "nested": true,
-	  "line_comment": ["/"],
-	  "quotes": [["\\\"", "\\\""]],
-	  "extensions": ["q"]
-	},
+      "name": "Q",
+      "nested": true,
+      "line_comment": ["/"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["q"]
+    },
     "Qml": {
       "name": "QML",
       "line_comment": ["//"],
