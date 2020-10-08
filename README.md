@@ -194,9 +194,6 @@ tokei with the features flag.
 
   YAML:
   cargo install tokei --features yaml
-
-  TOML:
-  cargo install tokei --features toml
 ```
 
 **Currently supported formats**
