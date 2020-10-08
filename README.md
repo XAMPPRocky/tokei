@@ -202,7 +202,6 @@ tokei with the features flag.
 **Currently supported formats**
 - JSON `--output json`
 - YAML `--output yaml`
-- TOML `--output toml`
 - CBOR `--output cbor`
 
 ```shell
