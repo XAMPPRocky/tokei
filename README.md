@@ -90,9 +90,9 @@ conda install -c conda-forge tokei
 sudo dnf install tokei
 # FreeBSD
 pkg install tokei
-# MacOS (Homebrew)
+# macOS (Homebrew)
 brew install tokei
-# MacOS (MacPorts)
+# macOS (MacPorts)
 sudo port selfupdate
 sudo port install tokei
 # Nix/NixOS
