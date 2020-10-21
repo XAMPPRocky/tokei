@@ -455,6 +455,12 @@
       "line_comment": ["#"],
       "extensions": ["feature"]
     },
+    "Gleam": {
+      "name": "Gleam",
+      "line_comment": ["//", "///", "////"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["gleam"]
+    },
     "Glsl": {
       "name": "GLSL",
       "line_comment": ["//"],
