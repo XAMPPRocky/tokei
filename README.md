@@ -79,6 +79,8 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 ## Installation
 
 ### Package Managers
+
+#### Linux
 ```console
 # Arch Linux
 pacman -S tokei
@@ -90,15 +92,24 @@ conda install -c conda-forge tokei
 sudo dnf install tokei
 # FreeBSD
 pkg install tokei
-# macOS (Homebrew)
-brew install tokei
-# macOS (MacPorts)
-sudo port selfupdate
-sudo port install tokei
 # Nix/NixOS
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
+```
+
+#### macOS
+```console
+# Homebrew
+brew install tokei
+# MacPorts
+sudo port selfupdate
+sudo port install tokei
+```
+
+#### Windows
+```console
+scoop install tokei
 ```
 
 ### Manual
