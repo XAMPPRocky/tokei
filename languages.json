@@ -629,6 +629,12 @@
       "mime": ["application/json", "application/manifest+json"],
       "extensions": ["json"]
     },
+    "Jsonnet": {
+      "line_comment": ["//", "#"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["jsonnet", "libsonnet"]
+    },
     "Jsx": {
       "name": "JSX",
       "line_comment": ["//"],
