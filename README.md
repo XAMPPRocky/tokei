@@ -366,6 +366,7 @@ Fstar
 GDB
 GdScript
 Gherkin
+Gleam
 Glsl
 Go
 Graphql
