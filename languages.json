@@ -738,6 +738,12 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Mercury": {
+      "line_comment": ["%"],
+      "quotes": [["\\\"", "\\\""]],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["m"]
+    },
     "ModuleDef": {
       "name": "Module-Definition",
       "extensions": ["def"],

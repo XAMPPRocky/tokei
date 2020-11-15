@@ -395,6 +395,7 @@ Lucius
 Madlang
 Makefile
 Markdown
+Mercury
 Meson
 Mint
 ModuleDef
