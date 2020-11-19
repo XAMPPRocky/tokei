@@ -492,6 +492,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["groovy", "grt", "gtpl", "gvy"]
     },
+    "Gwion": {
+      "line_comment": ["#!"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["gw"]
+    },
     "Happy": {
       "extensions": ["y", "ly"]
     },

@@ -371,6 +371,7 @@ Glsl
 Go
 Graphql
 Groovy
+Gwion
 Hamlet
 Handlebars
 Happy
