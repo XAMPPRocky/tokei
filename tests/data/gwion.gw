@@ -1,0 +1,10 @@
+#! 10 lines 8 code 1 comments 1 blanks
+class C {
+  var int i;
+  var float f;
+  var Object o;
+  operator void @dtor () { <<< "dtor" >>>; }
+}
+
+var C c;
+<<< c >>>;
