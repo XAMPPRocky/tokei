@@ -50,7 +50,7 @@ serde_json = "1.0.59"
 
 [dependencies.env_logger]
 features = []
-version = "0.8.1"
+version = "0.8.2"
 
 [dependencies.hex]
 optional = true
