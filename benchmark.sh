@@ -22,7 +22,7 @@ echo "The use of this tool requires $REQUIRED to be installed and available in y
 echo 'Please enter the path you would like to benchmark:'
 
 if [ -z ${FILE+x} ]; then
-    read input
+    read -r input
 else
     input=$FILE
 fi
