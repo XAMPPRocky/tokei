@@ -1,4 +1,4 @@
--- 91 lines 48 code 34 comments 9 blanks
+-- 78 lines 38 code 33 comments 7 blanks
 
 --[[
 This is a test file for tokei parsing. It contains
@@ -70,19 +70,6 @@ local sum_of_prods = fold(add, 0, map(compose(unpack, mul), t))
 --[[
   A translation of the famous fast reciprocal square root function in the quake engine
 ]]
-local terra Q_rsqrt(x: float): float
-  var i: int32
-  var x2: float, y: float
-
-  x2, y = x * 0.5f, x
-  i = @([&int32]([&opaque](&x))) -- evil floating point bit level hacking
-  i = 0x5f3759df - ( i >> 1 ) -- what the fuck?
-  y = @([&float]([&opaque](&i)))
-  y = y * (1.5f - (x * y * y)) -- 1st iteration
-  -- y = y * (1.5f - (x * y * y)) -- 2nd iteration, this can be removed
-
-  return y
-end
 
 return {
   gen_unpack = gen_unpack,
