@@ -468,6 +468,7 @@ Swift
 Swig
 SystemVerilog
 Tcl
+Terra
 Tex
 Text
 Thrift
