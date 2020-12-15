@@ -387,6 +387,7 @@
     "Fstar": {
       "name": "F*",
       "quotes": [["\\\"", "\\\""]],
+      "line_comment": ["//"],
       "multi_line_comments": [["(*", "*)"]],
       "extensions": ["fst"]
     },
