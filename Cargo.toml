@@ -67,4 +67,4 @@ version = "0.8.12"
 [dev-dependencies]
 regex = "1.4.2"
 tempfile = "3.0.8"
-git2 = { version = "0.13.12", default-features = false, features = [] }
+git2 = { version = "0.13.14", default-features = false, features = [] }
