@@ -31,7 +31,7 @@ serde_json = "1.0.60"
 [dependencies]
 aho-corasick = "0.7.14"
 clap = "2.33.3"
-crossbeam-channel = "0.4.4"
+crossbeam-channel = "0.5.0"
 dirs = "3.0.1"
 encoding_rs_io = "0.1.7"
 grep-searcher = "0.1.7"
