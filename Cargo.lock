@@ -1214,7 +1214,7 @@ checksum = "53953d2d3a5ad81d9f844a32f14ebb121f50b650cd59d0ee2a07cf13c617efed"
 
 [[package]]
 name = "tokei"
-version = "12.0.4"
+version = "12.1.0"
 dependencies = [
  "aho-corasick",
  "clap",
