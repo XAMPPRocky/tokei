@@ -22,6 +22,8 @@ pub struct Cli<'a> {
     pub types: Option<Vec<LanguageType>>,
     pub number_format: num_format::CustomFormat,
     pub verbose: u64,
+    pub command: std::path::PathBuf,
+    pub folder: std::path::PathBuf,
 }
 
 impl<'a> Cli<'a> {
@@ -46,6 +48,12 @@ impl<'a> Cli<'a> {
                 "Ignore all files & directories matching the pattern.")
             (@arg files: -f --files
                 "Will print out statistics on individual files.")
+            (@arg cmd: --cmd 
+                +takes_value
+                "Will call the specified shell command to process input files on their language.")
+            (@arg folder: --folder 
+                +takes_value
+                "Will generate output files into the target folder.")
             (@arg file_input: -i --input
                 +takes_value
                 "Gives statistics from a previous tokei run. Can be given a file path, \
@@ -118,6 +126,16 @@ impl<'a> Cli<'a> {
             .map(parse_or_exit::<NumberFormatStyle>)
             .unwrap_or_default();
 
+        let command = matches
+            .value_of("cmd")
+            .map(parse_or_exit::<std::path::PathBuf>)
+            .unwrap_or_default();
+
+        let folder = matches
+            .value_of("folder")
+            .map(parse_or_exit::<std::path::PathBuf>)
+            .unwrap_or_default();
+
         let number_format = match num_format_style.get_format() {
             Ok(format) => format,
             Err(e) => {
@@ -151,6 +169,8 @@ impl<'a> Cli<'a> {
             types,
             verbose,
             number_format,
+            command,
+            folder,
         };
 
         debug!("CLI Config: {:#?}", cli);

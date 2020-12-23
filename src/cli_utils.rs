@@ -1,6 +1,7 @@
 use std::{
-    fmt,
+    fmt, 
     io::{self, Write},
+    path::PathBuf,
     process,
     str::FromStr,
 };
@@ -117,28 +118,31 @@ impl NumberFormatStyle {
     }
 }
 
-pub struct Printer<W> {
-    writer: W,
+pub struct Printer {
     columns: usize,
     path_length: usize,
     row: String,
     subrow: String,
     list_files: bool,
+    command: std::path::PathBuf,
+    folder: std::path::PathBuf,
     number_format: num_format::CustomFormat,
 }
 
-impl<W> Printer<W> {
+impl Printer {
     pub fn new(
         columns: usize,
         list_files: bool,
-        writer: W,
+        command: std::path::PathBuf,
+        folder: std::path::PathBuf,
         number_format: num_format::CustomFormat,
     ) -> Self {
         Self {
             columns,
             list_files,
+            command,
+            folder,
             path_length: columns - NO_LANG_ROW_LEN_NO_SPACES,
-            writer,
             row: "=".repeat(columns),
             subrow: "-".repeat(columns),
             number_format,
@@ -146,11 +150,11 @@ impl<W> Printer<W> {
     }
 }
 
-impl<W: Write> Printer<W> {
-    pub fn print_header(&mut self) -> io::Result<()> {
-        self.print_row()?;
+impl Printer {
+    pub fn print_header(&self, writer: &mut io::BufWriter<io::Stdout>) -> io::Result<()> {
+        self.print_row(writer)?;
         writeln!(
-            self.writer,
+            writer,
             " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
             "Language",
             "Files",
@@ -160,25 +164,23 @@ impl<W: Write> Printer<W> {
             "Blanks",
             self.columns - NO_LANG_HEADER_ROW_LEN
         )?;
-        self.print_row()
+        self.print_row(writer)
     }
 
-    pub fn print_inaccuracy_warning(&mut self) -> io::Result<()> {
+    pub fn print_inaccuracy_warning(&self, writer: &mut io::BufWriter<io::Stdout>) -> io::Result<()> {
         writeln!(
-            self.writer,
+            writer,
             "Note: results can be inaccurate for languages marked with '{}'",
             IDENT_INACCURATE
         )
     }
 
-    pub fn print_language(&mut self, language: &Language, name: &str) -> io::Result<()>
-    where
-        W: Write,
+    pub fn print_language(&self, writer: &mut io::BufWriter<io::Stdout>, language: &Language, name: &str) -> io::Result<()>
     {
-        self.print_language_name(language.inaccurate, name, None)?;
-        write!(self.writer, " ")?;
+        self.print_language_name(writer, language.inaccurate, name, None)?;
+        write!(writer, " ")?;
         writeln!(
-            self.writer,
+            writer,
             "{:>6} {:>12} {:>12} {:>12} {:>12}",
             language
                 .reports
@@ -192,7 +194,7 @@ impl<W: Write> Printer<W> {
     }
 
     pub fn print_language_name(
-        &mut self,
+        &self, writer: &mut io::BufWriter<io::Stdout>,
         inaccurate: bool,
         name: &str,
         prefix: Option<&str>,
@@ -204,28 +206,28 @@ impl<W: Write> Printer<W> {
         }
 
         if let Some(prefix) = prefix {
-            write!(self.writer, "{}", prefix)?;
+            write!(writer, "{}", prefix)?;
         }
         // truncate and replace the last char with a `|` if the name is too long
         if lang_section_len < name.len() {
-            write!(self.writer, " {:.len$}", name, len = lang_section_len - 1)?;
-            write!(self.writer, "|")?;
+            write!(writer, " {:.len$}", name, len = lang_section_len - 1)?;
+            write!(writer, "|")?;
         } else {
-            write!(self.writer, " {:<len$}", name, len = lang_section_len)?;
+            write!(writer, " {:<len$}", name, len = lang_section_len)?;
         }
         if inaccurate {
-            write!(self.writer, "{}", IDENT_INACCURATE)?;
+            write!(writer, "{}", IDENT_INACCURATE)?;
         };
 
         Ok(())
     }
 
     fn print_code_stats<'a, 'b>(
-        &mut self,
+        &self, writer: &mut io::BufWriter<io::Stdout>,
         language_type: LanguageType,
         stats: &[CodeStats],
     ) -> io::Result<()> {
-        self.print_language_name(false, &language_type.to_string(), Some(&(" |-")))?;
+        self.print_language_name(writer, false, &language_type.to_string(), Some(&(" |-")))?;
         let mut code = 0;
         let mut comments = 0;
         let mut blanks = 0;
@@ -238,7 +240,7 @@ impl<W: Write> Printer<W> {
 
         if !stats.is_empty() {
             writeln!(
-                self.writer,
+                writer,
                 " {:>6} {:>12} {:>12} {:>12} {:>12}",
                 stats.len().to_formatted_string(&self.number_format),
                 (code + comments + blanks).to_formatted_string(&self.number_format),
@@ -251,9 +253,9 @@ impl<W: Write> Printer<W> {
         }
     }
 
-    fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
+    fn print_language_total(&self, writer: &mut io::BufWriter<io::Stdout>, parent: &Language) -> io::Result<()> {
         for (language, reports) in &parent.children {
-            self.print_code_stats(
+            self.print_code_stats(writer,
                 *language,
                 &reports
                     .iter()
@@ -266,12 +268,27 @@ impl<W: Write> Printer<W> {
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
         subtotal.stats.blanks += summary.blanks;
-        self.print_report_with_name(&subtotal)?;
+        self.print_report_with_name(writer, &subtotal)?;
 
         Ok(())
     }
 
-    pub fn print_results<'a, I>(&mut self, languages: I) -> io::Result<()>
+    fn process_file<'a>(&'a self, name: &std::path::PathBuf, lang: &str) {
+       let filename = PathBuf::from(name);
+       let command = PathBuf::from(&self.command);
+       let folder = PathBuf::from(&self.folder);
+       if command.to_str().expect("has command").len() > 0 { // there exists a command
+           let _ = std::process::Command::new("/bin/sh")
+            .arg(&command)
+            .arg(&filename)
+            .arg(&lang)
+            .arg(&folder)
+            .output()
+            .expect(format!("{:?} failed to start command {:?} for {} at folder {:?}", &filename, &command, &lang, &folder).as_str());
+        }
+    }
+
+    pub fn print_results<'a, I>(&self, writer: &mut io::BufWriter<io::Stdout>, languages: I) -> io::Result<()>
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     {
@@ -286,16 +303,16 @@ impl<W: Write> Printer<W> {
                 if first {
                     first = false;
                 } else if has_children || self.list_files {
-                    self.print_subrow()?;
+                    self.print_subrow(writer)?;
                 }
 
-                self.print_language(language, name.name())?;
+                self.print_language(writer, language, name.name())?;
                 if has_children {
-                    self.print_language_total(language)?;
+                    self.print_language_total(writer, language)?;
                 }
 
                 if self.list_files {
-                    self.print_subrow()?;
+                    self.print_subrow(writer)?;
                     let (a, b): (Vec<_>, Vec<_>) = language
                         .reports
                         .iter()
@@ -305,11 +322,11 @@ impl<W: Write> Printer<W> {
                         for report in reports.iter() {
                             if !report.stats.blobs.is_empty() {
                                 if first && a.is_empty() {
-                                    writeln!(self.writer, " {}", report.name.display())?;
+                                    writeln!(writer, " {}", report.name.display())?;
                                     first = false;
                                 } else {
                                     writeln!(
-                                        self.writer,
+                                        writer,
                                         "-- {} {}",
                                         report.name.display(),
                                         "-".repeat(
@@ -322,42 +339,61 @@ impl<W: Write> Printer<W> {
                                 let mut new_report = (*report).clone();
                                 new_report.name = name.to_string().into();
                                 writeln!(
-                                    self.writer,
+                                    writer,
                                     " |-{:1$}",
                                     new_report,
                                     self.path_length - 3
                                 )?;
-                                self.print_report_total(&report, language.inaccurate)?;
+                                self.print_report_total(writer, &report, language.inaccurate)?;
                             } else {
-                                writeln!(self.writer, "{:1$}", report, self.path_length)?;
+                                writeln!(writer, "{:1$}", report, self.path_length)?;
                             }
                         }
                     }
                 }
             }
         }
-
+        // parallelise the processes for handling individual files
+        crossbeam_utils::thread::scope(|scope| {
+            for languages in &[&a, &b] {
+                for &(name, language) in *languages {
+                    if self.list_files {
+                        let (a, b): (Vec<_>, Vec<_>) = language
+                            .reports
+                            .iter()
+                            .partition(|r| r.stats.blobs.is_empty());
+                        scope.spawn(move |_| {
+                            for reports in &[&a, &b] {
+                                for report in reports.iter() {
+                                    self.process_file(&report.name, name.name());
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+	    }).unwrap();
         Ok(())
     }
 
-    fn print_row(&mut self) -> io::Result<()> {
-        writeln!(self.writer, "{}", self.row)
+    fn print_row(&self, writer: &mut io::BufWriter<io::Stdout>) -> io::Result<()> {
+        writeln!(writer, "{}", self.row)
     }
 
-    fn print_subrow(&mut self) -> io::Result<()> {
-        writeln!(self.writer, "{}", self.subrow)
+    fn print_subrow(&self, writer: &mut io::BufWriter<io::Stdout>) -> io::Result<()> {
+        writeln!(writer, "{}", self.subrow)
     }
 
     fn print_report(
-        &mut self,
+        &self, writer: &mut io::BufWriter<io::Stdout>,
         language_type: LanguageType,
         stats: &CodeStats,
         inaccurate: bool,
     ) -> io::Result<()> {
-        self.print_language_name(inaccurate, &language_type.to_string(), Some(" |-"))?;
+        self.print_language_name(writer, inaccurate, &language_type.to_string(), Some(" |-"))?;
 
         writeln!(
-            self.writer,
+            writer,
             " {:>6} {:>12} {:>12} {:>12} {:>12}",
             " ",
             stats.lines().to_formatted_string(&self.number_format),
@@ -367,7 +403,7 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    fn print_report_total(&mut self, report: &Report, inaccurate: bool) -> io::Result<()> {
+    fn print_report_total(&self, writer: &mut io::BufWriter<io::Stdout>, report: &Report, inaccurate: bool) -> io::Result<()> {
         if report.stats.blobs.is_empty() {
             return Ok(());
         }
@@ -378,40 +414,40 @@ impl<W: Write> Printer<W> {
         subtotal.stats.blanks += report.stats.blanks;
 
         for (language_type, stats) in &report.stats.blobs {
-            self.print_report(*language_type, stats, inaccurate)?;
+            self.print_report(writer, *language_type, stats, inaccurate)?;
             subtotal.stats += stats.summarise();
         }
 
-        self.print_report_with_name(&report)?;
+        self.print_report_with_name(writer, &report)?;
 
         Ok(())
     }
 
-    fn print_report_with_name(&mut self, report: &Report) -> io::Result<()> {
+    fn print_report_with_name(&self, writer: &mut io::BufWriter<io::Stdout>, report: &Report) -> io::Result<()> {
         let name = report.name.to_string_lossy();
         let name_length = name.len();
 
         if name_length <= self.path_length {
-            self.print_report_total_formatted(name, self.path_length, report)?;
+            self.print_report_total_formatted(writer, name, self.path_length, report)?;
         } else {
             let mut formatted = String::from("|");
             // Add 1 to the index to account for the '|' we add to the output string
             let from = find_char_boundary(&name, name_length + 1 - self.path_length);
             formatted.push_str(&name[from..]);
-            self.print_report_total_formatted(name, self.path_length, report)?;
+            self.print_report_total_formatted(writer, name, self.path_length, report)?;
         }
 
         Ok(())
     }
 
     fn print_report_total_formatted(
-        &mut self,
+        &self, writer: &mut io::BufWriter<io::Stdout>,
         name: std::borrow::Cow<'_, str>,
         max_len: usize,
         report: &Report,
     ) -> io::Result<()> {
         writeln!(
-            self.writer,
+            writer,
             " {: <max$} {:>12} {:>12} {:>12} {:>12}",
             name,
             report
@@ -428,10 +464,10 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_total(&mut self, languages: tokei::Languages) -> io::Result<()> {
+    pub fn print_total(&self, writer: &mut io::BufWriter<io::Stdout>, languages: tokei::Languages) -> io::Result<()> {
         let total = languages.total();
-        self.print_row()?;
-        self.print_language(&total, "Total")?;
-        self.print_row()
+        self.print_row(writer)?;
+        self.print_language(writer, &total, "Total")?;
+        self.print_row(writer)
     }
 }

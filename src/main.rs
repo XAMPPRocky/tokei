@@ -13,6 +13,7 @@ use crate::{cli::Cli, cli_utils::*, input::*};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut cli = Cli::from_args();
+    let mut writer = io::BufWriter::new(io::stdout());
 
     if cli.print_languages {
         Cli::print_supported_languages();
@@ -58,18 +59,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         process::exit(0);
     }
 
-    let mut printer = Printer::new(
+    let printer = Printer::new(
         columns,
         cli.files,
-        io::BufWriter::new(io::stdout()),
+        cli.command,
+        cli.folder,
         cli.number_format,
     );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
-        printer.print_inaccuracy_warning()?;
+        printer.print_inaccuracy_warning(&mut writer)?;
     }
 
-    printer.print_header()?;
+    printer.print_header(&mut writer)?;
 
     if let Some(sort_category) = cli.sort.or(config.sort) {
         for (_, ref mut language) in &mut languages {
@@ -86,12 +88,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
 
-        printer.print_results(languages.into_iter())?
+        printer.print_results(&mut writer, languages.into_iter())?
     } else {
-        printer.print_results(languages.iter())?
+        printer.print_results(&mut writer, languages.iter())?
     }
 
-    printer.print_total(languages)?;
+    printer.print_total(&mut writer, languages)?;
 
     Ok(())
 }
