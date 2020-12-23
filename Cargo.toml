@@ -37,7 +37,7 @@ encoding_rs_io = "0.1.7"
 grep-searcher = "0.1.7"
 ignore = "0.4.16"
 log = "0.4.11"
-rayon = "1.4.1"
+rayon = "1.5.0"
 serde = { version = "1.0.118", features = ["derive", "rc"] }
 term_size = "0.3.2"
 toml = "0.5.8"
