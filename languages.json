@@ -935,6 +935,15 @@
       "line_comment": ["//"],
       "extensions": ["proto"]
     },
+    "Pug" : {
+      "line_comment": ["//", "//-"],
+      "quotes": [
+        ["#{\\\"", "\\\"}"],
+        ["#{'", "'}"],
+        ["#{`", "`}"]
+      ],
+      "extensions": ["pug"]
+    },
     "PureScript": {
       "nested": true,
       "line_comment": ["--"],
