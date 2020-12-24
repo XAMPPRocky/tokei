@@ -1219,6 +1219,7 @@ dependencies = [
  "aho-corasick",
  "clap",
  "crossbeam-channel",
+ "crossbeam-utils 0.8.0",
  "dashmap",
  "dirs",
  "encoding_rs_io",

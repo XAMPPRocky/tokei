@@ -278,7 +278,7 @@ impl Printer {
        let command = PathBuf::from(&self.command);
        let folder = PathBuf::from(&self.folder);
        if command.to_str().expect("has command").len() > 0 { // there exists a command
-           let _ = std::process::Command::new("/bin/sh")
+           let _ = std::process::Command::new("/bin/bash")
             .arg(&command)
             .arg(&filename)
             .arg(&lang)
