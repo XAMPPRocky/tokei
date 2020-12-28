@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # FIXME: Hack around thinLTO being broken.
-      - run: echo "::set-env name=RUSTFLAGS::-Clto=fat"
+      - run: echo "RUSTFLAGS=-Clto=fat" >> $GITHUB_ENV
       - run: bash ci/set_rust_version.bash stable ${{ matrix.target }}
       - run: bash ci/build.bash cargo ${{ matrix.target }} RELEASE
         # We're using using a fork of `actions/create-release` that detects
@@ -120,6 +120,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: install-cross
     strategy:
+      fail-fast: false
       matrix:
         target:
           # WASM, off by default as most rust projects aren't compatible yet.
