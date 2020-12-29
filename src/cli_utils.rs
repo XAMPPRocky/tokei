@@ -191,6 +191,28 @@ impl<W: Write> Printer<W> {
         )
     }
 
+    fn print_language_in_print_total(&mut self, language: &Language) -> io::Result<()>
+    where
+        W: Write,
+    {
+        self.print_language_name(language.inaccurate, "Total", None)?;
+        write!(self.writer, " ")?;
+        writeln!(
+            self.writer,
+            "{:>6} {:>12} {:>12} {:>12} {:>12}",
+            language
+                .children
+                .values()
+                .map(Vec::len)
+                .sum::<usize>()
+                .to_formatted_string(&self.number_format),
+            language.lines().to_formatted_string(&self.number_format),
+            language.code.to_formatted_string(&self.number_format),
+            language.comments.to_formatted_string(&self.number_format),
+            language.blanks.to_formatted_string(&self.number_format),
+        )
+    }
+
     pub fn print_language_name(
         &mut self,
         inaccurate: bool,
@@ -431,7 +453,7 @@ impl<W: Write> Printer<W> {
     pub fn print_total(&mut self, languages: tokei::Languages) -> io::Result<()> {
         let total = languages.total();
         self.print_row()?;
-        self.print_language(&total, "Total")?;
+        self.print_language_in_print_total(&total)?;
         self.print_row()
     }
 }
