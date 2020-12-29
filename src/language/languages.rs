@@ -106,6 +106,7 @@ impl Languages {
             total.code += language.code;
             total.inaccurate |= language.inaccurate;
             total.children.insert(*ty, language.reports.clone());
+            total.reports.extend(language.summarise().reports);
         }
         total
     }
