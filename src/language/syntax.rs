@@ -316,6 +316,7 @@ impl SyntaxCounter {
         };
 
         // `Some(true)` in order to respect the current configuration.
+        #[allow(clippy::if_same_then_else)]
         if self.quote.is_some() {
             if self.quote_is_doc_quote && config.treat_doc_strings_as_comments == Some(true) {
                 self.quote.map_or(false, |q| line.starts_with(q.as_bytes()))
@@ -335,10 +336,8 @@ impl SyntaxCounter {
             true
         } else if started_in_comments {
             true
-        } else if (starts_with_comment)() {
-            true
         } else {
-            false
+            (starts_with_comment)()
         }
     }
 
@@ -437,6 +436,7 @@ impl SyntaxCounter {
                     doc_block,
                 ))
             }
+            #[allow(clippy::trivial_regex)]
             LanguageType::Html
             | LanguageType::RubyHtml
             | LanguageType::Svelte

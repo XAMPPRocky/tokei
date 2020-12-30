@@ -97,6 +97,7 @@ impl Config {
             .and_then(Self::get_config)
             .unwrap_or_else(Self::default);
 
+        #[allow(clippy::or_fun_call)]
         Config {
             columns: current_dir
                 .columns

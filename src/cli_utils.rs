@@ -242,7 +242,7 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    fn print_code_stats<'a, 'b>(
+    fn print_code_stats(
         &mut self,
         language_type: LanguageType,
         stats: &[CodeStats],
@@ -283,7 +283,7 @@ impl<W: Write> Printer<W> {
                     .collect::<Vec<_>>(),
             )?;
         }
-        let mut subtotal = tokei::Report::new(format!("(Total)").into());
+        let mut subtotal = tokei::Report::new("(Total)".into());
         let summary = parent.summarise();
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
@@ -394,7 +394,7 @@ impl<W: Write> Printer<W> {
             return Ok(());
         }
 
-        let mut subtotal = tokei::Report::new(format!("|- (Total)").into());
+        let mut subtotal = tokei::Report::new("|- (Total)".into());
         subtotal.stats.code += report.stats.code;
         subtotal.stats.comments += report.stats.comments;
         subtotal.stats.blanks += report.stats.blanks;
