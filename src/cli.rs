@@ -20,6 +20,7 @@ pub struct Cli<'a> {
     pub print_languages: bool,
     pub sort: Option<Sort>,
     pub types: Option<Vec<LanguageType>>,
+    pub compact: bool,
     pub number_format: num_format::CustomFormat,
     pub verbose: u64,
 }
@@ -83,6 +84,8 @@ impl<'a> Cli<'a> {
             (@arg types: -t --type
                 +takes_value
                 "Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown")
+            (@arg compact: -C --compact
+                "Do not print statistics about embedded languages.")
             (@arg num_format_style: -n --("num-format")
                 possible_values(NumberFormatStyle::all())
                 conflicts_with[output]
@@ -106,6 +109,7 @@ impl<'a> Cli<'a> {
         let no_ignore_vcs = matches.is_present("no_ignore_vcs");
         let print_languages = matches.is_present("languages");
         let verbose = matches.occurrences_of("verbose");
+        let compact = matches.is_present("compact");
         let types = matches.value_of("types").map(|e| {
             e.split(',')
                 .map(|t| t.parse::<LanguageType>())
@@ -151,6 +155,7 @@ impl<'a> Cli<'a> {
             types,
             verbose,
             number_format,
+            compact,
         };
 
         debug!("CLI Config: {:#?}", cli);

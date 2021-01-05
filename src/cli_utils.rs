@@ -293,18 +293,18 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    pub fn print_results<'a, I>(&mut self, languages: I) -> io::Result<()>
+    pub fn print_results<'a, I>(&mut self, languages: I, compact: bool) -> io::Result<()>
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     {
         let (a, b): (Vec<_>, Vec<_>) = languages
             .filter(|(_, v)| !v.is_empty())
-            .partition(|(_, l)| l.children.is_empty());
+            .partition(|(_, l)| compact || l.children.is_empty());
         let mut first = true;
 
         for languages in &[&a, &b] {
             for &(name, language) in *languages {
-                let has_children = !language.children.is_empty();
+                let has_children = !(compact || language.children.is_empty());
                 if first {
                     first = false;
                 } else if has_children || self.list_files {
