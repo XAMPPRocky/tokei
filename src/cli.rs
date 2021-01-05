@@ -17,6 +17,7 @@ pub struct Cli<'a> {
     pub no_ignore_dot: bool,
     pub no_ignore_vcs: bool,
     pub output: Option<Format>,
+    pub streaming: bool,
     pub print_languages: bool,
     pub sort: Option<Sort>,
     pub types: Option<Vec<LanguageType>>,
@@ -75,6 +76,8 @@ impl<'a> Cli<'a> {
                 +takes_value
                 "Outputs Tokei in a specific format. Compile with additional features for more \
                 format support.")
+            (@arg streaming: --streaming
+                "Prints out the (filename, language) pairs for future batch processing")
             (@arg sort: -s --sort
                 possible_values(&["files", "lines", "blanks", "code", "comments"])
                 case_insensitive(true)
@@ -133,6 +136,7 @@ impl<'a> Cli<'a> {
         // is supported) but this will fail if support is not compiled in and
         // give a useful error to the user.
         let output = matches.value_of("output").map(parse_or_exit::<Format>);
+        let streaming = matches.is_present("streaming");
 
         crate::cli_utils::setup_logger(verbose);
 
@@ -146,6 +150,7 @@ impl<'a> Cli<'a> {
             no_ignore_dot,
             no_ignore_vcs,
             output,
+            streaming,
             print_languages,
             sort,
             types,
@@ -222,6 +227,12 @@ impl<'a> Cli<'a> {
             Some(true)
         } else {
             config.no_ignore_vcs
+        };
+
+        config.streaming = if self.streaming {
+            Some(true)
+        } else {
+            config.streaming
         };
 
         config.types = mem::replace(&mut self.types, None).or(config.types);
