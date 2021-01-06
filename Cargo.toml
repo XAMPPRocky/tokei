@@ -11,7 +11,7 @@ license = "MIT/Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/XAMPPRocky/tokei.git"
-version = "12.0.4"
+version = "12.1.0"
 
 [features]
 all = ["cbor", "yaml"]
@@ -25,18 +25,18 @@ panic = "abort"
 
 [build-dependencies]
 tera = "1.6.0"
-ignore = "0.4.16"
+ignore = "0.4.17"
 serde_json = "1.0.60"
 
 [dependencies]
-aho-corasick = "0.7.14"
+aho-corasick = "0.7.15"
 clap = "2.33.3"
 crossbeam-channel = "0.5.0"
 crossbeam-utils = "0.8.0"
 dirs = "3.0.1"
 encoding_rs_io = "0.1.7"
 grep-searcher = "0.1.7"
-ignore = "0.4.16"
+ignore = "0.4.17"
 log = "0.4.11"
 rayon = "1.5.0"
 serde = { version = "1.0.118", features = ["derive", "rc"] }
@@ -63,7 +63,7 @@ version = "0.11.1"
 
 [dependencies.serde_yaml]
 optional = true
-version = "0.8.12"
+version = "0.8.14"
 
 [dev-dependencies]
 regex = "1.4.2"

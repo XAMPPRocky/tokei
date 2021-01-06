@@ -100,8 +100,12 @@ impl Languages {
     /// Summary of the Languages struct.
     pub fn total(self: &Languages) -> Language {
         let mut total = Language::new();
-        for (_, language) in self {
-            total += language.summarise();
+        for (ty, language) in self {
+            total.comments += language.comments;
+            total.blanks += language.blanks;
+            total.code += language.code;
+            total.inaccurate |= language.inaccurate;
+            total.children.insert(*ty, language.reports.clone());
         }
         total
     }

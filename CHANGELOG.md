@@ -1,4 +1,4 @@
-# 12.0.0
+# 12.1.0
 
 ## Introduction
 Tokei is a fast and accurate code analysis CLI tool and library, allowing you to
@@ -18,6 +18,33 @@ cargo install tokei
 [pkg]: https://github.com/XAMPPRocky/tokei#package-managers
 [rs-info]: https://github.com/XAMPPRocky/tokei/blob/master/README.md#Badges
 [sponsor]: https://github.com/sponsors/XAMPPRocky
+
+## What's New?
+
+- [Added `-n/--num-format=[commas, dots, plain, underscores]` for adding
+  separator formatting for numbers.](https://github.com/XAMPPRocky/tokei/pull/591)
+- [The total is now included in output formats such as JSON.](https://github.com/XAMPPRocky/tokei/pull/580)
+- [`--no-ignore` now implies other ignore flags.](https://github.com/XAMPPRocky/tokei/pull/588)
+- [Added `--no-ignore-dot` flag to ignore files such as `.ignore`.](https://github.com/XAMPPRocky/tokei/pull/588)
+- [Added single line comments to F\*](https://github.com/XAMPPRocky/tokei/pull/670)
+- Updated various dependencies.
+
+### Added Languages
+
+- [ABNF](https://github.com/XAMPPRocky/tokei/pull/577)
+- [CodeQL](https://github.com/XAMPPRocky/tokei/pull/604)
+- [LiveScript](https://github.com/XAMPPRocky/tokei/pull/607)
+- [Stylus](https://github.com/XAMPPRocky/tokei/pull/619)
+- [DAML](https://github.com/XAMPPRocky/tokei/pull/620)
+- [Tera](https://github.com/XAMPPRocky/tokei/pull/627)
+- [TTCN-3](https://github.com/XAMPPRocky/tokei/pull/621)
+- [Beancount](https://github.com/XAMPPRocky/tokei/pull/630)
+- [Gleam](https://github.com/XAMPPRocky/tokei/pull/646)
+- [JSONNet](https://github.com/XAMPPRocky/tokei/pull/634)
+- [Stan](https://github.com/XAMPPRocky/tokei/pull/633)
+- [Gwion](https://github.com/XAMPPRocky/tokei/pull/659)
+
+# 12.0.0
 
 ## What's New? 
 Tokei 12 comes with some of the biggest user facing changes since 1.0, now in

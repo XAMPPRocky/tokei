@@ -46,6 +46,9 @@ pub struct Config {
     pub types: Option<Vec<LanguageType>>,
     // /// A map of individual language configuration.
     // pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
+    /// Whether to output only the paths for downstream batch processing 
+    /// *Default:* false
+    pub streaming: Option<bool>,
 }
 
 impl Config {
@@ -107,6 +110,7 @@ impl Config {
                 .or(conf_dir.treat_doc_strings_as_comments)),
             sort: current_dir.sort.or(home_dir.sort.or(conf_dir.sort)),
             types: current_dir.types.or(home_dir.types.or(conf_dir.types)),
+            streaming: current_dir.streaming.or(home_dir.streaming.or(conf_dir.streaming)),
             no_ignore: current_dir
                 .no_ignore
                 .or(home_dir.no_ignore.or(conf_dir.no_ignore)),

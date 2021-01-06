@@ -21,6 +21,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let config = cli.override_config(Config::from_config_files());
+ 
     let mut languages = Languages::new();
 
     if let Some(input) = cli.file_input() {
@@ -52,7 +53,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap_or(FALLBACK_ROW_LEN)
         .max(FALLBACK_ROW_LEN);
 
-    languages.get_statistics(&input, &cli.ignored_directories(), &config);
+   languages.get_statistics(&input, &cli.ignored_directories(), &config);
+
+   if config.streaming.unwrap_or_default() {
+        process::exit(0);
+   }
 
     if let Some(format) = cli.output {
         print!("{}", format.print(&languages).unwrap());

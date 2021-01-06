@@ -89,6 +89,7 @@ macro_rules! supported_formats {
                 for (language_type, language) in languages.into_iter() {
                     map.insert(language_type.to_string(), json!(language));
                 }
+
                 map.insert(String::from("Total"), json!(languages.total()));
 
                 match *self {
