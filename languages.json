@@ -818,7 +818,7 @@
     "OCaml": {
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["ml", "mli", "re", "rei"]
+      "extensions": ["ml", "mli", "mll", "mly", "re", "rei"]
     },
     "Odin": {
       "extensions": ["odin"],
