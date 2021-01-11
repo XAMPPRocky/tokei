@@ -40,6 +40,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "AsciiDoc": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["////", "////"]],
+      "extensions": ["adoc", "asciidoc"]
+    },
     "Asn1": {
       "name": "ASN.1",
       "line_comment": ["--"],
