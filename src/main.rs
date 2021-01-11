@@ -54,7 +54,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
    languages.get_statistics(&input, &cli.ignored_directories(), &config);
 
-   if config.streaming.unwrap_or_default() {
+   if config.for_each_fn.is_some() {
         process::exit(0);
    }
 
