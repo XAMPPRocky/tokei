@@ -232,7 +232,7 @@ impl<'a> Cli<'a> {
         config.for_each_fn = if self.streaming {
             Some(|l: LanguageType, e| println!("{} {}", e, l.name()))
         } else {
-            Some(|_l: LanguageType, _e| () )
+            None
         };
 
         config.types = mem::replace(&mut self.types, None).or(config.types);
