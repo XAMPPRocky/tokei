@@ -84,11 +84,11 @@ impl Config {
     // /// extensions = ["py3"]
     /// ```
     pub fn from_config_files() -> Self {
-        let conf_dir = dirs::config_dir()
+        let conf_dir = dirs_next::config_dir()
             .and_then(Self::get_config)
             .unwrap_or_else(Self::default);
 
-        let home_dir = dirs::home_dir()
+        let home_dir = dirs_next::home_dir()
             .and_then(Self::get_config)
             .unwrap_or_else(Self::default);
 
