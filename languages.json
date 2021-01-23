@@ -467,6 +467,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["gleam"]
     },
+    "Gml": {
+      "name": "Gml",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["gml"]
+    },
     "Glsl": {
       "name": "GLSL",
       "line_comment": ["//"],
