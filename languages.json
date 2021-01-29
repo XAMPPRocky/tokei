@@ -697,6 +697,13 @@
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["kt", "kts"]
     },
+    "KvLanguage": {
+      "name":"KV Language",
+      "line_comment": ["# "],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["kv"]
+    },
     "Lean": {
       "line_comment": ["--"],
       "multi_line_comments": [["/-", "-/"]],

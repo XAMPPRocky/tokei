@@ -1,0 +1,22 @@
+# 22 lines 17 code 3 comments 2 blanks
+
+
+#:kivy 2.0.0
+#:import C kivy.utils.get_color_from_hex
+#:import KeypadButton keypadbutton
+#:include keypadbutton.kv
+#:set name value
+<DynamicWidgetClass>:
+    color: C('#27272A')
+# general comment
+<Keypad@GridLayout>:
+    width: self.minimum_width
+    height: self.minimum_height
+    size_hint: None, None
+    cols: 3
+    spacing: 6
+    KeypadButton:
+        text: '1'
+        disabled: root.disabled
+        on_press: root.dispatch('on_key_pressed', self.key_val)
+    # a final comment
