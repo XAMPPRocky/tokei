@@ -62,7 +62,7 @@ version = "0.11.1"
 
 [dependencies.serde_yaml]
 optional = true
-version = "0.8.15"
+version = "0.8.16"
 
 [dev-dependencies]
 regex = "1.4.3"
