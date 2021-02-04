@@ -168,38 +168,38 @@ impl SyntaxCounter {
 
     /// Try to see if we can determine what a line is from examining the whole
     /// line at once. Returns `true` if successful.
-    pub(crate) fn can_perform_single_line_analysis(
+    pub(crate) fn try_perform_single_line_analysis(
         &self,
         line: &[u8],
         stats: &mut crate::stats::CodeStats,
     ) -> bool {
-        if self.is_plain_mode() {
-            if line.trim().is_empty() {
-                stats.blanks += 1;
-                trace!("Blank No.{}", stats.blanks);
-                return true;
-            } else if !self.shared.important_syntax.is_match(line) {
-                trace!("^ Skippable");
+        if !self.is_plain_mode() {
+            false
+        } else if line.trim().is_empty() {
+            stats.blanks += 1;
+            trace!("Blank No.{}", stats.blanks);
+            true
+        } else if !self.shared.important_syntax.is_match(line) {
+            trace!("^ Skippable");
 
-                if self.shared.is_literate
-                    || self
-                        .shared
-                        .line_comments
-                        .iter()
-                        .any(|c| line.starts_with(c.as_bytes()))
-                {
-                    stats.comments += 1;
-                    trace!("Comment No.{}", stats.comments);
-                } else {
-                    stats.code += 1;
-                    trace!("Code No.{}", stats.code);
-                }
-
-                return true;
+            if self.shared.is_literate
+                || self
+                    .shared
+                    .line_comments
+                    .iter()
+                    .any(|c| line.starts_with(c.as_bytes()))
+            {
+                stats.comments += 1;
+                trace!("Comment No.{}", stats.comments);
+            } else {
+                stats.code += 1;
+                trace!("Code No.{}", stats.code);
             }
-        }
 
-        false
+            true
+        } else {
+            false
+        }
     }
 
     pub(crate) fn perform_multi_line_analysis(

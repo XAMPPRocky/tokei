@@ -142,7 +142,7 @@ impl LanguageType {
             };
             trace!("{}", String::from_utf8_lossy(line));
 
-            if syntax.can_perform_single_line_analysis(line, &mut stats) {
+            if syntax.try_perform_single_line_analysis(line, &mut stats) {
                 continue;
             }
 
