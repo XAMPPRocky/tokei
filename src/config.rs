@@ -48,7 +48,9 @@ pub struct Config {
     // pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
     /// Whether to output only the paths for downstream batch processing 
     /// *Default:* false
-    pub streaming: Option<bool>,
+    #[serde(skip)]
+    /// adds a closure for each function, e.g., print the result
+    pub for_each_fn: Option<fn (LanguageType, String)>,
 }
 
 impl Config {
@@ -110,7 +112,7 @@ impl Config {
                 .or(conf_dir.treat_doc_strings_as_comments)),
             sort: current_dir.sort.or(home_dir.sort.or(conf_dir.sort)),
             types: current_dir.types.or(home_dir.types.or(conf_dir.types)),
-            streaming: current_dir.streaming.or(home_dir.streaming.or(conf_dir.streaming)),
+            for_each_fn: current_dir.for_each_fn.or(home_dir.for_each_fn.or(conf_dir.for_each_fn)),
             no_ignore: current_dir
                 .no_ignore
                 .or(home_dir.no_ignore.or(conf_dir.no_ignore)),

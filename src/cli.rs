@@ -249,10 +249,10 @@ impl<'a> Cli<'a> {
             config.no_ignore_vcs
         };
 
-        config.streaming = if self.streaming {
-            Some(true)
+        config.for_each_fn = if self.streaming {
+            Some(|l: LanguageType, e| println!("{} {}", e, l.name()))
         } else {
-            config.streaming
+            None
         };
 
         config.types = mem::replace(&mut self.types, None).or(config.types);
