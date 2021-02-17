@@ -5,6 +5,7 @@
 #[derive(Deserialize, Serialize)]
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[non_exhaustive]
+#[allow(clippy::upper_case_acronyms)]
 pub enum LanguageType {
     {% for key, _ in languages -%}
         #[allow(missing_docs)] {{key}},

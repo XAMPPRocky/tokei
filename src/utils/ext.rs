@@ -1,22 +1,22 @@
 //! Various extensions to Rust std types.
 
 pub(crate) trait AsciiExt {
-    fn is_whitespace(self) -> bool;
-    fn is_not_line_ending_whitespace(self) -> bool;
-    fn is_line_ending_whitespace(self) -> bool;
+    fn is_whitespace(&self) -> bool;
+    fn is_not_line_ending_whitespace(&self) -> bool;
+    fn is_line_ending_whitespace(&self) -> bool;
 }
 
 impl AsciiExt for u8 {
-    fn is_whitespace(self) -> bool {
-        self == b' ' || (b'\x09'..=b'\x0d').contains(&self)
+    fn is_whitespace(&self) -> bool {
+        *self == b' ' || (b'\x09'..=b'\x0d').contains(&self)
     }
 
-    fn is_not_line_ending_whitespace(self) -> bool {
+    fn is_not_line_ending_whitespace(&self) -> bool {
         self.is_whitespace() && !self.is_line_ending_whitespace()
     }
 
-    fn is_line_ending_whitespace(self) -> bool {
-        self == b'\n'
+    fn is_line_ending_whitespace(&self) -> bool {
+        *self == b'\n'
     }
 }
 

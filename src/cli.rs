@@ -141,10 +141,10 @@ impl<'a> Cli<'a> {
         crate::cli_utils::setup_logger(verbose);
 
         let cli = Cli {
+            matches,
             columns,
             files,
             hidden,
-            matches,
             no_ignore,
             no_ignore_parent,
             no_ignore_dot,
@@ -153,9 +153,9 @@ impl<'a> Cli<'a> {
             print_languages,
             sort,
             types,
-            verbose,
-            number_format,
             compact,
+            number_format,
+            verbose,
         };
 
         debug!("CLI Config: {:#?}", cli);
