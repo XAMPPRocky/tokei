@@ -6,6 +6,30 @@ use tokei::{Config, LanguageType, Sort};
 
 use crate::{cli_utils::*, input::Format};
 
+/// Used for sorting languages.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum Streaming {
+    /// simple lines.
+    Simple,
+    /// Json outputs.
+    Json,
+    /// Ignore
+    None,
+}
+
+impl std::str::FromStr for Streaming {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s.to_lowercase().as_ref() {
+            "simple" => Streaming::Simple,
+            "json" => Streaming::Json,
+            "none" => Streaming::None,
+            s => return Err(format!("Unsupported streaming option: {}", s)),
+        })
+    }
+}
+
 #[derive(Debug)]
 pub struct Cli<'a> {
     matches: ArgMatches<'a>,
@@ -17,7 +41,7 @@ pub struct Cli<'a> {
     pub no_ignore_dot: bool,
     pub no_ignore_vcs: bool,
     pub output: Option<Format>,
-    pub streaming: bool,
+    pub streaming: Option<Streaming>,
     pub print_languages: bool,
     pub sort: Option<Sort>,
     pub types: Option<Vec<LanguageType>>,
@@ -85,7 +109,10 @@ impl<'a> Cli<'a> {
                 "Outputs Tokei in a specific format. Compile with additional features for more \
                 format support.")
             (@arg streaming: --streaming
-                "Prints out the (filename, language) pairs for future batch processing")
+                possible_values(&["simple", "json", "none"])
+                case_insensitive(true)
+                +takes_value
+                "If not none (default), prints the (filename, language) pairs as simple lines or as Json for batch processing")
             (@arg sort: -s --sort
                 possible_values(&["files", "lines", "blanks", "code", "comments"])
                 case_insensitive(true)
@@ -154,7 +181,7 @@ impl<'a> Cli<'a> {
         // is supported) but this will fail if support is not compiled in and
         // give a useful error to the user.
         let output = matches.value_of("output").map(parse_or_exit::<Format>);
-        let streaming = matches.is_present("streaming");
+        let streaming = matches.value_of("streaming").map(parse_or_exit::<Streaming>);
 
         crate::cli_utils::setup_logger(verbose);
 
@@ -249,10 +276,11 @@ impl<'a> Cli<'a> {
             config.no_ignore_vcs
         };
 
-        config.for_each_fn = if self.streaming {
-            Some(|l: LanguageType, e| println!("{} {}", e, l.name()))
-        } else {
-            None
+        config.for_each_fn = match self.streaming {
+            Some(Streaming::Json) => Some(|l: LanguageType, e| println!("{{ path: '{}', language: '{}' }},", e, l.name())),
+            Some(Streaming::Simple) => Some(|l: LanguageType, e| println!("{} {}", e, l.name())),
+            Some(Streaming::None) => None,
+            _ => None,
         };
 
         config.types = mem::replace(&mut self.types, None).or(config.types);
