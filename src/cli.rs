@@ -45,10 +45,9 @@ pub struct Cli<'a> {
     pub print_languages: bool,
     pub sort: Option<Sort>,
     pub types: Option<Vec<LanguageType>>,
+    pub compact: bool,
     pub number_format: num_format::CustomFormat,
     pub verbose: u64,
-    pub command: std::path::PathBuf,
-    pub folder: std::path::PathBuf,
 }
 
 impl<'a> Cli<'a> {
@@ -73,12 +72,6 @@ impl<'a> Cli<'a> {
                 "Ignore all files & directories matching the pattern.")
             (@arg files: -f --files
                 "Will print out statistics on individual files.")
-            (@arg cmd: --cmd 
-                +takes_value
-                "Will call the specified shell command to process input files on their language.")
-            (@arg folder: --folder 
-                +takes_value
-                "Will generate output files into the target folder.")
             (@arg file_input: -i --input
                 +takes_value
                 "Gives statistics from a previous tokei run. Can be given a file path, \
@@ -121,6 +114,8 @@ impl<'a> Cli<'a> {
             (@arg types: -t --type
                 +takes_value
                 "Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown")
+            (@arg compact: -C --compact
+                "Do not print statistics about embedded languages.")
             (@arg num_format_style: -n --("num-format")
                 possible_values(NumberFormatStyle::all())
                 conflicts_with[output]
@@ -144,6 +139,7 @@ impl<'a> Cli<'a> {
         let no_ignore_vcs = matches.is_present("no_ignore_vcs");
         let print_languages = matches.is_present("languages");
         let verbose = matches.occurrences_of("verbose");
+        let compact = matches.is_present("compact");
         let types = matches.value_of("types").map(|e| {
             e.split(',')
                 .map(|t| t.parse::<LanguageType>())
@@ -154,16 +150,6 @@ impl<'a> Cli<'a> {
         let num_format_style: NumberFormatStyle = matches
             .value_of("num_format_style")
             .map(parse_or_exit::<NumberFormatStyle>)
-            .unwrap_or_default();
-
-        let command = matches
-            .value_of("cmd")
-            .map(parse_or_exit::<std::path::PathBuf>)
-            .unwrap_or_default();
-
-        let folder = matches
-            .value_of("folder")
-            .map(parse_or_exit::<std::path::PathBuf>)
             .unwrap_or_default();
 
         let number_format = match num_format_style.get_format() {
@@ -201,8 +187,7 @@ impl<'a> Cli<'a> {
             types,
             verbose,
             number_format,
-            command,
-            folder,
+            compact,
         };
 
         debug!("CLI Config: {:#?}", cli);

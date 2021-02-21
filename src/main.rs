@@ -13,7 +13,6 @@ use crate::{cli::Cli, cli_utils::*, input::*};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut cli = Cli::from_args();
-    let mut writer = io::BufWriter::new(io::stdout());
 
     if cli.print_languages {
         Cli::print_supported_languages();
@@ -21,7 +20,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     let config = cli.override_config(Config::from_config_files());
- 
     let mut languages = Languages::new();
 
     if let Some(input) = cli.file_input() {
@@ -53,30 +51,28 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap_or(FALLBACK_ROW_LEN)
         .max(FALLBACK_ROW_LEN);
 
-   languages.get_statistics(&input, &cli.ignored_directories(), &config);
-
-   if config.for_each_fn.is_some() {
+    languages.get_statistics(&input, &cli.ignored_directories(), &config);
+    if config.for_each_fn.is_some() {
         process::exit(0);
-   }
+    }
 
     if let Some(format) = cli.output {
         print!("{}", format.print(&languages).unwrap());
         process::exit(0);
     }
 
-    let printer = Printer::new(
+    let mut printer = Printer::new(
         columns,
         cli.files,
-        cli.command,
-        cli.folder,
+        io::BufWriter::new(io::stdout()),
         cli.number_format,
     );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
-        printer.print_inaccuracy_warning(&mut writer)?;
+        printer.print_inaccuracy_warning()?;
     }
 
-    printer.print_header(&mut writer)?;
+    printer.print_header()?;
 
     if let Some(sort_category) = cli.sort.or(config.sort) {
         for (_, ref mut language) in &mut languages {
@@ -93,12 +89,12 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
 
-        printer.print_results(&mut writer, languages.into_iter())?
+        printer.print_results(languages.into_iter(), cli.compact)?
     } else {
-        printer.print_results(&mut writer, languages.iter())?
+        printer.print_results(languages.iter(), cli.compact)?
     }
 
-    printer.print_total(&mut writer, languages)?;
+    printer.print_total(languages)?;
 
     Ok(())
 }
