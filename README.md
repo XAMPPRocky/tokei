@@ -66,7 +66,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei has huge range of languages, supporting over **150** languages, and
   their various extensions.
 
-- Tokei can output in multiple formats(**CBOR**, **JSON**, **TOML**, **YAML**)
+- Tokei can output in multiple formats(**CBOR**, **JSON**, **YAML**)
   allowing Tokei's output to be easily stored, and reused. These can also be
   reused in tokei combining a previous run's statistics with another set.
 
@@ -94,6 +94,8 @@ conda install -c conda-forge tokei
 sudo dnf install tokei
 # FreeBSD
 pkg install tokei
+# NetBSD
+pkgin install tokei
 # Nix/NixOS
 nix-env -i tokei
 # OpenSUSE

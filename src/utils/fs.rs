@@ -108,7 +108,7 @@ pub fn get_all_files<A: AsRef<Path>>(
             }
     };
 
-    if let Some(types) = config.types.as_ref().map(|v| &**v) {
+    if let Some(types) = config.types.as_deref() {
         rx_iter.filter(|(_, l)| types.contains(l)).for_each(process)
     } else {
         rx_iter.for_each(process)

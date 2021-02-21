@@ -40,6 +40,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "AsciiDoc": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["////", "////"]],
+      "extensions": ["adoc", "asciidoc"]
+    },
     "Asn1": {
       "name": "ASN.1",
       "line_comment": ["--"],
@@ -462,6 +467,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["gleam"]
     },
+    "Gml": {
+      "name": "Gml",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["gml"]
+    },
     "Glsl": {
       "name": "GLSL",
       "line_comment": ["//"],
@@ -685,6 +697,13 @@
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["kt", "kts"]
     },
+    "KvLanguage": {
+      "name":"KV Language",
+      "line_comment": ["# "],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["kv"]
+    },
     "Lean": {
       "line_comment": ["--"],
       "multi_line_comments": [["/-", "-/"]],
@@ -813,7 +832,7 @@
     "OCaml": {
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["ml", "mli", "re", "rei"]
+      "extensions": ["ml", "mli", "mll", "mly", "re", "rei"]
     },
     "Odin": {
       "extensions": ["odin"],
@@ -934,6 +953,15 @@
       "name": "Protocol Buffers",
       "line_comment": ["//"],
       "extensions": ["proto"]
+    },
+    "Pug" : {
+      "line_comment": ["//", "//-"],
+      "quotes": [
+        ["#{\\\"", "\\\"}"],
+        ["#{'", "'}"],
+        ["#{`", "`}"]
+      ],
+      "extensions": ["pug"]
     },
     "PureScript": {
       "nested": true,

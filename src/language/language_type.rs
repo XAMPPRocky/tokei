@@ -72,7 +72,7 @@ impl LanguageType {
                 // Get the position of the last line before the important
                 // syntax.
                 text[..=m.start()]
-                    .into_iter()
+                    .iter()
                     .rev()
                     .position(|&c| c == b'\n')
                     .filter(|&p| p != 0)
