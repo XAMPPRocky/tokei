@@ -91,16 +91,18 @@ pub fn get_all_files<A: AsRef<Path>>(
         .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)));
 
     let process = |(entry, language): (DirEntry, LanguageType)| {
-            let func = config.for_each_fn;
-            match func {
-                Some(f) => f(language, entry.clone().into_path().to_string_lossy().to_string()),
-                None => (),
-            }
             let result = language.parse(entry.into_path(), &config);
             let mut lock = languages.lock();
             let entry = lock.entry(language).or_insert_with(Language::new);
             match result {
-                Ok(stats) => entry.add_report(stats),
+                Ok(stats) => {
+                    let func = config.for_each_fn;
+                    match func {
+                        Some(f) => f(language, stats.clone()),
+                        None => (),
+                    };
+                    entry.add_report(stats)
+                },
                 Err((error, path)) => {
                     entry.mark_inaccurate();
                     error!("Error reading {}:\n{}", path.display(), error);

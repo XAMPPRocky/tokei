@@ -262,8 +262,8 @@ impl<'a> Cli<'a> {
         };
 
         config.for_each_fn = match self.streaming {
-            Some(Streaming::Json) => Some(|l: LanguageType, e| println!("{{ path: '{}', language: '{}' }},", e, l.name())),
-            Some(Streaming::Simple) => Some(|l: LanguageType, e| println!("{} {}", e, l.name())),
+            Some(Streaming::Json) => Some(|l: LanguageType, e| println!("{{language: '{}', stats: '{}'}},", l.name(), serde_json::json!(e))),
+            Some(Streaming::Simple) => Some(|l: LanguageType, e| println!("{:>10} {:>80}", l.name(), e)),
             Some(Streaming::None) => None,
             _ => None,
         };

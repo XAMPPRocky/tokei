@@ -2,6 +2,7 @@ use std::{env, fs, path::PathBuf};
 
 use crate::language::LanguageType;
 use crate::sort::Sort;
+use crate::stats::Report;
 
 /// A configuration struct for how [`Languages::get_statistics`] searches and
 /// counts languages.
@@ -50,7 +51,7 @@ pub struct Config {
     /// *Default:* false
     #[serde(skip)]
     /// adds a closure for each function, e.g., print the result
-    pub for_each_fn: Option<fn (LanguageType, String)>,
+    pub for_each_fn: Option<fn (LanguageType, Report)>,
 }
 
 impl Config {
