@@ -171,6 +171,9 @@ the same semantics as `.gitignore`.
 $ tokei ./foo --exclude *.rs
 ```
 
+Paths to exclude can also be listed in a `.tokeignore` file, using the same 
+[syntax](https://git-scm.com/docs/gitignore) as .gitignore files.
+
 #### Sorting output
 By default tokei sorts alphabetically by language name, however using `--sort`
 tokei can also sort by any of the columns.
