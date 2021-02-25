@@ -6,6 +6,7 @@ use tokei::{Config, LanguageType};
 #[derive(Arbitrary, Debug)]
 pub struct FuzzInput<'a> {
     lang: LanguageType,
+    treat_doc_strings_as_comments: bool,
     data: &'a [u8],
 }
 
@@ -13,7 +14,7 @@ pub struct FuzzInput<'a> {
 // If check_total is true, asserts that the parsed stats pass a basic sanity test
 pub fn parse_from_slice(input: FuzzInput, check_total: bool) {
     let config = &Config {
-        treat_doc_strings_as_comments: Some(true),
+        treat_doc_strings_as_comments: Some(input.treat_doc_strings_as_comments),
         ..Config::default()
     };
 
@@ -26,12 +27,13 @@ pub fn parse_from_slice(input: FuzzInput, check_total: bool) {
         if let Ok(s) = str::from_utf8(input.data) {
             assert!(
             stats.lines() <= s.lines().count(),
-            "{} got more total lines ({}) than str::lines ({}). Code: {}, Comments: {}, Blanks: {}. File contents (as UTF-8):\n{}",
+            "{} got more total lines ({}) than str::lines ({}). Code: {}, Comments: {}, Blanks: {}. treat_doc_strings_as_comments: {}. File contents (as UTF-8):\n{}",
             input.lang.name(),
             stats.lines(),
             s.lines().count(),
             stats.code,
             stats.comments,
+            input.treat_doc_strings_as_comments,
             stats.blanks,
             s
         )
