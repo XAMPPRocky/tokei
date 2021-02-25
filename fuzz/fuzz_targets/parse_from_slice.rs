@@ -15,7 +15,16 @@ pub struct FuzzInput<'a> {
 pub fn parse_from_slice(input: FuzzInput, check_total: bool) {
     let config = &Config {
         treat_doc_strings_as_comments: Some(input.treat_doc_strings_as_comments),
-        ..Config::default()
+
+        // these options don't impact the behaviour of parse_from_slice:
+        columns: None,
+        hidden: None,
+        no_ignore: None,
+        no_ignore_parent: None,
+        no_ignore_dot: None,
+        no_ignore_vcs: None,
+        sort: None,
+        types: None,
     };
 
     // check that parsing doesn't panic

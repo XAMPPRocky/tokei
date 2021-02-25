@@ -2,9 +2,12 @@
 
 Tokei can be fuzzed using libFuzzer, via [cargo-fuzz](https://github.com/rust-fuzz/cargo-fuzz/).
 
-To launch a fuzzing job: `cargo +nightly fuzz run <target>`
+To launch a fuzzing job: `cargo +nightly fuzz run <target>` - it will run until you kill it with ctrl-c.
 
 To use multiple cores: `cargo +nightly fuzz run <target> --jobs=6`
+
+To speed things up (at the expensive of missing bugs that only manifest in larger files):
+`cargo +nightly fuzz run <target> -- -max_len=200`
 
 Available fuzz targets:
 
@@ -17,12 +20,8 @@ input formats, e.g.: `cargo +nightly fuzz run parse_from_slice_{panic,total} fuz
 
 Potential improvements:
 
-- Cleaner failing test case output. The corpus files include additional data that is used to select the language type,
-  so don't represent clean inputs to tokei.
 - Do some coverage analysis to check if we're missing any code we would benefit from fuzzing (once it's
   [integrated into cargo-fuzz](https://github.com/rust-fuzz/cargo-fuzz/pull/248))
-- Check in a generated corpus, and run regression over it in CI.
 - Tighten the `parse_from_slice_total` fuzz target to check the total lines exactly matches the number of lines in the
-  file.
-- Potentially integrate with OSS-Fuzz? Not sure if they would be interested as this doesn't seem likely to identify
-  serious security bugs.
+  file. Only once any bugs found with the current fuzzer are fixed.
+- Check in a minimized corpus, and run regression over it in CI.
