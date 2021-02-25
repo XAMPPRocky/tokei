@@ -12,6 +12,9 @@ Available fuzz targets:
 - `parse_from_slice_total` - checks that the language stats pass a basic test of reporting no more total lines than
   there are new lines in the file. At the time of writing there are low-hanging bugs here.
 
+With the two `parse_from_slice` fuzz targets, it makes sense to share a common corpus directory as they have identical
+input formats, e.g.: `cargo +nightly fuzz run parse_from_slice_{panic,total} fuzz/corpus/common`
+
 Potential improvements:
 
 - Cleaner failing test case output. The corpus files include additional data that is used to select the language type,
