@@ -13,8 +13,6 @@ pub enum Streaming {
     Simple,
     /// Json outputs.
     Json,
-    /// Ignore
-    None,
 }
 
 impl std::str::FromStr for Streaming {
@@ -24,7 +22,6 @@ impl std::str::FromStr for Streaming {
         Ok(match s.to_lowercase().as_ref() {
             "simple" => Streaming::Simple,
             "json" => Streaming::Json,
-            "none" => Streaming::None,
             s => return Err(format!("Unsupported streaming option: {}", s)),
         })
     }
@@ -102,10 +99,10 @@ impl<'a> Cli<'a> {
                 "Outputs Tokei in a specific format. Compile with additional features for more \
                 format support.")
             (@arg streaming: --streaming
-                possible_values(&["simple", "json", "none"])
+                possible_values(&["simple", "json"])
                 case_insensitive(true)
                 +takes_value
-                "If not none (default), prints the (filename, language) pairs as simple lines or as Json for batch processing")
+                "prints the (language, path, lines, blanks, code, comments) records as simple lines or as Json for batch processing")
             (@arg sort: -s --sort
                 possible_values(&["files", "lines", "blanks", "code", "comments"])
                 case_insensitive(true)
@@ -264,7 +261,6 @@ impl<'a> Cli<'a> {
         config.for_each_fn = match self.streaming {
             Some(Streaming::Json) => Some(|l: LanguageType, e| println!("{}", serde_json::json!({"language": l.name(), "stats": e}))),
             Some(Streaming::Simple) => Some(|l: LanguageType, e| println!("{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}", l.name(), e.name.to_string_lossy().to_string(), e.stats.lines(), e.stats.code, e.stats.comments, e.stats.blanks)),
-            Some(Streaming::None) => None,
             _ => None,
         };
 
