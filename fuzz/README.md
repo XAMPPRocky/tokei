@@ -2,6 +2,8 @@
 
 Tokei can be fuzzed using libFuzzer, via [cargo-fuzz](https://github.com/rust-fuzz/cargo-fuzz/).
 
+First install cargo-fuzz: `cargo install cargo-fuzz`.
+
 To launch a fuzzing job: `cargo +nightly fuzz run <target>` - it will run until you kill it with ctrl-c.
 
 To use multiple cores: `cargo +nightly fuzz run <target> --jobs=6`
@@ -20,6 +22,7 @@ input formats, e.g.: `cargo +nightly fuzz run parse_from_slice_{panic,total} fuz
 
 Potential improvements:
 
+- Build the fuzz harnesses in CI, so they don't rot.
 - Do some coverage analysis to check if we're missing any code we would benefit from fuzzing (once it's
   [integrated into cargo-fuzz](https://github.com/rust-fuzz/cargo-fuzz/pull/248))
 - Tighten the `parse_from_slice_total` fuzz target to check the total lines exactly matches the number of lines in the
