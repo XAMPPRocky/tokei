@@ -50,7 +50,7 @@ dirs-next = "2.0.0"
 
 [dependencies.env_logger]
 features = []
-version = "0.8.2"
+version = "0.8.3"
 
 [dependencies.hex]
 optional = true
