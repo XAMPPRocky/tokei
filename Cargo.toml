@@ -54,7 +54,7 @@ version = "0.8.2"
 
 [dependencies.hex]
 optional = true
-version = "0.4.2"
+version = "0.4.3"
 
 [dependencies.serde_cbor]
 optional = true
