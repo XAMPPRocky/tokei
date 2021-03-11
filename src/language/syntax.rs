@@ -167,7 +167,7 @@ impl SyntaxCounter {
     }
 
     /// Try to see if we can determine what a line is from examining the whole
-    /// line at once. Returns `true` if sucessful.
+    /// line at once. Returns `true` if successful.
     pub(crate) fn can_perform_single_line_analysis(
         &self,
         line: &[u8],

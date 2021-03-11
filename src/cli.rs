@@ -83,7 +83,7 @@ impl<'a> Cli<'a> {
                 "Sort languages based on column")
             (@arg types: -t --type
                 +takes_value
-                "Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown")
+                "Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown")
             (@arg compact: -C --compact
                 "Do not print statistics about embedded languages.")
             (@arg num_format_style: -n --("num-format")
