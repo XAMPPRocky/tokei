@@ -157,8 +157,8 @@ jobs:
           # - x86_64-unknown-freebsd
           - x86_64-unknown-netbsd
           # Solaris
-          - sparcv9-sun-solaris
-          - x86_64-sun-solaris
+          # - sparcv9-sun-solaris
+          # - x86_64-sun-solaris
           # Bare Metal
           # These are no-std embedded targets, so they will only build if your
           # crate is `no_std` compatible.
