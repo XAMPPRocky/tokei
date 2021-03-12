@@ -840,6 +840,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
+    "OpenPolicyAgent": {
+      "name": "Open Policy Agent",
+      "line_comment": ["#"],
+      "quotes": [["\\\"","\\\""], ["`", "`"]],
+      "extensions": ["rego"]
+    },
     "OpenType": {
       "name": "OpenType Feature File",
       "line_comment": ["#"],
