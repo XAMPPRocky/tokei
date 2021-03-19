@@ -361,6 +361,7 @@ Elvish
 EmacsDevEnv
 Emojicode
 Erlang
+Factor
 FEN
 Fish
 FlatBuffers

@@ -377,6 +377,11 @@
       "line_comment": ["%"],
       "extensions": ["erl", "hrl"]
     },
+    "Factor": {
+        "line_comment": ["!", "#!"],
+        "multi_line_comments": [["/*", "*/"]],
+        "extensions": ["factor"]
+    },
     "FEN": {
       "name": "FEN",
       "blank": true,
