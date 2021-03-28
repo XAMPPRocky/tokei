@@ -799,6 +799,11 @@
       "blank": true,
       "extensions": ["mint"]
     },
+    "Mlatu": {
+        "line_comment": ["//"],
+        "quotes": [["\\\"", "\\\""]],
+        "extensions": ["mlt"]
+    },
     "Mustache": {
       "multi_line_comments": [["{{!", "}}"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],

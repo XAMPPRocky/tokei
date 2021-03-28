@@ -171,7 +171,7 @@ the same semantics as `.gitignore`.
 $ tokei ./foo --exclude *.rs
 ```
 
-Paths to exclude can also be listed in a `.tokeignore` file, using the same 
+Paths to exclude can also be listed in a `.tokeignore` file, using the same
 [syntax](https://git-scm.com/docs/gitignore) as .gitignore files.
 
 #### Sorting output
@@ -416,6 +416,7 @@ Makefile
 Markdown
 Meson
 Mint
+Mlatu
 ModuleDef
 MoonScript
 MsBuild
