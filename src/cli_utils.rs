@@ -6,6 +6,7 @@ use std::{
 };
 
 use clap::crate_version;
+use colored::*;
 use num_format::ToFormattedString;
 
 use crate::input::Format;
@@ -152,12 +153,12 @@ impl<W: Write> Printer<W> {
         writeln!(
             self.writer,
             " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
-            "Language",
-            "Files",
-            "Lines",
-            "Code",
-            "Comments",
-            "Blanks",
+            "Language".bold().blue(),
+            "Files".bold().blue(),
+            "Lines".bold().blue(),
+            "Code".bold().blue(),
+            "Comments".bold().blue(),
+            "Blanks".bold().blue(),
             self.columns - NO_LANG_HEADER_ROW_LEN
         )?;
         self.print_row()
@@ -205,11 +206,11 @@ impl<W: Write> Printer<W> {
                 .values()
                 .map(Vec::len)
                 .sum::<usize>()
-                .to_formatted_string(&self.number_format),
-            language.lines().to_formatted_string(&self.number_format),
-            language.code.to_formatted_string(&self.number_format),
-            language.comments.to_formatted_string(&self.number_format),
-            language.blanks.to_formatted_string(&self.number_format),
+                .to_formatted_string(&self.number_format).blue(),
+            language.lines().to_formatted_string(&self.number_format).blue(),
+            language.code.to_formatted_string(&self.number_format).blue(),
+            language.comments.to_formatted_string(&self.number_format).blue(),
+            language.blanks.to_formatted_string(&self.number_format).blue(),
         )
     }
 
@@ -233,7 +234,7 @@ impl<W: Write> Printer<W> {
             write!(self.writer, " {:.len$}", name, len = lang_section_len - 1)?;
             write!(self.writer, "|")?;
         } else {
-            write!(self.writer, " {:<len$}", name, len = lang_section_len)?;
+            write!(self.writer, " {:<len$}", name.bold(), len = lang_section_len)?;
         }
         if inaccurate {
             write!(self.writer, "{}", IDENT_INACCURATE)?;
@@ -367,7 +368,7 @@ impl<W: Write> Printer<W> {
     }
 
     fn print_subrow(&mut self) -> io::Result<()> {
-        writeln!(self.writer, "{}", self.subrow)
+        writeln!(self.writer, "{}", self.subrow.dimmed())
     }
 
     fn print_report(
@@ -457,3 +458,27 @@ impl<W: Write> Printer<W> {
         self.print_row()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use regex::Regex;
+
+    #[test]
+    fn print_header_prints_headings() {
+        let mut buffer : Vec<u8> = Vec::new();
+        {
+            let mut printer = Printer::new(
+                100,
+                false,
+                io::BufWriter::new(&mut buffer),
+                NumberFormatStyle::default().get_format().unwrap());
+            printer.print_header();
+        }
+        let output = String::from_utf8(buffer.to_vec()).unwrap();
+        let header_regex = Regex::new(r"\u{1b}\[1;34mLanguage").unwrap();
+        print!("{:?}", output);
+        assert!(header_regex.is_match(&output));
+    }
+}
+
