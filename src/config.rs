@@ -65,7 +65,7 @@ impl Config {
     /// Firstly it will attempt to find a config in the configuration directory
     /// (see below), secondly from the home directory, `$HOME/`,
     /// and thirdly from the current directory, `./`.
-    /// The current directory's configuration will take priority over the configuratio
+    /// The current directory's configuration will take priority over the configuration
     /// directory.
     ///
     /// |Platform | Value | Example |
