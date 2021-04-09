@@ -458,27 +458,3 @@ impl<W: Write> Printer<W> {
         self.print_row()
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use regex::Regex;
-
-    #[test]
-    fn print_header_prints_headings() {
-        let mut buffer : Vec<u8> = Vec::new();
-        {
-            let mut printer = Printer::new(
-                100,
-                false,
-                io::BufWriter::new(&mut buffer),
-                NumberFormatStyle::default().get_format().unwrap());
-            printer.print_header();
-        }
-        let output = String::from_utf8(buffer.to_vec()).unwrap();
-        let header_regex = Regex::new(r"\u{1b}\[1;34mLanguage").unwrap();
-        print!("{:?}", output);
-        assert!(header_regex.is_match(&output));
-    }
-}
-
