@@ -1005,9 +1005,9 @@ dependencies = [
 
 [[package]]
 name = "tera"
-version = "1.6.1"
+version = "1.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eac6ab7eacf40937241959d540670f06209c38ceadb62116999db4a950fbf8dc"
+checksum = "2617ab2fb1de8587a988a761692e59895438bebf404725d4f2123251f60bf23e"
 dependencies = [
  "chrono",
  "chrono-tz",

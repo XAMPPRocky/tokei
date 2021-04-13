@@ -24,7 +24,7 @@ lto = "thin"
 panic = "abort"
 
 [build-dependencies]
-tera = "1.6.1"
+tera = "1.7.1"
 ignore = "0.4.17"
 serde_json = "1.0.64"
 
