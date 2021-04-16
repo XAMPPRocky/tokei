@@ -780,6 +780,13 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Metal": {
+      "name": "Metal Shading Language",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["metal"]
+    },
     "ModuleDef": {
       "name": "Module-Definition",
       "extensions": ["def"],
@@ -1367,6 +1374,11 @@
       "line_comment": [";;"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["wat", "wast"]
+    },
+    "WGSL": {
+      "name": "WebGPU Shader Language",
+      "line_comment": ["//"],
+      "extensions": ["wgsl"]
     },
     "Wolfram": {
       "quotes": [["\\\"", "\\\""]],
