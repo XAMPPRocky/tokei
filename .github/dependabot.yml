@@ -1,0 +1,23 @@
+version: 2
+updates:
+- package-ecosystem: cargo
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 99
+  ignore:
+  - dependency-name: tera
+    versions:
+    - 1.7.0
+    - 1.7.1
+  - dependency-name: git2
+    versions:
+    - 0.13.17
+  - dependency-name: once_cell
+    versions:
+    - 1.6.0
+    - 1.7.0
+  - dependency-name: serde_yaml
+    versions:
+    - 0.8.16
