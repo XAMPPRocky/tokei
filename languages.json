@@ -731,10 +731,11 @@
       "extensions": ["lds"]
     },
     "Lisp": {
+      "name": "Common Lisp",
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "extensions": ["lisp", "lsp"]
+      "extensions": ["lisp", "lsp", "asd"]
     },
     "LiveScript": {
       "line_comment": ["#"],
@@ -839,6 +840,12 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
+    },
+    "OpenPolicyAgent": {
+      "name": "Open Policy Agent",
+      "line_comment": ["#"],
+      "quotes": [["\\\"","\\\""], ["`", "`"]],
+      "extensions": ["rego"]
     },
     "OpenType": {
       "name": "OpenType Feature File",
