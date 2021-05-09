@@ -1,0 +1,33 @@
+
+[package]
+name = "tokei-fuzz"
+version = "0.0.1"
+authors = ["Michael Macnair"]
+publish = false
+edition = "2018"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+arbitrary = { version = "1.0.0", features = ["derive"] }
+
+[dependencies.tokei]
+path = ".."
+
+# Prevent this from interfering with workspaces
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "parse_from_slice_total"
+path = "fuzz_targets/parse_from_slice_total.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "parse_from_slice_panic"
+path = "fuzz_targets/parse_from_slice_panic.rs"
+test = false
+doc = false

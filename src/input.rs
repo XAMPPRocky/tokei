@@ -1,5 +1,5 @@
-use std::{collections::BTreeMap, error::Error, str::FromStr};
 use serde_json::{json, Map};
+use std::{collections::BTreeMap, error::Error, str::FromStr};
 
 use tokei::{Language, LanguageType, Languages};
 

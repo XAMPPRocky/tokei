@@ -1,0 +1,22 @@
+// 22 lines 14 code 3 comments 5 blanks
+
+define divisible (Int, Int -> Bool +Fail) { (%) 0 (=) }
+
+// Here's a random comment that is definitely useful
+
+define fizzbuzz (Int -> String) {
+  -> n;
+  do (with (+Fail)) { n 5 divisible n 3 divisible }
+  if { if { "FizzBuzz" } else { "Fizz" } }
+  else { if { "Buzz" } else { n show } }
+}
+
+define fizzbuzzes (Int, Int -> +IO) {
+  -> c, m;
+  c fizzbuzz println (c < m)
+  if { (c + 1) m fizzbuzzes }
+  else {} // We don't need anything here
+}
+
+1 100 fizzbuzzes
+// Comment at end

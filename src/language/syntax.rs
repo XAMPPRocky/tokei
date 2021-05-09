@@ -5,8 +5,8 @@ use dashmap::DashMap;
 use grep_searcher::LineStep;
 use log::Level::Trace;
 use once_cell::sync::Lazy;
-use regex::bytes::Regex;
 
+use super::embedding::*;
 use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
 
 /// Tracks the syntax of the language as well as the current state in the file.
@@ -168,38 +168,38 @@ impl SyntaxCounter {
 
     /// Try to see if we can determine what a line is from examining the whole
     /// line at once. Returns `true` if successful.
-    pub(crate) fn can_perform_single_line_analysis(
+    pub(crate) fn try_perform_single_line_analysis(
         &self,
         line: &[u8],
         stats: &mut crate::stats::CodeStats,
     ) -> bool {
-        if self.is_plain_mode() {
-            if line.trim().is_empty() {
-                stats.blanks += 1;
-                trace!("Blank No.{}", stats.blanks);
-                return true;
-            } else if !self.shared.important_syntax.is_match(line) {
-                trace!("^ Skippable");
+        if !self.is_plain_mode() {
+            false
+        } else if line.trim().is_empty() {
+            stats.blanks += 1;
+            trace!("Blank No.{}", stats.blanks);
+            true
+        } else if !self.shared.important_syntax.is_match(line) {
+            trace!("^ Skippable");
 
-                if self.shared.is_literate
-                    || self
-                        .shared
-                        .line_comments
-                        .iter()
-                        .any(|c| line.starts_with(c.as_bytes()))
-                {
-                    stats.comments += 1;
-                    trace!("Comment No.{}", stats.comments);
-                } else {
-                    stats.code += 1;
-                    trace!("Code No.{}", stats.code);
-                }
-
-                return true;
+            if self.shared.is_literate
+                || self
+                    .shared
+                    .line_comments
+                    .iter()
+                    .any(|c| line.starts_with(c.as_bytes()))
+            {
+                stats.comments += 1;
+                trace!("Comment No.{}", stats.comments);
+            } else {
+                stats.code += 1;
+                trace!("Code No.{}", stats.code);
             }
-        }
 
-        false
+            true
+        } else {
+            false
+        }
     }
 
     pub(crate) fn perform_multi_line_analysis(
@@ -216,6 +216,8 @@ impl SyntaxCounter {
                 skip = $skip - 1;
             }};
         }
+
+        let regex_cache = RegexCache::build(self.shared.language, lines, start, end);
 
         for i in start..end {
             if skip != 0 {
@@ -242,7 +244,7 @@ impl SyntaxCounter {
                 continue;
             }
 
-            if let Some(child) = self.parse_context(lines, i, end, config) {
+            if let Some(child) = self.parse_context(lines, i, end, config, &regex_cache) {
                 return AnalysisReport::ChildLanguage(child);
             }
 
@@ -348,6 +350,7 @@ impl SyntaxCounter {
         start: usize,
         end: usize,
         config: &Config,
+        regex_cache: &RegexCache,
     ) -> Option<FileContext> {
         use std::str::FromStr;
 
@@ -356,19 +359,14 @@ impl SyntaxCounter {
             return None;
         }
 
-        match self.shared.language {
-            LanguageType::Markdown | LanguageType::UnrealDeveloperMarkdown => {
-                static STARTING_MARKDOWN_REGEX: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"^```\S+\s"#).unwrap());
-                static ENDING_MARKDOWN_REGEX: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"```\s?"#).unwrap());
-
+        match regex_cache.family()? {
+            RegexFamily::Markdown(md) => {
                 if !lines[start..end].contains_slice(b"```") {
                     return None;
                 }
 
-                let opening_fence = STARTING_MARKDOWN_REGEX.find(&lines[start..end])?;
-                let start_of_code = start + opening_fence.end();
+                let opening_fence = md.starts_in_range(start, end)?;
+                let start_of_code = opening_fence.end();
                 let closing_fence = ENDING_MARKDOWN_REGEX.find(&lines[start_of_code..]);
                 if let Some(m) = &closing_fence {
                     trace!("{:?}", String::from_utf8_lossy(m.as_bytes()))
@@ -400,7 +398,7 @@ impl SyntaxCounter {
                     stats,
                 ))
             }
-            LanguageType::Rust => {
+            RegexFamily::Rust => {
                 let rest = &lines[start..];
                 let comment_syntax = if rest.trim_start().starts_with(b"///") {
                     b"///"
@@ -436,28 +434,13 @@ impl SyntaxCounter {
                     doc_block,
                 ))
             }
-            #[allow(clippy::trivial_regex)]
-            LanguageType::Html
-            | LanguageType::RubyHtml
-            | LanguageType::Svelte
-            | LanguageType::Vue => {
-                static START_SCRIPT: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"^<script(?:.*type="(.*)")?.*?>"#).unwrap());
-                static END_SCRIPT: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</script>"#).unwrap());
-                static START_STYLE: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"^<style(?:.*lang="(.*)")?.*?>"#).unwrap());
-                static END_STYLE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</style>"#).unwrap());
-                static START_TEMPLATE: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"^<template(?:.*lang="(.*)")?.*?>"#).unwrap());
-                static END_TEMPLATE: Lazy<Regex> =
-                    Lazy::new(|| Regex::new(r#"</template>"#).unwrap());
-
-                if let Some(captures) = START_SCRIPT.captures(&lines[start..end]) {
-                    let start_of_code = start + captures.get(0).unwrap().end();
+            RegexFamily::HtmlLike(html) => {
+                if let Some(mut captures) = html.start_script_in_range(start, end) {
+                    let start_of_code = captures.next().unwrap().end();
                     let closing_tag = END_SCRIPT.find(&lines[start_of_code..])?;
                     let end_of_code = start_of_code + closing_tag.start();
                     let language = captures
-                        .get(1)
+                        .next()
                         .and_then(|m| {
                             LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
                         })
@@ -476,12 +459,12 @@ impl SyntaxCounter {
                         end_of_code,
                         stats,
                     ))
-                } else if let Some(captures) = START_STYLE.captures(&lines[start..end]) {
-                    let start_of_code = start + captures.get(0).unwrap().end();
+                } else if let Some(mut captures) = html.start_style_in_range(start, end) {
+                    let start_of_code = captures.next().unwrap().end();
                     let closing_tag = END_STYLE.find(&lines[start_of_code..])?;
                     let end_of_code = start_of_code + closing_tag.start();
                     let language = captures
-                        .get(1)
+                        .next()
                         .and_then(|m| {
                             LanguageType::from_str(
                                 &String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase(),
@@ -503,12 +486,12 @@ impl SyntaxCounter {
                         end_of_code,
                         stats,
                     ))
-                } else if let Some(captures) = START_TEMPLATE.captures(&lines[start..end]) {
-                    let start_of_code = start + captures.get(0).unwrap().end();
+                } else if let Some(mut captures) = html.start_template_in_range(start, end) {
+                    let start_of_code = captures.next().unwrap().end();
                     let closing_tag = END_TEMPLATE.find(&lines[start_of_code..])?;
                     let end_of_code = start_of_code + closing_tag.start();
                     let language = captures
-                        .get(1)
+                        .next()
                         .and_then(|m| {
                             LanguageType::from_str(
                                 &String::from_utf8_lossy(m.as_bytes().trim()).to_lowercase(),
@@ -534,7 +517,6 @@ impl SyntaxCounter {
                     None
                 }
             }
-            _ => None,
         }
     }
 

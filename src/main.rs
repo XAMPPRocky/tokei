@@ -51,7 +51,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap_or(FALLBACK_ROW_LEN)
         .max(FALLBACK_ROW_LEN);
 
+    if cli.streaming == Some(crate::cli::Streaming::Simple) {
+        println!("#{:^10} {:^80} {:^12} {:^12} {:^12} {:^12}", "language", "path", "lines", "code", "comments", "blanks");
+        println!("{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}", (0..10).map(|_| "#").collect::<String>(), (0..80).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>());
+    }
+
     languages.get_statistics(&input, &cli.ignored_directories(), &config);
+    if config.for_each_fn.is_some() {
+        process::exit(0);
+    }
 
     if let Some(format) = cli.output {
         print!("{}", format.print(&languages).unwrap());

@@ -1,0 +1,27 @@
+<!-- 27 lines 20 code 5 comments 2 blanks -->
+< 0!DOCTYPE HTML>
+<html>
+<head><meta charset="utf-8"></head>
+<body>
+<b>Frame 1</b><br/>
+
+<script type="application/javascript">
+  // make sure to set document.domain to the same domain as the subframe
+  window.onload = function() {
+    document.domain = "mochi.test";
+  };
+  window.addEventListener("message", receiveMessage);
+  function receiveMessage(event) {
+    // make sure to get the right start command, otherwise
+    // let the parent know and fail the test
+    if (event.data.start !== "startTest") {
+      window.removeEventListener("message", receiveMessage);
+      window.parent.postMessage({triggeringPrincipalURI: "false"}, "*");
+    }
+    // click the link to navigate the subframe
+    document.getElementById("testlink").click();
+  }
+</script>
+
+</body>
+</html>

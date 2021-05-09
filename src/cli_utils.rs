@@ -317,42 +317,50 @@ impl<W: Write> Printer<W> {
                 }
 
                 if self.list_files {
-                    self.print_subrow()?;
-                    let (a, b): (Vec<_>, Vec<_>) = language
-                        .reports
-                        .iter()
-                        .partition(|r| r.stats.blobs.is_empty());
-                    for reports in &[&a, &b] {
-                        let mut first = true;
-                        for report in reports.iter() {
-                            if !report.stats.blobs.is_empty() {
-                                if first && a.is_empty() {
-                                    writeln!(self.writer, " {}", report.name.display())?;
-                                    first = false;
-                                } else {
+                    if !compact {
+                        self.print_subrow()?;
+                        let (a, b): (Vec<_>, Vec<_>) = language
+                            .reports
+                            .iter()
+                            .partition(|r| r.stats.blobs.is_empty());
+                        for reports in &[&a, &b] {
+                            let mut first = true;
+                            for report in reports.iter() {
+                                if !report.stats.blobs.is_empty() {
+                                    if first && a.is_empty() {
+                                        writeln!(self.writer, " {}", report.name.display())?;
+                                        first = false;
+                                    } else {
+                                        writeln!(
+                                            self.writer,
+                                            "-- {} {}",
+                                            report.name.display(),
+                                            "-".repeat(
+                                                self.columns
+                                                    - 4
+                                                    - report.name.display().to_string().len()
+                                            )
+                                        )?;
+                                    }
+                                    let mut new_report = (*report).clone();
+                                    new_report.name = name.to_string().into();
                                     writeln!(
                                         self.writer,
-                                        "-- {} {}",
-                                        report.name.display(),
-                                        "-".repeat(
-                                            self.columns
-                                                - 4
-                                                - report.name.display().to_string().len()
-                                        )
+                                        " |-{:1$}",
+                                        new_report,
+                                        self.path_length - 3
                                     )?;
+                                    self.print_report_total(&report, language.inaccurate)?;
+                                } else {
+                                    writeln!(self.writer, "{:1$}", report, self.path_length)?;
                                 }
-                                let mut new_report = (*report).clone();
-                                new_report.name = name.to_string().into();
-                                writeln!(
-                                    self.writer,
-                                    " |-{:1$}",
-                                    new_report,
-                                    self.path_length - 3
-                                )?;
-                                self.print_report_total(&report, language.inaccurate)?;
-                            } else {
-                                writeln!(self.writer, "{:1$}", report, self.path_length)?;
                             }
+                        }
+                    } else {
+                        // compact format
+                        self.print_subrow()?;
+                        for report in &language.reports {
+                            writeln!(self.writer, "{:1$}", report, self.path_length)?;
                         }
                     }
                 }

@@ -377,6 +377,11 @@
       "line_comment": ["%"],
       "extensions": ["erl", "hrl"]
     },
+    "Factor": {
+        "line_comment": ["!", "#!"],
+        "multi_line_comments": [["/*", "*/"]],
+        "extensions": ["factor"]
+    },
     "FEN": {
       "name": "FEN",
       "blank": true,
@@ -731,10 +736,11 @@
       "extensions": ["lds"]
     },
     "Lisp": {
+      "name": "Common Lisp",
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "extensions": ["lisp", "lsp"]
+      "extensions": ["lisp", "lsp", "asd"]
     },
     "LiveScript": {
       "line_comment": ["#"],
@@ -780,6 +786,13 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Metal": {
+      "name": "Metal Shading Language",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["metal"]
+    },
     "ModuleDef": {
       "name": "Module-Definition",
       "extensions": ["def"],
@@ -798,6 +811,11 @@
     "Mint": {
       "blank": true,
       "extensions": ["mint"]
+    },
+    "Mlatu": {
+        "line_comment": ["//"],
+        "quotes": [["\\\"", "\\\""]],
+        "extensions": ["mlt"]
     },
     "Mustache": {
       "multi_line_comments": [["{{!", "}}"]],
@@ -839,6 +857,12 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
+    },
+    "OpenPolicyAgent": {
+      "name": "Open Policy Agent",
+      "line_comment": ["#"],
+      "quotes": [["\\\"","\\\""], ["`", "`"]],
+      "extensions": ["rego"]
     },
     "OpenType": {
       "name": "OpenType Feature File",
@@ -1367,6 +1391,11 @@
       "line_comment": [";;"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["wat", "wast"]
+    },
+    "WGSL": {
+      "name": "WebGPU Shader Language",
+      "line_comment": ["//"],
+      "extensions": ["wgsl"]
     },
     "Wolfram": {
       "quotes": [["\\\"", "\\\""]],
