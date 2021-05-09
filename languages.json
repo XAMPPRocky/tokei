@@ -731,6 +731,7 @@
       "extensions": ["lds"]
     },
     "Lisp": {
+      "name": "Common Lisp",
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
