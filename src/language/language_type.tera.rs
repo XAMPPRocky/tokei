@@ -7,6 +7,7 @@ use arbitrary::Arbitrary;
 #[derive(Deserialize, Serialize)]
 #[derive(Arbitrary, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[non_exhaustive]
+#[allow(clippy::upper_case_acronyms)]
 pub enum LanguageType {
     {% for key, _ in languages -%}
         #[allow(missing_docs)] {{key}},

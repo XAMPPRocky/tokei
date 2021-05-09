@@ -1,3 +1,4 @@
+mod embedding;
 pub mod language_type;
 pub mod languages;
 mod syntax;

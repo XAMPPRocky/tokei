@@ -69,7 +69,18 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
     const INITIAL_BUFFER_SIZE: usize = 989 * 130;
     let mut string = String::with_capacity(INITIAL_BUFFER_SIZE);
 
-    let walker = Walk::new("./tests/data/").filter(|p| match p {
+    generate_tests_batch("./tests/data", None, &mut string)?;
+    generate_tests_batch("./tests/embedding", Some("embedding"), &mut string)?;
+
+    Ok(fs::write(Path::new(&out_dir).join("tests.rs"), string)?)
+}
+
+fn generate_tests_batch(
+    src_dir: &str,
+    test_module: Option<&str>,
+    string: &mut String,
+) -> Result<(), Box<dyn error::Error>> {
+    let walker = Walk::new(src_dir).filter(|p| match p {
         Ok(ref p) => {
             if let Ok(ref p) = p.metadata() {
                 p.is_file()
@@ -79,6 +90,17 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
         }
         _ => false,
     });
+
+    if let Some(test_module) = test_module {
+        string.push_str(&format!(
+            r####"
+#[cfg(test)]
+mod {0} {{
+use super::*;
+        "####,
+            test_module
+        ));
+    }
 
     for path in walker {
         let path = path?;
@@ -129,10 +151,14 @@ fn generate_tests(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
         }}
         "####,
             name,
-            path.display(),
+            path.to_string_lossy().replace('\\', "/"),
             std::fs::canonicalize(root.join(path)).unwrap().display(),
         ));
     }
 
-    Ok(fs::write(Path::new(&out_dir).join("tests.rs"), string)?)
+    if test_module.is_some() {
+        string.push_str("\n}");
+    }
+
+    Ok(())
 }

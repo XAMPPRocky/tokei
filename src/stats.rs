@@ -44,15 +44,6 @@ impl CodeStats {
     }
 }
 
-impl ops::Add for CodeStats {
-    type Output = Self;
-
-    fn add(mut self, rhs: Self) -> Self::Output {
-        self += rhs;
-        self
-    }
-}
-
 impl ops::AddAssign for CodeStats {
     fn add_assign(&mut self, rhs: Self) {
         self.blanks += rhs.blanks;
