@@ -212,8 +212,8 @@ impl<'a> Cli<'a> {
     }
 
     pub fn print_supported_languages() {
-        for key in LanguageType::list() {
-            println!("{:<25}", key);
+        for (key, extensions) in LanguageType::list() {
+            println!("{} ({})", format!("{}", key), extensions.join(", "));
         }
     }
 

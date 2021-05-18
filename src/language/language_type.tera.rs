@@ -57,8 +57,13 @@ impl LanguageType {
     }
 
     /// Provides every variant in a Vec
-    pub fn list() -> &'static [Self] {
-        &[{% for key, _ in languages %}{{key}}, {%- endfor %}]
+    pub fn list() -> &'static [(Self, &'static [&'static str])] {
+        &[{% for key, val in languages -%}
+            ({{key}}, 
+            {% if val.extensions %} &[{% for extension in val.extensions %}"{{extension}}", {% endfor %}],
+            {% else %} &[],
+            {% endif %}),
+        {% endfor %}]
     }
 
     /// Returns the single line comments of a language.
