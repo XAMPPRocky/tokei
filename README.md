@@ -76,6 +76,9 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei is also a **library** allowing you to easily integrate it with other
   projects.
 
+- Tokei comes with and without color. Set the env variable NO_COLOR to 1, and
+  it'll be black and white.
+
 ## Installation
 
 ### Package Managers

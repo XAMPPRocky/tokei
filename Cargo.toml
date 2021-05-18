@@ -32,6 +32,7 @@ serde_json = "1.0.64"
 aho-corasick = "0.7.15"
 arbitrary = { version = "1.0.0", features = ["derive"] }
 clap = "2.33.3"
+colored = "2"
 crossbeam-channel = "0.5.0"
 encoding_rs_io = "0.1.7"
 grep-searcher = "0.1.7"
