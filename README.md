@@ -128,7 +128,7 @@ You can download prebuilt binaries in the
 #### Building
 You can also build and install from source (requires the latest stable [Rust] compiler.)
 ```console
-cargo install --git https://github.com/XAMPPRocky/tokei.git
+cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 ```
 
 [rust]: https://www.rust-lang.org
