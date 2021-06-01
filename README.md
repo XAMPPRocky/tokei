@@ -93,8 +93,6 @@ cargo install tokei
 
 ##### GNU+Linux
 ```sh
-# Alpine (since 3.13)
-apk add tokei
 # Arch-like distros, eg. Parabola, Artix
 pacman -S tokei
 # Conda
@@ -105,6 +103,13 @@ sudo dnf install tokei
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
+```
+
+##### Non-GNU+Linux
+
+```sh
+# Alpine (since 3.13)
+apk add tokei
 ```
 
 ##### BSD
