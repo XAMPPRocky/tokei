@@ -69,7 +69,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
   allowing Tokei's output to be easily stored, and reused. These can also be
   reused in tokei combining a previous run's statistics with another set.
 
-- Tokei is available on **Mac**, **Linux**, and **Windows**. See [installation
+- Tokei is available on Unix-like systems, eg. **GNU+Linux**, **BSD**, and **macOS**, and other types of systems, eg. **Windows**. See [installation
   instructions](#installation) for how to get Tokei on your platform.
 
 - Tokei is also a **library** allowing you to easily integrate it with other
@@ -82,30 +82,41 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ### Package Managers
 
-#### Linux
-```console
-# Alpine Linux (since 3.13)
-apk add tokei
-# Arch Linux
-pacman -S tokei
+#### All supported Rust platforms
+
+```sh
 # Cargo
 cargo install tokei
+```
+
+#### Unix-like
+
+##### GNU+Linux
+```sh
+# Alpine (since 3.13)
+apk add tokei
+# Arch-like distros, eg. Parabola, Artix
+pacman -S tokei
 # Conda
 conda install -c conda-forge tokei
 # Fedora
 sudo dnf install tokei
-# FreeBSD
-pkg install tokei
-# NetBSD
-pkgin install tokei
 # Nix/NixOS
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
 ```
 
-#### macOS
-```console
+##### BSD
+```sh
+# FreeBSD
+pkg install tokei
+# NetBSD
+pkgin install tokei
+```
+
+##### macOS
+```sh
 # Homebrew
 brew install tokei
 # MacPorts
@@ -113,8 +124,10 @@ sudo port selfupdate
 sudo port install tokei
 ```
 
-#### Windows
-```console
+#### Other systems
+
+###### Windows
+```sh
 scoop install tokei
 ```
 
