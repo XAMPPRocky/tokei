@@ -46,7 +46,6 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
 - [Badges](#badges)
-- [Plugins](#plugins)
 - [Supported Languages](#supported-languages)
 - [Changelog](CHANGELOG.md)
 - [Common Issues](#common-issues)
@@ -296,11 +295,6 @@ Example show total lines:
 ```
 
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
-
-## Plugins
-Thanks to contributors tokei is now available as a plugin for some text editors.
-
-- [Vim](https://github.com/vmchale/tokei-vim) by [vmchale](https://github.com/vmchale/)
 
 ## Supported Languages
 
