@@ -1,0 +1,26 @@
+BTW 26 lines 11 code 9 comments 6 blanks
+HAI 1.3
+
+BTW TEST!
+I HAS A MSG ITZ "BYE! OBTW"
+HOW IZ I PRINT_HELLO
+    I HAS A MSG ITZ "BTW Hello, World!" BTW OBTW
+    BTW MORE COMMENTS!
+    VISIBLE MSG  BTW TLDR
+IF U SAY SO
+
+I HAS A MSG ITZ "Hello OBTW BTW TLDR"
+I IZ PRINT_HELLO MKAY
+
+OBTW
+a longer test
+asd TLDR
+
+OBTW TLDR
+
+I IZ PRINT_HELLO MKAY  OBTW should be valid
+foo bar
+TLDR
+
+VISIBLE MSG
+KTHXBYE

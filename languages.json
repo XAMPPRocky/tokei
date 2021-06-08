@@ -759,6 +759,13 @@
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["lgt", "logtalk"]
     },
+    "LolCode": {
+      "name": "LOLCODE",
+      "line_comment": ["BTW"],
+      "quotes": [["\\\"", "\\\""]],
+      "multi_line_comments": [["OBTW", "TLDR"]],
+      "extensions": ["lol"]
+    },
     "Lua": {
       "line_comment": ["--"],
       "multi_line_comments": [["--[[", "]]"]],
