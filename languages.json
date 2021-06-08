@@ -534,7 +534,7 @@
       "line_comment": ["#", "//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["tf", "tfvars"]
+      "extensions": ["hcl", "tf", "tfvars"]
     },
     "Headache": {
       "line_comment": ["//"],
