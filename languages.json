@@ -793,6 +793,15 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Menhir": {
+      "quotes": [["\\\"", "\\\""]],
+      "line_comment": ["//"],
+      "multi_line_comments": [
+        ["(*", "*)"],
+        ["/*", "*/"]
+      ],
+      "extensions": ["mll", "mly", "vy"]
+    },
     "Metal": {
       "name": "Metal Shading Language",
       "line_comment": ["//"],
@@ -857,7 +866,7 @@
     "OCaml": {
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["ml", "mli", "mll", "mly", "re", "rei"]
+      "extensions": ["ml", "mli", "re", "rei"]
     },
     "Odin": {
       "extensions": ["odin"],
