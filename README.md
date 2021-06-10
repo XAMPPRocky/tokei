@@ -509,6 +509,7 @@ Xml
 XSL
 Xtend
 Yaml
+ZenCode
 Zig
 Zsh
 ```

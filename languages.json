@@ -1451,6 +1451,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["yaml", "yml"]
     },
+    "ZenCode": {
+      "line_comment": ["//", "#"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "verbatim_quotes": [["@\\\"", "\\\""], ["@'", "'"]],
+      "extensions": ["zs"]
+    },
     "Zig": {
       "line_comment": ["//"],
       "quotes": [["\\\"", "\\\""]],
