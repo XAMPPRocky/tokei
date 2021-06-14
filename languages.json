@@ -386,6 +386,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["fbs"]
     },
+    "ForgeConfig": {
+      "name": "Forge Config",
+      "line_comment": ["#", "~"],
+      "extensions": ["cfg"]
+    },
     "Forth": {
       "line_comment": ["\\\\"],
       "multi_line_comments": [["( ", ")"]],
