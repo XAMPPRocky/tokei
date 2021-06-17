@@ -165,7 +165,9 @@ impl<'a> Cli<'a> {
         // is supported) but this will fail if support is not compiled in and
         // give a useful error to the user.
         let output = matches.value_of("output").map(parse_or_exit::<Format>);
-        let streaming = matches.value_of("streaming").map(parse_or_exit::<Streaming>);
+        let streaming = matches
+            .value_of("streaming")
+            .map(parse_or_exit::<Streaming>);
 
         crate::cli_utils::setup_logger(verbose);
 
@@ -260,8 +262,20 @@ impl<'a> Cli<'a> {
         };
 
         config.for_each_fn = match self.streaming {
-            Some(Streaming::Json) => Some(|l: LanguageType, e| println!("{}", serde_json::json!({"language": l.name(), "stats": e}))),
-            Some(Streaming::Simple) => Some(|l: LanguageType, e| println!("{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}", l.name(), e.name.to_string_lossy().to_string(), e.stats.lines(), e.stats.code, e.stats.comments, e.stats.blanks)),
+            Some(Streaming::Json) => Some(|l: LanguageType, e| {
+                println!("{}", serde_json::json!({"language": l.name(), "stats": e}))
+            }),
+            Some(Streaming::Simple) => Some(|l: LanguageType, e| {
+                println!(
+                    "{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}",
+                    l.name(),
+                    e.name.to_string_lossy().to_string(),
+                    e.stats.lines(),
+                    e.stats.code,
+                    e.stats.comments,
+                    e.stats.blanks
+                )
+            }),
             _ => None,
         };
 
