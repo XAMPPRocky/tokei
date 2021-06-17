@@ -1,7 +1,7 @@
 use std::mem;
 use std::process;
 
-use clap::{clap_app, crate_description, ArgMatches};
+use clap::{clap_app, crate_description, AppSettings, ArgMatches};
 use tokei::{Config, LanguageType, Sort};
 
 use crate::{cli_utils::*, input::Format};
@@ -58,6 +58,7 @@ impl<'a> Cli<'a> {
                     "Support this project on GitHub Sponsors: https://github.com/sponsors/XAMPPRocky"
                 )
             )
+            (setting: AppSettings::ColoredHelp)
             (@arg columns: -c --columns
                 +takes_value
                 conflicts_with[output]
