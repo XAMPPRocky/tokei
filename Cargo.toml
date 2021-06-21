@@ -38,7 +38,7 @@ serde_json = "1.0.64"
 
 [dependencies]
 aho-corasick = "0.7.15"
-arbitrary = { version="1.0.0", features=["derive"] }
+arbitrary = { version="1.0.1", features=["derive"] }
 clap = "2.33.3"
 colored = "2"
 crossbeam-channel = "0.5.0"
