@@ -400,18 +400,18 @@ dependencies = [
 
 [[package]]
 name = "grep-matcher"
-version = "0.1.4"
+version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fdf0e1fd5af17008a918fd868e63ec0226e96ce88b832f00c7fb041e014b9350"
+checksum = "6d27563c33062cd33003b166ade2bb4fd82db1fd6a86db764dfdad132d46c1cc"
 dependencies = [
  "memchr",
 ]
 
 [[package]]
 name = "grep-searcher"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19897320890970db77fb9e8110aeafdf5a74f4ee32756db16d44a96d8f454b1b"
+checksum = "7fbdbde90ba52adc240d2deef7b6ad1f99f53142d074b771fe9b7bede6c4c23d"
 dependencies = [
  "bstr",
  "bytecount",
@@ -419,7 +419,7 @@ dependencies = [
  "encoding_rs_io",
  "grep-matcher",
  "log",
- "memmap",
+ "memmap2",
 ]
 
 [[package]]
@@ -587,13 +587,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b16bd47d9e329435e309c58469fe0791c2d0d1ba96ec0954152a5ae2b04387dc"
 
 [[package]]
-name = "memmap"
-version = "0.7.0"
+name = "memmap2"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6585fd95e7bb50d6cc31e20d4cf9afb4e2ba16c5846fc76793f11218da9c475b"
+checksum = "20ff203f7bdc401350b1dbaa0355135777d25f41c0bbc601851bbd6cf61e8ff5"
 dependencies = [
  "libc",
- "winapi",
 ]
 
 [[package]]
@@ -817,9 +816,9 @@ dependencies = [
 
 [[package]]
 name = "rayon"
-version = "1.5.0"
+version = "1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b0d8e0819fadc20c74ea8373106ead0600e3a67ef1fe8da56e39b9ae7275674"
+checksum = "c06aca804d41dbc8ba42dfd964f0d01334eceb64314b9ecf7c5fad5188a06d90"
 dependencies = [
  "autocfg",
  "crossbeam-deque",
@@ -829,9 +828,9 @@ dependencies = [
 
 [[package]]
 name = "rayon-core"
-version = "1.9.0"
+version = "1.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9ab346ac5921dc62ffa9f89b7a773907511cdfa5490c572ae9be1be33e8afa4a"
+checksum = "d78120e2c850279833f1dd3582f730c4ab53ed95aeaaaa862a2a5c71b1656d8e"
 dependencies = [
  "crossbeam-channel",
  "crossbeam-deque",
