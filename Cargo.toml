@@ -33,21 +33,21 @@ panic = "abort"
 
 [build-dependencies]
 tera = "1.6.1"
-ignore = "0.4.17"
+ignore = "0.4.18"
 serde_json = "1.0.64"
 
 [dependencies]
 aho-corasick = "0.7.15"
-arbitrary = { version="1.0.0", features=["derive"] }
+arbitrary = { version="1.0.1", features=["derive"] }
 clap = "2.33.3"
 colored = "2"
 crossbeam-channel = "0.5.0"
 encoding_rs_io = "0.1.7"
 grep-searcher = "0.1.8"
-ignore = "0.4.17"
+ignore = "0.4.18"
 log = "0.4.11"
 rayon = "1.5.0"
-serde = { version="1.0.125", features=["derive", "rc"] }
+serde = { version="1.0.126", features=["derive", "rc"] }
 term_size = "0.3.2"
 toml = "0.5.8"
 parking_lot = "0.11.1"
