@@ -206,11 +206,24 @@ impl<W: Write> Printer<W> {
                 .values()
                 .map(Vec::len)
                 .sum::<usize>()
-                .to_formatted_string(&self.number_format).blue(),
-            language.lines().to_formatted_string(&self.number_format).blue(),
-            language.code.to_formatted_string(&self.number_format).blue(),
-            language.comments.to_formatted_string(&self.number_format).blue(),
-            language.blanks.to_formatted_string(&self.number_format).blue(),
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .lines()
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .code
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .comments
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .blanks
+                .to_formatted_string(&self.number_format)
+                .blue(),
         )
     }
 
@@ -234,7 +247,12 @@ impl<W: Write> Printer<W> {
             write!(self.writer, " {:.len$}", name, len = lang_section_len - 1)?;
             write!(self.writer, "|")?;
         } else {
-            write!(self.writer, " {:<len$}", name.bold(), len = lang_section_len)?;
+            write!(
+                self.writer,
+                " {:<len$}",
+                name.bold(),
+                len = lang_section_len
+            )?;
         }
         if inaccurate {
             write!(self.writer, "{}", IDENT_INACCURATE)?;
