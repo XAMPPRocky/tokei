@@ -1056,6 +1056,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["rpy"]
     },
+    "ReScript": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["res", "resi"]
+    },
     "RON": {
       "name": "Rusty Object Notation",
       "line_comment": ["//"],
