@@ -1,34 +1,18 @@
-/* 35 lines 18 code 6 comments 11 blank */
+/* 18 lines 10 code 5 comments 3 blanks */
 
 /*
-Nextflow - Your first script
-https://www.nextflow.io/docs/latest/getstarted.html
+Nextflow - hello
 */
 
-// Script parameters
-params.str = 'Hello world!'
+// comment
+cheers = Channel.from 'Bonjour', 'Ciao', 'Hello', 'Hola'
 
-process splitLetters {
-
-    output:
-    file 'chunk_*' into letters
-
+process sayHello {
+  echo true
+  input: 
+    val x from cheers
+  script:
     """
-    printf '${params.str}' | split -b 6 - chunk_
-    """
-}
-
-process convertToUpper {
-
-    input:
-    file x from letters.flatten()
-
-    output:
-    stdout result
-
-    """
-    cat $x | tr '[a-z]' '[A-Z]'
+    echo '$x world!'
     """
 }
-
-result.view { it.trim() }
