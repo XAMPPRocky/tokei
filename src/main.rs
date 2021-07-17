@@ -105,7 +105,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
 
-        printer.print_results(languages.into_iter(), cli.compact)?
+        if cli.sort_reverse {
+            printer.print_results(languages.into_iter().rev(), cli.compact)?
+        } else {
+            printer.print_results(languages.into_iter(), cli.compact)?
+        }
     } else {
         printer.print_results(languages.iter(), cli.compact)?
     }
