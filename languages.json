@@ -702,6 +702,14 @@
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["kt", "kts"]
     },
+    "Ksh": {
+      "name": "Korn shell",
+      "shebangs": ["#!/bin/ksh"],
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "env": ["ksh"],
+      "extensions": ["ksh"]
+    },
     "KvLanguage": {
       "name":"KV Language",
       "line_comment": ["# "],
