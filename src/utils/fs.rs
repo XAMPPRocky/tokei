@@ -97,9 +97,8 @@ pub fn get_all_files<A: AsRef<Path>>(
         match result {
             Ok(stats) => {
                 let func = config.for_each_fn;
-                match func {
-                    Some(f) => f(language, stats.clone()),
-                    None => (),
+                if let Some(f) = func {
+                     f(language, stats.clone())
                 };
                 entry.add_report(stats)
             }
