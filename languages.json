@@ -95,6 +95,11 @@
       "line_comment": ["#"],
       "extensions": ["am"]
     },
+    "AWK": {
+      "line_comment": ["#"],
+      "shebangs": ["#!/bin/awk -f"],
+      "extensions": ["awk"]
+    },
     "Bash": {
       "name": "BASH",
       "shebangs": ["#!/bin/bash"],

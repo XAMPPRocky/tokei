@@ -169,9 +169,9 @@ impl AddAssign for Language {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.reports
-            .extend(mem::replace(&mut rhs.reports, Vec::new()));
+            .extend(mem::take(&mut rhs.reports));
         self.children
-            .extend(mem::replace(&mut rhs.children, BTreeMap::new()));
+            .extend(mem::take(&mut rhs.children));
         self.inaccurate |= rhs.inaccurate
     }
 }

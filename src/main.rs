@@ -52,8 +52,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         .max(FALLBACK_ROW_LEN);
 
     if cli.streaming == Some(crate::cli::Streaming::Simple) {
-        println!("#{:^10} {:^80} {:^12} {:^12} {:^12} {:^12}", "language", "path", "lines", "code", "comments", "blanks");
-        println!("{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}", (0..10).map(|_| "#").collect::<String>(), (0..80).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>(), (0..12).map(|_| "#").collect::<String>());
+        println!(
+            "#{:^10} {:^80} {:^12} {:^12} {:^12} {:^12}",
+            "language", "path", "lines", "code", "comments", "blanks"
+        );
+        println!(
+            "{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}",
+            (0..10).map(|_| "#").collect::<String>(),
+            (0..80).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>()
+        );
     }
 
     languages.get_statistics(&input, &cli.ignored_directories(), &config);
@@ -94,7 +105,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
 
-        printer.print_results(languages.into_iter(), cli.compact)?
+        if cli.sort_reverse {
+            printer.print_results(languages.into_iter().rev(), cli.compact)?
+        } else {
+            printer.print_results(languages.into_iter(), cli.compact)?
+        }
     } else {
         printer.print_results(languages.iter(), cli.compact)?
     }

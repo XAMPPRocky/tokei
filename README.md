@@ -317,6 +317,7 @@ AssemblyGAS
 Autoconf
 AutoHotKey
 Automake
+AWK
 Bash
 Batch
 BrightScript

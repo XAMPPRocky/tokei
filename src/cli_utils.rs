@@ -206,11 +206,24 @@ impl<W: Write> Printer<W> {
                 .values()
                 .map(Vec::len)
                 .sum::<usize>()
-                .to_formatted_string(&self.number_format).blue(),
-            language.lines().to_formatted_string(&self.number_format).blue(),
-            language.code.to_formatted_string(&self.number_format).blue(),
-            language.comments.to_formatted_string(&self.number_format).blue(),
-            language.blanks.to_formatted_string(&self.number_format).blue(),
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .lines()
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .code
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .comments
+                .to_formatted_string(&self.number_format)
+                .blue(),
+            language
+                .blanks
+                .to_formatted_string(&self.number_format)
+                .blue(),
         )
     }
 
@@ -234,7 +247,12 @@ impl<W: Write> Printer<W> {
             write!(self.writer, " {:.len$}", name, len = lang_section_len - 1)?;
             write!(self.writer, "|")?;
         } else {
-            write!(self.writer, " {:<len$}", name.bold(), len = lang_section_len)?;
+            write!(
+                self.writer,
+                " {:<len$}",
+                name.bold(),
+                len = lang_section_len
+            )?;
         }
         if inaccurate {
             write!(self.writer, "{}", IDENT_INACCURATE)?;
@@ -318,8 +336,9 @@ impl<W: Write> Printer<W> {
                 }
 
                 if self.list_files {
+                    self.print_subrow()?;
+
                     if !compact {
-                        self.print_subrow()?;
                         let (a, b): (Vec<_>, Vec<_>) = language
                             .reports
                             .iter()
@@ -359,7 +378,6 @@ impl<W: Write> Printer<W> {
                         }
                     } else {
                         // compact format
-                        self.print_subrow()?;
                         for report in &language.reports {
                             writeln!(self.writer, "{:1$}", report, self.path_length)?;
                         }
@@ -422,15 +440,13 @@ impl<W: Write> Printer<W> {
         let name = report.name.to_string_lossy();
         let name_length = name.len();
 
-        if name_length <= self.path_length {
-            self.print_report_total_formatted(name, self.path_length, report)?;
-        } else {
+        if name_length > self.path_length {
             let mut formatted = String::from("|");
             // Add 1 to the index to account for the '|' we add to the output string
             let from = find_char_boundary(&name, name_length + 1 - self.path_length);
             formatted.push_str(&name[from..]);
-            self.print_report_total_formatted(name, self.path_length, report)?;
         }
+        self.print_report_total_formatted(name, self.path_length, report)?;
 
         Ok(())
     }

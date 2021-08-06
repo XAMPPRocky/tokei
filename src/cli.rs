@@ -1,7 +1,7 @@
 use std::mem;
 use std::process;
 
-use clap::{clap_app, crate_description, ArgMatches};
+use clap::{clap_app, crate_description, AppSettings, ArgMatches};
 use tokei::{Config, LanguageType, Sort};
 
 use crate::{cli_utils::*, input::Format};
@@ -41,6 +41,7 @@ pub struct Cli<'a> {
     pub streaming: Option<Streaming>,
     pub print_languages: bool,
     pub sort: Option<Sort>,
+    pub sort_reverse: bool,
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
@@ -58,6 +59,7 @@ impl<'a> Cli<'a> {
                     "Support this project on GitHub Sponsors: https://github.com/sponsors/XAMPPRocky"
                 )
             )
+            (setting: AppSettings::ColoredHelp)
             (@arg columns: -c --columns
                 +takes_value
                 conflicts_with[output]
@@ -106,8 +108,15 @@ impl<'a> Cli<'a> {
             (@arg sort: -s --sort
                 possible_values(&["files", "lines", "blanks", "code", "comments"])
                 case_insensitive(true)
+                conflicts_with[rsort]
                 +takes_value
                 "Sort languages based on column")
+            (@arg rsort: -r --rsort
+                possible_values(&["files", "lines", "blanks", "code", "comments"])
+                case_insensitive(true)
+                conflicts_with[sort]
+                +takes_value
+                "Reverse sort languages based on column")
             (@arg types: -t --type
                 +takes_value
                 "Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown")
@@ -159,12 +168,18 @@ impl<'a> Cli<'a> {
 
         // Sorting category should be restricted by clap but parse before we do
         // work just in case.
-        let sort = matches.value_of("sort").map(parse_or_exit::<Sort>);
+        let sort = matches.value_of("sort")
+            .or_else(|| matches.value_of("rsort"))
+            .map(parse_or_exit::<Sort>);
+        let sort_reverse = matches.value_of("rsort").is_some();
+
         // Format category is overly accepting by clap (so the user knows what
         // is supported) but this will fail if support is not compiled in and
         // give a useful error to the user.
         let output = matches.value_of("output").map(parse_or_exit::<Format>);
-        let streaming = matches.value_of("streaming").map(parse_or_exit::<Streaming>);
+        let streaming = matches
+            .value_of("streaming")
+            .map(parse_or_exit::<Streaming>);
 
         crate::cli_utils::setup_logger(verbose);
 
@@ -181,6 +196,7 @@ impl<'a> Cli<'a> {
             streaming,
             print_languages,
             sort,
+            sort_reverse,
             types,
             compact,
             number_format,
@@ -259,8 +275,20 @@ impl<'a> Cli<'a> {
         };
 
         config.for_each_fn = match self.streaming {
-            Some(Streaming::Json) => Some(|l: LanguageType, e| println!("{}", serde_json::json!({"language": l.name(), "stats": e}))),
-            Some(Streaming::Simple) => Some(|l: LanguageType, e| println!("{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}", l.name(), e.name.to_string_lossy().to_string(), e.stats.lines(), e.stats.code, e.stats.comments, e.stats.blanks)),
+            Some(Streaming::Json) => Some(|l: LanguageType, e| {
+                println!("{}", serde_json::json!({"language": l.name(), "stats": e}))
+            }),
+            Some(Streaming::Simple) => Some(|l: LanguageType, e| {
+                println!(
+                    "{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}",
+                    l.name(),
+                    e.name.to_string_lossy().to_string(),
+                    e.stats.lines(),
+                    e.stats.code,
+                    e.stats.comments,
+                    e.stats.blanks
+                )
+            }),
             _ => None,
         };
 
