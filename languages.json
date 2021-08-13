@@ -944,6 +944,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["php"]
     },
+    "Po": {
+        "name": "PO File",
+        "line_comment": ["#"],
+        "extensions": ["po", "pot"]
+    },
     "Polly": {
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
