@@ -82,6 +82,11 @@
         "webinfo"
       ]
     },
+    "Astro":{
+      "line_comment":["---","//"],
+      "extensions":["astro"],
+      "multi_line_comments": [["/*", "*/"]]
+    },
     "Autoconf": {
       "line_comment": ["#", "dnl"],
       "extensions": ["in"]
