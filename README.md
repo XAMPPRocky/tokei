@@ -94,14 +94,20 @@ cargo install tokei
 conda install -c conda-forge tokei
 # Fedora
 sudo dnf install tokei
-# FreeBSD
-pkg install tokei
-# NetBSD
-pkgin install tokei
 # Nix/NixOS
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
+```
+
+#### FreeBSD
+```console
+pkg install tokei
+```
+
+#### NetBSD
+```console
+pkgin install tokei
 ```
 
 #### macOS
