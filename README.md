@@ -5,7 +5,9 @@
 [![Lines Of Code](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/XAMPPRocky/tokei)
 [![Documentation](https://docs.rs/tokei/badge.svg)](https://docs.rs/tokei/)
 
-Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
+Tokei is a program that displays statistics about your code. Tokei will show the
+number of files, total lines within those files and code, comments, and blanks
+grouped by language.
 
 ### Translations
 - [中文](https://github.com/chinanf-boy/tokei-zh#支持的语言)
@@ -38,19 +40,19 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ## Table of Contents
 
-- [Features](#features)
-- [Installation](#installation)
+  - [Features](#features)
+  - [Installation](#installation)
     - [Package Managers](#package-managers)
     - [Manual](#manual)
-- [Configuration](#configuration)
+  - [Configuration](#configuration)
 - [How to use Tokei](#how-to-use-tokei)
-- [Options](#options)
-- [Badges](#badges)
-- [Supported Languages](#supported-languages)
+  - [Options](#options)
+  - [Badges](#badges)
+  - [Supported Languages](#supported-languages)
 - [Changelog](CHANGELOG.md)
-- [Common Issues](#common-issues)
-- [Canonical Source](#canonical-source)
-- [Copyright and License](#copyright-and-license)
+  - [Common Issues](#common-issues)
+  - [Canonical Source](#canonical-source)
+  - [Copyright and License](#copyright-and-license)
 
 ## Features
 
@@ -58,16 +60,16 @@ Tokei is a program that displays statistics about your code. Tokei will show the
   Check out the [12.0.0 release](https://github.com/XAMPPRocky/tokei/releases/v12.0.0)
   to see how Tokei's speed compares to others.
 
-- Tokei is **accurate**, Tokei correctly handles multi line comments,
-  nested comments, and not counting comments that are in strings. Providing an
-  accurate code statistics.
+- Tokei is **accurate**. Tokei correctly handles multi-line comments, nested
+  comments, and not counting comments that are in strings providing an accurate
+  code statistics.
 
-- Tokei has huge range of languages, supporting over **150** languages, and
-  their various extensions.
+- Tokei has a huge range of languages, supporting over **150**, and their
+  various extensions.
 
-- Tokei can output in multiple formats(**CBOR**, **JSON**, **YAML**)
-  allowing Tokei's output to be easily stored, and reused. These can also be
-  reused in tokei combining a previous run's statistics with another set.
+- Tokei can output in multiple formats (**CBOR**, **JSON**, **YAML**) allowing
+  Tokei's output to be easily stored and reused. These can also be reused in
+  tokei combining a previous run's statistics with another set.
 
 - Tokei is available on **Mac**, **Linux**, and **Windows**. See [installation
   instructions](#installation) for how to get Tokei on your platform.
@@ -125,27 +127,27 @@ You can download prebuilt binaries in the
 [releases section](https://github.com/XAMPPRocky/tokei/releases).
 
 #### Building
-You can also build and install from source (requires the latest stable [Rust] compiler.)
+You can also build and install from source (requires the latest stable [Rust]
+compiler.)
 ```console
 cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 ```
 
 [rust]: https://www.rust-lang.org
 
-
 ## Configuration
 
 Tokei has a [configuration] file that allows you to change default behaviour.
-The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
-this file in three different places. The current directory,your home directory,
-and your configuration directory.
+The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for this
+file in three different places: the current directory, your home directory, and
+your configuration directory.
 
-## How to use Tokei
+## How to Use Tokei
 
-#### Basic usage
+#### Basic Usage
 
-This is the basic way to use tokei. Which will report on the code in `./foo`
-and all subfolders.
+This is the basic way to use tokei which will report on the code in `./foo` and
+all subfolders.
 
 ```shell
 $ tokei ./foo
@@ -153,9 +155,9 @@ $ tokei ./foo
 
 [configuration]: ./tokei.example.toml
 
-#### Multiple folders
-To have tokei report on multiple folders in the same call simply add a comma,
-or a space followed by another path.
+#### Multiple Folders
+To have tokei report on multiple folders in the same call simply add a comma or
+a space followed by another path.
 
 ```shell
 $ tokei ./foo ./bar ./baz
@@ -164,10 +166,10 @@ $ tokei ./foo ./bar ./baz
 $ tokei ./foo, ./bar, ./baz
 ```
 
-#### Excluding folders
-Tokei will respect all `.gitignore` and `.ignore` files, and you can use
-the `--exclude` option to exclude any additional files. The `--exclude` flag has
-the same semantics as `.gitignore`.
+#### Excluding Folders
+Tokei will respect all `.gitignore` and `.ignore` files and you can use the
+`--exclude` option to exclude any additional files. The `--exclude` flag has the
+same semantics as `.gitignore`.
 
 ```shell
 $ tokei ./foo --exclude *.rs
@@ -176,9 +178,9 @@ $ tokei ./foo --exclude *.rs
 Paths to exclude can also be listed in a `.tokeignore` file, using the same
 [syntax](https://git-scm.com/docs/gitignore) as .gitignore files.
 
-#### Sorting output
-By default tokei sorts alphabetically by language name, however using `--sort`
-tokei can also sort by any of the columns.
+#### Sorting Output
+By default, tokei sorts alphabetically by language name, however, using
+`--sort`, tokei can also sort by any of the columns.
 
 `blanks, code, comments, lines`
 
@@ -186,21 +188,21 @@ tokei can also sort by any of the columns.
 $ tokei ./foo --sort code
 ```
 
-#### Outputting file statistics
-By default tokei only outputs the total of the languages, and using `--files`
+#### Outputting File Statistics
+By default, tokei only outputs the total of the languages and using `--files`
 flag tokei can also output individual file statistics.
 
 ```shell
 $ tokei ./foo --files
 ```
 
-#### Outputting into different formats
-Tokei normally outputs into a nice human readable format designed for terminals.
+#### Outputting into Different Formats
+Tokei normally outputs into a nice human-readable format designed for terminals.
 There is also using the `--output` option various other formats that are more
-useful for bringing the data into another program.
+useful for bringing the data into another programs.
 
-**Note:** This version of tokei was compiled without any serialization formats, to enable serialization, reinstall
-tokei with the features flag.
+**Note:** This version of tokei was compiled without any serialization formats.
+To enable serialization, reinstall tokei with the features flag.
 
 ```shell
   ALL:
@@ -216,7 +218,7 @@ tokei with the features flag.
   cargo install tokei --features yaml
 ```
 
-**Currently supported formats**
+**Currently Supported Formats**
 - JSON `--output json`
 - YAML `--output yaml`
 - CBOR `--output cbor`
@@ -225,10 +227,10 @@ tokei with the features flag.
 $ tokei ./foo --output json
 ```
 
-#### Reading in stored formats
-Tokei can also take in the outputted formats added in the previous results to it's
-current run. Tokei can take either a path to a file, the format passed in as a
-value to the option, or from stdin.
+#### Reading in Stored Formats
+Tokei can also take in the outputted formats added in the previous results to
+its current run. Tokei can take either a path to a file, the format passed in as
+a value to the option, or from stdin.
 
 ```shell
 $ tokei ./foo --input ./stats.json
@@ -272,24 +274,23 @@ ARGS:
 ```
 
 ## Badges
-Tokei has support for badges. For example
+Tokei has support for badges. For example:
 [![](https://tokei.rs/b1/github/XAMPPRocky/tokei)](https://github.com/XAMPPRocky/tokei).
 
 ```
 [![](https://tokei.rs/b1/github/XAMPPRocky/tokei)](https://github.com/XAMPPRocky/tokei).
 ```
 
-Tokei's URL scheme is as follows.
-
+Tokei's URL scheme is as follows:
 ```
 https://tokei.rs/b1/{host: values: github|gitlab}/{Repo Owner eg: XAMPPRocky}/{Repo name eg: tokei}
 ```
 
-By default the badge will show the repo's LoC(_Lines of Code_), you can also
+By default, the badge will show the repo's LoC(_Lines of Code_). You can also
 specify for it to show a different category, by using the `?category=` query
-string. It can be either `code`, `blanks`, `files`, `lines`, `comments`,
-Example show total lines:
+string. It can be either `code`, `blanks`, `files`, `lines`, or `comments`.
 
+Example showing total lines:
 ```
 [![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=lines)](https://github.com/XAMPPRocky/tokei).
 ```
@@ -299,8 +300,9 @@ The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.co
 ## Supported Languages
 
 If there is a language that you would to add to tokei feel free to make a pull
-request. Languages are defined in [`languages.json`](./languages.json), and you can
-read how to add and test your language in our [CONTRIBUTING.md](./CONTRIBUTING.md).
+request. Languages are defined in [`languages.json`](./languages.json), and you
+can read how to add and test your language in our
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ```
 Abap
@@ -514,7 +516,7 @@ Zig
 Zsh
 ```
 
-## Common issues
+## Common Issues
 
 ### Tokei says I have a lot of D code, but I know there is no D code!
 This is likely due to `gcc` generating `.d` files. Until the D people decide on
@@ -533,8 +535,11 @@ please make your issues, and pull requests there.
 ## Copyright and License
 (C) Copyright 2015 by XAMPPRocky and contributors
 
-See [the graph](https://github.com/XAMPPRocky/tokei/graphs/contributors) for a full list of contributors.
+See [the graph](https://github.com/XAMPPRocky/tokei/graphs/contributors) for a
+full list of contributors.
 
-Tokei is distributed under the terms of both the MIT license and the Apache License (Version 2.0).
+Tokei is distributed under the terms of both the MIT license and the Apache
+License (Version 2.0).
 
-See [LICENCE-APACHE](./LICENCE-APACHE), [LICENCE-MIT](./LICENCE-MIT) for more information.
+See [LICENCE-APACHE](./LICENCE-APACHE), [LICENCE-MIT](./LICENCE-MIT) for more
+information.
