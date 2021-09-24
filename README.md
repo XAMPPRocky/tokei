@@ -137,7 +137,7 @@ cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 Tokei has a [configuration] file that allows you to change default behaviour.
 The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
-this file in three different places. The current directory,your home directory,
+this file in three different places. The current directory, your home directory,
 and your configuration directory.
 
 ## How to use Tokei
