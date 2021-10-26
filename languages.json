@@ -82,6 +82,18 @@
         "webinfo"
       ]
     },
+    "Ats": {
+      "name": "ATS",
+      "line_comments": ["//"],
+      "multi_line_comments": [["(*", "*)"], ["/*", "*/"]],
+      "extensions": [
+        "ats",
+	"dats",
+	"cats",
+	"hats",
+	"sats"
+      ]
+    },
     "Autoconf": {
       "line_comment": ["#", "dnl"],
       "extensions": ["in"]
