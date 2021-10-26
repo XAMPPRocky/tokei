@@ -84,8 +84,9 @@
     },
     "Ats": {
       "name": "ATS",
-      "line_comments": ["//"],
+      "line_comment": ["//"],
       "multi_line_comments": [["(*", "*)"], ["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
       "extensions": [
         "ats",
 	"dats",

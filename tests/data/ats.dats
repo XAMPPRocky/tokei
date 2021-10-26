@@ -1,10 +1,9 @@
-//! 43 lines 25 code 9 comments 9 blanks
+//! 42 lines 25 code 9 comments 8 blanks
 
 (*************
     Reference:
     https://github.com/ats-lang/ats-lang.github.io/blob/master/DOCUMENT/ATS2TUTORIAL/CODE/chap_stream_vt.dats
 **************)
-
 #include "share/atspre_staload.hats"
 
 /* Lazy-evaluated integer iterator */
