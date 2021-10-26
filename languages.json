@@ -89,10 +89,10 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": [
         "ats",
-	"dats",
-	"cats",
-	"hats",
-	"sats"
+        "dats",
+        "cats",
+        "hats",
+        "sats"
       ]
     },
     "Autoconf": {
