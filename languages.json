@@ -1143,6 +1143,12 @@
       "multi_line_comments": [["(*", "*)"]],
       "extensions": ["sml"]
     },
+    "Smalltalk": {
+      "name": "Smalltalk",
+      "quotes": [["'", "'"]],
+      "multi_line_comments": [["\\\"", "\\\""]],
+      "extensions": ["st"]
+    }
     "Solidity": {
       "name": "Solidity",
       "line_comment": ["//"],
