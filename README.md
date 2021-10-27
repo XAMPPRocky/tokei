@@ -342,6 +342,7 @@ Crystal
 CSharp
 CShell
 Css
+Cuda
 D
 DAML
 Dart
