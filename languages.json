@@ -278,6 +278,13 @@
       "mime": ["text/css"],
       "extensions": ["css"]
     },
+    "Cuda": {
+      "name": "CUDA",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["cu"]
+    },
     "D": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
