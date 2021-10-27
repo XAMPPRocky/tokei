@@ -88,11 +88,10 @@
       "multi_line_comments": [["(*", "*)"], ["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": [
-        "ats",
         "dats",
-        "cats",
         "hats",
-        "sats"
+        "sats",
+        "atxt"
       ]
     },
     "Autoconf": {
