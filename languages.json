@@ -651,6 +651,12 @@
       ],
       "extensions": ["js", "mjs"]
     },
+    "Jinja2": {
+      "name": "Jinja2",
+      "blank": true,
+      "extensions": ["j2"],
+      "multi_line_comments": [["{#", "#}"]]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
