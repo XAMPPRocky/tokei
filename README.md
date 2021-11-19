@@ -530,6 +530,11 @@ The canonical source of this repo is hosted on
 [GitHub](https://github.com/XAMPPRocky/tokei). If you have a GitHub account,
 please make your issues, and pull requests there.
 
+## Related Tools
+
+- [tokei-pie](https://github.com/laixintao/tokei-pie): Render tokei's output to
+  interactive sunburst chart.
+
 ## Copyright and License
 (C) Copyright 2015 by XAMPPRocky and contributors
 
