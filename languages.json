@@ -1068,7 +1068,8 @@
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "extensions": ["rkt"]
+      "env": ["racket"],
+      "extensions": ["rkt", "scrbl"]
     },
     "Rakefile": {
       "line_comment": ["#"],
