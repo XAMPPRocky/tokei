@@ -1,4 +1,4 @@
-/* 8 lines 4 code 2 comments 2 blanks */
+/* 7 lines 4 code 2 comments 1 blanks */
 
 // add vector
 __host__ void add(const int* a, const int* b, int* c) {
