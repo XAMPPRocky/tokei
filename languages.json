@@ -133,6 +133,11 @@
       "line_comment": ["'", "REM"],
       "extensions": ["brs"]
     },
+    "Ebuild": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["ebuild", "eclass"]
+    },
     "Elvish": {
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
