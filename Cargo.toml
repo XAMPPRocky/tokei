@@ -75,6 +75,8 @@ optional = true
 version = "0.8.15"
 
 [dev-dependencies]
+strum = "0.23.0"
+strum_macros = "0.23.0"
 regex = "1.4.6"
 tempfile = "3.0.8"
 git2 = { version="0.13.20", default-features=false, features=[] }

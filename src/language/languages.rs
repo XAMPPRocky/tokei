@@ -17,7 +17,7 @@ use crate::{
 /// directory.
 /// ([_List of
 /// Languages_](https://github.com/XAMPPRocky/tokei#supported-languages))
-#[derive(Debug, Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct Languages {
     inner: BTreeMap<LanguageType, Language>,
 }
