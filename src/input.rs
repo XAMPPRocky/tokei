@@ -7,7 +7,9 @@ type LanguageMap = BTreeMap<LanguageType, Language>;
 
 #[derive(Deserialize, Serialize, Debug)]
 struct Output {
+    #[serde(flatten)]
     languages: LanguageMap,
+    #[serde(rename = "Total")]
     totals: Language,
 }
 
