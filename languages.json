@@ -82,6 +82,18 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["s"]
     },
+    "Ats": {
+      "name": "ATS",
+      "line_comment": ["//"],
+      "multi_line_comments": [["(*", "*)"], ["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": [
+        "dats",
+        "hats",
+        "sats",
+        "atxt"
+      ]
+    },
     "Autoconf": {
       "line_comment": ["#", "dnl"],
       "extensions": ["in"]
@@ -648,6 +660,12 @@
       ],
       "extensions": ["js", "mjs"]
     },
+    "Jinja2": {
+      "name": "Jinja2",
+      "blank": true,
+      "extensions": ["j2"],
+      "multi_line_comments": [["{#", "#}"]]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
@@ -703,6 +721,14 @@
       "nested": true,
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["kt", "kts"]
+    },
+    "Ksh": {
+      "name": "Korn shell",
+      "shebangs": ["#!/bin/ksh"],
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "env": ["ksh"],
+      "extensions": ["ksh"]
     },
     "KvLanguage": {
       "name":"KV Language",
@@ -1045,7 +1071,8 @@
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "extensions": ["rkt"]
+      "env": ["racket"],
+      "extensions": ["rkt", "scrbl"]
     },
     "Rakefile": {
       "line_comment": ["#"],

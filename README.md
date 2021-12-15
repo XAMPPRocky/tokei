@@ -137,7 +137,7 @@ cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 Tokei has a [configuration] file that allows you to change default behaviour.
 The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
-this file in three different places. The current directory,your home directory,
+this file in three different places. The current directory, your home directory,
 and your configuration directory.
 
 ## How to use Tokei
@@ -314,6 +314,7 @@ Asp
 AspNet
 Assembly
 AssemblyGAS
+ATS
 Autoconf
 AutoHotKey
 Automake
@@ -531,6 +532,11 @@ $ tokei . -e *.d
 The canonical source of this repo is hosted on
 [GitHub](https://github.com/XAMPPRocky/tokei). If you have a GitHub account,
 please make your issues, and pull requests there.
+
+## Related Tools
+
+- [tokei-pie](https://github.com/laixintao/tokei-pie): Render tokei's output to
+  interactive sunburst chart.
 
 ## Copyright and License
 (C) Copyright 2015 by XAMPPRocky and contributors
