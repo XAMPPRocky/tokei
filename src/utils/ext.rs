@@ -29,7 +29,6 @@ pub(crate) trait SliceExt {
 
 impl SliceExt for [u8] {
     fn trim_first_and_last_line_of_whitespace(&self) -> &Self {
-        dbg!(&self);
         let start = self
             .iter()
             .position(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
@@ -39,7 +38,7 @@ impl SliceExt for [u8] {
             .iter()
             .rposition(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
             .map_or_else(
-                || self.len(),
+                || self.len().saturating_sub(1),
                 |i| {
                     // Remove the entire `\r\n` in the case that it was the line ending whitespace
                     if self[i.saturating_sub(1)] == b'\r' && self[i] == b'\n' {
@@ -148,14 +147,16 @@ mod tests {
     }
 
     #[test]
-    fn issue_727() {
+    fn trim_first_and_last_line_of_whitespace_edge_cases() {
         assert_eq!(b"", b"\ra ".trim_first_and_last_line_of_whitespace());
         assert_eq!(b"a", b"\r\na ".trim_first_and_last_line_of_whitespace());
+
+        assert_eq!(b" ", b" ".trim_first_and_last_line_of_whitespace());
     }
 
     proptest! {
         #[test]
-        fn trim_whitespace_doesnt_panic(input: Vec<u8>) {
+        fn trim_first_and_last_line_of_whitespace_doesnt_panic(input: Vec<u8>) {
             let _ = &input.trim_first_and_last_line_of_whitespace();
         }
     }
