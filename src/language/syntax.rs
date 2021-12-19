@@ -91,7 +91,6 @@ impl SharedMatchers {
             let mut builder = AhoCorasickBuilder::new();
             builder
                 .anchored(anchored)
-                .byte_classes(false)
                 .dfa(true)
                 .prefilter(true);
             builder.build_with_size(pattern).unwrap()
