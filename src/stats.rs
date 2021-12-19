@@ -46,12 +46,18 @@ impl CodeStats {
 
 impl ops::AddAssign for CodeStats {
     fn add_assign(&mut self, rhs: Self) {
+        self.add_assign(&rhs);
+    }
+}
+
+impl ops::AddAssign<&'_ CodeStats> for CodeStats {
+    fn add_assign(&mut self, rhs: &'_ CodeStats) {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.comments += rhs.comments;
 
-        for (language, stats) in rhs.blobs {
-            *self.blobs.entry(language).or_default() += stats;
+        for (language, stats) in &rhs.blobs {
+            *self.blobs.entry(*language).or_default() += stats;
         }
     }
 }
