@@ -1,9 +1,17 @@
-use serde_json::{json, Map};
+use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, error::Error, str::FromStr};
 
 use tokei::{Language, LanguageType, Languages};
 
 type LanguageMap = BTreeMap<LanguageType, Language>;
+
+#[derive(Deserialize, Serialize, Debug)]
+struct Output {
+    #[serde(flatten)]
+    languages: LanguageMap,
+    #[serde(rename = "Total")]
+    totals: Language,
+}
 
 macro_rules! supported_formats {
     ($(
@@ -20,6 +28,7 @@ macro_rules! supported_formats {
         /// Supported serialization formats.
         ///
         /// To enable all formats compile with the `all` feature.
+        #[cfg_attr(test, derive(strum_macros::EnumIter))]
         #[derive(Debug)]
         pub enum Format {
             Json,
@@ -63,8 +72,9 @@ macro_rules! supported_formats {
                 if input.is_empty() {
                     return None
                 }
-                if let Ok(result) = serde_json::from_str(input) {
-                    return Some(result)
+
+                if let Ok(Output { languages, .. }) = serde_json::from_str::<Output>(input) {
+                    return Some(languages);
                 }
 
                 $(
@@ -73,8 +83,8 @@ macro_rules! supported_formats {
                     {
                         let parse = &{ $parse_kode };
 
-                        if let Ok(result) = parse(input) {
-                            return Some(result)
+                        if let Ok(Output { languages, .. }) = parse(input) {
+                            return Some(languages)
                         }
                     }
                 )+
@@ -84,20 +94,17 @@ macro_rules! supported_formats {
             }
 
             pub fn print(&self, languages: &Languages) -> Result<String, Box<dyn Error>> {
-                // To serde_json Map and add summary
-                let mut map = Map::new();
-                for (language_type, language) in languages.into_iter() {
-                    map.insert(language_type.to_string(), json!(language));
-                }
-
-                map.insert(String::from("Total"), json!(languages.total()));
+                let output = Output {
+                    languages: (*languages).to_owned(),
+                    totals: languages.total()
+                };
 
                 match *self {
-                    Format::Json => Ok(serde_json::to_string(&map)?),
+                    Format::Json => Ok(serde_json::to_string(&output)?),
                     $(
                         #[cfg(feature = $feature)] Format::$variant => {
                             let print= &{ $print_kode };
-                            Ok(print(&map)?)
+                            Ok(print(&output)?)
                         }
                     ),+
                 }
@@ -195,4 +202,32 @@ pub fn add_input(input: &str, languages: &mut Languages) -> bool {
 
 fn convert_input(contents: &str) -> Option<LanguageMap> {
     self::Format::parse(&contents)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use strum::IntoEnumIterator;
+    use tokei::Config;
+
+    use std::path::Path;
+
+    #[test]
+    fn formatting_print_matches_parse() {
+        // Get language results from sample dir
+        let data_dir = Path::new("tests").join("data");
+        let mut langs = Languages::new();
+        langs.get_statistics(&[data_dir], &[], &Config::default());
+
+        // Check that the value matches after serializing and deserializing
+        for variant in Format::iter() {
+            let serialized = variant
+                .print(&langs)
+                .expect(&format!("Failed serializing variant: {:?}", variant));
+            let deserialized = Format::parse(&serialized)
+                .expect(&format!("Failed deserializing variant: {:?}", variant));
+            assert_eq!(*langs, deserialized);
+        }
+    }
 }
