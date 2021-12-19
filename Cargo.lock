@@ -22,9 +22,9 @@ dependencies = [
 
 [[package]]
 name = "arbitrary"
-version = "1.0.1"
+version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "237430fd6ed3740afe94eefcc278ae21e050285be882804e0d6e8695f0c94691"
+checksum = "510c76ecefdceada737ea728f4f9a84bd2e1ef29f1ba555e560940fe279954de"
 dependencies = [
  "derive_arbitrary",
 ]
