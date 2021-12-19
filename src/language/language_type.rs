@@ -260,7 +260,8 @@ impl LanguageType {
             .collect::<Vec<_>>();
 
         for (language, stats) in iter {
-            *jupyter_stats.blobs.entry(language).or_default() += stats;
+            *jupyter_stats.blobs.entry(language).or_default() += &stats;
+            jupyter_stats += &stats;
         }
 
         Some(jupyter_stats)
@@ -271,8 +272,29 @@ impl LanguageType {
 mod tests {
     use super::*;
 
+    use std::{fs, path::Path};
+
     #[test]
     fn rust_allows_nested() {
         assert!(LanguageType::Rust.allows_nested());
+    }
+
+    #[test]
+    fn jupyter_notebook_has_correct_totals() {
+        let sample_notebook =
+            fs::read_to_string(Path::new("tests").join("data").join("jupyter.ipynb")).unwrap();
+
+        let CodeStats {
+            blanks,
+            code,
+            comments,
+            ..
+        } = LanguageType::Jupyter
+            .parse_jupyter(sample_notebook.as_bytes(), &Config::default())
+            .unwrap();
+
+        assert_eq!(blanks, 115);
+        assert_eq!(code, 528);
+        assert_eq!(comments, 333);
     }
 }
