@@ -38,9 +38,10 @@ impl SliceExt for [u8] {
             .iter()
             .rposition(|c| c.is_line_ending_whitespace() || !c.is_whitespace())
             .map_or_else(
-                || self.len(),
+                || self.len().saturating_sub(1),
                 |i| {
-                    if self[i.saturating_sub(1)] == b'\r' {
+                    // Remove the entire `\r\n` in the case that it was the line ending whitespace
+                    if self[i.saturating_sub(1)] == b'\r' && self[i] == b'\n' {
                         i - 1
                     } else {
                         i
@@ -114,6 +115,8 @@ impl SliceExt for [u8] {
 mod tests {
     use super::*;
 
+    use proptest::prelude::*;
+
     #[test]
     fn is_whitespace() {
         assert!(b' '.is_whitespace());
@@ -141,5 +144,20 @@ mod tests {
         assert!([1, 2, 3, 4, 5].contains_slice(&[3, 4, 5]));
         assert!([1, 2, 3, 4, 5].contains_slice(&[2, 3, 4]));
         assert!(![1, 2, 3, 4, 5].contains_slice(&[]));
+    }
+
+    #[test]
+    fn trim_first_and_last_line_of_whitespace_edge_cases() {
+        assert_eq!(b"", b"\ra ".trim_first_and_last_line_of_whitespace());
+        assert_eq!(b"a", b"\r\na ".trim_first_and_last_line_of_whitespace());
+
+        assert_eq!(b" ", b" ".trim_first_and_last_line_of_whitespace());
+    }
+
+    proptest! {
+        #[test]
+        fn trim_first_and_last_line_of_whitespace_doesnt_panic(input: Vec<u8>) {
+            let _ = &input.trim_first_and_last_line_of_whitespace();
+        }
     }
 }
