@@ -532,6 +532,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["gw"]
     },
+    "Haml": {
+      "line_comment": ["-#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["haml"]
+    },
     "Happy": {
       "extensions": ["y", "ly"]
     },
