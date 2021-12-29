@@ -149,7 +149,8 @@ impl LanguageType {
             let started_in_comments = !syntax.stack.is_empty()
                 || (config.treat_doc_strings_as_comments == Some(true)
                     && syntax.quote.is_some()
-                    && syntax.quote_is_doc_quote);
+                    && syntax.quote_is_doc_quote)
+                || syntax.comment_indent.is_some();
             let ended_with_comments =
                 match syntax.perform_multi_line_analysis(lines, start, end, config) {
                     crate::language::syntax::AnalysisReport::Normal(end) => end,
@@ -172,6 +173,10 @@ impl LanguageType {
                             LanguageContext::Html { language } => {
                                 stats.code += 1;
                                 // Add all the markdown blobs.
+                                *stats.blobs.entry(language).or_default() += blob;
+                            }
+                            LanguageContext::Haml { language } => {
+                                stats.code += 1;
                                 *stats.blobs.entry(language).or_default() += blob;
                             }
                         }

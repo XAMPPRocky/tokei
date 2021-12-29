@@ -1,4 +1,4 @@
--# 18 lines 11 code 2 comments 5 blanks
+-# 36 lines 12 code 16 comments 8 blanks
 
 %section.container
 
@@ -16,3 +16,21 @@
       %div
         %span
           This is all wrapped in a comment
+
+      Caveats: Trailing empty line is counted as a comment.
+    :javascript
+      // JS comment
+      console.log("Hello!");
+
+      /*
+        This is also a comment
+      */
+      // Caveats: trailing empty line is discarded
+    :coffee
+      # CoffeeScript
+
+      console.log "Hello!"
+    :scss
+      // SCSS
+
+      body {}

@@ -534,6 +534,8 @@
     },
     "Haml": {
       "line_comment": ["-#"],
+      "indent_based_comments": ["/"],
+      "important_syntax": ["/", ":"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["haml"]
     },

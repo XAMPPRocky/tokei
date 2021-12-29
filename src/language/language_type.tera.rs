@@ -80,6 +80,21 @@ impl LanguageType {
         }
     }
 
+    /// Returns the indent-based comments of a language.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::Haml;
+    /// assert_eq!(lang.indent_based_comments(), &["/"]);
+    /// ```
+    pub fn indent_based_comments(self) -> &'static [&'static str]
+    {
+        match self {
+            {% for key, value in languages -%}
+                {{key}} => &[{% for item in value.indent_based_comments | default(value=[]) %}"{{item}}",{% endfor %}],
+            {% endfor %}
+        }
+    }
+
     /// Returns the single line comments of a language.
     /// ```
     /// use tokei::LanguageType;

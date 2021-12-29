@@ -7,7 +7,7 @@ use log::Level::Trace;
 use once_cell::sync::Lazy;
 
 use super::embedding::*;
-use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
+use crate::{stats::CodeStats, utils::ext::{SliceExt, AsciiExt}, Config, LanguageType};
 
 /// Tracks the syntax of the language as well as the current state in the file.
 /// Current has what could be consider three types of mode.
@@ -27,6 +27,7 @@ pub(crate) struct SyntaxCounter {
     pub(crate) quote_is_doc_quote: bool,
     pub(crate) stack: Vec<&'static str>,
     pub(crate) quote_is_verbatim: bool,
+    pub(crate) comment_indent: Option<usize>,
 }
 
 #[derive(Clone, Debug)]
@@ -51,6 +52,9 @@ pub(crate) enum LanguageContext {
     Html {
         language: LanguageType,
     },
+    Haml {
+        language: LanguageType,
+    },
     Markdown {
         balanced: bool,
         language: LanguageType,
@@ -68,6 +72,7 @@ pub(crate) struct SharedMatchers {
     pub is_fortran: bool,
     pub is_literate: bool,
     pub line_comments: &'static [&'static str],
+    pub indent_based_comments: &'static [&'static str],
     pub any_multi_line_comments: &'static [(&'static str, &'static str)],
     pub multi_line_comments: &'static [(&'static str, &'static str)],
     pub nested_comments: &'static [(&'static str, &'static str)],
@@ -105,6 +110,7 @@ impl SharedMatchers {
             important_syntax: init_corasick(language.important_syntax(), false),
             any_comments: language.any_comments(),
             line_comments: language.line_comments(),
+            indent_based_comments: language.indent_based_comments(),
             multi_line_comments: language.multi_line_comments(),
             any_multi_line_comments: language.any_multi_line_comments(),
             nested_comments: language.nested_comments(),
@@ -130,12 +136,13 @@ impl SyntaxCounter {
             quote_is_verbatim: false,
             stack: Vec::with_capacity(1),
             quote: None,
+            comment_indent: None,
         }
     }
 
     /// Returns whether the syntax is currently in plain mode.
     pub(crate) fn is_plain_mode(&self) -> bool {
-        self.quote.is_none() && self.stack.is_empty()
+        self.quote.is_none() && self.stack.is_empty() && self.comment_indent.is_none()
     }
 
     /// Returns whether the syntax is currently in string mode.
@@ -216,6 +223,12 @@ impl SyntaxCounter {
             }};
         }
 
+        if !self.shared.indent_based_comments.is_empty() {
+            if let Some(report) = self.try_analyze_indent_based_comments(lines, start) {
+                return report;
+            }
+        }
+
         let regex_cache = RegexCache::build(self.shared.language, lines, start, end);
 
         for i in start..end {
@@ -265,6 +278,35 @@ impl SyntaxCounter {
         AnalysisReport::Normal(ended_with_comments)
     }
 
+    fn try_analyze_indent_based_comments(
+        &mut self,
+        lines: &[u8],
+        start: usize,
+    ) -> Option<AnalysisReport> {
+        let indent = lines[start..].iter().position(|c| !c.is_whitespace());
+        if let Some(end_indent) = self.comment_indent {
+            if let Some(indent) = indent {
+                if indent > end_indent {
+                    return Some(AnalysisReport::Normal(true));
+                }
+            } else {
+                return Some(AnalysisReport::Normal(true));
+            }
+            self.comment_indent = None;
+        }
+
+        if let Some(indent) = indent {
+            let window = &lines[start + indent..];
+            for &indent_based_comment in self.shared.indent_based_comments {
+                if window.starts_with(indent_based_comment.as_bytes()) {
+                    self.comment_indent = Some(indent);
+                    return Some(AnalysisReport::Normal(true));
+                }
+            }
+        }
+        None
+    }
+
     /// Performs a set of heuristics to determine whether a line is a comment or
     /// not. The procedure is as follows.
     ///
@@ -305,6 +347,9 @@ impl SyntaxCounter {
                     })
         };
         let starts_with_comment = || {
+            if self.comment_indent.is_some() {
+                return self.shared.indent_based_comments.iter().any(|start| trimmed.starts_with(start.as_bytes()))
+            }
             let quote = match self.stack.last() {
                 Some(q) => q,
                 _ => return false,
@@ -516,6 +561,35 @@ impl SyntaxCounter {
                     None
                 }
             }
+            RegexFamily::Haml(haml) => {
+                if !lines[start..end].contains_slice(b":") {
+                    return None;
+                }
+
+                let start_of_code = end;
+                let indent = haml.indent().unwrap_or(0);
+                let end_of_code = find_indented_end(lines, end, indent).unwrap_or(lines.len());
+                let identifier = haml.lang().unwrap_or(b"");
+                let identifier = HAML_LANGUAGE_MAP.get(identifier).copied().unwrap_or(identifier);
+
+                let language = identifier
+                    .split(|&b| b == b',')
+                    .filter_map(|s| LanguageType::from_str(&String::from_utf8_lossy(s)).ok())
+                    .next()?;
+                trace!(
+                    "{} BLOCK: {:?}",
+                    language,
+                    String::from_utf8_lossy(&lines[end..end_of_code])
+                );
+                let stats =
+                    language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+
+                Some(FileContext::new(
+                    LanguageContext::Haml { language },
+                    end_of_code,
+                    stats,
+                ))
+            }
         }
     }
 
@@ -644,4 +718,18 @@ impl SyntaxCounter {
             None
         }
     }
+}
+
+fn find_indented_end(lines: &[u8], start: usize, indent: usize) -> Option<usize> {
+    let mut stepper = LineStep::new(b'\n', start, lines.len());
+
+    while let Some((start, end)) = stepper.next(lines) {
+        let line = &lines[start..end];
+        if let Some(current_indent) = line.iter().position(|c| !c.is_whitespace()) {
+            if current_indent <= indent {
+                return Some(start);
+            }
+        }
+    }
+    None
 }

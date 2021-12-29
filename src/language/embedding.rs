@@ -1,8 +1,10 @@
 #![allow(clippy::trivial_regex)]
 
+use std::{collections::HashMap, iter::FromIterator};
+
 use crate::LanguageType;
 use once_cell::sync::Lazy;
-use regex::bytes::Regex;
+use regex::bytes::{Regex, RegexBuilder};
 
 pub static START_SCRIPT: Lazy<Regex> =
     Lazy::new(|| Regex::new(r#"<script(?:.*type="(.*)")?.*?>"#).unwrap());
@@ -18,6 +20,16 @@ pub static END_TEMPLATE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</template>"#)
 
 pub static STARTING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\S+\s"#).unwrap());
 pub static ENDING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\s?"#).unwrap());
+
+pub static START_HAML_EMBEDDING: Lazy<Regex> = Lazy::new(|| RegexBuilder::new(r#"^(\s*):(\S+)\s"#).multi_line(true).build().unwrap());
+
+pub static HAML_LANGUAGE_MAP: Lazy<HashMap<&'static [u8], &'static [u8]>> =
+    Lazy::new(|| HashMap::from_iter(vec![
+        (&b"coffee"[..], &b"coffeescript"[..]),
+        (b"scss", b"sass"),
+        (b"erb", b"rubyhtml"),
+        (b"maruku", b"markdown"),
+    ]));
 
 /// A memory of a regex matched.
 /// The values provided by `Self::start` and `Self::end` are in the same space as the
@@ -62,6 +74,7 @@ pub(crate) struct RegexCache<'a> {
 pub(crate) enum RegexFamily<'a> {
     HtmlLike(HtmlLike<'a>),
     Markdown(Markdown<'a>),
+    Haml(Haml<'a>),
     Rust,
 }
 
@@ -72,6 +85,10 @@ pub(crate) struct HtmlLike<'a> {
 }
 
 pub(crate) struct Markdown<'a> {
+    starts: Option<Box<[Capture<'a>]>>,
+}
+
+pub(crate) struct Haml<'a> {
     starts: Option<Box<[Capture<'a>]>>,
 }
 
@@ -104,6 +121,16 @@ impl<'a> HtmlLike<'a> {
 impl<'a> Markdown<'a> {
     pub fn starts_in_range(&'a self, start: usize, end: usize) -> Option<&Capture<'a>> {
         filter_range(self.starts.as_ref()?, start, end).and_then(|mut it| it.next())
+    }
+}
+
+impl<'a> Haml<'a> {
+    pub fn indent(&'a self) -> Option<usize> {
+        Some(self.starts.as_ref()?[1].text.len())
+    }
+
+    pub fn lang(&'a self) -> Option<&'a [u8]> {
+        Some(self.starts.as_ref()?[2].text)
     }
 }
 
@@ -165,6 +192,17 @@ impl<'a> RegexCache<'a> {
                     || html.start_template.is_some()
                 {
                     Some(RegexFamily::HtmlLike(html))
+                } else {
+                    None
+                }
+            }
+            LanguageType::Haml => {
+                let haml = Haml {
+                    starts: save_captures(&START_HAML_EMBEDDING, lines, start, end),
+                };
+
+                if haml.starts.is_some() {
+                    Some(RegexFamily::Haml(haml))
                 } else {
                     None
                 }
