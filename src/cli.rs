@@ -104,6 +104,7 @@ impl Cli {
             )
             .arg(
                 Arg::new("input")
+                    .min_values(1)
                     .conflicts_with("languages")
                     .help("The path(s) to the file or directory to be counted."),
             )
