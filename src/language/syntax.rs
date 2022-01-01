@@ -64,6 +64,7 @@ pub(crate) struct SharedMatchers {
     pub allows_nested: bool,
     pub doc_quotes: &'static [(&'static str, &'static str)],
     pub important_syntax: AhoCorasick<u16>,
+    #[allow(dead_code)]
     pub any_comments: &'static [&'static str],
     pub is_fortran: bool,
     pub is_literate: bool,
@@ -89,10 +90,7 @@ impl SharedMatchers {
     pub fn init(language: LanguageType) -> Self {
         fn init_corasick(pattern: &[&'static str], anchored: bool) -> AhoCorasick<u16> {
             let mut builder = AhoCorasickBuilder::new();
-            builder
-                .anchored(anchored)
-                .dfa(true)
-                .prefilter(true);
+            builder.anchored(anchored).dfa(true).prefilter(true);
             builder.build_with_size(pattern).unwrap()
         }
 

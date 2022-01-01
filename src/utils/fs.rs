@@ -98,7 +98,7 @@ pub fn get_all_files<A: AsRef<Path>>(
             Ok(stats) => {
                 let func = config.for_each_fn;
                 if let Some(f) = func {
-                     f(language, stats.clone())
+                    f(language, stats.clone())
                 };
                 entry.add_report(stats)
             }

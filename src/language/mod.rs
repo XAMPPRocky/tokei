@@ -168,10 +168,8 @@ impl AddAssign for Language {
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
         self.code += rhs.code;
-        self.reports
-            .extend(mem::take(&mut rhs.reports));
-        self.children
-            .extend(mem::take(&mut rhs.children));
+        self.reports.extend(mem::take(&mut rhs.reports));
+        self.children.extend(mem::take(&mut rhs.children));
         self.inaccurate |= rhs.inaccurate
     }
 }
