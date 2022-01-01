@@ -44,20 +44,20 @@ impl<'de> serde::Deserialize<'de> for Languages {
 
 impl Languages {
     fn from_previous(map: BTreeMap<LanguageType, Language>) -> Self {
-        use std::collections::btree_map::Entry::*;
-        let mut _self = Self::new();
+        use std::collections::btree_map::Entry;
+        let mut me = Self::new();
 
         for (name, input_language) in map {
-            match _self.entry(name) {
-                Occupied(mut entry) => {
+            match me.entry(name) {
+                Entry::Occupied(mut entry) => {
                     *entry.get_mut() += input_language;
                 }
-                Vacant(entry) => {
+                Entry::Vacant(entry) => {
                     entry.insert(input_language);
                 }
             }
         }
-        _self
+        me
     }
 
     /// Populates the `Languages` struct with statistics about languages
@@ -93,11 +93,13 @@ impl Languages {
     /// # use tokei::*;
     /// let languages = Languages::new();
     /// ```
+    #[must_use]
     pub fn new() -> Self {
         Languages::default()
     }
 
     /// Summary of the Languages struct.
+    #[must_use]
     pub fn total(self: &Languages) -> Language {
         let mut total = Language::new();
         for (ty, language) in self {

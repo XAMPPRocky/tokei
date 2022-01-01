@@ -5,7 +5,10 @@ use clap::Arg;
 use clap::{crate_description, ArgMatches};
 use tokei::{Config, LanguageType, Sort};
 
-use crate::{cli_utils::*, input::Format};
+use crate::{
+    cli_utils::{crate_version, parse_or_exit, NumberFormatStyle},
+    input::Format,
+};
 
 /// Used for sorting languages.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -218,7 +221,7 @@ impl Cli {
         let compact = matches.is_present("compact");
         let types = matches.value_of("types").map(|e| {
             e.split(',')
-                .map(|t| t.parse::<LanguageType>())
+                .map(str::parse::<LanguageType>)
                 .filter_map(Result::ok)
                 .collect()
         });
@@ -347,7 +350,7 @@ impl Cli {
 
         config.for_each_fn = match self.streaming {
             Some(Streaming::Json) => Some(|l: LanguageType, e| {
-                println!("{}", serde_json::json!({"language": l.name(), "stats": e}))
+                println!("{}", serde_json::json!({"language": l.name(), "stats": e}));
             }),
             Some(Streaming::Simple) => Some(|l: LanguageType, e| {
                 println!(
@@ -358,7 +361,7 @@ impl Cli {
                     e.stats.code,
                     e.stats.comments,
                     e.stats.blanks
-                )
+                );
             }),
             _ => None,
         };

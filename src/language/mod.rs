@@ -7,10 +7,7 @@ use std::{collections::BTreeMap, mem, ops::AddAssign};
 
 pub use self::{language_type::*, languages::Languages};
 
-use crate::{
-    sort::Sort::{self, *},
-    stats::Report,
-};
+use crate::{sort::Sort, stats::Report};
 
 /// A struct representing statistics about a single Language.
 #[derive(Clone, Debug, Deserialize, Default, PartialEq, Serialize)]
@@ -36,12 +33,14 @@ impl Language {
     /// # use tokei::*;
     /// let mut rust = Language::new();
     /// ```
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Returns the total number of lines.
     #[inline]
+    #[must_use]
     pub fn lines(&self) -> usize {
         self.blanks + self.code + self.comments
     }
@@ -69,6 +68,7 @@ impl Language {
     /// of the language that doesn't contain any children. It will count
     /// non-blank lines in child languages as code unless the child language is
     /// considered "literate" then it will be counted as comments.
+    #[must_use]
     pub fn summarise(&self) -> Language {
         let mut summary = self.clone();
 
@@ -125,6 +125,7 @@ impl Language {
     ///
     /// assert!(rust.is_empty());
     /// ```
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.code == 0 && self.comments == 0 && self.blanks == 0 && self.children.is_empty()
     }
@@ -148,15 +149,15 @@ impl Language {
     /// ```
     pub fn sort_by(&mut self, category: Sort) {
         match category {
-            Blanks => self
+            Sort::Blanks => self
                 .reports
                 .sort_by(|a, b| b.stats.blanks.cmp(&a.stats.blanks)),
-            Comments => self
+            Sort::Comments => self
                 .reports
                 .sort_by(|a, b| b.stats.comments.cmp(&a.stats.comments)),
-            Code => self.reports.sort_by(|a, b| b.stats.code.cmp(&a.stats.code)),
-            Files => self.reports.sort_by(|a, b| a.name.cmp(&b.name)),
-            Lines => self
+            Sort::Code => self.reports.sort_by(|a, b| b.stats.code.cmp(&a.stats.code)),
+            Sort::Files => self.reports.sort_by(|a, b| a.name.cmp(&b.name)),
+            Sort::Lines => self
                 .reports
                 .sort_by(|a, b| b.stats.lines().cmp(&a.stats.lines())),
         }
@@ -170,6 +171,6 @@ impl AddAssign for Language {
         self.code += rhs.code;
         self.reports.extend(mem::take(&mut rhs.reports));
         self.children.extend(mem::take(&mut rhs.children));
-        self.inaccurate |= rhs.inaccurate
+        self.inaccurate |= rhs.inaccurate;
     }
 }

@@ -92,16 +92,16 @@ impl Config {
     pub fn from_config_files() -> Self {
         let conf_dir = dirs::config_dir()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
         let home_dir = dirs::home_dir()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
         let current_dir = env::current_dir()
             .ok()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
         #[allow(clippy::or_fun_call)]
         Config {
