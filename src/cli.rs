@@ -202,12 +202,18 @@ impl Cli {
                         used with --output.",
                     ),
             )
-            .arg(Arg::new("verbose").long("verbose").short('v').help(
-                "Set log output level:
-                1: to show unknown file extensions,
-                2: reserved for future debugging,
-                3: enable file level trace. Not recommended on multiple files",
-            ))
+            .arg(
+                Arg::new("verbose")
+                    .long("verbose")
+                    .short('v')
+                    .multiple_occurrences(true)
+                    .help(
+                        "Set log output level:
+                        1: to show unknown file extensions,
+                        2: reserved for future debugging,
+                        3: enable file level trace. Not recommended on multiple files",
+                    ),
+            )
             .get_matches();
 
         let columns = matches.value_of("columns").map(parse_or_exit::<usize>);
