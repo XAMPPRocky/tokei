@@ -1,4 +1,4 @@
-;; 16 lines 6 code 6 comments 5 blanks
+;; 16 lines 6 code 5 comments 5 blanks
 
 ; this is a ; single comment
 ;;;; this is also a single comment ;;;;;;
