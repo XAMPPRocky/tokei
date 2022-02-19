@@ -525,6 +525,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "env": ["groovy"],
       "extensions": ["groovy", "grt", "gtpl", "gvy"]
     },
     "Gwion": {
