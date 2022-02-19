@@ -501,7 +501,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["vert", "tesc", "tese", "geom", "frag", "comp", "glsl"]
+      "extensions": ["vert", "tesc", "tese", "geom", "frag", "comp", "mesh", "task", "rgen", "rint", "rahit", "rchit", "rmiss", "rcall", "glsl"]
     },
     "Go": {
       "line_comment": ["//"],
