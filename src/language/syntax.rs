@@ -439,6 +439,7 @@ impl SyntaxCounter {
             #[allow(clippy::trivial_regex)]
             LanguageType::Html
             | LanguageType::RubyHtml
+            | LanguageType::Liquid
             | LanguageType::Svelte
             | LanguageType::Vue => {
                 static START_SCRIPT: Lazy<Regex> =

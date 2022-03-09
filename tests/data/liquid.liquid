@@ -1,4 +1,4 @@
-{% comment %} 27 lines 16 code 7 comments 4 blanks {% endcomment %}
+{% comment %} 32 lines 19 code 8 comments 5 blanks {% endcomment %}
 
 {% paginate collection.products by 20 %}
 <!-- html comment -->
@@ -19,6 +19,11 @@
     </li>
     {% endfor %}
 </ul>
+
+<style>
+.description { font-size: 2em; }
+/* comment */
+</style>
 
 <div id="pagination">
   {{ paginate | default_pagination }}

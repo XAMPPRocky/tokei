@@ -706,6 +706,7 @@
     "Liquid": {
       "name": "Liquid",
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "important_syntax": ["<script", "<style"],
       "extensions": ["liquid"],
       "multi_line_comments": [["<!--", "-->"], ["{% comment %}", "{% endcomment %}"]]
     },
