@@ -63,56 +63,6 @@ where
 
 #[non_exhaustive]
 #[derive(Debug, Copy, Clone)]
-pub enum RowFormatStyle {
-    // -, = (Default)
-    Plain,
-    // ─, ━
-    BoxDrawing,
-}
-
-impl Default for RowFormatStyle {
-    fn default() -> Self {
-        Self::Plain
-    }
-}
-
-impl FromStr for RowFormatStyle {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "plain" => Ok(Self::Plain),
-            "box-drawing" => Ok(Self::BoxDrawing),
-            _ => Err(format!(
-                "Expected 'plain' or 'box-drawing' for row-format, but got '{}'",
-                s,
-            )),
-        }
-    }
-}
-
-impl RowFormatStyle {
-    fn row(self) -> &'static str {
-        match self {
-            Self::Plain => "=",
-            Self::BoxDrawing => "━",
-        }
-    }
-
-    fn subrow(self) -> &'static str {
-        match self {
-            Self::Plain => "-",
-            Self::BoxDrawing => "─",
-        }
-    }
-
-    pub fn all() -> &'static [&'static str] {
-        &["plain", "box-drawing"]
-    }
-}
-
-#[non_exhaustive]
-#[derive(Debug, Copy, Clone)]
 pub enum NumberFormatStyle {
     // 1234 (Default)
     Plain,
@@ -173,9 +123,10 @@ pub struct Printer<W> {
     writer: W,
     columns: usize,
     path_length: usize,
+    row: String,
+    subrow: String,
     list_files: bool,
     number_format: num_format::CustomFormat,
-    row_format: RowFormatStyle,
 }
 
 impl<W> Printer<W> {
@@ -184,15 +135,15 @@ impl<W> Printer<W> {
         list_files: bool,
         writer: W,
         number_format: num_format::CustomFormat,
-        row_format: RowFormatStyle,
     ) -> Self {
         Self {
             columns,
             list_files,
             path_length: columns - NO_LANG_ROW_LEN_NO_SPACES,
             writer,
+            row: "━".repeat(columns),
+            subrow: "─".repeat(columns),
             number_format,
-            row_format,
         }
     }
 }
@@ -438,19 +389,11 @@ impl<W: Write> Printer<W> {
     }
 
     fn print_row(&mut self) -> io::Result<()> {
-        writeln!(
-            self.writer,
-            "{}",
-            self.row_format.row().repeat(self.columns)
-        )
+        writeln!(self.writer, "{}", self.row)
     }
 
     fn print_subrow(&mut self) -> io::Result<()> {
-        writeln!(
-            self.writer,
-            "{}",
-            self.row_format.subrow().repeat(self.columns).dimmed()
-        )
+        writeln!(self.writer, "{}", self.subrow.dimmed())
     }
 
     fn print_report(
