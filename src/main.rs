@@ -86,6 +86,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         cli.files,
         io::BufWriter::new(io::stdout()),
         cli.number_format,
+        cli.row_format,
     );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {

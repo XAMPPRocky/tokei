@@ -6,7 +6,7 @@ use clap::{crate_description, ArgMatches};
 use tokei::{Config, LanguageType, Sort};
 
 use crate::{
-    cli_utils::{crate_version, parse_or_exit, NumberFormatStyle},
+    cli_utils::{crate_version, parse_or_exit, NumberFormatStyle, RowFormatStyle},
     input::Format,
 };
 
@@ -49,6 +49,7 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
+    pub row_format: RowFormatStyle,
     pub verbose: u64,
 }
 
@@ -203,6 +204,18 @@ impl Cli {
                     ),
             )
             .arg(
+                Arg::new("row_format_style")
+                    .long("row-format")
+                    .short('R')
+                    .takes_value(true)
+                    .possible_values(RowFormatStyle::all())
+                    .conflicts_with("output")
+                    .help(
+                        "Format of rows, i.e., plain (= and -, default), \
+                        box-drawing (━ and ─). Cannot be used with --output.",
+                    ),
+            )
+            .arg(
                 Arg::new("verbose")
                     .long("verbose")
                     .short('v')
@@ -232,6 +245,11 @@ impl Cli {
                 .filter_map(Result::ok)
                 .collect()
         });
+
+        let row_format: RowFormatStyle = matches
+            .value_of("row_format_style")
+            .map(parse_or_exit::<RowFormatStyle>)
+            .unwrap_or_default();
 
         let num_format_style: NumberFormatStyle = matches
             .value_of("num_format_style")
@@ -281,6 +299,7 @@ impl Cli {
             types,
             compact,
             number_format,
+            row_format,
             verbose,
         };
 
