@@ -141,8 +141,8 @@ impl<W> Printer<W> {
             list_files,
             path_length: columns - NO_LANG_ROW_LEN_NO_SPACES,
             writer,
-            row: "=".repeat(columns),
-            subrow: "-".repeat(columns),
+            row: "━".repeat(columns),
+            subrow: "─".repeat(columns),
             number_format,
         }
     }
