@@ -206,9 +206,6 @@ tokei with the features flag.
   ALL:
   cargo install tokei --features all
 
-  JSON:
-  cargo install tokei --features json
-
   CBOR:
   cargo install tokei --features cbor
 
