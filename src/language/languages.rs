@@ -102,7 +102,8 @@ impl Languages {
     #[must_use]
     pub fn total(self: &Languages) -> Language {
         let mut total = Language::new();
-        for (ty, language) in self {
+        for (ty, l) in self {
+            let language = l.summarise();
             total.comments += language.comments;
             total.blanks += language.blanks;
             total.code += language.code;
