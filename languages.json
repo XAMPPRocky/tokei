@@ -139,6 +139,11 @@
       "env": ["elvish"],
       "extensions": ["elv"]
     },
+    "Fennel" : {
+      "line_comment": [";", ";;"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["fnl"]
+    },
     "Fish": {
       "shebangs": ["#!/bin/fish"],
       "line_comment": ["#"],
