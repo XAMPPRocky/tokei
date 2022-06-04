@@ -570,6 +570,8 @@ impl SyntaxCounter {
             let quote = self.quote.take().unwrap();
             trace!("End {:?}", quote);
             Some(quote.len())
+        } else if window.starts_with(br"\\") {
+            Some(2)
         } else if !self.quote_is_verbatim
             && window.starts_with(br"\")
             && self
