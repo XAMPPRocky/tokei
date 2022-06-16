@@ -1315,6 +1315,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["ts"]
     },
+    "Unison": {
+      "nested": true,
+      "line_comment": ["--"],
+      "multi_line_comments": [["{-", "-}"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["u"]
+    },
     "UnrealPlugin": {
       "name": "Unreal Plugin",
       "blank": true,
