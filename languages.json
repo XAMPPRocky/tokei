@@ -814,6 +814,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["lucius"]
     },
+    "M4": {
+      "extensions": ["m4"],
+      "line_comment": ["#", "dnl"],
+      "quotes": [["`", "'"]]
+    },
     "Madlang": {
       "extensions": ["mad"],
       "line_comment": ["#"],
