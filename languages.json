@@ -1405,6 +1405,7 @@
     "Vhdl": {
       "name": "VHDL",
       "line_comment": ["--"],
+      "multi_line_comments": [["/*", "*/"]],
       "extensions": ["vhd", "vhdl"]
     },
     "VisualBasic": {

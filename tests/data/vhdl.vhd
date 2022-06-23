@@ -1,4 +1,8 @@
--- 30 lines 20 code 4 comments 6 blanks
+-- 34 lines 20 code 5 comments 7 blanks
+
+/*
+  Since VHDL 2008 C-Style delimited comment are allowed.
+*/
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
