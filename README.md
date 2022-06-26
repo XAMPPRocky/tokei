@@ -264,7 +264,7 @@ OPTIONS:
     -o, --output <output>         Outputs Tokei in a specific format. Compile with additional features for more format
                                   support. [possible values: cbor, json, yaml]
     -s, --sort <sort>             Sort languages based on column [possible values: files, lines, blanks, code, comments]
-    -t, --type <types>            Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown
+    -t, --type <types>            Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown
 
 ARGS:
     <input>...    The path(s) to the file or directory to be counted.
