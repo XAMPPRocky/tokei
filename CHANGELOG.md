@@ -447,7 +447,7 @@ Made various optimisations, up to 65% faster in some cases.
 - @rmbreak Tokei will now not add directories with `foo.bar` like syntax
   to a language.
 - @Michael-F-Bryan tokei will now exit gracefully when a feature is missing
-  instead of panicing
+  instead of panicking
 
 **Added languages:**
 
@@ -475,7 +475,7 @@ Made various optimisations, up to 65% faster in some cases.
 - @lligo : Tokei no longer panics on non-character-boundary when printing file names.
 - Fixed regression where no comment style files(_json, markdown_) weren't counted.
 - Tokei can now handle files in different encodings.(_using the [encoding](https://crates.io/crates/encoding) library_)
-- Tokei now prints errors instead of sliently skipping them.
+- Tokei now prints errors instead of silently skipping them.
 - Tokei can now print unused extensions using `-v` option.
 
 **Added languages:**

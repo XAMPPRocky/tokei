@@ -18,7 +18,7 @@ option "operating_currency" "EUR"
 ; verifying starting balance
 2020-09-02 balance Assets:Cash  81.7 EUR
 
-; transfering money
+; transferring money
 2020-09-03 * "transfer of money"
   Assets:Cash   -17.7 EUR
   Expenses:Food
