@@ -342,6 +342,7 @@ Crystal
 CSharp
 CShell
 Css
+Cython
 D
 DAML
 Dart
