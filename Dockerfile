@@ -14,10 +14,6 @@ RUN cargo build --release
 
 FROM alpine:3.14 as tool
 
-RUN apk update \
-    && apk add \
-        libgcc
-
 COPY --from=base /src/target/release/tokei /usr/local/bin/
 WORKDIR /src
 
