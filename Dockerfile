@@ -10,7 +10,7 @@ RUN apk update \
 COPY . /src
 
 WORKDIR /src
-RUN RUSTFLAGS="-C target-feature=-crt-static" cargo build --release
+RUN cargo build --release
 
 FROM alpine:3.14 as tool
 
