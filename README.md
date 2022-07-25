@@ -474,6 +474,7 @@ Svg
 Swift
 Swig
 SystemVerilog
+Talon
 Tcl
 Tex
 Text

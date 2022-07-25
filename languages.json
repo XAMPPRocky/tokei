@@ -1250,6 +1250,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["sv", "svh"]
     },
+    "Talon": {
+      "name": "Talon",
+      "line_comment": ["#"],
+      "quotes": ["\\\"", "\\\""],
+      "doc_quotes": ["\\\"\\\"\\\"", "\\\"\\\"\\\""],
+      "extensions": ["talon"]
+    },
     "Tcl": {
       "name": "TCL",
       "line_comment": ["#"],
