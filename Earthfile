@@ -17,7 +17,6 @@ build:
     SAVE ARTIFACT /src/target/release/tokei AS LOCAL ./tokei
 
 docker:
-    BUILD +build
     COPY +build/tokei /usr/local/bin/
     WORKDIR /src
     ENTRYPOINT [ "tokei" ]
