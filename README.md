@@ -298,7 +298,7 @@ The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.co
 ## Dockerized version
 Tokei is available in a small `alpine`-based docker image, buildable through:
 ```bash
-docker build . -t tokei
+earthly +docker
 ```
 
 Once built, one can run the image with:
