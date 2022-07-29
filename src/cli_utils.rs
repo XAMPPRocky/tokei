@@ -13,11 +13,17 @@ use num_format::ToFormattedString;
 use crate::input::Format;
 use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
 
-pub const FALLBACK_ROW_LEN: usize = 79;
-const NO_LANG_HEADER_ROW_LEN: usize = 67;
-const NO_LANG_ROW_LEN: usize = 61;
-const NO_LANG_ROW_LEN_NO_SPACES: usize = 54;
+pub const FALLBACK_ROW_LEN: usize = 81;
+const NO_LANG_HEADER_ROW_LEN: usize = 69;
+const NO_LANG_ROW_LEN: usize = 63;
+const NO_LANG_ROW_LEN_NO_SPACES: usize = 56;
 const IDENT_INACCURATE: &str = "(!)";
+
+const FILES_COLUMN_WIDTH: usize = 8;
+const LINES_COLUMN_WIDTH: usize = 12;
+const CODE_COLUMN_WIDTH: usize = 12;
+const COMMENTS_COLUMN_WIDTH: usize = 12;
+const BLANKS_COLUMN_WIDTH: usize = 12;
 
 pub fn crate_version() -> String {
     if Format::supported().is_empty() {
@@ -151,9 +157,11 @@ impl<W> Printer<W> {
 impl<W: Write> Printer<W> {
     pub fn print_header(&mut self) -> io::Result<()> {
         self.print_row()?;
+
+        let files_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
+            " {:<6$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             "Language".bold().blue(),
             "Files".bold().blue(),
             "Lines".bold().blue(),
@@ -181,7 +189,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>6} {:>12} {:>12} {:>12} {:>12}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             language
                 .reports
                 .len()
@@ -201,7 +209,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>6} {:>12} {:>12} {:>12} {:>12}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             language
                 .children
                 .values()
@@ -282,7 +290,7 @@ impl<W: Write> Printer<W> {
         } else {
             writeln!(
                 self.writer,
-                " {:>6} {:>12} {:>12} {:>12} {:>12}",
+                " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
                 stats.len().to_formatted_string(&self.number_format),
                 (code + comments + blanks).to_formatted_string(&self.number_format),
                 code.to_formatted_string(&self.number_format),
@@ -406,7 +414,7 @@ impl<W: Write> Printer<W> {
 
         writeln!(
             self.writer,
-            " {:>6} {:>12} {:>12} {:>12} {:>12}",
+            " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             " ",
             stats.lines().to_formatted_string(&self.number_format),
             stats.code.to_formatted_string(&self.number_format),
@@ -456,9 +464,10 @@ impl<W: Write> Printer<W> {
         max_len: usize,
         report: &Report,
     ) -> io::Result<()> {
+        let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {: <max$} {:>12} {:>12} {:>12} {:>12}",
+            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             name,
             report
                 .stats
