@@ -970,6 +970,10 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["php"]
     },
+    "Poke": {
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["pk"]
+    },
     "Polly": {
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
