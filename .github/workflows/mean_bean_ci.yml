@@ -137,8 +137,8 @@ jobs:
           # - mips-unknown-linux-musl
           - mips64-unknown-linux-gnuabi64
           - mips64el-unknown-linux-gnuabi64
-          - mipsel-unknown-linux-gnu
-          - mipsel-unknown-linux-musl
+          # - mipsel-unknown-linux-gnu
+          # - mipsel-unknown-linux-musl
           - powerpc-unknown-linux-gnu
           - powerpc64le-unknown-linux-gnu
           - s390x-unknown-linux-gnu
