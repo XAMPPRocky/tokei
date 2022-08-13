@@ -868,6 +868,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["mustache"]
     },
+    "Nextflow": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["nextflow", "nf"]
+    },
     "Nim": {
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
