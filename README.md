@@ -363,6 +363,7 @@ Factor
 FEN
 Fish
 FlatBuffers
+ForgeConfig
 Forth
 FortranLegacy
 FortranModern
@@ -510,6 +511,7 @@ Xml
 XSL
 Xtend
 Yaml
+ZenCode
 Zig
 Zsh
 ```
