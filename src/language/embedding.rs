@@ -47,7 +47,7 @@ impl<'a> std::fmt::Debug for Capture<'a> {
         f.debug_struct("Capture")
             .field("start", &self.start)
             .field("end", &self.end())
-            .field("text", &String::from_utf8_lossy(&self.text))
+            .field("text", &String::from_utf8_lossy(self.text))
             .finish()
     }
 }

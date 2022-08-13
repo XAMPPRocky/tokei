@@ -389,6 +389,11 @@
       "blank": true,
       "extensions": ["fen"]
     },
+    "Fennel" : {
+      "line_comment": [";", ";;"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["fnl"]
+    },
     "Fish": {
       "shebangs": ["#!/bin/fish"],
       "line_comment": ["#"],
@@ -491,7 +496,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["vert", "tesc", "tese", "geom", "frag", "comp", "glsl"]
+      "extensions": ["vert", "tesc", "tese", "geom", "frag", "comp", "mesh", "task", "rgen", "rint", "rahit", "rchit", "rmiss", "rcall", "glsl"]
     },
     "Gml": {
       "name": "Gml",
@@ -1320,6 +1325,13 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["ts"]
+    },
+    "Unison": {
+      "nested": true,
+      "line_comment": ["--"],
+      "multi_line_comments": [["{-", "-}"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["u"]
     },
     "UnrealDeveloperMarkdown": {
       "name": "Unreal Markdown",

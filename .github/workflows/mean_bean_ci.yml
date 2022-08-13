@@ -54,7 +54,7 @@ jobs:
           - i686-pc-windows-msvc
           - x86_64-pc-windows-msvc
           # GNU: You typically only need to test Windows GNU if you're
-          # specifically targetting it, and it can cause issues with some
+          # specifically targeting it, and it can cause issues with some
           # dependencies if you're not so it's disabled by self.
           # - i686-pc-windows-gnu
           # - x86_64-pc-windows-gnu

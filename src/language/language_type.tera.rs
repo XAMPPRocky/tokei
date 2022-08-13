@@ -59,7 +59,7 @@ impl LanguageType {
     /// Provides every variant in a Vec
     pub fn list() -> &'static [(Self, &'static [&'static str])] {
         &[{% for key, val in languages -%}
-            ({{key}}, 
+            ({{key}},
             {% if val.extensions %} &[{% for extension in val.extensions %}"{{extension}}", {% endfor %}],
             {% else %} &[],
             {% endif %}),
@@ -278,7 +278,7 @@ impl LanguageType {
     {
         let entry = entry.as_ref();
 
-        if let Some(filename) = fsutils::get_filename(&entry) {
+        if let Some(filename) = fsutils::get_filename(entry) {
             match &*filename {
                 {% for key, value in languages -%}
                     {%- if value.filenames -%}
@@ -292,7 +292,7 @@ impl LanguageType {
             }
         }
 
-        match fsutils::get_extension(&entry) {
+        match fsutils::get_extension(entry) {
             Some(extension) => LanguageType::from_file_extension(extension.as_str()),
             None => LanguageType::from_shebang(&entry),
         }
@@ -307,6 +307,7 @@ impl LanguageType {
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
+    #[must_use]
     pub fn from_file_extension(extension: &str) -> Option<Self> {
         match extension {
             {% for key, value in languages -%}
@@ -330,6 +331,7 @@ impl LanguageType {
     ///
     /// assert_eq!(lang, Some(LanguageType::JavaScript));
     /// ```
+    #[must_use]
     pub fn from_mime(mime: &str) -> Option<Self> {
         match mime {
             {% for key, value in languages -%}
