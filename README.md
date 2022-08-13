@@ -84,7 +84,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ### Package Managers
 
-#### Linux
+#### Unix
 ```console
 # Alpine Linux (since 3.13)
 apk add tokei
