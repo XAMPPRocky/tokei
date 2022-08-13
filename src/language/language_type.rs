@@ -23,8 +23,8 @@ use self::LanguageType::*;
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
 impl LanguageType {
-    /// Parses a given `Path` using the `LanguageType`. Returning `Report`
-    /// on success and giving back ownership of PathBuf on error.
+    /// Parses a given [`Path`] using the [`LanguageType`]. Returning [`Report`]
+    /// on success and giving back ownership of [`PathBuf`] on error.
     pub fn parse(self, path: PathBuf, config: &Config) -> Result<Report, (io::Error, PathBuf)> {
         let text = {
             let f = match File::open(&path) {
@@ -47,12 +47,12 @@ impl LanguageType {
         Ok(stats)
     }
 
-    /// Parses the text provided as the given `LanguageType`.
+    /// Parses the text provided as the given [`LanguageType`].
     pub fn parse_from_str<A: AsRef<str>>(self, text: A, config: &Config) -> CodeStats {
         self.parse_from_slice(text.as_ref().as_bytes(), config)
     }
 
-    /// Parses the bytes provided as the given `LanguageType`.
+    /// Parses the bytes provided as the given [`LanguageType`].
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
         let text = text.as_ref();
 
@@ -260,7 +260,8 @@ impl LanguageType {
             .collect::<Vec<_>>();
 
         for (language, stats) in iter {
-            *jupyter_stats.blobs.entry(language).or_default() += stats;
+            *jupyter_stats.blobs.entry(language).or_default() += &stats;
+            jupyter_stats += &stats;
         }
 
         Some(jupyter_stats)
@@ -271,8 +272,29 @@ impl LanguageType {
 mod tests {
     use super::*;
 
+    use std::{fs, path::Path};
+
     #[test]
     fn rust_allows_nested() {
         assert!(LanguageType::Rust.allows_nested());
+    }
+
+    #[test]
+    fn jupyter_notebook_has_correct_totals() {
+        let sample_notebook =
+            fs::read_to_string(Path::new("tests").join("data").join("jupyter.ipynb")).unwrap();
+
+        let CodeStats {
+            blanks,
+            code,
+            comments,
+            ..
+        } = LanguageType::Jupyter
+            .parse_jupyter(sample_notebook.as_bytes(), &Config::default())
+            .unwrap();
+
+        assert_eq!(blanks, 115);
+        assert_eq!(code, 528);
+        assert_eq!(comments, 333);
     }
 }

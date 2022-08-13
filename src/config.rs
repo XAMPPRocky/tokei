@@ -47,11 +47,11 @@ pub struct Config {
     pub types: Option<Vec<LanguageType>>,
     // /// A map of individual language configuration.
     // pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
-    /// Whether to output only the paths for downstream batch processing 
+    /// Whether to output only the paths for downstream batch processing
     /// *Default:* false
     #[serde(skip)]
     /// adds a closure for each function, e.g., print the result
-    pub for_each_fn: Option<fn (LanguageType, Report)>,
+    pub for_each_fn: Option<fn(LanguageType, Report)>,
 }
 
 impl Config {
@@ -90,18 +90,18 @@ impl Config {
     // /// extensions = ["py3"]
     /// ```
     pub fn from_config_files() -> Self {
-        let conf_dir = dirs_next::config_dir()
+        let conf_dir = dirs::config_dir()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
-        let home_dir = dirs_next::home_dir()
+        let home_dir = dirs::home_dir()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
         let current_dir = env::current_dir()
             .ok()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
         #[allow(clippy::or_fun_call)]
         Config {
@@ -114,7 +114,9 @@ impl Config {
                 .or(conf_dir.treat_doc_strings_as_comments)),
             sort: current_dir.sort.or(home_dir.sort.or(conf_dir.sort)),
             types: current_dir.types.or(home_dir.types.or(conf_dir.types)),
-            for_each_fn: current_dir.for_each_fn.or(home_dir.for_each_fn.or(conf_dir.for_each_fn)),
+            for_each_fn: current_dir
+                .for_each_fn
+                .or(home_dir.for_each_fn.or(conf_dir.for_each_fn)),
             no_ignore: current_dir
                 .no_ignore
                 .or(home_dir.no_ignore.or(conf_dir.no_ignore)),
