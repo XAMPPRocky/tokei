@@ -134,7 +134,7 @@ jobs:
           - i686-unknown-linux-gnu
           - i686-unknown-linux-musl
           # - mips-unknown-linux-gnu
-          - mips-unknown-linux-musl
+          # - mips-unknown-linux-musl
           - mips64-unknown-linux-gnuabi64
           - mips64el-unknown-linux-gnuabi64
           - mipsel-unknown-linux-gnu
