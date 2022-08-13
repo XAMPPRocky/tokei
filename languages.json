@@ -1454,6 +1454,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["wat", "wast"]
     },
+    "WenYan":{
+      "name":"The WenYan Programming Language",
+      "multi_line_comments":[["批曰。","。"],["疏曰。","。"]],
+      "extensions":["wy"]
+    },
     "WGSL": {
       "name": "WebGPU Shader Language",
       "line_comment": ["//"],
