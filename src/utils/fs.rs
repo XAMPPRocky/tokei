@@ -88,18 +88,17 @@ pub fn get_all_files<A: AsRef<Path>>(
     let rx_iter = rx
         .into_iter()
         .par_bridge()
-        .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)));
+        .filter_map(|e| LanguageType::from_path(e.path(), config).map(|l| (e, l)));
 
     let process = |(entry, language): (DirEntry, LanguageType)| {
-        let result = language.parse(entry.into_path(), &config);
+        let result = language.parse(entry.into_path(), config);
         let mut lock = languages.lock();
         let entry = lock.entry(language).or_insert_with(Language::new);
         match result {
             Ok(stats) => {
                 let func = config.for_each_fn;
-                match func {
-                    Some(f) => f(language, stats.clone()),
-                    None => (),
+                if let Some(f) = func {
+                    f(language, stats.clone())
                 };
                 entry.add_report(stats)
             }
