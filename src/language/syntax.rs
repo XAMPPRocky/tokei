@@ -6,7 +6,9 @@ use grep_searcher::LineStep;
 use log::Level::Trace;
 use once_cell::sync::Lazy;
 
-use super::embedding::*;
+use super::embedding::{
+    RegexCache, RegexFamily, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE, END_TEMPLATE,
+};
 use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
 
 /// Tracks the syntax of the language as well as the current state in the file.
@@ -64,6 +66,7 @@ pub(crate) struct SharedMatchers {
     pub allows_nested: bool,
     pub doc_quotes: &'static [(&'static str, &'static str)],
     pub important_syntax: AhoCorasick<u16>,
+    #[allow(dead_code)]
     pub any_comments: &'static [&'static str],
     pub is_fortran: bool,
     pub is_literate: bool,
@@ -89,11 +92,7 @@ impl SharedMatchers {
     pub fn init(language: LanguageType) -> Self {
         fn init_corasick(pattern: &[&'static str], anchored: bool) -> AhoCorasick<u16> {
             let mut builder = AhoCorasickBuilder::new();
-            builder
-                .anchored(anchored)
-                .byte_classes(false)
-                .dfa(true)
-                .prefilter(true);
+            builder.anchored(anchored).dfa(true).prefilter(true);
             builder.build_with_size(pattern).unwrap()
         }
 
@@ -179,7 +178,9 @@ impl SyntaxCounter {
             stats.blanks += 1;
             trace!("Blank No.{}", stats.blanks);
             true
-        } else if !self.shared.important_syntax.is_match(line) {
+        } else if self.shared.important_syntax.is_match(line) {
+            false
+        } else {
             trace!("^ Skippable");
 
             if self.shared.is_literate
@@ -197,8 +198,6 @@ impl SyntaxCounter {
             }
 
             true
-        } else {
-            false
         }
     }
 
@@ -369,21 +368,18 @@ impl SyntaxCounter {
                 let start_of_code = opening_fence.end();
                 let closing_fence = ENDING_MARKDOWN_REGEX.find(&lines[start_of_code..]);
                 if let Some(m) = &closing_fence {
-                    trace!("{:?}", String::from_utf8_lossy(m.as_bytes()))
+                    trace!("{:?}", String::from_utf8_lossy(m.as_bytes()));
                 }
                 let end_of_code = closing_fence
-                    .map(|fence| start_of_code + fence.start())
-                    .unwrap_or_else(|| lines.len());
-                let end_of_code_block = closing_fence
-                    .map(|fence| start_of_code + fence.end())
-                    .unwrap_or_else(|| lines.len());
+                    .map_or_else(|| lines.len(), |fence| start_of_code + fence.start());
+                let end_of_code_block =
+                    closing_fence.map_or_else(|| lines.len(), |fence| start_of_code + fence.end());
                 let balanced = closing_fence.is_some();
                 let identifier = &opening_fence.as_bytes().trim()[3..];
 
                 let language = identifier
                     .split(|&b| b == b',')
-                    .filter_map(|s| LanguageType::from_str(&String::from_utf8_lossy(s)).ok())
-                    .next()?;
+                    .find_map(|s| LanguageType::from_str(&String::from_utf8_lossy(s)).ok())?;
                 trace!(
                     "{} BLOCK: {:?}",
                     language,
