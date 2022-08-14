@@ -1134,6 +1134,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["rpy"]
     },
+    "ReScript": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["res", "resi"]
+    },
     "ReStructuredText": {
       "blank": true,
       "extensions": ["rst"]
