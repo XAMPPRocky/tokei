@@ -1,4 +1,4 @@
-# 49 lines 38 code 5 comments 6 blanks
+# 49 lines 37 code 6 comments 6 blanks
 
 =begin pod
 
