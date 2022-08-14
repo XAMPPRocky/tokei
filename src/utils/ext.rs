@@ -8,7 +8,7 @@ pub(crate) trait AsciiExt {
 
 impl AsciiExt for u8 {
     fn is_whitespace(&self) -> bool {
-        *self == b' ' || (b'\x09'..=b'\x0d').contains(&self)
+        *self == b' ' || (b'\x09'..=b'\x0d').contains(self)
     }
 
     fn is_not_line_ending_whitespace(&self) -> bool {
@@ -60,7 +60,7 @@ impl SliceExt for [u8] {
         let length = self.len();
 
         if length == 0 {
-            return &self;
+            return self;
         }
 
         let start = match self.iter().position(|c| !c.is_whitespace()) {
@@ -75,7 +75,7 @@ impl SliceExt for [u8] {
         let length = self.len();
 
         if length == 0 {
-            return &self;
+            return self;
         }
 
         let start = match self.iter().position(|c| !c.is_whitespace()) {

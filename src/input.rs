@@ -201,7 +201,7 @@ pub fn add_input(input: &str, languages: &mut Languages) -> bool {
 }
 
 fn convert_input(contents: &str) -> Option<LanguageMap> {
-    self::Format::parse(&contents)
+    self::Format::parse(contents)
 }
 
 #[cfg(test)]

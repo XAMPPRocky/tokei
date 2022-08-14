@@ -18,17 +18,20 @@ pub struct CodeStats {
 
 impl CodeStats {
     /// Creates a new blank `CodeStats`.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Get the total lines in a blob of code.
+    #[must_use]
     pub fn lines(&self) -> usize {
         self.blanks + self.code + self.comments
     }
 
     /// Creates a new `CodeStats` from an existing one with all of the child
     /// blobs merged.
+    #[must_use]
     pub fn summarise(&self) -> Self {
         let mut summary = self.clone();
 
@@ -76,8 +79,9 @@ impl Report {
     /// Create a new `Report` from a [`PathBuf`].
     ///
     /// [`PathBuf`]: //doc.rust-lang.org/std/path/struct.PathBuf.html
+    #[must_use]
     pub fn new(name: PathBuf) -> Self {
-        Report {
+        Self {
             name,
             ..Self::default()
         }
@@ -91,6 +95,7 @@ impl ops::AddAssign<CodeStats> for Report {
 }
 
 #[doc(hidden)]
+#[must_use]
 pub fn find_char_boundary(s: &str, index: usize) -> usize {
     for i in 0..4 {
         if s.is_char_boundary(index + i) {

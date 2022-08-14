@@ -1,9 +1,11 @@
 # Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
 [![Mean Bean CI](https://github.com/XAMPPRocky/tokei/workflows/Mean%20Bean%20CI/badge.svg)](https://github.com/XAMPPRocky/tokei/actions?query=workflow%3A%22Mean+Bean+CI%22)
-[![crates.io](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
 [![Help Wanted](https://img.shields.io/github/issues/XAMPPRocky/tokei/help%20wanted?color=green)](https://github.com/XAMPPRocky/tokei/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 [![Lines Of Code](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/XAMPPRocky/tokei)
 [![Documentation](https://docs.rs/tokei/badge.svg)](https://docs.rs/tokei/)
+![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
+![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
+![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
 
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
@@ -12,26 +14,26 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ## Example
 ```console
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language            Files        Lines         Code     Comments       Blanks
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  BASH                    4           49           30           10            9
  JSON                    1         1332         1332            0            0
  Shell                   1           49           38            1           10
  TOML                    2           77           64            4            9
--------------------------------------------------------------------------------
+───────────────────────────────────────────────────────────────────────────────
  Markdown                5         1355            0         1074          281
  |- JSON                 1           41           41            0            0
  |- Rust                 2           53           42            6            5
  |- Shell                1           22           18            0            4
  (Total)                           1471          101         1080          290
--------------------------------------------------------------------------------
+───────────────────────────────────────────────────────────────────────────────
  Rust                   19         3416         2840          116          460
  |- Markdown            12          351            5          295           51
  (Total)                           3767         2845          411          511
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Total                  32         6745         4410         1506          829
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ## [API Documentation](https://docs.rs/tokei)
@@ -82,7 +84,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ### Package Managers
 
-#### Linux
+#### Unix
 ```console
 # Alpine Linux (since 3.13)
 apk add tokei
@@ -206,9 +208,6 @@ tokei with the features flag.
   ALL:
   cargo install tokei --features all
 
-  JSON:
-  cargo install tokei --features json
-
   CBOR:
   cargo install tokei --features cbor
 
@@ -226,7 +225,7 @@ $ tokei ./foo --output json
 ```
 
 #### Reading in stored formats
-Tokei can also take in the outputted formats added in the previous results to it's
+Tokei can also take in the outputted formats added in the previous results to its
 current run. Tokei can take either a path to a file, the format passed in as a
 value to the option, or from stdin.
 
@@ -265,7 +264,7 @@ OPTIONS:
     -o, --output <output>         Outputs Tokei in a specific format. Compile with additional features for more format
                                   support. [possible values: cbor, json, yaml]
     -s, --sort <sort>             Sort languages based on column [possible values: files, lines, blanks, code, comments]
-    -t, --type <types>            Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown
+    -t, --type <types>            Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown
 
 ARGS:
     <input>...    The path(s) to the file or directory to be counted.
@@ -343,6 +342,7 @@ Crystal
 CSharp
 CShell
 Css
+Cuda
 D
 DAML
 Dart
@@ -364,6 +364,7 @@ Factor
 FEN
 Fish
 FlatBuffers
+ForgeConfig
 Forth
 FortranLegacy
 FortranModern
@@ -435,6 +436,7 @@ Perl
 Perl6
 Pest
 Php
+Poke
 Polly
 Pony
 PostCss
@@ -511,6 +513,7 @@ Xml
 XSL
 Xtend
 Yaml
+ZenCode
 Zig
 Zsh
 ```
