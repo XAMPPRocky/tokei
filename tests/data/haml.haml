@@ -1,0 +1,18 @@
+-# 18 lines 11 code 2 comments 5 blanks
+
+%section.container
+
+  - @posts.each do |post|
+    -# Ruby comment
+    %h1= post.title
+
+    %h2= post.subtitle
+
+    .content
+      = post.content
+
+    /
+      HTML comment. Not detected as of now.
+      %div
+        %span
+          This is all wrapped in a comment

@@ -552,6 +552,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["gw"]
     },
+    "Haml": {
+      "line_comment": ["-#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["haml"]
+    },
     "Hamlet": {
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
