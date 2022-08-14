@@ -98,6 +98,11 @@
       "line_comment": ["#", "dnl"],
       "extensions": ["in"]
     },
+    "Autoit": {
+      "line_comment": [";"],
+      "multi_line_comments": [["#comments-start", "#comments-end"], ["#cs", "#ce"]],
+      "extensions": ["au3"]
+    },
     "AutoHotKey": {
       "line_comment": [";"],
       "multi_line_comments": [["/*", "*/"]],
