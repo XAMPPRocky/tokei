@@ -345,6 +345,11 @@
       "multi_line_comments": [["{!", "!}"]],
       "extensions": ["dust"]
     },
+    "Ebuild": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["ebuild", "eclass"]
+    },
     "Edn": {
       "line_comment": [";"],
       "extensions": ["edn"]
