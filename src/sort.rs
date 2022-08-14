@@ -21,13 +21,18 @@ impl FromStr for Sort {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(match s.to_lowercase().as_ref() {
-            "blanks" => Sort::Blanks,
-            "comments" => Sort::Comments,
-            "code" => Sort::Code,
-            "files" => Sort::Files,
-            "lines" => Sort::Lines,
-            s => return Err(format!("Unsupported sorting option: {}", s)),
+        Ok(if s.eq_ignore_ascii_case("blanks") {
+            Sort::Blanks
+        } else if s.eq_ignore_ascii_case("comments") {
+            Sort::Comments
+        } else if s.eq_ignore_ascii_case("code") {
+            Sort::Code
+        } else if s.eq_ignore_ascii_case("files") {
+            Sort::Files
+        } else if s.eq_ignore_ascii_case("lines") {
+            Sort::Lines
+        } else {
+            return Err(format!("Unsupported sorting option: {}", s));
         })
     }
 }
