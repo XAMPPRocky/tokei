@@ -985,13 +985,6 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["pl", "pm"]
     },
-    "Perl6": {
-      "name": "Rakudo",
-      "line_comment": ["#"],
-      "multi_line_comments": [["=begin", "=end"]],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["pl6", "pm6"]
-    },
     "Pest": {
       "line_comment": ["//"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
@@ -1123,6 +1116,43 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "filenames": ["rakefile"],
       "extensions": ["rake"]
+    },
+    "Raku": {
+      "shebangs": ["#!/usr/bin/raku", "#!/usr/bin/perl6"],
+      "line_comment": ["#"],
+      "multi_line_comments": [
+        ["#`(", ")"],
+        ["#`[", "]"],
+        ["#`{", "}"],
+        ["#`｢", "｣"]
+      ],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""] , ["'", "'"]],
+      "verbatim_quotes": [["｢", "｣"]],
+      "doc_quotes": [
+        ["#|{", "}"],
+        ["#={", "}"],
+        ["#|(", ")"],
+        ["#=(", ")"],
+        ["#|[", "]"],
+        ["#=[", "]"],
+        ["#|｢", "｣"],
+        ["#=｢", "｣"],
+        ["=begin pod", "=end pod"],
+        ["=begin code", "=end code"],
+        ["=begin head", "=end head"],
+        ["=begin item", "=end item"],
+        ["=begin table", "=end table"],
+        ["=begin defn", "=end defn"],
+        ["=begin para", "=end para"],
+        ["=begin comment", "=end comment"],
+        ["=begin data", "=end data"],
+        ["=begin DESCRIPTION", "=end DESCRIPTION"],
+        ["=begin SYNOPSIS", "=end SYNOPSIS"],
+        ["=begin ", "=end "]
+      ],
+      "env": ["raku", "perl6"],
+      "extensions": ["raku", "rakumod", "rakutest", "pm6", "pl6", "p6"]
     },
     "Razor": {
       "multi_line_comments": [["<!--", "-->"], ["@*", "*@"]],
