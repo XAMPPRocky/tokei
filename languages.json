@@ -1259,6 +1259,13 @@
       "env": ["sh"],
       "extensions": ["sh"]
     },
+    "ShaderLab": {
+      "name": "ShaderLab",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["shader", "cginc"]
+    },
     "Sml": {
       "name": "Standard ML (SML)",
       "quotes": [["\\\"", "\\\""]],
