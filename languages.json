@@ -1406,6 +1406,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["ts"]
     },
+    "UMPL": {
+      "line_comment": ["!"],
+      "quotes": [["`", "`"]],
+      "extensions": ["umpl"]
+    },
     "Unison": {
       "nested": true,
       "line_comment": ["--"],

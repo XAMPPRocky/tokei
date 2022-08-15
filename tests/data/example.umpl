@@ -1,0 +1,68 @@
+! 68 lines 58 code 2 comments 8 blanks
+
+create yum with 5
+create num with ((plus 7 6 6 yum))>
+(num)>
+((plus 1 num))> ! prints 17, the greater than signifies that this should be the printed, the bang symbol signifies a comment, numbers must be in hexadecimal but will be printed in decimal
+
+potato 😂3 ⧼ ! to create a function we use the potato keyword, functions must be nameed with a single emoji, we put the number of args and then ⧼⧽ is where the code goes
+    loop ⧼
+        (` `)>
+        if {$3} ⧼
+            break
+        ⧽ else ⧼
+            continue
+        ⧽
+    ⧽
+    potato 😂 1 ⧼
+      ((minus 1 10))> ! prints -15
+    ⧽
+    create final with ((add $1 $2))< ! ! we use the create keyword to create a variable and the with keyword to assign a value to the variable, to refrence the args from a function use $1 for the first arg and so on
+    ! adds both arg1 and arg2, the less than signifies that this should not be the printed and sets it to the final variable
+    return: ! we use (:) colon whe returning nothing
+⧽
+((new 😂 10 1 0x1A))> ! we use the new keyword to call a function followed by function names, prints 32, when the first digit of number is a letre prefix with 0x
+
+list it with [((not true))> 0] ! creates a list with the values  1,2 (in hex), list can only have two elements and you cant declare recursive lists like: [0 [1 1]], but if you have an identiifer (d) that points to a list you can do: [9 d]
+((set-with it.first 2))<! sets the first element of the it list to 2, we can also use something like addwith mulitply with  which will add  or multiple by the variable to/by the value
+((set-with it.second 4))< ! sets the second element of the it list to 4 and print its
+
+create bool with true
+create other-bool with ((not bool))< ! creates a variable called bool and sets it to true, then creates a variable called other-bool and sets it to the opposite of bool, when we call a function in a variable defenition we must use an expression to call the function
+(other-bool)> ! prints false
+((set-with other-bool true))< ! we set other-bool to true
+
+if {other-bool} ⧼ ! the {} must evalte to a boolean, we can also use eq, ne lt, le etc
+  (`hello`)> ! the bactick (`) is used to encapsulate a string
+⧽ else ⧼
+    (`by`)>
+⧽
+
+if {true} ⧼ ! there is now else, use nested if elses, condotins must be in {} and we can use nested () within the 
+  ((minus 1 10))> ! prints -15
+⧽ else ⧼
+  ((plus 1 10))> ! prints 17 
+⧽
+
+loop ⧼
+    potato 😂 1 ⧼
+    ((minus 1 10))> ! prints -15
+    ⧽
+  create inputs with ((input `continue?`))<
+  if {((eq inputs `y`))<} ⧼ ! there is now else, use nested if elses, condotins must be in {} and we can use nested () within the 
+    potato 😂 1 ⧼
+      ((minus 1 10))> ! prints -15
+      ⧽
+    continue
+  ⧽ else ⧼
+      potato 😂 1 ⧼
+        ((minus 1 10))> ! prints -15
+      ⧽
+    break ! what the if/esle do can be nothing if you dont pu anything in the parenthesis
+  ⧽
+  ((inputs `continue?`))<
+⧽
+((new 😂 10 190 0x1A))> ! we use the new keyword to call a function followed by function names, prints 32, when the first digit of number is a letre prefix with 0x
+
+((set-with bool (input `ads`)))>
+create inputs with ((input `continue?`))<
