@@ -134,6 +134,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["bean", "beancount"]
     },
+    "Bitbake": {
+      "name": "Bitbake",
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["bb", "bbclass", "bbappend", "inc", "conf"]
+    },
     "BrightScript": {
       "quotes": [["\\\"", "\\\""]],
       "line_comment": ["'", "REM"],
