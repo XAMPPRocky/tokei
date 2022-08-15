@@ -343,6 +343,7 @@ CSharp
 CShell
 Css
 Cuda
+Cython
 D
 DAML
 Dart

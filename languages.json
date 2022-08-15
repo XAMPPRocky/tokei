@@ -287,6 +287,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["cu"]
     },
+    "Cython": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "env": ["cython"],
+      "extensions": ["pyx", "pxd", "pxi"]
+    },
     "D": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
