@@ -624,7 +624,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["HC", "hc"]
+      "extensions": ["HC", "hc","ZC","zc"]
     },
     "Html": {
       "name": "HTML",
