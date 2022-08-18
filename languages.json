@@ -699,7 +699,7 @@
           "text/x-ecmascript",
           "text/x-javascript"
       ],
-      "extensions": ["js", "mjs"]
+      "extensions": ["cjs", "js", "mjs"]
     },
     "Jinja2": {
       "name": "Jinja2",
