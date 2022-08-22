@@ -466,6 +466,7 @@ Scala
 Scheme
 Scons
 Sh
+ShaderLab
 Sml
 Solidity
 SpecmanE
