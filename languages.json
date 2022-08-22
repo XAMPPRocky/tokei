@@ -989,7 +989,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["{", "}"], ["(*", "*)"]],
       "quotes": [["'", "'"]],
-      "extensions": ["pas", "pp"]
+      "extensions": ["pas"]
     },
     "Perl": {
       "shebangs": ["#!/usr/bin/perl"],
@@ -1076,6 +1076,11 @@
         ["#{`", "`}"]
       ],
       "extensions": ["pug"]
+    },
+    "Puppet": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["pp"]
     },
     "PureScript": {
       "nested": true,
