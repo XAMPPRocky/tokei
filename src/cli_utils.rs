@@ -13,17 +13,15 @@ use num_format::ToFormattedString;
 use crate::input::Format;
 use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
 
-pub const FALLBACK_ROW_LEN: usize = 81;
+use crate::consts::{
+    BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
+    LINES_COLUMN_WIDTH,
+};
+
 const NO_LANG_HEADER_ROW_LEN: usize = 69;
 const NO_LANG_ROW_LEN: usize = 63;
 const NO_LANG_ROW_LEN_NO_SPACES: usize = 56;
 const IDENT_INACCURATE: &str = "(!)";
-
-const FILES_COLUMN_WIDTH: usize = 8;
-const LINES_COLUMN_WIDTH: usize = 12;
-const CODE_COLUMN_WIDTH: usize = 12;
-const COMMENTS_COLUMN_WIDTH: usize = 12;
-const BLANKS_COLUMN_WIDTH: usize = 12;
 
 pub fn crate_version() -> String {
     if Format::supported().is_empty() {
