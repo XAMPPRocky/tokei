@@ -1423,7 +1423,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
-      "extensions": ["ts"]
+      "extensions": ["ts", "mts"]
     },
     "UMPL": {
       "line_comment": ["!"],
