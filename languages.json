@@ -1302,6 +1302,13 @@
       "quotes": [["'", "'"]],
       "extensions": ["sql"]
     },
+    "Sqf": {
+      "name": "SQF",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["sqf"]
+    },
     "SRecode": {
       "name": "SRecode Template",
       "line_comment": [";;"],
