@@ -76,7 +76,7 @@ impl Config {
     ///
     /// |Platform | Value | Example |
     /// | ------- | ----- | ------- |
-    /// | Linux   | `$XDG_DATA_HOME` or `$HOME`/.local/share | /home/alice/.local/share |
+    /// | Linux   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config |
     /// | macOS   | `$HOME`/Library/Application Support | /Users/Alice/Library/Application Support |
     /// | Windows | `{FOLDERID_RoamingAppData}` | C:\Users\Alice\AppData\Roaming |
     ///
