@@ -719,7 +719,7 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["jsonnet", "libsonnet"]
     },
-    "JSX": {
+    "Jsx": {
       "name": "JSX",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -1399,7 +1399,7 @@
       ],
       "extensions": ["toml"]
     },
-    "TypeScript JSX": {
+    "Tsx": {
       "name": "TSX",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
