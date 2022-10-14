@@ -719,7 +719,7 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["jsonnet", "libsonnet"]
     },
-    "Jsx": {
+    "JSX": {
       "name": "JSX",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -1399,7 +1399,7 @@
       ],
       "extensions": ["toml"]
     },
-    "Tsx": {
+    "TypeScript JSX": {
       "name": "TSX",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -1423,7 +1423,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
-      "extensions": ["ts"]
+      "extensions": ["ts", "mts", "cts"]
     },
     "UMPL": {
       "line_comment": ["!"],
