@@ -9,15 +9,6 @@
       "line_comment": [";"],
       "extensions": ["abnf"]
     },
-    "Ebnf": {
-      "name": "EBNF",
-      "line_comment": [";"],
-      "multi_line_comments": [
-        ["(*", "*)"],
-        ["/*", "*/"]
-      ],
-      "extensions": ["ebnf"]
-    },
     "ActionScript": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -366,6 +357,15 @@
       "name": "Dust.js",
       "multi_line_comments": [["{!", "!}"]],
       "extensions": ["dust"]
+    },
+    "Ebnf": {
+      "name": "EBNF",
+      "line_comment": [";"],
+      "multi_line_comments": [
+        ["(*", "*)"],
+        ["/*", "*/"]
+      ],
+      "extensions": ["ebnf"]
     },
     "Ebuild": {
       "line_comment": ["#"],
