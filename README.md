@@ -84,7 +84,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ### Package Managers
 
-#### Linux
+#### Unix
 ```console
 # Alpine Linux (since 3.13)
 apk add tokei
@@ -342,6 +342,8 @@ Crystal
 CSharp
 CShell
 Css
+Cuda
+Cython
 D
 DAML
 Dart
@@ -435,6 +437,7 @@ Perl
 Perl6
 Pest
 Php
+Poke
 Polly
 Pony
 PostCss
@@ -463,6 +466,7 @@ Scala
 Scheme
 Scons
 Sh
+ShaderLab
 Sml
 Solidity
 SpecmanE
@@ -483,6 +487,7 @@ Toml
 Tsx
 Twig
 TypeScript
+UMPL
 UnrealDeveloperMarkdown
 UnrealPlugin
 UnrealProject

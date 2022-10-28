@@ -380,7 +380,13 @@ impl LanguageType {
                     match word {
                         {% for key, value in languages -%}
                             {%- if value.env -%}
-                                {%- for item in value.env  %}| "{{item}}" {% endfor %}=> Some({{key}}),
+                                {%- for item in value.env  %}
+                                    {% if loop.index == 1 %}
+                                        _ if word.starts_with("{{item}}")
+                                    {% else %}
+                                        || word.starts_with("{{item}}")
+                                    {% endif %}
+                                {% endfor %}=> Some({{key}}),
                             {% endif -%}
                         {%- endfor %}
                         env => {

@@ -50,7 +50,7 @@ rayon = "1.5.0"
 serde = { version = "1.0.128", features = ["derive", "rc"] }
 term_size = "0.3"
 toml = "0.5"
-parking_lot = "0.11"
+parking_lot = "0.12"
 dashmap = { version = "5.0.0", features = ["serde"] }
 num-format = "0.4.0"
 once_cell = "1.9"
@@ -60,7 +60,7 @@ dirs = "4"
 
 [dependencies.env_logger]
 features = []
-version = "0.8"
+version = "0.9"
 
 [dependencies.hex]
 optional = true
@@ -72,11 +72,11 @@ version = "0.11.2"
 
 [dependencies.serde_yaml]
 optional = true
-version = "0.8"
+version = "0.9"
 
 [dev-dependencies]
 proptest = "1"
-strum = "0.23"
-strum_macros = "0.23"
+strum = "0.24"
+strum_macros = "0.24"
 tempfile = "3.2"
-git2 = { version = "0.13", default-features = false, features = [] }
+git2 = { version = "0.15", default-features = false, features = [] }

@@ -1,4 +1,4 @@
-/* 23 lines 16 code 4 comments 3 blanks */
+/* 37 lines 23 code 5 comments 9 blanks */
 
 /*
  * Simple test class
@@ -19,5 +19,19 @@ class Foo
     public void bar()
     {
       System.out.println("FooBar"); //Not counted
+    }
+}
+
+// issues/915
+public class BackSlash {
+    public void run()
+    {
+      "\\"; // 1 code + 2 blanks
+
+
+      "\\"; // 1 code + 3 blanks
+
+
+
     }
 }
