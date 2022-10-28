@@ -868,6 +868,7 @@
       "extensions": ["md", "markdown"]
     },
     "Menhir": {
+      "nested": true,
       "quotes": [["\\\"", "\\\""]],
       "line_comment": ["//"],
       "multi_line_comments": [
