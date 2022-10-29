@@ -467,6 +467,7 @@ Scheme
 Scons
 Sh
 ShaderLab
+Slang
 Sml
 Solidity
 SpecmanE
