@@ -82,6 +82,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["s"]
     },
+    "Astro": {
+		"line_comment": ["//", "---"],
+		"extensions": ["astro"],
+		"multi_line_comments": [["/*", "*/"], ["<!--", "-->"]]
+	},
     "Ats": {
       "name": "ATS",
       "line_comment": ["//"],
