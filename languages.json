@@ -635,6 +635,10 @@
       "mime": ["text/html"],
       "extensions": ["html", "htm"]
     },
+    "Hy": {
+      "line_comment": [";"],
+      "extensions": ["hy"]
+    },
     "Idris": {
       "line_comment": ["--"],
       "multi_line_comments": [["{-", "-}"]],
