@@ -391,6 +391,7 @@ Hex
 Hlsl
 HolyC
 Html
+Hy
 Idris
 Ini
 IntelHex
