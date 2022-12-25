@@ -633,7 +633,8 @@
       "kind": "html",
       "important_syntax": ["<script", "<style"],
       "mime": ["text/html"],
-      "extensions": ["html", "htm"]
+      "extensions": ["html", "htm"],
+      "color": {"r": 228, "g": 77, "b": 38}
     },
     "Hy": {
       "line_comment": [";"],
@@ -703,7 +704,8 @@
           "text/x-ecmascript",
           "text/x-javascript"
       ],
-      "extensions": ["cjs", "js", "mjs"]
+      "extensions": ["cjs", "js", "mjs"],
+      "color": { "r": 240, "g": 219, "b": 79 }
     },
     "Jinja2": {
       "name": "Jinja2",
@@ -1334,7 +1336,8 @@
       "multi_line_comments": [["<!--", "-->"]],
       "important_syntax": ["<script", "<style"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["svelte"]
+      "extensions": ["svelte"],
+      "color": { "r": 255, "g": 64, "b": 0 }
     },
     "Svg": {
       "name": "SVG",
