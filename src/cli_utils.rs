@@ -7,7 +7,7 @@ use std::{
 };
 
 use clap::crate_version;
-use colored::Colorize;
+use colored::{Color, Colorize, ColoredString};
 use num_format::ToFormattedString;
 
 use crate::input::Format;
@@ -173,11 +173,11 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_language(&mut self, language: &Language, name: &str) -> io::Result<()>
+    pub fn print_language(&mut self, language: &Language, name: &str, color: Option<Color>) -> io::Result<()>
     where
         W: Write,
     {
-        self.print_language_name(language.inaccurate, name, None)?;
+        self.print_language_name(language.inaccurate, name, None, color)?;
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
@@ -197,7 +197,7 @@ impl<W: Write> Printer<W> {
     where
         W: Write,
     {
-        self.print_language_name(language.inaccurate, "Total", None)?;
+        self.print_language_name(language.inaccurate, "Total", None, None)?;
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
@@ -272,7 +272,12 @@ impl<W: Write> Printer<W> {
         language_type: LanguageType,
         stats: &[CodeStats],
     ) -> io::Result<()> {
-        self.print_language_name(false, &language_type.to_string(), Some(" |-"))?;
+        self.print_language_name(
+            false,
+            &language_type.to_string(),
+            Some(" |-"),
+            language_type.color(),
+        )?;
         let mut code = 0;
         let mut comments = 0;
         let mut blanks = 0;
@@ -336,7 +341,7 @@ impl<W: Write> Printer<W> {
                     self.print_subrow()?;
                 }
 
-                self.print_language(language, name.name())?;
+                self.print_language(language, name.name(), name.color())?;
                 if has_children {
                     self.print_language_total(language)?;
                 }
@@ -408,7 +413,7 @@ impl<W: Write> Printer<W> {
         stats: &CodeStats,
         inaccurate: bool,
     ) -> io::Result<()> {
-        self.print_language_name(inaccurate, &language_type.to_string(), Some(" |-"))?;
+        self.print_language_name(inaccurate, &language_type.to_string(), Some(" |-"), language_type.color())?;
 
         writeln!(
             self.writer,
