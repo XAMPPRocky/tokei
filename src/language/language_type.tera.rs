@@ -1,4 +1,5 @@
 use arbitrary::Arbitrary;
+use colored::Color;
 
 /// Represents a individual programming language. Can be used to provide
 /// information about the language, such as multi line comments, single line
@@ -15,6 +16,14 @@ pub enum LanguageType {
 }
 
 impl LanguageType {
+
+    pub fn color(self) -> Option<Color> {
+        match self {
+            {% for key, value in languages -%}
+                {{key}} => {% if value.color %}Some(Color::TrueColor{r: {{value.color.r}}, g: {{value.color.g}}, b: {{value.color.b}}}){% else %}None{% endif %},
+            {% endfor %}
+        }
+    }
 
     /// Returns the display name of a language.
     ///
