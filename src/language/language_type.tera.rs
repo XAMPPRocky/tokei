@@ -17,6 +17,14 @@ pub enum LanguageType {
 
 impl LanguageType {
 
+    /// Returns an Option<Color> containing a color associated with the language
+    ///
+    /// ```
+    /// # use tokei::*;
+    /// let svelte = LanguageType::Svelte;
+    ///
+    /// assert_eq!(svelte.color(), Some(Color::TrueColor{ r: 255, g: 64, b: 0 }));
+    /// ```
     pub fn color(self) -> Option<Color> {
         match self {
             {% for key, value in languages -%}
