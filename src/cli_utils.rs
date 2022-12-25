@@ -233,8 +233,14 @@ impl<W: Write> Printer<W> {
         inaccurate: bool,
         name: &str,
         prefix: Option<&str>,
+        language_color: Option<Color>,
     ) -> io::Result<()> {
         let mut lang_section_len = self.columns - NO_LANG_ROW_LEN - prefix.map_or(0, str::len);
+        let colored_name = match language_color {
+            Some(color) => name.color(color),
+            None => ColoredString::from(name),
+        };
+
         if inaccurate {
             lang_section_len -= IDENT_INACCURATE.len();
         }
@@ -244,13 +250,13 @@ impl<W: Write> Printer<W> {
         }
         // truncate and replace the last char with a `|` if the name is too long
         if lang_section_len < name.len() {
-            write!(self.writer, " {:.len$}", name, len = lang_section_len - 1)?;
+            write!(self.writer, " {:.len$}", colored_name, len = lang_section_len - 1)?;
             write!(self.writer, "|")?;
         } else {
             write!(
                 self.writer,
                 " {:<len$}",
-                name.bold(),
+                colored_name.bold(),
                 len = lang_section_len
             )?;
         }
