@@ -415,6 +415,7 @@ Logtalk
 Lua
 Lucius
 Madlang
+Max
 Makefile
 Markdown
 Meson

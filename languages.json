@@ -871,6 +871,9 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Max": {
+      "extensions": ["maxpat"]
+    },
     "Meson": {
       "line_comment": ["#"],
       "quotes": [["'", "'"], ["'''", "'''"]],
