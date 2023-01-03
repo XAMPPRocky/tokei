@@ -711,6 +711,12 @@
       "extensions": ["j2"],
       "multi_line_comments": [["{#", "#}"]]
     },
+    "Jq": {
+      "name": "jq",
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["jq"]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
