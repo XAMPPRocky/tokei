@@ -84,7 +84,7 @@
     },
     "Astro": {
       "line_comment": ["//"],
-      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
       "extensions": ["astro"]
     },
     "Ats": {
