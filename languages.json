@@ -583,6 +583,10 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["hbs", "handlebars"]
     },
+    "Hare": {
+      "line_comment": ["//"],
+      "extensions": ["ha"]
+    },
     "Haskell": {
       "nested": true,
       "line_comment": ["--"],
