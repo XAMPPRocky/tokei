@@ -987,7 +987,7 @@
       "name": "Pacman's makepkg",
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "filenames": ["pkgbuild", ".srcinfo"] 
+      "filenames": ["pkgbuild"] 
     },
     "Pan": {
       "line_comment": ["#"],
