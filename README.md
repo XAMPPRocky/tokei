@@ -104,6 +104,8 @@ pkgin install tokei
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
+# Void Linux
+sudo xbps-install tokei
 ```
 
 #### macOS
