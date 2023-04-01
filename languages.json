@@ -971,7 +971,7 @@
     "OpenCL": {
       "name": "OpenCL",
       "multi_line_comments": [["/*", "*/"]],
-      "extensions: ["cl", "ocl"]
+      "extensions": ["cl", "ocl"]
     },
     "OpenType": {
       "name": "OpenType Feature File",
