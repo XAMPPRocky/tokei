@@ -937,6 +937,14 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["nqp"]
     },
+    "Nushell": {
+      "line_comment": ["#"],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["'", "'"]
+      ],
+      "extensions": ["nu"]
+    },
     "ObjectiveC": {
       "name": "Objective-C",
       "line_comment": ["//"],
