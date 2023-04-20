@@ -146,10 +146,10 @@ jobs:
           - x86_64-unknown-linux-musl
           # Android
           # - aarch64-linux-android
-          - arm-linux-androideabi
-          - armv7-linux-androideabi
-          - i686-linux-android
-          - x86_64-linux-android
+          # - arm-linux-androideabi
+          # - armv7-linux-androideabi
+          # - i686-linux-android
+          # - x86_64-linux-android
           # *BSD
           # The FreeBSD targets can have issues linking so they are disabled
           # by default.
