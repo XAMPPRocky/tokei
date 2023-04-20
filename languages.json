@@ -613,6 +613,11 @@
       "blank": true,
       "extensions": ["hex"]
     },
+    "HiCad": {
+      "name": "HICAD",
+      "line_comment": ["REM", "rem"],
+      "extensions": ["MAC", "mac"]
+    },
     "Hlsl": {
       "name": "HLSL",
       "line_comment": ["//"],
