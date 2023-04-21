@@ -613,6 +613,11 @@
       "blank": true,
       "extensions": ["hex"]
     },
+    "HiCad": {
+      "name": "HICAD",
+      "line_comment": ["REM", "rem"],
+      "extensions": ["MAC", "mac"]
+    },
     "Hlsl": {
       "name": "HLSL",
       "line_comment": ["//"],
@@ -634,6 +639,10 @@
       "important_syntax": ["<script", "<style"],
       "mime": ["text/html"],
       "extensions": ["html", "htm"]
+    },
+    "Hy": {
+      "line_comment": [";"],
+      "extensions": ["hy"]
     },
     "Idris": {
       "line_comment": ["--"],
@@ -932,6 +941,14 @@
       "multi_line_comments": [["=begin", "=end"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["nqp"]
+    },
+    "Nushell": {
+      "line_comment": ["#"],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["'", "'"]
+      ],
+      "extensions": ["nu"]
     },
     "ObjectiveC": {
       "name": "Objective-C",
@@ -1277,6 +1294,12 @@
       "multi_line_comments": [["(*", "*)"]],
       "extensions": ["sml"]
     },
+    "Smalltalk": {
+      "name": "Smalltalk",
+      "quotes": [["'", "'"]],
+      "multi_line_comments": [["\\\"", "\\\""]],
+      "extensions": ["cs.st", "pck.st"]
+    },
     "Solidity": {
       "name": "Solidity",
       "line_comment": ["//"],
@@ -1301,6 +1324,13 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["'", "'"]],
       "extensions": ["sql"]
+    },
+    "Sqf": {
+      "name": "SQF",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["sqf"]
     },
     "SRecode": {
       "name": "SRecode Template",

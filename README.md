@@ -57,7 +57,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 ## Features
 
 - Tokei is **very fast**, and is able to count millions of lines of code in seconds.
-  Check out the [12.0.0 release](https://github.com/XAMPPRocky/tokei/releases/v12.0.0)
+  Check out the [11.0.0 release](https://github.com/XAMPPRocky/tokei/releases/v11.0.0)
   to see how Tokei's speed compares to others.
 
 - Tokei is **accurate**, Tokei correctly handles multi line comments,
@@ -104,6 +104,8 @@ pkgin install tokei
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
+# Void Linux
+sudo xbps-install tokei
 ```
 
 #### macOS
@@ -391,6 +393,7 @@ Hex
 Hlsl
 HolyC
 Html
+Hy
 Idris
 Ini
 IntelHex
