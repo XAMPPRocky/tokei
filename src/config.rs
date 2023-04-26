@@ -1,5 +1,7 @@
 use std::{env, fs, path::PathBuf};
 
+use etcetera::BaseStrategy;
+
 use crate::language::LanguageType;
 use crate::sort::Sort;
 use crate::stats::Report;
@@ -74,11 +76,11 @@ impl Config {
     /// The current directory's configuration will take priority over the configuration
     /// directory.
     ///
-    /// |Platform | Value | Example |
-    /// | ------- | ----- | ------- |
-    /// | Linux   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config |
-    /// | macOS   | `$HOME`/Library/Application Support | /Users/Alice/Library/Application Support |
-    /// | Windows | `{FOLDERID_RoamingAppData}` | C:\Users\Alice\AppData\Roaming |
+    /// |Platform | Value                                 | Example                        |
+    /// | ------- | ------------------------------------- | ------------------------------ |
+    /// | Linux   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config            |
+    /// | macOS   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /Users/alice/.config           |
+    /// | Windows | `{FOLDERID_RoamingAppData}`           | C:\Users\Alice\AppData\Roaming |
     ///
     /// # Example
     /// ```toml
@@ -90,11 +92,14 @@ impl Config {
     // /// extensions = ["py3"]
     /// ```
     pub fn from_config_files() -> Self {
-        let conf_dir = dirs::config_dir()
+        let conf_dir = etcetera::choose_base_strategy()
+            .ok()
+            .map(|basedirs| basedirs.config_dir())
             .and_then(Self::get_config)
             .unwrap_or_default();
 
-        let home_dir = dirs::home_dir()
+        let home_dir = etcetera::home_dir()
+            .ok()
             .and_then(Self::get_config)
             .unwrap_or_default();
 
