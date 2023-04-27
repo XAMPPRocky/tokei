@@ -401,6 +401,7 @@ Isabelle
 Jai
 Java
 JavaScript
+Jq
 Json
 Jsx
 Julia
