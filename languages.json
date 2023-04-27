@@ -817,6 +817,15 @@
       "extensions": ["liquid"],
       "multi_line_comments": [["<!--", "-->"], ["{% comment %}", "{% endcomment %}"]]
     },
+    "LinguaFranca": {
+      "name": "Lingua Franca",
+      "line_comment": ["//", "#"],
+      "important_syntax": ["{="],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "nested": true,
+      "extensions": ["lf"]
+    },
     "LinkerScript": {
       "name": "LD Script",
       "line_comment": ["//"],
