@@ -7,7 +7,7 @@ use std::{
 };
 
 use clap::crate_version;
-use colored::{Color, Colorize, ColoredString};
+use colored::{Color, ColoredString, Colorize};
 use num_format::ToFormattedString;
 
 use crate::input::Format;
@@ -173,11 +173,16 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_language(&mut self, language: &Language, name: &str, color: Option<Color>) -> io::Result<()>
+    pub fn print_language(
+        &mut self,
+        language: &Language,
+        name: &str,
+        color: Color,
+    ) -> io::Result<()>
     where
         W: Write,
     {
-        self.print_language_name(language.inaccurate, name, None, color)?;
+        self.print_language_name(language.inaccurate, name, None, Some(color))?;
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
@@ -250,7 +255,12 @@ impl<W: Write> Printer<W> {
         }
         // truncate and replace the last char with a `|` if the name is too long
         if lang_section_len < name.len() {
-            write!(self.writer, " {:.len$}", colored_name, len = lang_section_len - 1)?;
+            write!(
+                self.writer,
+                " {:.len$}",
+                colored_name,
+                len = lang_section_len - 1
+            )?;
             write!(self.writer, "|")?;
         } else {
             write!(
@@ -276,7 +286,7 @@ impl<W: Write> Printer<W> {
             false,
             &language_type.to_string(),
             Some(" |-"),
-            language_type.color(),
+            Some(language_type.category().color()),
         )?;
         let mut code = 0;
         let mut comments = 0;
@@ -341,7 +351,7 @@ impl<W: Write> Printer<W> {
                     self.print_subrow()?;
                 }
 
-                self.print_language(language, name.name(), name.color())?;
+                self.print_language(language, name.name(), name.category().color())?;
                 if has_children {
                     self.print_language_total(language)?;
                 }
@@ -413,7 +423,12 @@ impl<W: Write> Printer<W> {
         stats: &CodeStats,
         inaccurate: bool,
     ) -> io::Result<()> {
-        self.print_language_name(inaccurate, &language_type.to_string(), Some(" |-"), language_type.color())?;
+        self.print_language_name(
+            inaccurate,
+            &language_type.to_string(),
+            Some(" |-"),
+            Some(language_type.category().color()),
+        )?;
 
         writeln!(
             self.writer,

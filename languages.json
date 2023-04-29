@@ -1352,7 +1352,7 @@
       "important_syntax": ["<script", "<style"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["svelte"],
-      "color": { "r": 255, "g": 64, "b": 0 }
+      "category": "Programming"
     },
     "Svg": {
       "name": "SVG",
@@ -1366,7 +1366,8 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "nested": true,
-      "extensions": ["swift"]
+      "extensions": ["swift"],
+      "category": "Programming"
     },
     "Swig": {
       "name": "SWIG",

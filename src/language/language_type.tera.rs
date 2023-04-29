@@ -15,20 +15,47 @@ pub enum LanguageType {
     {% endfor %}
 }
 
+/// Groups languages together to share features like the output color
+#[derive(Default)]
+pub enum LanguageCategory {
+/// JavaScript, Rust, etc.
+    Programming,
+/// CSV, JSON, etc.
+    Data,
+/// markdown, asciidoc, etc.
+    Documentation,
+/// Everything else
+    #[default]
+    Unassigned
+}
+
+impl LanguageCategory {
+/// Used to visually distinguish certain groups of languages
+    pub fn color(&self) -> Color {
+        match self {
+            LanguageCategory::Programming => Color::Yellow,
+            LanguageCategory::Data => Color::Green,
+            LanguageCategory::Documentation => Color::Blue,
+            LanguageCategory::Unassigned => Color::White
+        }
+    }
+}
+
 impl LanguageType {
 
-    /// Returns an Option<Color> containing a color associated with the language
+    /// Returns an LanguageCategory used to group languages into bigger cohorts
+    /// As of now only used to determine the output coloring
     ///
     /// ```
     /// # use tokei::*;
     /// let svelte = LanguageType::Svelte;
     ///
-    /// assert_eq!(svelte.color(), Some(Color::TrueColor{ r: 255, g: 64, b: 0 }));
+    /// assert_eq!(svelte.category().color(), LanguageCategory::Programming);
     /// ```
-    pub fn color(self) -> Option<Color> {
+    pub fn category(self) -> LanguageCategory {
         match self {
             {% for key, value in languages -%}
-                {{key}} => {% if value.color %}Some(Color::TrueColor{r: {{value.color.r}}, g: {{value.color.g}}, b: {{value.color.b}}}){% else %}None{% endif %},
+                {{key}} => {% if value.category %}LanguageCategory::{{value.category}}{% else %}LanguageCategory::Unassigned{% endif %},
             {% endfor %}
         }
     }
