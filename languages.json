@@ -1204,6 +1204,14 @@
       "multi_line_comments": [["<!--", "-->"], ["@*", "*@"]],
       "extensions": ["cshtml"]
     },
+    "Redscript": {
+      "name": "Redscript",
+      "line_comment": ["//", "///"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "nested": true,
+      "extensions": ["reds"]
+    },
     "Renpy": {
       "name": "Ren'Py",
       "line_comment": ["#"],
