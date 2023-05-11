@@ -16,7 +16,8 @@ properties of a language in `languages.json` through examples.
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
-      "extensions": ["js", "mjs"]
+      "extensions": ["cjs", "js", "mjs"],
+      "color": { "r": 240, "g": 219, "b": 79 }
 },
 ```
 
@@ -123,6 +124,16 @@ detected as a `CMake` file, not a `Text` file.
     "filenames": [
         "cmakelists.txt"
     ]
+},
+```
+
+If a language has a color defined (like for example used in language statistics by git hosting platforms) it can be defined as a RGB-Object.
+
+GitHub uses [linguist](https://github.com/github/linguist) for it's colors so their [color definitions](https://github.com/github/linguist/blob/master/lib/linguist/languages.yml) are a good source to look for a language color.
+
+```json
+"JavaScript": {
+      "color": { "r": 240, "g": 219, "b": 79 }
 },
 ```
 

@@ -56,7 +56,7 @@ mod stats;
 
 pub use self::{
     config::Config,
-    language::{Language, LanguageType, Languages},
+    language::{Language, LanguageCategory, LanguageType, Languages},
     sort::Sort,
     stats::{find_char_boundary, CodeStats, Report},
 };
