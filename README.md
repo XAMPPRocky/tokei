@@ -430,6 +430,7 @@ Mustache
 Nim
 Nix
 NotQuitePerl
+Nushell
 ObjectiveC
 ObjectiveCpp
 OCaml
