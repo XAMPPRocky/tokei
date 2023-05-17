@@ -456,7 +456,6 @@ impl SyntaxCounter {
                 let stats =
                     self.get_lf_target_language().parse_from_slice(block_contents.trim_first_and_last_line_of_whitespace(), config);
                 trace!("-> stats: {:?}", stats);
-                println!("-> stats: {:?}", stats);
 
                 Some(FileContext::new(
                     LanguageContext::LinguaFranca,
