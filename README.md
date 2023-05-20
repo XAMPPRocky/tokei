@@ -358,6 +358,8 @@ Dockerfile
 DotNetResource
 DreamMaker
 Dust
+Ebuild
+EdgeDB
 Edn
 Elisp
 Elixir
