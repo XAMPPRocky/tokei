@@ -9,8 +9,8 @@ use arbitrary::Arbitrary;
 #[non_exhaustive]
 #[allow(clippy::upper_case_acronyms)]
 pub enum LanguageType {
-    {% for key, _ in languages -%}
-        #[allow(missing_docs)] {{key}},
+    {% for key, value in languages -%}
+        #[allow(missing_docs)] {% if value.name is defined %} #[serde(alias = "{{value.name}}")] {% else %} #[serde(alias = "{{key}}")] {% endif %} {{key}},
     {% endfor %}
 }
 
