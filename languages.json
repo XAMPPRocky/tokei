@@ -375,6 +375,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["ebuild", "eclass"]
     },
+    "EdgeQL": {
+      "name": "EdgeQL",
+      "line_comment": ["#"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""], ["$", "$"]],
+      "extensions": ["esdl"]
+    },
     "Edn": {
       "line_comment": [";"],
       "extensions": ["edn"]
