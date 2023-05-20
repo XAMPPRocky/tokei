@@ -953,6 +953,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["nqp"]
     },
+    "NuGetConfig": {
+      "name": "NuGet Config",
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "filenames": ["nuget.config", "packages.config", "nugetdefaults.config"]
+    },
     "Nushell": {
       "line_comment": ["#"],
       "quotes": [

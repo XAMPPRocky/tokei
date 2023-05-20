@@ -205,12 +205,13 @@ fn foo() {
 Please include the error message and a minimum working example
 including the file or file structure.
 
-```
+````
 This file crashes the program:
 
 <filename>
-\`\`\`
-\`\`\`
 ```
+<file/file structure>
+```
+````
 
 [Rust's enum style]: https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md#general-naming-conventions
