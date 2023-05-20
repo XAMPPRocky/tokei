@@ -322,6 +322,9 @@ Automake
 AWK
 Bash
 Batch
+Bazel
+Bean
+Bitbake
 BrightScript
 C
 Cabal
@@ -430,6 +433,7 @@ Mustache
 Nim
 Nix
 NotQuitePerl
+NuGetConfig
 Nushell
 ObjectiveC
 ObjectiveCpp
