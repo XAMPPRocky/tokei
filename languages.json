@@ -134,6 +134,13 @@
       "line_comment": ["REM", "::"],
       "extensions": ["bat", "btm", "cmd"]
     },
+    "Bazel": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["bzl", "bazel"],
+      "filenames": ["build", "workspace"]
+    },
     "Bean": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""]],
