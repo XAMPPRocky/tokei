@@ -4,7 +4,7 @@ use arbitrary::Arbitrary;
 /// information about the language, such as multi line comments, single line
 /// comments, string literal syntax, whether a given language allows nesting
 /// comments.
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize)]
 #[derive(Arbitrary, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[non_exhaustive]
 #[allow(clippy::upper_case_acronyms)]

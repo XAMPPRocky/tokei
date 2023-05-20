@@ -17,10 +17,19 @@ use crate::{
 use encoding_rs_io::DecodeReaderBytesBuilder;
 use grep_searcher::{LineIter, LineStep};
 use rayon::prelude::*;
+use serde::Serialize;
 
 use self::LanguageType::*;
 
 include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
+
+impl Serialize for LanguageType {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer {
+        serializer.serialize_str(self.name())
+    }
+}
 
 impl LanguageType {
     /// Parses a given [`Path`] using the [`LanguageType`]. Returning [`Report`]
