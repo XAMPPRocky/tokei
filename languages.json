@@ -379,6 +379,12 @@
       "name": "EdgeQL",
       "line_comment": ["#"],
       "quotes": [["'", "'"], ["\\\"", "\\\""], ["$", "$"]],
+      "extensions": ["edgeql"]
+    },
+    "ESDL": {
+      "name": "EdgeDB Schema Definition",
+      "line_comment": ["#"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""]],
       "extensions": ["esdl"]
     },
     "Edn": {
