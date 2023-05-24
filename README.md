@@ -322,6 +322,9 @@ Automake
 AWK
 Bash
 Batch
+Bazel
+Bean
+Bitbake
 BrightScript
 C
 Cabal
@@ -355,6 +358,8 @@ Dockerfile
 DotNetResource
 DreamMaker
 Dust
+Ebuild
+EdgeDB
 Edn
 Elisp
 Elixir
@@ -430,6 +435,7 @@ Mustache
 Nim
 Nix
 NotQuitePerl
+NuGetConfig
 Nushell
 ObjectiveC
 ObjectiveCpp

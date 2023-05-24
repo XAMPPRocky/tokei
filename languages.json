@@ -134,6 +134,13 @@
       "line_comment": ["REM", "::"],
       "extensions": ["bat", "btm", "cmd"]
     },
+    "Bazel": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["bzl", "bazel"],
+      "filenames": ["build", "workspace"]
+    },
     "Bean": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""]],
@@ -367,6 +374,18 @@
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["ebuild", "eclass"]
+    },
+    "EdgeQL": {
+      "name": "EdgeQL",
+      "line_comment": ["#"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""], ["$", "$"]],
+      "extensions": ["edgeql"]
+    },
+    "ESDL": {
+      "name": "EdgeDB Schema Definition",
+      "line_comment": ["#"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""]],
+      "extensions": ["esdl"]
     },
     "Edn": {
       "line_comment": [";"],
@@ -952,6 +971,12 @@
       "multi_line_comments": [["=begin", "=end"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["nqp"]
+    },
+    "NuGetConfig": {
+      "name": "NuGet Config",
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "filenames": ["nuget.config", "packages.config", "nugetdefaults.config"]
     },
     "Nushell": {
       "line_comment": ["#"],
