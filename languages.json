@@ -131,8 +131,24 @@
       "extensions": ["bash"]
     },
     "Batch": {
-      "line_comment": ["REM", "::"],
-      "extensions": ["bat", "btm", "cmd"]
+      "line_comment": [
+        "rem",
+        "Rem",
+        "REM",
+        "@rem",
+        "@Rem",
+        "@REM",
+        "&rem",
+        "&Rem",
+        "&REM",
+        "&@rem",
+        "&@Rem",
+        "&@REM",
+        "::",
+        ":::"],
+      "important_syntax": ["::+"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["bat", "cmd"]
     },
     "Bazel": {
       "line_comment": ["#"],
