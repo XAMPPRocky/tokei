@@ -623,6 +623,11 @@
       ],
       "extensions": ["gd"]
     },
+    "GenericConfig": {
+        "name": "Generic config",
+        "line_comment": ["#"],
+        "extensions": ["conf"]
+    },
     "Gherkin": {
       "name": "Gherkin (Cucumber)",
       "line_comment": ["#"],
