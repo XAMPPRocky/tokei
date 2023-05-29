@@ -167,7 +167,7 @@
       "name": "Bitbake",
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["bb", "bbclass", "bbappend", "inc", "conf"]
+      "extensions": ["bb", "bbclass", "bbappend", "inc"]
     },
     "Bqn": {
       "name": "BQN",
