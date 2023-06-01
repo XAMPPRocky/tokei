@@ -224,9 +224,9 @@ mod tests {
         for variant in Format::iter() {
             let serialized = variant
                 .print(&langs)
-                .expect(&format!("Failed serializing variant: {:?}", variant));
+                .unwrap_or_else(|_| panic!("Failed serializing variant: {:?}", variant));
             let deserialized = Format::parse(&serialized)
-                .expect(&format!("Failed deserializing variant: {:?}", variant));
+                .unwrap_or_else(|| panic!("Failed deserializing variant: {:?}", variant));
             assert_eq!(*langs, deserialized);
         }
     }
