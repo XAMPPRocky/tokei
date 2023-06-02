@@ -50,6 +50,7 @@ extern crate serde;
 #[macro_use]
 mod utils;
 mod config;
+mod consts;
 mod language;
 mod sort;
 mod stats;

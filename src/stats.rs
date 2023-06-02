@@ -1,6 +1,8 @@
-use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
-
+use crate::consts::{
+    BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, LINES_COLUMN_WIDTH,
+};
 use crate::LanguageType;
+use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
 
 /// A struct representing stats about a single blob of code.
 #[derive(Clone, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -109,7 +111,7 @@ macro_rules! display_stats {
     ($f:expr, $this:expr, $name:expr, $max:expr) => {
         write!(
             $f,
-            " {: <max$} {:>12} {:>12} {:>12} {:>12}",
+            " {: <max$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             $name,
             $this.stats.lines(),
             $this.stats.code,
@@ -125,7 +127,8 @@ impl fmt::Display for Report {
         let name = self.name.to_string_lossy();
         let name_length = name.len();
 
-        let max_len = f.width().unwrap_or(25);
+        // Added 2 to max length to cover wider Files column (see https://github.com/XAMPPRocky/tokei/issues/891).
+        let max_len = f.width().unwrap_or(27) + 2;
 
         if name_length <= max_len {
             display_stats!(f, self, name, max_len)
