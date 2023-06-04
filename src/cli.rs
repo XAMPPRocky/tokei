@@ -309,9 +309,55 @@ impl Cli {
     }
 
     pub fn print_supported_languages() {
-        for (key, extensions) in LanguageType::list() {
-            println!("{} ({})", key, extensions.join(", "));
-        }
+        use table_formatter::table;
+        let term_width = term_size::dimensions()
+            .map(|(w, _)| w)
+            .unwrap_or(75)
+            .min(120)
+            - 6;
+        let (lang_w, suffix_w) = if dbg!(term_width) <= 60 {
+            (term_width / 2, term_width / 2)
+        } else {
+            (30, term_width - 30)
+        };
+        dbg!(lang_w, suffix_w);
+
+        let header: Vec<table::TableCell> = vec![
+            table::TableCell::new(table::Cell::TextCell("Language".to_string())).with_width(lang_w),
+            table::TableCell::new(table::Cell::TextCell("Extensions".to_string()))
+                .with_width(suffix_w)
+                .with_padding(table::CellPadding::new(3, 0)),
+        ];
+        let content: Vec<Vec<table::TableCell>> = LanguageType::list()
+            .iter()
+            .map(|(key, ext)| {
+                vec![
+                    table::TableCell::new(table::Cell::TextCell(key.name().to_string()))
+                        .with_width(lang_w),
+                    table::TableCell::new(table::Cell::TextCell(
+                        if matches!(key, LanguageType::Emojicode) {
+                            ext.join(", ") + "\u{200b}"
+                        } else if ext.is_empty() {
+                            "<None>".to_string()
+                        } else {
+                            ext.join(", ")
+                        },
+                    ))
+                    .with_width(suffix_w)
+                    .with_padding(table::CellPadding::new(3, 0)),
+                ]
+            })
+            .collect();
+        let t = table::Table::from_data(header, content)
+            .with_overflow(table::CellOverflow::Ellipsis)
+            .with_border(table::Border::ALL);
+
+        let rendered = t.render();
+        dbg!(rendered.split('\n').collect::<Vec<_>>()[0]
+            .chars()
+            .collect::<Vec<_>>()
+            .len());
+        println!("{}", rendered);
     }
 
     /// Overrides the shared options (See `tokei::Config` for option
