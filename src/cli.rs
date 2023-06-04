@@ -315,12 +315,11 @@ impl Cli {
             .unwrap_or(75)
             .min(120)
             - 6;
-        let (lang_w, suffix_w) = if dbg!(term_width) <= 60 {
+        let (lang_w, suffix_w) = if term_width <= 60 {
             (term_width / 2, term_width / 2)
         } else {
             (30, term_width - 30)
         };
-        dbg!(lang_w, suffix_w);
 
         let header: Vec<table::TableCell> = vec![
             table::TableCell::new(table::Cell::TextCell("Language".to_string())).with_width(lang_w),
@@ -353,10 +352,6 @@ impl Cli {
             .with_border(table::Border::ALL);
 
         let rendered = t.render();
-        dbg!(rendered.split('\n').collect::<Vec<_>>()[0]
-            .chars()
-            .collect::<Vec<_>>()
-            .len());
         println!("{}", rendered);
     }
 
