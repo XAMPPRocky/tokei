@@ -3,6 +3,7 @@ use std::process;
 
 use clap::Arg;
 use clap::{crate_description, ArgMatches};
+use colored::Colorize;
 use tokei::{Config, LanguageType, Sort};
 
 use crate::{
@@ -308,10 +309,60 @@ impl Cli {
         }
     }
 
-    pub fn print_supported_languages() {
-        for (key, extensions) in LanguageType::list() {
-            println!("{} ({})", format!("{}", key), extensions.join(", "));
-        }
+    pub fn print_supported_languages() -> Result<(), Box<dyn std::error::Error>> {
+        use table_formatter::table::*;
+        use table_formatter::{cell, table};
+        let term_width = term_size::dimensions().map(|(w, _)| w).unwrap_or(75) - 8;
+        let (lang_w, suffix_w) = if term_width <= 80 {
+            (term_width / 2, term_width / 2)
+        } else {
+            (40, term_width - 40)
+        };
+
+        let header = vec![
+            cell!(
+                "Language",
+                align = Align::Left,
+                padding = Padding::NONE,
+                width = Some(lang_w)
+            )
+            .with_formatter(vec![Colorize::bold]),
+            cell!(
+                "Extensions",
+                align = Align::Left,
+                padding = Padding::new(3, 0),
+                width = Some(suffix_w)
+            )
+            .with_formatter(vec![Colorize::bold]),
+        ];
+        let content = LanguageType::list()
+            .iter()
+            .map(|(key, ext)| {
+                vec![
+                    // table::TableCell::new(table::Cell::TextCell(key.name().to_string()))
+                    //     .with_width(lang_w),
+                    cell!(key.name()).with_width(Some(lang_w)),
+                    cell!(
+                        if matches!(key, LanguageType::Emojicode) {
+                            ext.join(", ") + "\u{200b}"
+                        } else if ext.is_empty() {
+                            "<None>".to_string()
+                        } else {
+                            ext.join(", ")
+                        },
+                        align = Align::Left,
+                        padding = Padding::new(3, 0),
+                        width = Some(suffix_w)
+                    ),
+                ]
+            })
+            .collect();
+        let t = table!(header - content with Border::ALL);
+
+        let mut render_result = Vec::new();
+        t.render(&mut render_result)?;
+        println!("{}", String::from_utf8(render_result)?);
+        Ok(())
     }
 
     /// Overrides the shared options (See `tokei::Config` for option
