@@ -3,6 +3,7 @@ use std::process;
 
 use clap::Arg;
 use clap::{crate_description, ArgMatches};
+use colored::Colorize;
 use tokei::{Config, LanguageType, Sort};
 
 use crate::{
@@ -308,32 +309,40 @@ impl Cli {
         }
     }
 
-    pub fn print_supported_languages() {
-        use table_formatter::table;
-        let term_width = term_size::dimensions()
-            .map(|(w, _)| w)
-            .unwrap_or(75)
-            .min(120)
-            - 6;
-        let (lang_w, suffix_w) = if term_width <= 60 {
+    pub fn print_supported_languages() -> Result<(), Box<dyn std::error::Error>> {
+        use table_formatter::table::*;
+        use table_formatter::{cell, table};
+        let term_width = term_size::dimensions().map(|(w, _)| w).unwrap_or(75) - 8;
+        let (lang_w, suffix_w) = if term_width <= 80 {
             (term_width / 2, term_width / 2)
         } else {
-            (30, term_width - 30)
+            (40, term_width - 40)
         };
 
-        let header: Vec<table::TableCell> = vec![
-            table::TableCell::new(table::Cell::TextCell("Language".to_string())).with_width(lang_w),
-            table::TableCell::new(table::Cell::TextCell("Extensions".to_string()))
-                .with_width(suffix_w)
-                .with_padding(table::CellPadding::new(3, 0)),
+        let header = vec![
+            cell!(
+                "Language",
+                align = Align::Left,
+                padding = Padding::NONE,
+                width = Some(lang_w)
+            )
+            .with_formatter(vec![Colorize::bold]),
+            cell!(
+                "Extensions",
+                align = Align::Left,
+                padding = Padding::new(3, 0),
+                width = Some(suffix_w)
+            )
+            .with_formatter(vec![Colorize::bold]),
         ];
-        let content: Vec<Vec<table::TableCell>> = LanguageType::list()
+        let content = LanguageType::list()
             .iter()
             .map(|(key, ext)| {
                 vec![
-                    table::TableCell::new(table::Cell::TextCell(key.name().to_string()))
-                        .with_width(lang_w),
-                    table::TableCell::new(table::Cell::TextCell(
+                    // table::TableCell::new(table::Cell::TextCell(key.name().to_string()))
+                    //     .with_width(lang_w),
+                    cell!(key.name()).with_width(Some(lang_w)),
+                    cell!(
                         if matches!(key, LanguageType::Emojicode) {
                             ext.join(", ") + "\u{200b}"
                         } else if ext.is_empty() {
@@ -341,22 +350,19 @@ impl Cli {
                         } else {
                             ext.join(", ")
                         },
-                    ))
-                    .with_width(suffix_w)
-                    .with_padding(table::CellPadding::new(3, 0)),
+                        align = Align::Left,
+                        padding = Padding::new(3, 0),
+                        width = Some(suffix_w)
+                    ),
                 ]
             })
             .collect();
-        let t = table::Table::from_data(header, content)
-            .with_overflow(table::CellOverflow::Ellipsis)
-            .with_border(table::Border::ALL);
+        let t = table!(header - content with Border::ALL);
 
-        let rendered = t.render();
-        rendered.split('\n').collect::<Vec<_>>()[0]
-            .chars()
-            .collect::<Vec<_>>()
-            .len();
-        println!("{}", rendered);
+        let mut render_result = Vec::new();
+        t.render(&mut render_result)?;
+        println!("{}", String::from_utf8(render_result)?);
+        Ok(())
     }
 
     /// Overrides the shared options (See `tokei::Config` for option
