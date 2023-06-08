@@ -9,3 +9,4 @@ src/test
 .tokeirc
 results.csv
 node_modules
+*.code-workspace
