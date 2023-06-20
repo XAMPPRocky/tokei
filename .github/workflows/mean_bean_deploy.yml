@@ -23,7 +23,7 @@ jobs:
           repo: cross
           matches: ${{ matrix.platform }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v3
         with:
           name: cross-${{ matrix.platform }}
           path: ${{ steps.cross.outputs.install_path }}
@@ -44,7 +44,7 @@ jobs:
           # - i686-pc-windows-gnu
           # - x86_64-pc-windows-gnu
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       # FIXME: Hack around thinLTO being broken.
       - run: echo "RUSTFLAGS=-Clto=fat" >> $GITHUB_ENV
       - run: bash ci/set_rust_version.bash stable ${{ matrix.target }}
@@ -87,8 +87,8 @@ jobs:
           # - i386-apple-ios
           # - x86_64-apple-ios
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v1
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
         with:
           name: cross-apple-darwin
           path: /usr/local/bin/
@@ -162,8 +162,8 @@ jobs:
           # - thumbv7em-none-eabihf
           # - thumbv7m-none-eabi
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v1
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
         with:
           name: cross-linux-musl
           path: /tmp/
