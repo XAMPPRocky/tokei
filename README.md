@@ -322,6 +322,9 @@ Automake
 AWK
 Bash
 Batch
+Bazel
+Bean
+Bitbake
 BrightScript
 C
 Cabal
@@ -355,6 +358,8 @@ Dockerfile
 DotNetResource
 DreamMaker
 Dust
+Ebuild
+EdgeDB
 Edn
 Elisp
 Elixir
@@ -401,6 +406,7 @@ Isabelle
 Jai
 Java
 JavaScript
+Jq
 Json
 Jsx
 Julia
@@ -429,6 +435,8 @@ Mustache
 Nim
 Nix
 NotQuitePerl
+NuGetConfig
+Nushell
 ObjectiveC
 ObjectiveCpp
 OCaml

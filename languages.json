@@ -82,6 +82,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["s"]
     },
+    "Astro": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
+      "extensions": ["astro"]
+    },
     "Ats": {
       "name": "ATS",
       "line_comment": ["//"],
@@ -128,6 +133,13 @@
     "Batch": {
       "line_comment": ["REM", "::"],
       "extensions": ["bat", "btm", "cmd"]
+    },
+    "Bazel": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["bzl", "bazel"],
+      "filenames": ["build", "workspace"]
     },
     "Bean": {
       "line_comment": [";"],
@@ -362,6 +374,18 @@
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["ebuild", "eclass"]
+    },
+    "EdgeQL": {
+      "name": "EdgeQL",
+      "line_comment": ["#"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""], ["$", "$"]],
+      "extensions": ["edgeql"]
+    },
+    "ESDL": {
+      "name": "EdgeDB Schema Definition",
+      "line_comment": ["#"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""]],
+      "extensions": ["esdl"]
     },
     "Edn": {
       "line_comment": [";"],
@@ -716,6 +740,12 @@
       "extensions": ["j2"],
       "multi_line_comments": [["{#", "#}"]]
     },
+    "Jq": {
+      "name": "jq",
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["jq"]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
@@ -941,6 +971,12 @@
       "multi_line_comments": [["=begin", "=end"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["nqp"]
+    },
+    "NuGetConfig": {
+      "name": "NuGet Config",
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "filenames": ["nuget.config", "packages.config", "nugetdefaults.config"]
     },
     "Nushell": {
       "line_comment": ["#"],
@@ -1192,6 +1228,14 @@
     "Razor": {
       "multi_line_comments": [["<!--", "-->"], ["@*", "*@"]],
       "extensions": ["cshtml"]
+    },
+    "Redscript": {
+      "name": "Redscript",
+      "line_comment": ["//", "///"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "nested": true,
+      "extensions": ["reds"]
     },
     "Renpy": {
       "name": "Ren'Py",

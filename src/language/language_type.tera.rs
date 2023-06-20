@@ -4,13 +4,13 @@ use arbitrary::Arbitrary;
 /// information about the language, such as multi line comments, single line
 /// comments, string literal syntax, whether a given language allows nesting
 /// comments.
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize)]
 #[derive(Arbitrary, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[non_exhaustive]
 #[allow(clippy::upper_case_acronyms)]
 pub enum LanguageType {
-    {% for key, _ in languages -%}
-        #[allow(missing_docs)] {{key}},
+    {% for key, value in languages -%}
+        #[allow(missing_docs)] {% if value.name is defined %} #[serde(alias = "{{value.name}}")] {% else %} #[serde(alias = "{{key}}")] {% endif %} {{key}},
     {% endfor %}
 }
 
