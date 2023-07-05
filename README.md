@@ -297,6 +297,22 @@ Example show total lines:
 
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
+## Dockerized version
+Tokei is available in a small `alpine`-based docker image, buildable through:
+```bash
+earthly +docker
+```
+
+Once built, one can run the image with:
+```bash
+docker run --rm -v /path/to/analyze:/src tokei .
+```
+
+Or, to simply analyze the current folder (linux):
+```bash
+docker run --rm -v $(pwd):/src tokei .
+```
+
 ## Supported Languages
 
 If there is a language that you would to add to tokei feel free to make a pull
