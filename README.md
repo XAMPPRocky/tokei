@@ -119,6 +119,9 @@ sudo port install tokei
 
 #### Windows
 ```console
+# Winget
+winget install XAMPPRocky.tokei
+# Scoop
 scoop install tokei
 ```
 
