@@ -131,8 +131,19 @@
       "extensions": ["bash"]
     },
     "Batch": {
-      "line_comment": ["REM", "::"],
-      "extensions": ["bat", "btm", "cmd"]
+      "name": "Batchfile",
+      "line_comment": [":::",
+        "REM", "&REM", "@REM", "&@REM",
+        "REm", "&REm", "@REm", "&@REm",
+        "ReM", "&ReM", "@ReM", "&@ReM",
+        "Rem", "&Rem", "@Rem", "&@Rem",
+        "rEM", "&rEM", "@rEM", "&@rEM",
+        "rEm", "&rEm", "@rEm", "&@rEm",
+        "reM", "&reM", "@reM", "&@reM",
+        "rem", "&rem", "@rem", "&@rem"
+      ],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["bat", "cmd"]
     },
     "Bazel": {
       "line_comment": ["#"],
@@ -1433,6 +1444,24 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["sv", "svh"]
+    },
+    "Tcc": {
+      "name": "TCC",
+      "line_comment": [":::",
+        "REM", "&REM", "@REM", "&@REM",
+        "REm", "&REm", "@REm", "&@REm",
+        "ReM", "&ReM", "@ReM", "&@ReM",
+        "Rem", "&Rem", "@Rem", "&@Rem",
+        "rEM", "&rEM", "@rEM", "&@rEM",
+        "rEm", "&rEm", "@rEm", "&@rEm",
+        "reM", "&reM", "@reM", "&@reM",
+        "rem", "&rem", "@rem", "&@rem"
+      ],
+      "multi_line_comments": [
+        ["COMMENT", "ENDCOMMENT"]
+      ],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["btm"]
     },
     "Tcl": {
       "name": "TCL",
