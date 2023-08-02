@@ -326,14 +326,14 @@ impl Cli {
                 padding = Padding::NONE,
                 width = Some(lang_w)
             )
-            .with_formatter(vec![Colorize::bold]),
+            .with_formatter(vec![table_formatter::table::FormatterFunc::Normal(Colorize::bold)]),
             cell!(
                 "Extensions",
                 align = Align::Left,
                 padding = Padding::new(3, 0),
                 width = Some(suffix_w)
             )
-            .with_formatter(vec![Colorize::bold]),
+            .with_formatter(vec![table_formatter::table::FormatterFunc::Normal(Colorize::bold)]),
         ];
         let content = LanguageType::list()
             .iter()
