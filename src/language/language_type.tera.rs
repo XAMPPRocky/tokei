@@ -293,7 +293,12 @@ impl LanguageType {
         }
 
         match fsutils::get_extension(entry) {
-            Some(extension) => LanguageType::from_file_extension(extension.as_str()),
+            Some(extension) => {
+                if let Some(language_type) = LanguageType::from_file_extension(extension.as_str()) {
+                    return Some(language_type);
+                }
+                LanguageType::from_file_extension(extension.to_lowercase().as_str())
+            },
             None => LanguageType::from_shebang(&entry),
         }
     }
