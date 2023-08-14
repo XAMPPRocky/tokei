@@ -1,4 +1,4 @@
-# 42 lines 22 code 4 comments 16 blanks
+# language: "rpm specfile" 42 lines 22 code 4 comments 16 blanks
 
 Name:           example
 Version:        0.0.1

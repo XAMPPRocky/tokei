@@ -1,4 +1,4 @@
-! 68 lines 58 code 2 comments 8 blanks
+! language: "umpl" 68 lines 58 code 2 comments 8 blanks
 
 create yum with 5
 create num with ((plus 7 6 6 yum))>

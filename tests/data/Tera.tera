@@ -1,4 +1,4 @@
-{# 42 lines 26 code 11 comments 5 blanks #}
+{# language: "tera" 42 lines 26 code 11 comments 5 blanks #}
 <!DOCTYPE html>
 <html>
     <head>

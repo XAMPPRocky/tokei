@@ -1,4 +1,4 @@
-# 12 lines 6 code 2 comments 4 blanks
+# language: "meson" 12 lines 6 code 2 comments 4 blanks
 
 project('xyz', 'c',
         meson_version : '>=0.30.0') # not counted

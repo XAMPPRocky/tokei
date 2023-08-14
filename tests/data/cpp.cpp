@@ -1,4 +1,4 @@
-/* 46 lines 37 code 3 comments 6 blanks */
+/* language: "c++" 46 lines 37 code 3 comments 6 blanks */
 
 #include <stdio.h>
 
