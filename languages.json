@@ -841,7 +841,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["lds"]
+      "extensions": ["ld", "lds"]
     },
     "Lisp": {
       "name": "Common Lisp",
