@@ -838,7 +838,6 @@
     },
     "LinkerScript": {
       "name": "LD Script",
-      "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ld", "lds"]
