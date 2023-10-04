@@ -1150,7 +1150,6 @@
     },
     "PRQL": {
       "line_comment": ["#"],
-      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "mime": ["application/prql"],
       "extensions": ["prql"]
