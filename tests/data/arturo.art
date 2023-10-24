@@ -1,0 +1,25 @@
+//! 25 lines 17 code 1 comments 7 blanks
+
+pi: 3.14159
+
+message: "Hello, World!"
+message2: « Hello, World!
+
+message3: {
+    Hello,
+    World!
+} ; this ignores indentation
+
+message4: {:
+    Hello,
+        World!
+} ; this respects indentation
+
+message5: 
+------
+Hello,
+World
+
+say-hi: function [name][~"Hello, |name|!"]
+print say-hi "tokei"
+; "Hello, tokei!"
