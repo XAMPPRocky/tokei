@@ -1,0 +1,11 @@
+// 11 lines 3 code 6 comments 2 blanks
+
+/*
+    This is a multi-line comment
+    written in more than just one line.
+*/
+
+def main() -> field {
+    // an inline comment
+    return 42; // on a line.
+}
