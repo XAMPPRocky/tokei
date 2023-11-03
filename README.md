@@ -541,6 +541,7 @@ VisualStudioSolution
 Vue
 WebAssembly
 Wolfram
+Wren
 Xaml
 XcodeConfig
 Xml
