@@ -1,5 +1,13 @@
 {
   "languages": {
+    "_8th": {
+      "name": "8th",
+      "line_comment": ["\\\\ ", "-- "],
+      "multi_line_comments": [["(*", "*)"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["8th"]
+    },
     "Abap": {
       "name": "ABAP",
       "line_comment": ["*", "\\\""],
