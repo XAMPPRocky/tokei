@@ -1,0 +1,38 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-22.04
+    env:
+      platform: linux-musl
+      channel: stable
+      target: x86_64-unknown-linux-musl
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: Download cross binary
+        run: ci/download_cross.bash $target $platform
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set Rust version
+        run: ci/set_rust_version.bash $channel $target
+      - name: Build
+        run: ci/build.bash $PWD/cross $target
+      - name: Run tests
+        run: ci/test.bash $PWD/cross $target
