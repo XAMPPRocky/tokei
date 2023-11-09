@@ -1148,6 +1148,13 @@
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["purs"]
     },
+    "Pyret": {
+      "line_comment": ["#"],
+      "multi_line_comments": [["#|", "|#"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["arr"],
+      "nested": true
+    },
     "Python": {
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
