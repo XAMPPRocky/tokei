@@ -468,6 +468,7 @@ Pascal
 Perl
 Perl6
 Pest
+Smalltalk
 Php
 Poke
 Polly

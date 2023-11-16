@@ -1364,7 +1364,7 @@
       "name": "Smalltalk",
       "quotes": [["'", "'"]],
       "multi_line_comments": [["\\\"", "\\\""]],
-      "extensions": ["cs.st", "pck.st"]
+      "extensions": ["st"]
     },
     "Solidity": {
       "name": "Solidity",
