@@ -1343,6 +1343,13 @@
       "multi_line_comments": [["\\\"", "\\\""]],
       "extensions": ["cs.st", "pck.st"]
     },
+    "Snakemake": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["smk", "rules"],
+      "filenames": ["snakefile"]
+    },
     "Solidity": {
       "name": "Solidity",
       "line_comment": ["//"],
