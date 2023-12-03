@@ -905,6 +905,12 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Mdx": {
+      "name": "MDX",
+      "literate": true,
+      "important_syntax": ["```"],
+      "extensions": ["mdx"]
+    },
     "Meson": {
       "line_comment": ["#"],
       "quotes": [["'", "'"], ["'''", "'''"]],
