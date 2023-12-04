@@ -250,7 +250,7 @@ impl<W: Write> Printer<W> {
             write!(
                 self.writer,
                 " {:<len$}",
-                name.bold(),
+                name.bold().magenta(),
                 len = lang_section_len
             )?;
         }
