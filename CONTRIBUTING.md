@@ -14,7 +14,6 @@ properties of a language in `languages.json` through examples.
 "JavaScript": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["js", "mjs"]
 },

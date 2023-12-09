@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use aho_corasick::{AhoCorasick, AhoCorasickBuilder};
+use aho_corasick::AhoCorasick;
 use dashmap::DashMap;
 use grep_searcher::LineStep;
 use log::Level::Trace;
@@ -65,7 +65,7 @@ pub(crate) struct SharedMatchers {
     pub language: LanguageType,
     pub allows_nested: bool,
     pub doc_quotes: &'static [(&'static str, &'static str)],
-    pub important_syntax: AhoCorasick<u16>,
+    pub important_syntax: AhoCorasick,
     #[allow(dead_code)]
     pub any_comments: &'static [&'static str],
     pub is_fortran: bool,
@@ -90,10 +90,14 @@ impl SharedMatchers {
     }
 
     pub fn init(language: LanguageType) -> Self {
-        fn init_corasick(pattern: &[&'static str], anchored: bool) -> AhoCorasick<u16> {
-            let mut builder = AhoCorasickBuilder::new();
-            builder.anchored(anchored).dfa(true).prefilter(true);
-            builder.build_with_size(pattern).unwrap()
+        fn init_corasick(pattern: &[&'static str]) -> AhoCorasick {
+            AhoCorasick::builder()
+                .match_kind(aho_corasick::MatchKind::LeftmostLongest)
+                .start_kind(aho_corasick::StartKind::Unanchored)
+                .prefilter(true)
+                .kind(Some(aho_corasick::AhoCorasickKind::DFA))
+                .build(pattern)
+                .unwrap()
         }
 
         Self {
@@ -102,7 +106,7 @@ impl SharedMatchers {
             doc_quotes: language.doc_quotes(),
             is_fortran: language.is_fortran(),
             is_literate: language.is_literate(),
-            important_syntax: init_corasick(language.important_syntax(), false),
+            important_syntax: init_corasick(language.important_syntax()),
             any_comments: language.any_comments(),
             line_comments: language.line_comments(),
             multi_line_comments: language.multi_line_comments(),
