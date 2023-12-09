@@ -76,7 +76,7 @@ impl LanguageType {
         if let Some(end) = syntax
             .shared
             .important_syntax
-            .earliest_find(text)
+            .find(text)
             .and_then(|m| {
                 // Get the position of the last line before the important
                 // syntax.
