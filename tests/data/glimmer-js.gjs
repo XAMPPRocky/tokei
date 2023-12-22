@@ -1,4 +1,4 @@
-// 21 lines, 13 code, 4 comments, 4 blanks
+// 26 lines, 18 code, 4 comments, 4 blanks
 import { helper } from '@ember/component/helper';
 import { modifier } from 'ember-modifier';
 
@@ -18,4 +18,9 @@ const setScrollPosition = modifier((element, [position]) => {
       Item #{{plusOne index}}: {{item}}
     {{/each}}
   </div>
+  <style>
+    div {
+      background-color: #E04E39;
+    }
+  </style>
 </template>
