@@ -545,6 +545,20 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["gleam"]
     },
+    "GlimmerJs": {
+      "name": "Glimmer JS",
+      "multi_line_comments": [["<!--", "-->"]],
+      "important_syntax": ["<script", "<style"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["gjs"]
+    },
+    "GlimmerTs": {
+      "name": "Glimmer TS",
+      "multi_line_comments": [["<!--", "-->"]],
+      "important_syntax": ["<script", "<style"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["gts"]
+    },
     "Glsl": {
       "name": "GLSL",
       "line_comment": ["//"],
