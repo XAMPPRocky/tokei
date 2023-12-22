@@ -547,16 +547,18 @@
     },
     "GlimmerJs": {
       "name": "Glimmer JS",
-      "multi_line_comments": [["<!--", "-->"]],
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "important_syntax": ["<script", "<style"],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["gjs"]
     },
     "GlimmerTs": {
       "name": "Glimmer TS",
-      "multi_line_comments": [["<!--", "-->"]],
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "important_syntax": ["<script", "<style"],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["gts"]
     },
     "Glsl": {
