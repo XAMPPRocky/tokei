@@ -26,6 +26,8 @@ pub struct Config {
     pub columns: Option<usize>,
     /// Count hidden files and directories. *Default:* `false`.
     pub hidden: Option<bool>,
+    /// Include directories in the final report. *Default:* `false`.
+    pub include_dirs: Option<bool>,
     /// Don't respect ignore files (.gitignore, .ignore, etc.). This implies --no-ignore-parent,
     /// --no-ignore-dot, and --no-ignore-vcs. *Default:* `false`.
     pub no_ignore: Option<bool>,
@@ -114,6 +116,9 @@ impl Config {
                 .columns
                 .or(home_dir.columns.or(conf_dir.columns)),
             hidden: current_dir.hidden.or(home_dir.hidden.or(conf_dir.hidden)),
+            include_dirs: current_dir
+                .include_dirs
+                .or(home_dir.include_dirs.or(conf_dir.include_dirs)),
             //languages: current_dir.languages.or(conf_dir.languages),
             treat_doc_strings_as_comments: current_dir.treat_doc_strings_as_comments.or(home_dir
                 .treat_doc_strings_as_comments

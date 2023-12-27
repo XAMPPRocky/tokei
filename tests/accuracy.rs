@@ -67,7 +67,7 @@ mod config {
             ..Config::default()
         };
 
-        languages.get_statistics(&["tests/data/python.py"], &[], &config);
+        languages.get_statistics(&["tests/data/python.py"], &[], &config, false);
 
         if languages.len() != 1 {
             panic!(

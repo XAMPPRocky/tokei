@@ -27,7 +27,7 @@
 //! let config = Config::default();
 //!
 //! let mut languages = Languages::new();
-//! languages.get_statistics(paths, excluded, &config);
+//! languages.get_statistics(paths, excluded, &config, false);
 //! let rust = &languages[&LanguageType::Rust];
 //!
 //! println!("Lines of code: {}", rust.code);

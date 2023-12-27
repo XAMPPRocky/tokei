@@ -83,7 +83,13 @@ impl Languages {
         config: &Config,
     ) {
         utils::fs::get_all_files(paths, ignored, &mut self.inner, config);
-        self.inner.par_iter_mut().for_each(|(_, l)| l.total());
+        self.inner.par_iter_mut().for_each(|(_, l)| {
+            l.total();
+
+            if config.include_dirs.unwrap_or(false) {
+                l.dirs();
+            }
+        });
     }
 
     /// Constructs a new, Languages struct. Languages is always empty and does
