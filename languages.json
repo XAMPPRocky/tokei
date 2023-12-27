@@ -550,7 +550,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
-      "important_syntax": ["<script", "<style"],
+      "important_syntax": ["<template", "<style"],
       "extensions": ["gjs"]
     },
     "GlimmerTs": {
@@ -558,7 +558,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
-      "important_syntax": ["<script", "<style"],
+      "important_syntax": ["<template", "<style"],
       "extensions": ["gts"]
     },
     "Glsl": {
