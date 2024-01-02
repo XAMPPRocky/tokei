@@ -19,6 +19,11 @@ pub static END_TEMPLATE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</template>"#)
 pub static STARTING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\S+\s"#).unwrap());
 pub static ENDING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\s?"#).unwrap());
 
+pub static START_PIO_CSDK: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r#"% c-sdk \{"#).unwrap());
+pub static END_PIO_CSDK: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r#"%}"#).unwrap());
+
 /// A memory of a regex matched.
 /// The values provided by `Self::start` and `Self::end` are in the same space as the
 /// start value supplied to `RegexCache::build`
@@ -62,6 +67,7 @@ pub(crate) struct RegexCache<'a> {
 pub(crate) enum RegexFamily<'a> {
     HtmlLike(HtmlLike<'a>),
     Markdown(Markdown<'a>),
+    PioAsm(PioAsm<'a>),
     Rust,
 }
 
@@ -72,6 +78,10 @@ pub(crate) struct HtmlLike<'a> {
 }
 
 pub(crate) struct Markdown<'a> {
+    starts: Option<Box<[Capture<'a>]>>,
+}
+
+pub(crate) struct PioAsm<'a> {
     starts: Option<Box<[Capture<'a>]>>,
 }
 
@@ -102,6 +112,12 @@ impl<'a> HtmlLike<'a> {
 }
 
 impl<'a> Markdown<'a> {
+    pub fn starts_in_range(&'a self, start: usize, end: usize) -> Option<&Capture<'a>> {
+        filter_range(self.starts.as_ref()?, start, end).and_then(|mut it| it.next())
+    }
+}
+
+impl<'a> PioAsm<'a> {
     pub fn starts_in_range(&'a self, start: usize, end: usize) -> Option<&Capture<'a>> {
         filter_range(self.starts.as_ref()?, start, end).and_then(|mut it| it.next())
     }
@@ -165,6 +181,17 @@ impl<'a> RegexCache<'a> {
                     || html.start_template.is_some()
                 {
                     Some(RegexFamily::HtmlLike(html))
+                } else {
+                    None
+                }
+            }
+            LanguageType::PioAsm => {
+                let pioasm = PioAsm {
+                    starts: save_captures(&START_PIO_CSDK, lines, start, end),
+                };
+
+                if pioasm.starts.is_some() {
+                    Some(RegexFamily::PioAsm(pioasm))
                 } else {
                     None
                 }
