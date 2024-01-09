@@ -337,18 +337,18 @@ impl<W: Write> Printer<W> {
 
                 if self.list_files {
                     self.print_subrow()?;
-                    let mut reports: Vec<_> = language.reports.clone();
+                    let mut reports: Vec<&Report> = language.reports.iter().map(|report| &*report).collect();
                     if !is_sorted {
-                        reports.sort_by(|a, b| a.name.cmp(&b.name));
+                        reports.sort_by(|&a, &b| a.name.cmp(&b.name));
                     }
                     if compact {
-                        for report in &reports {
+                        for &report in &reports {
                             writeln!(self.writer, "{:1$}", report, self.path_length)?;
                         }
                     } else {
-                        let (a, b): (Vec<_>, Vec<_>) = reports
+                        let (a, b): (Vec<&Report>, Vec<&Report>) = reports
                             .iter()
-                            .partition(|r| r.stats.blobs.is_empty());
+                            .partition(|&r| r.stats.blobs.is_empty());
                         for reports in &[&a, &b] {
                             let mut first = true;
                             for report in reports.iter() {
