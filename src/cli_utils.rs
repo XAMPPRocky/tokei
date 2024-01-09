@@ -312,7 +312,7 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    pub fn print_results<'a, I>(&mut self, languages: I, compact: bool) -> io::Result<()>
+    pub fn print_results<'a, I>(&mut self, languages: I, compact: bool, is_sorted: bool) -> io::Result<()>
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     {
@@ -337,14 +337,16 @@ impl<W: Write> Printer<W> {
 
                 if self.list_files {
                     self.print_subrow()?;
-
+                    let mut reports: Vec<_> = language.reports.clone();
+                    if !is_sorted {
+                        reports.sort_by(|a, b| a.name.cmp(&b.name));
+                    }
                     if compact {
-                        for report in &language.reports {
+                        for report in &reports {
                             writeln!(self.writer, "{:1$}", report, self.path_length)?;
                         }
                     } else {
-                        let (a, b): (Vec<_>, Vec<_>) = language
-                            .reports
+                        let (a, b): (Vec<_>, Vec<_>) = reports
                             .iter()
                             .partition(|r| r.stats.blobs.is_empty());
                         for reports in &[&a, &b] {
