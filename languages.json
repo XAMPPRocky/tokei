@@ -494,7 +494,7 @@
       "name": "FORTRAN Modern",
       "line_comment": ["!"],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["f03", "f08", "f90", "f95"]
+      "extensions": ["f03", "f08", "f90", "f95", "fpp"]
     },
     "FreeMarker": {
       "multi_line_comments": [["<#--", "-->"]],
