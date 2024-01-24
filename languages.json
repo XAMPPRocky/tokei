@@ -926,6 +926,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["mlt"]
     },
+    "Modelica": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["mo", "mos"]
+    },
     "ModuleDef": {
       "name": "Module-Definition",
       "extensions": ["def"],
