@@ -56,10 +56,9 @@ pub struct Config {
     pub for_each_fn: Option<fn(LanguageType, Report)>,
     #[serde(skip)]
     /// function to transform the file content before analysis
-    pub transform_fn: Option<TransformFn>,
+    pub transform_fn: Option<fn(&[u8]) -> &[u8]>,
 }
 
-type TransformFn = fn(&[u8]) -> &[u8];
 
 impl Config {
     /// Constructs a new `Config` from either `$base/tokei.toml` or
