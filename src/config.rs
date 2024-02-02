@@ -54,7 +54,12 @@ pub struct Config {
     #[serde(skip)]
     /// adds a closure for each function, e.g., print the result
     pub for_each_fn: Option<fn(LanguageType, Report)>,
+    #[serde(skip)]
+    /// function to transform the file content before analysis
+    pub transform_fn: Option<TransformFn>,
 }
+
+type TransformFn = fn(&[u8]) -> &[u8];
 
 impl Config {
     /// Constructs a new `Config` from either `$base/tokei.toml` or
