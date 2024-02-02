@@ -78,16 +78,21 @@ impl LanguageType {
 
         let syntax = SyntaxCounter::new(self);
 
-        if let Some(end) = syntax.shared.important_syntax.find(text).and_then(|m| {
-            // Get the position of the last line before the important
-            // syntax.
-            text[..=m.start()]
-                .iter()
-                .rev()
-                .position(|&c| c == b'\n')
-                .filter(|&p| p != 0)
-                .map(|p| m.start() - p)
-        }) {
+        if let Some(end) = syntax
+            .shared
+            .important_syntax
+            .find(text)
+            .and_then(|m| {
+                // Get the position of the last line before the important
+                // syntax.
+                text[..=m.start()]
+                    .iter()
+                    .rev()
+                    .position(|&c| c == b'\n')
+                    .filter(|&p| p != 0)
+                    .map(|p| m.start() - p)
+            }) 
+        {
             let (skippable_text, rest) = text.split_at(end + 1);
             let is_fortran = syntax.shared.is_fortran;
             let is_literate = syntax.shared.is_literate;
