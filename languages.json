@@ -877,7 +877,7 @@
       "line_comment": ["--"],
       "multi_line_comments": [["--[[", "]]"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["lua"]
+      "extensions": ["lua", "luau"]
     },
     "Lucius": {
       "line_comment": ["//"],
