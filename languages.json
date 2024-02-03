@@ -1,5 +1,13 @@
 {
   "languages": {
+    "_8th": {
+      "name": "8th",
+      "line_comment": ["\\\\ ", "-- "],
+      "multi_line_comments": [["(*", "*)"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["8th"]
+    },
     "Abap": {
       "name": "ABAP",
       "line_comment": ["*", "\\\""],
@@ -830,6 +838,14 @@
       "extensions": ["less"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
+    "Lfe": {
+      "name": "LFE",
+      "line_comment": [";"],
+      "multi_line_comments": [["#|", "|#"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "nested": true,
+      "extensions": ["lfe"]
+    },
     "Liquid": {
       "name": "Liquid",
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
@@ -1140,6 +1156,13 @@
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["purs"]
     },
+    "Pyret": {
+      "line_comment": ["#"],
+      "multi_line_comments": [["#|", "|#"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["arr"],
+      "nested": true
+    },
     "Python": {
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
@@ -1227,6 +1250,12 @@
     "Razor": {
       "multi_line_comments": [["<!--", "-->"], ["@*", "*@"]],
       "extensions": ["cshtml"]
+    },
+    "Red": {
+      "line_comment": [";"],
+      "multi_line_comments": [["comment [", "]"], ["comment {", "}"]],
+      "quotes": [["\\\"", "\\\""], ["{", "}"]],
+      "extensions": ["red"]
     },
     "Redscript": {
       "name": "Redscript",
@@ -1341,7 +1370,7 @@
       "name": "Smalltalk",
       "quotes": [["'", "'"]],
       "multi_line_comments": [["\\\"", "\\\""]],
-      "extensions": ["cs.st", "pck.st"]
+      "extensions": ["st"]
     },
     "Solidity": {
       "name": "Solidity",
@@ -1646,6 +1675,13 @@
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
       "extensions": ["nb", "wl"]
+    },
+    "Wren": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["wren"]
     },
     "Xaml": {
       "name": "XAML",

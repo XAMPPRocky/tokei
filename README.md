@@ -323,6 +323,7 @@ request. Languages are defined in [`languages.json`](./languages.json), and you 
 read how to add and test your language in our [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ```
+8th
 Abap
 ActionScript
 Ada
@@ -434,6 +435,7 @@ KakouneScript
 Kotlin
 Lean
 Less
+LFE
 LinkerScript
 Liquid
 Lisp
@@ -466,6 +468,7 @@ Pascal
 Perl
 Perl6
 Pest
+Smalltalk
 Php
 Poke
 Polly
@@ -477,6 +480,7 @@ Prolog
 Protobuf
 PSL
 PureScript
+Pyret
 Python
 Qcl
 Qml
@@ -540,6 +544,7 @@ VisualStudioSolution
 Vue
 WebAssembly
 Wolfram
+Wren
 Xaml
 XcodeConfig
 Xml
