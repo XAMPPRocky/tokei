@@ -410,6 +410,7 @@ Gwion
 Hamlet
 Handlebars
 Happy
+Hare
 Haskell
 Haxe
 Hcl
