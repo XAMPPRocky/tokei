@@ -56,7 +56,7 @@ pub struct Config {
     pub for_each_fn: Option<fn(LanguageType, Report)>,
     #[serde(skip)]
     /// function to transform the file content before analysis
-    pub transform_fn: Option<fn(&[u8]) -> &[u8]>,
+    pub transform_fn: Option<fn(&[u8], &LanguageType) -> String>,
 }
 
 
