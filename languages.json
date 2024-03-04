@@ -370,6 +370,15 @@
       "multi_line_comments": [["{!", "!}"]],
       "extensions": ["dust"]
     },
+    "Ebnf": {
+      "name": "EBNF",
+      "line_comment": [";"],
+      "multi_line_comments": [
+        ["(*", "*)"],
+        ["/*", "*/"]
+      ],
+      "extensions": ["ebnf"]
+    },
     "Ebuild": {
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
