@@ -1,3 +1,40 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [13.0.0-alpha.1](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.0...v13.0.0-alpha.1) - 2024-03-04
+
+### Fixed
+- fixed language names not showing when in Light mode (light background ([#1048](https://github.com/XAMPPRocky/tokei/pull/1048))
+
+### Other
+- Create release-plz.yaml
+- Update mean_bean_ci.yml
+- Fix LD Script language data ([#1028](https://github.com/XAMPPRocky/tokei/pull/1028))
+- Fix language data example in CONTRIBUTING.md ([#1029](https://github.com/XAMPPRocky/tokei/pull/1029))
+- Update dependencies
+- Add widget install instructions
+- Update mean_bean_ci.yml
+- Dockerize tokei ([#930](https://github.com/XAMPPRocky/tokei/pull/930))
+- Ignore format commits for `languages.json` ([#1013](https://github.com/XAMPPRocky/tokei/pull/1013))
+- Upgrade GitHub Actions ([#955](https://github.com/XAMPPRocky/tokei/pull/955))
+- add --languages ouput formatter ([#1007](https://github.com/XAMPPRocky/tokei/pull/1007))
+- Add Nuget Config, Bazel and EdgeQL Support, Fix Output Formatter ([#999](https://github.com/XAMPPRocky/tokei/pull/999))
+- show nushell in the readme ([#991](https://github.com/XAMPPRocky/tokei/pull/991))
+- Add support for Redscript ([#994](https://github.com/XAMPPRocky/tokei/pull/994))
+- Add support for jq ([#965](https://github.com/XAMPPRocky/tokei/pull/965))
+- Add support for Astro ([#966](https://github.com/XAMPPRocky/tokei/pull/966))
+- Use XDG conventions on macOS too ([#989](https://github.com/XAMPPRocky/tokei/pull/989))
+- Add JSON5 support for languages.json ([#986](https://github.com/XAMPPRocky/tokei/pull/986))
+- Delete Smalltalk.cs.st ([#990](https://github.com/XAMPPRocky/tokei/pull/990))
+- Add support for smalltalk ([#839](https://github.com/XAMPPRocky/tokei/pull/839))
+- Disable *-android
+- Add HiCAD to languages.json ([#985](https://github.com/XAMPPRocky/tokei/pull/985))
+- Add Nushell to languages.json ([#982](https://github.com/XAMPPRocky/tokei/pull/982))
 # 12.1.0
 
 ## Introduction
