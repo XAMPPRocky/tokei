@@ -434,6 +434,7 @@ KakouneScript
 Kotlin
 Lean
 Less
+Lingua Franca
 LinkerScript
 Liquid
 Lisp

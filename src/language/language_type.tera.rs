@@ -322,6 +322,31 @@ impl LanguageType {
         }
     }
 
+    /// Get language from its name.
+    ///
+    /// ```no_run
+    /// use tokei::LanguageType;
+    ///
+    /// let rust = LanguageType::from_name("Rust");
+    ///
+    /// assert_eq!(rust, Some(LanguageType::Rust));
+    /// ```
+    #[must_use]
+    pub fn from_name(name: &str) -> Option<Self> {
+        match name {
+            {% for key, value in languages -%}
+                {% if value.name and value.name != key -%}
+                    | "{{value.name}}"
+                {% endif -%}
+                    | "{{key}}" => Some({{key}}),
+            {% endfor %}
+            unknown => {
+                warn!("Unknown language name: {}", unknown);
+                None
+            },
+        }
+    }
+
     /// Get language from its MIME type if available.
     ///
     /// ```no_run
