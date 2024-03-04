@@ -218,7 +218,7 @@ mod tests {
         // Get language results from sample dir
         let data_dir = Path::new("tests").join("data");
         let mut langs = Languages::new();
-        langs.get_statistics(&[data_dir], &[], &Config::default());
+        langs.get_statistics(&[data_dir], &[], &Config::default(), false);
 
         // Check that the value matches after serializing and deserializing
         for variant in Format::iter() {

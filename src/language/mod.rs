@@ -3,7 +3,7 @@ pub mod language_type;
 pub mod languages;
 mod syntax;
 
-use std::{collections::BTreeMap, mem, ops::AddAssign};
+use std::{collections::BTreeMap, collections::HashMap, mem, ops::AddAssign, path::Path};
 
 pub use self::{language_type::*, languages::Languages};
 
@@ -81,6 +81,58 @@ impl Language {
         }
 
         summary
+    }
+
+    /// Generates stats for directories and their child directories.
+    ///
+    /// ```no_run
+    /// use tokei::Language;
+    ///
+    /// let mut language = Language::new();
+    ///
+    /// // Add stats, assuming 10 directories are on the path afterward...
+    ///
+    /// // Compute totals.
+    /// language.total();
+    ///
+    /// let reports = language.reports.len();
+    ///
+    /// language.dirs();
+    ///
+    /// assert_eq!(reports + 10, language.reports.len());
+    /// ```
+    pub fn dirs(&mut self) {
+        let empty = Path::new("");
+
+        let reports: Vec<Report> = {
+            let mut dir_reports = HashMap::new();
+
+            for child_report in &self.reports {
+                let mut path = child_report.name.as_path();
+                while let Some(dir) = path.parent() {
+                    path = dir;
+                    if path == empty {
+                        continue;
+                    }
+
+                    let dir_report = dir_reports
+                        .entry(path)
+                        .or_insert_with(|| {
+                            let mut report = Report::default();
+                            report.name = path.to_path_buf();
+                            report
+                        });
+
+                    dir_report.stats.comments += child_report.stats.comments;
+                    dir_report.stats.code += child_report.stats.code;
+                    dir_report.stats.blanks += child_report.stats.blanks;
+                }
+            }
+
+            dir_reports.into_values().collect()
+        };
+
+        self.reports.extend(reports);
     }
 
     /// Totals up the statistics of the `Stat` structs currently contained in
