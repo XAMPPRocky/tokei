@@ -147,7 +147,7 @@ impl Cli {
                 Arg::new("streaming")
                     .long("streaming")
                     .takes_value(true)
-                    .possible_values(&["simple", "json"])
+                    .possible_values(["simple", "json"])
                     .ignore_case(true)
                     .help(
                         "prints the (language, path, lines, blanks, code, comments) records as \
@@ -159,7 +159,7 @@ impl Cli {
                     .long("sort")
                     .short('s')
                     .takes_value(true)
-                    .possible_values(&["files", "lines", "blanks", "code", "comments"])
+                    .possible_values(["files", "lines", "blanks", "code", "comments"])
                     .ignore_case(true)
                     .conflicts_with("rsort")
                     .help("Sort languages based on column"),
@@ -169,7 +169,7 @@ impl Cli {
                     .long("rsort")
                     .short('r')
                     .takes_value(true)
-                    .possible_values(&["files", "lines", "blanks", "code", "comments"])
+                    .possible_values(["files", "lines", "blanks", "code", "comments"])
                     .ignore_case(true)
                     .conflicts_with("sort")
                     .help("Reverse sort languages based on column"),
