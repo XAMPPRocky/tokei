@@ -1,4 +1,4 @@
-# 49 lines 37 code 6 comments 6 blanks
+# language: "raku" 49 lines 37 code 6 comments 6 blanks
 
 =begin pod
 
