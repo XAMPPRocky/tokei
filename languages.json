@@ -1062,6 +1062,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["php"]
     },
+    "PioAsm": {
+      "name": "RP2040 PIO ASM",
+      "line_comment": [";", "//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "important_syntax": ["% c-sdk {"],
+      "extensions": ["pio"]
+    },
     "Poke": {
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["pk"]

@@ -467,6 +467,7 @@ Perl
 Perl6
 Pest
 Php
+PioAsm
 Poke
 Polly
 Pony
