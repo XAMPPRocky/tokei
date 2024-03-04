@@ -423,6 +423,7 @@ Ini
 IntelHex
 Isabelle
 Jai
+Janet
 Java
 JavaScript
 Jq
