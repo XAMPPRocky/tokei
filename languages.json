@@ -80,7 +80,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["s"]
+      "extensions": ["s", "S"]
     },
     "Astro": {
       "line_comment": ["//"],
@@ -253,7 +253,7 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "verbatim_quotes": [["R\\\"(", ")\\\""]],
-      "extensions": ["cc", "cpp", "cxx", "c++", "pcc", "tpp"]
+      "extensions": ["cc", "cpp", "cxx", "c++", "pcc", "tpp", "C"]
     },
     "CppHeader": {
       "name": "C++ Header",
