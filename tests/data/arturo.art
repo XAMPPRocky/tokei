@@ -1,0 +1,21 @@
+; 12 lines 9 code 8 comments 4 blanks
+; this is a comment
+; this is another comment
+
+;---------------------------------
+; VARIABLES & VALUES
+;---------------------------------
+
+; numbers
+a1: 2
+a2: 3.14
+a3: to :complex [1 2.0]     ; 1.0+2.0i
+
+; strings
+c1: "this is a string"
+c2: {
+    this is a multiline string
+    that is indentation-agnostic
+}
+
+ch: 'c'
