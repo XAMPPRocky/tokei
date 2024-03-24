@@ -301,7 +301,7 @@ Example show total lines:
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
 ## Dockerized version
-Tokei is available in a small `alpine`-based docker image, buildable through:
+Tokei is available in a small `alpine`-based docker image, buildable through [earthly](https://github.com/earthly/earthly):
 ```bash
 earthly +docker
 ```
