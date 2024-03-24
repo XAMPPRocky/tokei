@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.2](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.1...v13.0.0-alpha.2) - 2024-03-24
+
+### Other
+- link to earthly project ([#1078](https://github.com/XAMPPRocky/tokei/pull/1078))
+
 ## [13.0.0-alpha.1](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.0...v13.0.0-alpha.1) - 2024-03-04
 
 ### Fixed
