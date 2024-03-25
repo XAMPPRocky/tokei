@@ -1,0 +1,45 @@
+@* 45 lines 16 code 21 comments 8 blanks *@
+@page "/counter"
+
+@{
+    // foo
+    string foo = "bar";
+
+    /*
+    * bar
+    */
+    string bar = "foo";
+}
+
+<PageTitle>Counter</PageTitle>
+
+@*
+
+multi-line comment
+
+*@
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<!--
+
+different multi-line comment
+
+-->
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    /*
+    
+    C# style multi-line comment
+    
+    */
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        // increment the count
+        currentCount++;
+    }
+}
