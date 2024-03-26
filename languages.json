@@ -1498,6 +1498,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["ts"]
     },
+    "Typst": {
+      "nested": true,
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["typ"]
+    },
     "UMPL": {
       "line_comment": ["!"],
       "quotes": [["`", "`"]],
