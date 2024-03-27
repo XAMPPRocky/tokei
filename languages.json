@@ -1146,7 +1146,7 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "env": ["python", "python2", "python3"],
       "mime": ["text/x-python"],
-      "extensions": ["py", "pyw"]
+      "extensions": ["py", "pyw", "pyi"]
     },
     "Q": {
       "name": "Q",
