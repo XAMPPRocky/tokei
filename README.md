@@ -448,6 +448,7 @@ Meson
 Mint
 Mlatu
 ModuleDef
+MonkeyC
 MoonScript
 MsBuild
 Mustache
