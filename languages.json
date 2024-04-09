@@ -441,6 +441,12 @@
       "line_comment": ["%"],
       "extensions": ["erl", "hrl"]
     },
+    "Euphoria": {
+      "line_comment": ["--"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["e", "ex"]
+    },
     "Factor": {
         "line_comment": ["!", "#!"],
         "multi_line_comments": [["/*", "*/"]],

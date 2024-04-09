@@ -388,6 +388,7 @@ Elvish
 EmacsDevEnv
 Emojicode
 Erlang
+Euphoria
 Factor
 FEN
 Fish
