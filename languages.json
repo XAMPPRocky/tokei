@@ -905,6 +905,16 @@
       "important_syntax": ["```"],
       "extensions": ["md", "markdown"]
     },
+    "Menhir": {
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "line_comment": ["//"],
+      "multi_line_comments": [
+        ["(*", "*)"],
+        ["/*", "*/"]
+      ],
+      "extensions": ["mll", "mly", "vy"]
+    },
     "Meson": {
       "line_comment": ["#"],
       "quotes": [["'", "'"], ["'''", "'''"]],
@@ -1002,7 +1012,7 @@
     "OCaml": {
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["ml", "mli", "mll", "mly", "re", "rei"]
+      "extensions": ["ml", "mli", "re", "rei"]
     },
     "Odin": {
       "extensions": ["odin"],
