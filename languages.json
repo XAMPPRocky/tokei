@@ -433,6 +433,12 @@
       "line_comment": ["%"],
       "extensions": ["erl", "hrl"]
     },
+    "Expect": {
+      "name": "Expect",
+      "line_comment": [["#", ";#"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["exp"]
+    },
     "Factor": {
         "line_comment": ["!", "#!"],
         "multi_line_comments": [["/*", "*/"]],
@@ -1434,9 +1440,9 @@
       "extensions": ["sv", "svh"]
     },
     "Tcl": {
-      "name": "TCL",
-      "line_comment": ["#"],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "name": "Tcl",
+      "line_comment": [["#", ";#"]],
+      "quotes": [["\\\"", "\\\""]],
       "extensions": ["tcl"]
     },
     "Tera": {
