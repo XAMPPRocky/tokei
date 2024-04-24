@@ -183,6 +183,12 @@ impl LanguageType {
                                 // Add all the markdown blobs.
                                 *stats.blobs.entry(language).or_default() += blob;
                             }
+                            LanguageContext::PioAsm { balanced, language } => {
+                                // Add the lines for the code fences.
+                                stats.comments += if balanced { 2 } else { 1 };
+                                // Add the code inside the fence to the stats.
+                                *stats.blobs.entry(language).or_default() += blob;
+                            }
                         }
 
                         // Advance to after the language code and the delimiter..

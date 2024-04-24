@@ -8,6 +8,7 @@ use once_cell::sync::Lazy;
 
 use super::embedding::{
     RegexCache, RegexFamily, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE, END_TEMPLATE,
+    END_PIO_CSDK,
 };
 use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
 
@@ -54,6 +55,10 @@ pub(crate) enum LanguageContext {
         language: LanguageType,
     },
     Markdown {
+        balanced: bool,
+        language: LanguageType,
+    },
+    PioAsm {
         balanced: bool,
         language: LanguageType,
     },
@@ -516,6 +521,41 @@ impl SyntaxCounter {
                 } else {
                     None
                 }
+            }
+            RegexFamily::PioAsm(pioasm) => {
+                // TODO: This logic is copied from Markdown. That is, it allows for unbalanced code
+                // blocks, which I don't think is valid. Not sure what the proper way to handle
+                // this is, though.
+                if !lines[start..end].contains_slice(b"% c-sdk {") {
+                    return None;
+                }
+
+                let opening_fence = pioasm.starts_in_range(start, end)?;
+                let start_of_code = opening_fence.end();
+                let closing_fence = END_PIO_CSDK.find(&lines[start_of_code..]);
+                if let Some(m) = &closing_fence {
+                    trace!("{:?}", String::from_utf8_lossy(m.as_bytes()));
+                }
+                let end_of_code = closing_fence
+                    .map_or_else(|| lines.len(), |fence| start_of_code + fence.start());
+                let end_of_code_block =
+                    closing_fence.map_or_else(|| lines.len(), |fence| start_of_code + fence.end());
+                let balanced = closing_fence.is_some();
+
+                let language = LanguageType::C;
+                trace!(
+                    "{} BLOCK: {:?}",
+                    language,
+                    String::from_utf8_lossy(&lines[start_of_code..end_of_code])
+                );
+                let stats =
+                    language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+
+                Some(FileContext::new(
+                    LanguageContext::PioAsm { balanced, language },
+                    end_of_code_block,
+                    stats,
+                ))
             }
         }
     }

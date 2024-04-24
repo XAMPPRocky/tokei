@@ -1,0 +1,29 @@
+; 30 lines 9 code 14 comments 7 blanks
+; test program
+.program hello
+
+; A comment.
+// A C++-style comment
+/* A C-style comment */
+
+/*
+ *
+ * a multiline comment
+ */
+
+loop:
+  pull                  ; pull word from TX FIFO
+  out pins, 1           /* set pins */
+  jmp loop              // jump
+
+% c-sdk {
+/* A dummy function to test pioasm parsing. */
+static inline uint my_cool_function(uint a) {
+  uint ret = a >> 1;
+
+  // a comment in C
+  return ret;
+}
+%}
+
+; a comment after the C code
