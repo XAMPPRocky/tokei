@@ -738,6 +738,11 @@
       "extensions": ["jai"],
       "nested": true
     },
+    "Janet": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["janet"]
+    },
     "Java": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
