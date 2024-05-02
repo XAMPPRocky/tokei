@@ -1249,8 +1249,11 @@
       "extensions": ["raku", "rakumod", "rakutest", "pm6", "pl6", "p6"]
     },
     "Razor": {
-      "multi_line_comments": [["<!--", "-->"], ["@*", "*@"]],
-      "extensions": ["cshtml"]
+      "line_comment": ["//"],
+      "multi_line_comments": [["<!--", "-->"], ["@*", "*@"], ["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["@\\\"", "\\\""]],
+      "extensions": ["cshtml", "razor"]
     },
     "Redscript": {
       "name": "Redscript",
