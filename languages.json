@@ -194,6 +194,12 @@
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["ceylon"]
     },
+    "Chapel": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["chpl"]
+    },
     "CHeader": {
       "name": "C Header",
       "line_comment": ["//"],
