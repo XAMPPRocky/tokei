@@ -400,7 +400,7 @@ impl SyntaxCounter {
                     String::from_utf8_lossy(&lines[start_of_code..end_of_code])
                 );
                 let stats =
-                    language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    language.parse_from_slice(lines[start_of_code..end_of_code].trim(), config);
 
                 Some(FileContext::new(
                     LanguageContext::Markdown { balanced, language },
@@ -603,6 +603,7 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
+        #[allow(clippy::if_same_then_else)]
         if self._is_string_mode() && window.starts_with(self.quote?.as_bytes()) {
             let quote = self.quote.take().unwrap();
             trace!("End {:?}", quote);
