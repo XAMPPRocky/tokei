@@ -1744,6 +1744,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["zig"]
     },
+    "Zokrates": {
+      "name": "ZoKrates",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["zok"]
+    },
     "Zsh": {
       "shebangs": ["#!/bin/zsh"],
       "line_comment": ["#"],
