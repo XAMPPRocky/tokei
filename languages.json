@@ -1070,6 +1070,12 @@
       "quotes": [["\\\"","\\\""], ["`", "`"]],
       "extensions": ["rego"]
     },
+    "OpenQasm": {
+      "name": "OpenQASM",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["qasm"]
+    },
     "OpenType": {
       "name": "OpenType Feature File",
       "line_comment": ["#"],

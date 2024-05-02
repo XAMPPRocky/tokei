@@ -466,6 +466,7 @@ ObjectiveC
 ObjectiveCpp
 OCaml
 Odin
+OpenQASM
 Org
 Oz
 Pascal
