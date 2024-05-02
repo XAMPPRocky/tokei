@@ -439,7 +439,6 @@ KakouneScript
 Kotlin
 Lean
 Less
-LFE
 Lingua Franca
 LinkerScript
 Liquid
