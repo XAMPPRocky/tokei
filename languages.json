@@ -830,6 +830,11 @@
       "extensions": ["less"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
+    "Lex": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["l", "lex"]
+    },
     "Liquid": {
       "name": "Liquid",
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
