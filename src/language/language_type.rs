@@ -52,7 +52,7 @@ impl LanguageType {
 
         let mut stats = Report::new(path);
 
-        stats += self.parse_from_slice(&text, config);
+        stats += self.parse_from_slice(text, config);
 
         Ok(stats)
     }
