@@ -558,6 +558,7 @@ Xtend
 Yaml
 ZenCode
 Zig
+ZoKrates
 Zsh
 ```
 
