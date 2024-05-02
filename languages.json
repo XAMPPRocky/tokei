@@ -849,6 +849,13 @@
       "env": ["ksh"],
       "extensions": ["ksh"]
     },
+    "Lalrpop": {
+      "name": "LALRPOP",
+      "line_comment": ["//"],
+      "extensions": ["lalrpop"],
+      "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
+    },
     "KvLanguage": {
       "name":"KV Language",
       "line_comment": ["# "],
