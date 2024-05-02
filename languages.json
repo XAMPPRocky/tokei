@@ -1251,12 +1251,6 @@
       "mime": ["application/prql"],
       "extensions": ["prql"]
     },
-    "PRQL": {
-      "line_comment": ["#"],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "mime": ["application/prql"],
-      "extensions": ["prql"]
-    },
     "Q": {
       "name": "Q",
       "nested": true,
