@@ -1501,7 +1501,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
-      "extensions": ["ts"]
+      "extensions": ["ts", "mts", "cts"]
     },
     "UMPL": {
       "line_comment": ["!"],
