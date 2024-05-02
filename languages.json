@@ -1034,6 +1034,11 @@
       "quotes": [["\\\"","\\\""], ["`", "`"]],
       "extensions": ["rego"]
     },
+    "OpenCL": {
+      "name": "OpenCL",
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["cl", "ocl"]
+    },
     "OpenType": {
       "name": "OpenType Feature File",
       "line_comment": ["#"],
