@@ -201,6 +201,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["h"]
     },
+    "Circom": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["circom"]
+    },
     "Clojure": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""]],
