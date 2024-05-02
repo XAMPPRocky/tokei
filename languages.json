@@ -1376,6 +1376,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["shader", "cginc"]
     },
+    "Slang": {
+      "name": "Slang",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["slang"]
+    },
     "Sml": {
       "name": "Standard ML (SML)",
       "quotes": [["\\\"", "\\\""]],
