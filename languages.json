@@ -1627,6 +1627,12 @@
       "important_syntax": ["<script", "<style", "<template"],
       "extensions": ["vue"]
     },
+    "Vyper": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["vy"]
+    },
     "WebAssembly": {
       "line_comment": [";;"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
