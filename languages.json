@@ -324,6 +324,11 @@
       "nested_comments": [["/+", "+/"]],
       "extensions": ["d"]
     },
+    "D2": {
+      "line_comment": ["#"],
+      "multi_line_comments": [["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "extensions": ["d2"]
+    },
     "Daml": {
       "name": "DAML",
       "nested": true,
