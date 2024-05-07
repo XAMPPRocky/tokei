@@ -1158,6 +1158,16 @@
       "line_comment": ["#"],
       "extensions": ["nix"]
     },
+    "Noir": {
+      "name": "Noir",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "important_syntax": ["///", "//!"],
+      "extensions": ["nr"],
+      "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
+    },
     "NotQuitePerl": {
       "name": "Not Quite Perl",
       "line_comment": ["#"],
