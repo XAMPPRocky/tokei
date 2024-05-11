@@ -966,6 +966,11 @@
       "extensions": ["def"],
       "line_comment": [";"]
     },
+    "MoonBit": {
+      "line_comment": ["//"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["mbt"]
+    },
     "MoonScript": {
       "line_comment": ["--"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
@@ -1076,7 +1081,7 @@
       "name": "Pacman's makepkg",
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "filenames": ["pkgbuild"] 
+      "filenames": ["pkgbuild"]
     },
     "Pan": {
       "line_comment": ["#"],
