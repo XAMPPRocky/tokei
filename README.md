@@ -6,6 +6,7 @@
 ![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
 ![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
 ![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
+[![dependency status](https://deps.rs/repo/github/XAMPPRocky/tokei/status.svg)](https://deps.rs/repo/github/XAMPPRocky/tokei)
 
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
