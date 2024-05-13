@@ -1072,6 +1072,13 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
+    "OpenScad": {
+      "name": "OpenSCAD",
+      "extensions": ["scad"],
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]]
+    },
     "OpenPolicyAgent": {
       "name": "Open Policy Agent",
       "line_comment": ["#"],
