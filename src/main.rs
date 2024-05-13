@@ -22,7 +22,6 @@ fn main() -> Result<(), Box<dyn Error>> {
         Cli::print_supported_languages()?;
         process::exit(0);
     }
-
     let config = cli.override_config(Config::from_config_files());
     let mut languages = Languages::new();
 
@@ -94,13 +93,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     printer.print_header()?;
 
+    let mut is_sorted = false;
     if let Some(sort_category) = cli.sort.or(config.sort) {
         for (_, ref mut language) in &mut languages {
             language.sort_by(sort_category);
         }
 
         let mut languages: Vec<_> = languages.iter().collect();
-
         match sort_category {
             Sort::Blanks => languages.sort_by(|a, b| b.1.blanks.cmp(&a.1.blanks)),
             Sort::Comments => languages.sort_by(|a, b| b.1.comments.cmp(&a.1.comments)),
@@ -108,14 +107,14 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Files => languages.sort_by(|a, b| b.1.reports.len().cmp(&a.1.reports.len())),
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
-
+        is_sorted = true;
         if cli.sort_reverse {
-            printer.print_results(languages.into_iter().rev(), cli.compact)?;
+            printer.print_results(languages.into_iter().rev(), cli.compact, is_sorted)?;
         } else {
-            printer.print_results(languages.into_iter(), cli.compact)?;
+            printer.print_results(languages.into_iter(), cli.compact, is_sorted)?;
         }
     } else {
-        printer.print_results(languages.iter(), cli.compact)?;
+        printer.print_results(languages.iter(), cli.compact, is_sorted)?;
     }
 
     printer.print_total(&languages)?;
