@@ -1115,7 +1115,7 @@
       "name": "Pacman's makepkg",
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "filenames": ["pkgbuild"] 
+      "filenames": ["pkgbuild"]
     },
     "Pan": {
       "line_comment": ["#"],
