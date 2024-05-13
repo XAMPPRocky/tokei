@@ -370,6 +370,7 @@ impl Cli {
     /// higher precedence than options present in config files.
     ///
     /// #### Shared options
+    /// * `hidden`
     /// * `no_ignore`
     /// * `no_ignore_parent`
     /// * `no_ignore_dot`
