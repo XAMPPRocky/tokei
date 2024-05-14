@@ -344,6 +344,7 @@ Bash
 Batch
 Bazel
 Bean
+Bicep
 Bitbake
 BrightScript
 C
