@@ -330,6 +330,7 @@ Ada
 Agda
 Alex
 Alloy
+Apex
 Asn1
 Asp
 AspNet

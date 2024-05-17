@@ -33,6 +33,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["als"]
     },
+    "Apex": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["cls", "trigger"]
+    },
     "Arduino": {
       "name": "Arduino C++",
       "line_comment": ["//"],
