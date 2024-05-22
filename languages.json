@@ -1432,6 +1432,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["sol"]
     },
+
+    "Spade": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "extensions": ["spade"]
+    },
     "SpecmanE": {
       "name": "Specman e",
       "line_comment": ["--", "//"],

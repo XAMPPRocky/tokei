@@ -1,0 +1,12 @@
+// 12 lines 3 code 7 comments 2 blanks
+// Comment
+
+/* 
+    block comment
+    /* nested comment */
+    end of block comment
+*/
+
+fn add(x: int<8>, y: int<8>) -> int<9> {
+    x + y
+}
