@@ -1515,6 +1515,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["sv", "svh"]
     },
+    "Tact": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["tact"]
+    },
     "Tcl": {
       "name": "TCL",
       "line_comment": ["#"],
