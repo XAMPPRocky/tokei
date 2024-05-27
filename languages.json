@@ -829,6 +829,10 @@
       "nested": true,
       "extensions": ["lean", "hlean"]
     },
+    "Leo": {
+      "line_comment": ["//"],
+      "extensions": ["leo"],
+    },
     "Less": {
       "name": "LESS",
       "line_comment": ["//"],
