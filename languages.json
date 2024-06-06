@@ -48,6 +48,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "Arturo": {
+      "line_comment": [";"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["art"]
+    },
     "AsciiDoc": {
       "line_comment": ["//"],
       "multi_line_comments": [["////", "////"]],
