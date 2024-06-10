@@ -476,6 +476,7 @@ Perl
 Perl6
 Pest
 Smalltalk
+Phix
 Php
 Poke
 Polly
