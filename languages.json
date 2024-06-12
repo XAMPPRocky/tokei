@@ -726,6 +726,13 @@
       "quotes": [["''", "''"]],
       "extensions": ["thy"]
     },
+    "J":{
+      "name": "J",
+      "line_comment": ["NB."],
+      "quotes": [["'", "'"]],
+      "verbatim_quotes": [["'", "'"]],
+      "extensions": ["ijs", "jproj"]
+    },
     "Jai": {
       "name": "JAI",
       "line_comment": ["//"],
