@@ -36,3 +36,6 @@ Cargo.lock
 
 # benchmark
 results.csv
+
+node_modules
+*.code-workspace
