@@ -473,6 +473,7 @@ Pascal
 Perl
 Perl6
 Pest
+Phix
 Php
 Poke
 Polly
