@@ -1468,6 +1468,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["stan"]
     },
+    "Stata": {
+      "line_comment": ["//", "*"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["do"]
+    },
     "Stratego": {
       "name": "Stratego/XT",
       "line_comment": ["//"],
