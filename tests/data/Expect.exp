@@ -1,0 +1,44 @@
+# 44 lines 27 code 9 comments 10 blanks
+
+##
+# foo function doing stuff
+#
+proc foo {bar {baz 5} \
+    {not_used "hi mom"}} {
+    puts $bar ;# print out bar
+    # sum bar + baz 
+    set foo_res [expr $bar + $baz]
+    return $foo_res
+}
+
+proc #weird {} {
+    return -code 5
+}
+
+
+puts "hello world ####"
+
+puts #Alsovalid# ;# comment here!
+puts {;#and this}
+puts {really anything -$#;/ /\ \ -_'@?` "\".$?"!'][¨@ is allowed in curly braces}
+
+puts "3 == [foo 1 2] and 6 == [foo 2]"
+
+set function "#weird"
+set code [catch {[$function]}]
+puts "$code == 5"
+
+# And now onto expect specific
+spawn "bash" "-c" "sleep 2; echo regex_pattern"
+
+set timeout 5 ;# this is 5 seconds
+expect {
+    -re "regex_pattern" {
+        puts "and then this when it's found 'match' == $expect_out(0,string)"
+    }
+    timeout {
+        # if no match after 5 seconds
+    }
+}
+
+after 500
