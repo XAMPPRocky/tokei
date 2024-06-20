@@ -484,6 +484,7 @@ Prolog
 Protobuf
 PSL
 PureScript
+Pyret
 Python
 Qcl
 Qml
