@@ -368,6 +368,7 @@ CSharp
 CShell
 Css
 Cuda
+CUE
 Cython
 D
 DAML
