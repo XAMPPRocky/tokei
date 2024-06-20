@@ -1,4 +1,4 @@
-// 29 lines 17 code 7 comments 5 blanks
+// language: "odin" 29 lines 17 code 7 comments 5 blanks
 import "core:fmt"
 
 /*

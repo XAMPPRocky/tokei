@@ -1,5 +1,5 @@
 #!python
-# 10 lines 3 code 3 comments 4 blanks
+# language: "scons" 10 lines 3 code 3 comments 4 blanks
 
 # this is a comment
 
