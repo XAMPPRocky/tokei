@@ -26,8 +26,9 @@ include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
 impl Serialize for LanguageType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer {
+    where
+        S: serde::Serializer,
+    {
         serializer.serialize_str(self.name())
     }
 }
@@ -64,7 +65,16 @@ impl LanguageType {
 
     /// Parses the bytes provided as the given [`LanguageType`].
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
-        let text = text.as_ref();
+        let mut text = text.as_ref();
+        let func = config.transform_fn;
+        let transformed: String;
+        text = match func {
+            Some(f) => {
+                transformed = f(text, &self);
+                transformed.as_bytes()
+            }
+            _ => text,
+        };
 
         if self == Jupyter {
             return self
@@ -80,21 +90,16 @@ impl LanguageType {
             syntax_mut
         };
 
-        if let Some(end) = syntax
-            .shared
-            .important_syntax
-            .find(text)
-            .and_then(|m| {
-                // Get the position of the last line before the important
-                // syntax.
-                text[..=m.start()]
-                    .iter()
-                    .rev()
-                    .position(|&c| c == b'\n')
-                    .filter(|&p| p != 0)
-                    .map(|p| m.start() - p)
-            })
-        {
+        if let Some(end) = syntax.shared.important_syntax.find(text).and_then(|m| {
+            // Get the position of the last line before the important
+            // syntax.
+            text[..=m.start()]
+                .iter()
+                .rev()
+                .position(|&c| c == b'\n')
+                .filter(|&p| p != 0)
+                .map(|p| m.start() - p)
+        }) {
             let (skippable_text, rest) = text.split_at(end + 1);
             let is_fortran = syntax.shared.is_fortran;
             let is_literate = syntax.shared.is_literate;
