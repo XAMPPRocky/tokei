@@ -72,7 +72,7 @@ impl Languages {
     /// use tokei::{Config, Languages};
     ///
     /// let mut languages = Languages::new();
-    /// languages.get_statistics(&["."], &[".git", "target"], &Config::default());
+    /// languages.get_statistics(&["."], &[".git", "target"], &Config::default(), false);
     /// ```
     ///
     /// [`Language`]: struct.Language.html
@@ -81,9 +81,16 @@ impl Languages {
         paths: &[A],
         ignored: &[&str],
         config: &Config,
+        include_dirs: bool,
     ) {
         utils::fs::get_all_files(paths, ignored, &mut self.inner, config);
-        self.inner.par_iter_mut().for_each(|(_, l)| l.total());
+        self.inner.par_iter_mut().for_each(|(_, l)| {
+            l.total();
+
+            if include_dirs {
+                l.dirs();
+            }
+        });
     }
 
     /// Constructs a new, Languages struct. Languages is always empty and does

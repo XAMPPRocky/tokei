@@ -42,6 +42,7 @@ pub struct Cli {
     pub columns: Option<usize>,
     pub files: bool,
     pub hidden: bool,
+    pub include_dirs: bool,
     pub no_ignore: bool,
     pub no_ignore_parent: bool,
     pub no_ignore_dot: bool,
@@ -106,6 +107,14 @@ impl Cli {
                 Arg::new("hidden")
                     .long("hidden")
                     .help("Count hidden files."),
+            )
+            .arg(
+                Arg::new("include_dirs")
+                    .long("include-dirs")
+                    .conflicts_with("streaming")
+                    .help(
+                        "Include directories in the final report.",
+                    ),
             )
             .arg(
                 Arg::new("input")
@@ -224,6 +233,7 @@ impl Cli {
         let columns = matches.value_of("columns").map(parse_or_exit::<usize>);
         let files = matches.is_present("files");
         let hidden = matches.is_present("hidden");
+        let include_dirs = matches.is_present("include_dirs");
         let no_ignore = matches.is_present("no_ignore");
         let no_ignore_parent = matches.is_present("no_ignore_parent");
         let no_ignore_dot = matches.is_present("no_ignore_dot");
@@ -274,6 +284,7 @@ impl Cli {
             columns,
             files,
             hidden,
+            include_dirs,
             no_ignore,
             no_ignore_parent,
             no_ignore_dot,
