@@ -401,6 +401,7 @@ FSharp
 Fstar
 GDB
 GdScript
+GdShader
 Gherkin
 Gleam
 Glsl
