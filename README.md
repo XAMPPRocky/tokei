@@ -433,6 +433,7 @@ Json
 Jsx
 Julia
 Julius
+Juvix
 KakouneScript
 Kotlin
 Lean
