@@ -187,6 +187,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["chpl"]
     },
+    "ChaiScript": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["chai"]
+    },
     "CHeader": {
       "name": "C Header",
       "line_comment": ["//"],
