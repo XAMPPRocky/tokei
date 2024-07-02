@@ -1,0 +1,25 @@
+// 25 lines 9 code 12 comments 4 blanks
+/*
+  ChaiScript supports the normal kind of control blocks you've come to expect from 
+  C++ and JavaScript
+*/
+
+/*
+  // Function definition
+  def myFunc(x) {
+    print(x);
+  }
+*/
+
+var x = true; // ChaiScript supports var, which is a dynamic type
+
+// function definition with function guards
+def myFunc(x) : x > 2 && x < 5 {
+  print(to_string(x) + " is between 2 and 5")
+}
+
+while (x)
+{
+  print("x was true") // /* nested comment */
+  x = false;
+}

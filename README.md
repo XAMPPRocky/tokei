@@ -350,6 +350,7 @@ C
 Cabal
 Cassius
 Ceylon
+ChaiScript
 CHeader
 Clojure
 ClojureC
