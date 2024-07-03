@@ -846,6 +846,13 @@
       "nested": true,
       "extensions": ["lean", "hlean"]
     },
+    "Hledger": {
+      "name": "hledger",
+      "line_comment": [";", "#"],
+      "multi_line_comments": [["comment", "end comment"]],
+      "nested": false,
+      "extensions": ["hledger"]
+    },
     "Less": {
       "name": "LESS",
       "line_comment": ["//"],

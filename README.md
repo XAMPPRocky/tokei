@@ -416,6 +416,7 @@ Haskell
 Haxe
 Hcl
 Hex
+hledger
 Hlsl
 HolyC
 Html
