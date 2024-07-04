@@ -1412,6 +1412,15 @@
       "mime": ["image/svg+xml"],
       "extensions": ["svg"]
     },
+    "Sway": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "important_syntax": ["///", "//!"],
+      "extensions": ["sw"],
+      "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
+    },
     "Swift": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
