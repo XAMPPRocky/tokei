@@ -1,4 +1,4 @@
-/* 51 lines 33 code 10 comments 8 blanks */
+/* 51 lines 31 code 10 comments 10 blanks */
 //Taken from examples: https://fuellabs.github.io/sway/v0.61.1/book/examples/liquidity_pool.html 
 contract;
 
