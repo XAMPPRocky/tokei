@@ -1530,6 +1530,8 @@
       "name": "Templ",
       "line_comment": ["//"],
       "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "important_syntax": ["templ", "script", "css"],
       "extensions": ["templ", "tmpl"]
     },
     "Tex": {
