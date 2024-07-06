@@ -1530,7 +1530,7 @@
       "name": "Templ",
       "line_comment": ["//"],
       "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
-      "extensions": ["templ", "tmpl", "tpl"]
+      "extensions": ["templ", "tmpl"]
     },
     "Tex": {
       "name": "TeX",
