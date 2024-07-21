@@ -351,6 +351,7 @@ Cabal
 Cassius
 Ceylon
 CHeader
+Cil
 Clojure
 ClojureC
 ClojureScript
