@@ -182,6 +182,11 @@
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["cabal"]
     },
+    "Cairo": {
+      "line_comment": ["//"],
+      "extensions": ["cairo"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]]
+    },
     "Cassius": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -1472,13 +1477,6 @@
       "quotes": [["'", "'"]],
       "multi_line_comments": [["\\\"", "\\\""]],
       "extensions": ["st"]
-    },
-    "Snakemake": {
-      "line_comment": ["#"],
-      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["smk", "rules"],
-      "filenames": ["snakefile"]
     },
     "Snakemake": {
       "line_comment": ["#"],

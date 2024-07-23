@@ -349,6 +349,7 @@ Bitbake
 BrightScript
 C
 Cabal
+Cairo
 Cassius
 Ceylon
 CHeader
