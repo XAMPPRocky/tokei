@@ -169,6 +169,15 @@
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["cabal"]
     },
+    "Cangjie": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""],["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "verbatim_quotes": [["#\\\"", "\\\"#"],["##\\\"", "\\\"##"],["###\\\"", "\\\"###"],
+        ["#'", "'#"],["##'", "'##"],["###'", "'###"]],
+      "extensions": ["cj"]
+    },
     "Cassius": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
