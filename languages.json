@@ -762,6 +762,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["jq"]
     },
+    "JSLT": {
+      "name": "JSLT",
+      "line_comment": ["//"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["jslt"]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
