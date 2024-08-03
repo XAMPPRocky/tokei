@@ -138,8 +138,8 @@
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["bzl", "bazel"],
-      "filenames": ["build", "workspace"]
+      "extensions": ["bzl", "bazel", "bzlmod"],
+      "filenames": ["build", "workspace", "module"]
     },
     "Bean": {
       "line_comment": [";"],
