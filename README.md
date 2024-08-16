@@ -493,6 +493,7 @@ PowerShell
 Processing
 Prolog
 Protobuf
+PRQL
 PSL
 PureScript
 Python
