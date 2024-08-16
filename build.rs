@@ -1,8 +1,9 @@
 extern crate ignore;
 extern crate serde_json;
+extern crate json5;
 
 use std::ffi::OsStr;
-use std::fs::{self, File};
+use std::fs;
 use std::path::Path;
 use std::{cmp, env, error};
 
@@ -20,7 +21,8 @@ fn main() -> Result<(), Box<dyn error::Error>> {
 fn generate_languages(out_dir: &OsStr) -> Result<(), Box<dyn error::Error>> {
     let mut tera = tera::Tera::default();
 
-    let mut json: Value = serde_json::from_reader(File::open(&"languages.json")?)?;
+    let json_string: String = fs::read_to_string("languages.json")?.parse()?;
+    let mut json: Value = json5::from_str(&json_string)?;
 
     for (_key, ref mut item) in json
         .get_mut("languages")
