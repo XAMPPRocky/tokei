@@ -1,6 +1,6 @@
 /* 40 lines 25 code 8 comments 7 blanks */
 
--- copied from cpp, not necessarily idiomatic Euphoria code
+-- copied from Euphoria, not necessarily idiomatic Phix code
 
 include std/sequence.e
 
