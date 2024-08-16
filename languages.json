@@ -1811,6 +1811,12 @@
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["zsh"]
+    },
+    "GdShader": {
+      "name": "GDShader",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["gdshader"]
     }
   }
 }
