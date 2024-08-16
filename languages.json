@@ -1137,6 +1137,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["php"]
     },
+    "Po": {
+        "name": "PO File",
+        "line_comment": ["#"],
+        "extensions": ["po", "pot"]
+    },
     "Poke": {
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["pk"]
