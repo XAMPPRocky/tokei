@@ -1042,6 +1042,13 @@
       "extensions": ["def"],
       "line_comment": [";"]
     },
+    "MonkeyC": {
+      "name": "Monkey C",
+      "extensions": ["mc"],
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]]
+    },
     "MoonBit": {
       "line_comment": ["//"],
       "quotes": [["\\\"", "\\\""]],
