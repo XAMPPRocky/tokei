@@ -40,6 +40,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "Arturo": {
+      "line_comment": [";"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["art"]
+    },
     "AsciiDoc": {
       "line_comment": ["//"],
       "multi_line_comments": [["////", "////"]],
@@ -138,8 +143,8 @@
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["bzl", "bazel"],
-      "filenames": ["build", "workspace"]
+      "extensions": ["bzl", "bazel", "bzlmod"],
+      "filenames": ["build", "workspace", "module"]
     },
     "Bean": {
       "line_comment": [";"],
@@ -168,6 +173,15 @@
       "line_comment": ["--"],
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["cabal"]
+    },
+    "Cangjie": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""],["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "verbatim_quotes": [["#\\\"", "\\\"#"],["##\\\"", "\\\"##"],["###\\\"", "\\\"###"],
+        ["#'", "'#"],["##'", "'##"],["###'", "'###"]],
+      "extensions": ["cj"]
     },
     "Cassius": {
       "line_comment": ["//"],
@@ -762,6 +776,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["jq"]
     },
+    "JSLT": {
+      "name": "JSLT",
+      "line_comment": ["//"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["jslt"]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
@@ -940,6 +960,16 @@
     "Max": {
       "extensions": ["maxpat"]
     },
+    "Menhir": {
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "line_comment": ["//"],
+      "multi_line_comments": [
+        ["(*", "*)"],
+        ["/*", "*/"]
+      ],
+      "extensions": ["mll", "mly", "vy"]
+    },
     "Meson": {
       "line_comment": ["#"],
       "quotes": [["'", "'"], ["'''", "'''"]],
@@ -960,6 +990,12 @@
       "line_comment": ["//"],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["mlt"]
+    },
+    "Modelica": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["mo", "mos"]
     },
     "ModuleDef": {
       "name": "Module-Definition",
@@ -1042,7 +1078,7 @@
     "OCaml": {
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["ml", "mli", "mll", "mly", "re", "rei"]
+      "extensions": ["ml", "mli", "re", "rei"]
     },
     "Odin": {
       "extensions": ["odin"],
@@ -1062,6 +1098,11 @@
       "line_comment": ["#"],
       "quotes": [["\\\"","\\\""], ["`", "`"]],
       "extensions": ["rego"]
+    },
+    "OpenCL": {
+      "name": "OpenCL",
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["cl", "ocl"]
     },
     "OpenQasm": {
       "name": "OpenQASM",
@@ -1127,6 +1168,11 @@
       "multi_line_comments": [["/'", "'/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["puml"]
+    },
+    "Po": {
+        "name": "PO File",
+        "line_comment": ["#"],
+        "extensions": ["po", "pot"]
     },
     "Poke": {
       "multi_line_comments": [["/*", "*/"]],
@@ -1802,6 +1848,12 @@
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["zsh"]
+    },
+    "GdShader": {
+      "name": "GDShader",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["gdshader"]
     }
   }
 }
