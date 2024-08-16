@@ -40,6 +40,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "Arturo": {
+      "line_comment": [";"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["art"]
+    },
     "AsciiDoc": {
       "line_comment": ["//"],
       "multi_line_comments": [["////", "////"]],
@@ -138,13 +143,19 @@
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["bzl", "bazel"],
-      "filenames": ["build", "workspace"]
+      "extensions": ["bzl", "bazel", "bzlmod"],
+      "filenames": ["build", "workspace", "module"]
     },
     "Bean": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["bean", "beancount"]
+    },
+    "Bicep" : {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["'", "'"], ["'''", "'''"]],
+      "extensions": ["bicep", "bicepparam"]
     },
     "Bitbake": {
       "name": "Bitbake",
@@ -168,6 +179,15 @@
       "line_comment": ["--"],
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["cabal"]
+    },
+    "Cangjie": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""],["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "verbatim_quotes": [["#\\\"", "\\\"#"],["##\\\"", "\\\"##"],["###\\\"", "\\\"###"],
+        ["#'", "'#"],["##'", "'##"],["###'", "'###"]],
+      "extensions": ["cj"]
     },
     "Cassius": {
       "line_comment": ["//"],
@@ -193,6 +213,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["h"]
+    },
+    "Cil": {
+      "name": "CIL (SELinux)",
+      "line_comment": [";"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["cil"]
     },
     "Circom": {
       "line_comment": ["//"],
@@ -310,6 +336,17 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["cu"]
     },
+    "Cue": {
+      "name": "CUE",
+      "line_comment": ["//"],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["'", "'"],
+        ["\\\"\\\"\\\"", "\\\"\\\"\\\""]
+      ],
+      "verbatim_quotes": [["#\\\"", "\\\"#"]],
+      "extensions": ["cue"]
+    },
     "Cython": {
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
@@ -323,6 +360,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "nested_comments": [["/+", "+/"]],
       "extensions": ["d"]
+    },
+    "D2": {
+      "line_comment": ["#"],
+      "multi_line_comments": [["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "extensions": ["d2"]
     },
     "Daml": {
       "name": "DAML",
@@ -505,7 +547,7 @@
       "name": "FORTRAN Modern",
       "line_comment": ["!"],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["f03", "f08", "f90", "f95"]
+      "extensions": ["f03", "f08", "f90", "f95", "fpp"]
     },
     "FreeMarker": {
       "multi_line_comments": [["<#--", "-->"]],
@@ -762,6 +804,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["jq"]
     },
+    "JSLT": {
+      "name": "JSLT",
+      "line_comment": ["//"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["jslt"]
+    },
     "Json": {
       "name": "JSON",
       "blank": true,
@@ -846,12 +894,24 @@
       "nested": true,
       "extensions": ["lean", "hlean"]
     },
+    "Hledger": {
+      "name": "hledger",
+      "line_comment": [";", "#"],
+      "multi_line_comments": [["comment", "end comment"]],
+      "nested": false,
+      "extensions": ["hledger"]
+    },
     "Less": {
       "name": "LESS",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["less"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
+    },
+    "Lex": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["l", "lex"]
     },
     "Liquid": {
       "name": "Liquid",
@@ -940,6 +1000,22 @@
     "Max": {
       "extensions": ["maxpat"]
     },
+    "Mdx": {
+      "name": "MDX",
+      "literate": true,
+      "important_syntax": ["```"],
+      "extensions": ["mdx"]
+    },
+    "Menhir": {
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "line_comment": ["//"],
+      "multi_line_comments": [
+        ["(*", "*)"],
+        ["/*", "*/"]
+      ],
+      "extensions": ["mll", "mly", "vy"]
+    },
     "Meson": {
       "line_comment": ["#"],
       "quotes": [["'", "'"], ["'''", "'''"]],
@@ -961,10 +1037,23 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["mlt"]
     },
+    "Modelica": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["mo", "mos"]
+    },
     "ModuleDef": {
       "name": "Module-Definition",
       "extensions": ["def"],
       "line_comment": [";"]
+    },
+    "MonkeyC": {
+      "name": "Monkey C",
+      "extensions": ["mc"],
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]]
     },
     "MoonBit": {
       "line_comment": ["//"],
@@ -1042,7 +1131,7 @@
     "OCaml": {
       "quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["ml", "mli", "mll", "mly", "re", "rei"]
+      "extensions": ["ml", "mli", "re", "rei"]
     },
     "Odin": {
       "extensions": ["odin"],
@@ -1062,6 +1151,11 @@
       "line_comment": ["#"],
       "quotes": [["\\\"","\\\""], ["`", "`"]],
       "extensions": ["rego"]
+    },
+    "OpenCL": {
+      "name": "OpenCL",
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["cl", "ocl"]
     },
     "OpenQasm": {
       "name": "OpenQASM",
@@ -1128,6 +1222,18 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["php"]
+    },
+    "PlantUml": {
+      "name": "PlantUML",
+      "line_comment": ["'"],
+      "multi_line_comments": [["/'", "'/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["puml"]
+    },
+    "Po": {
+        "name": "PO File",
+        "line_comment": ["#"],
+        "extensions": ["po", "pot"]
     },
     "Poke": {
       "multi_line_comments": [["/*", "*/"]],
@@ -1476,6 +1582,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["stan"]
     },
+    "Stata": {
+      "line_comment": ["//", "*"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["do"]
+    },
     "Stratego": {
       "name": "Stratego/XT",
       "line_comment": ["//"],
@@ -1522,6 +1633,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["sv", "svh"]
+    },
+    "Tact": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["tact"]
     },
     "Tcl": {
       "name": "TCL",
@@ -1803,6 +1920,12 @@
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["zsh"]
+    },
+    "GdShader": {
+      "name": "GDShader",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["gdshader"]
     }
   }
 }
