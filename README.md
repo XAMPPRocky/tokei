@@ -376,6 +376,7 @@ Cuda
 CUE
 Cython
 D
+D2
 DAML
 Dart
 DeviceTree
