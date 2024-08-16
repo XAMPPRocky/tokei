@@ -7,9 +7,10 @@ use log::Level::Trace;
 use once_cell::sync::Lazy;
 
 use super::embedding::{
-    RegexCache, RegexFamily, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE, END_TEMPLATE,
+    RegexCache, RegexFamily, ENDING_MARKDOWN_REGEX, ENDING_LF_BLOCK_REGEX, END_SCRIPT, END_STYLE, END_TEMPLATE
 };
 use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
+use crate::LanguageType::LinguaFranca;
 
 /// Tracks the syntax of the language as well as the current state in the file.
 /// Current has what could be consider three types of mode.
@@ -29,6 +30,7 @@ pub(crate) struct SyntaxCounter {
     pub(crate) quote_is_doc_quote: bool,
     pub(crate) stack: Vec<&'static str>,
     pub(crate) quote_is_verbatim: bool,
+    pub(crate) lf_embedded_language: Option<LanguageType>
 }
 
 #[derive(Clone, Debug)]
@@ -53,6 +55,7 @@ pub(crate) enum LanguageContext {
     Html {
         language: LanguageType,
     },
+    LinguaFranca,
     Markdown {
         balanced: bool,
         language: LanguageType,
@@ -133,6 +136,7 @@ impl SyntaxCounter {
             quote_is_doc_quote: false,
             quote_is_verbatim: false,
             stack: Vec::with_capacity(1),
+            lf_embedded_language: None,
             quote: None,
         }
     }
@@ -150,6 +154,12 @@ impl SyntaxCounter {
     /// Returns whether the syntax is currently in comment mode.
     pub(crate) fn _is_comment_mode(&self) -> bool {
         !self.stack.is_empty()
+    }
+
+    pub(crate) fn get_lf_target_language(&self) -> LanguageType {
+        // in case the target declaration was not found, default it to that language
+        const DEFAULT_LANG: LanguageType = LinguaFranca;
+        self.lf_embedded_language.unwrap_or(DEFAULT_LANG)
     }
 
     #[inline]
@@ -390,7 +400,7 @@ impl SyntaxCounter {
                     String::from_utf8_lossy(&lines[start_of_code..end_of_code])
                 );
                 let stats =
-                    language.parse_from_slice(&lines[start_of_code..end_of_code].trim(), config);
+                    language.parse_from_slice(lines[start_of_code..end_of_code].trim(), config);
 
                 Some(FileContext::new(
                     LanguageContext::Markdown { balanced, language },
@@ -432,6 +442,29 @@ impl SyntaxCounter {
                     LanguageContext::Rust,
                     end_of_block,
                     doc_block,
+                ))
+            }
+            RegexFamily::LinguaFranca(lf) => {
+                let opening_fence = lf.starts_in_range(start, end)?;
+                let start_of_code = opening_fence.end();
+                let closing_fence = ENDING_LF_BLOCK_REGEX.find(&lines[start_of_code..]);
+                let end_of_code = closing_fence
+                    .map_or_else(|| lines.len(),
+                                 |fence| start_of_code + fence.start());
+
+                let block_contents = &lines[start_of_code..end_of_code];
+                trace!(
+                    "LF block: {:?}",
+                    String::from_utf8_lossy(block_contents)
+                );
+                let stats =
+                    self.get_lf_target_language().parse_from_slice(block_contents.trim_first_and_last_line_of_whitespace(), config);
+                trace!("-> stats: {:?}", stats);
+
+                Some(FileContext::new(
+                    LanguageContext::LinguaFranca,
+                    end_of_code,
+                    stats,
                 ))
             }
             RegexFamily::HtmlLike(html) => {
@@ -570,6 +603,7 @@ impl SyntaxCounter {
 
     #[inline]
     pub(crate) fn parse_end_of_quote(&mut self, window: &[u8]) -> Option<usize> {
+        #[allow(clippy::if_same_then_else)]
         if self._is_string_mode() && window.starts_with(self.quote?.as_bytes()) {
             let quote = self.quote.take().unwrap();
             trace!("End {:?}", quote);

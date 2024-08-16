@@ -8,6 +8,10 @@ use tokei::{Config, LanguageType, Sort};
 
 use crate::{
     cli_utils::{crate_version, parse_or_exit, NumberFormatStyle},
+    consts::{
+        BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, LANGUAGE_COLUMN_WIDTH,
+        LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH,
+    },
     input::Format,
 };
 
@@ -147,7 +151,7 @@ impl Cli {
                 Arg::new("streaming")
                     .long("streaming")
                     .takes_value(true)
-                    .possible_values(&["simple", "json"])
+                    .possible_values(["simple", "json"])
                     .ignore_case(true)
                     .help(
                         "prints the (language, path, lines, blanks, code, comments) records as \
@@ -159,7 +163,7 @@ impl Cli {
                     .long("sort")
                     .short('s')
                     .takes_value(true)
-                    .possible_values(&["files", "lines", "blanks", "code", "comments"])
+                    .possible_values(["files", "lines", "blanks", "code", "comments"])
                     .ignore_case(true)
                     .conflicts_with("rsort")
                     .help("Sort languages based on column"),
@@ -169,7 +173,7 @@ impl Cli {
                     .long("rsort")
                     .short('r')
                     .takes_value(true)
-                    .possible_values(&["files", "lines", "blanks", "code", "comments"])
+                    .possible_values(["files", "lines", "blanks", "code", "comments"])
                     .ignore_case(true)
                     .conflicts_with("sort")
                     .help("Reverse sort languages based on column"),
@@ -370,6 +374,7 @@ impl Cli {
     /// higher precedence than options present in config files.
     ///
     /// #### Shared options
+    /// * `hidden`
     /// * `no_ignore`
     /// * `no_ignore_parent`
     /// * `no_ignore_dot`
@@ -412,7 +417,7 @@ impl Cli {
             }),
             Some(Streaming::Simple) => Some(|l: LanguageType, e| {
                 println!(
-                    "{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}",
+                    "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
                     l.name(),
                     e.name.to_string_lossy().to_string(),
                     e.stats.lines(),

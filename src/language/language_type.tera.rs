@@ -322,6 +322,31 @@ impl LanguageType {
         }
     }
 
+    /// Get language from its name.
+    ///
+    /// ```no_run
+    /// use tokei::LanguageType;
+    ///
+    /// let rust = LanguageType::from_name("Rust");
+    ///
+    /// assert_eq!(rust, Some(LanguageType::Rust));
+    /// ```
+    #[must_use]
+    pub fn from_name(name: &str) -> Option<Self> {
+        match name {
+            {% for key, value in languages -%}
+                {% if value.name and value.name != key -%}
+                    | "{{value.name}}"
+                {% endif -%}
+                    | "{{key}}" => Some({{key}}),
+            {% endfor %}
+            unknown => {
+                warn!("Unknown language name: {}", unknown);
+                None
+            },
+        }
+    }
+
     /// Get language from its MIME type if available.
     ///
     /// ```no_run
@@ -356,16 +381,23 @@ impl LanguageType {
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
     pub fn from_shebang<P: AsRef<Path>>(entry: P) -> Option<Self> {
-        let file = match File::open(entry) {
-            Ok(file) => file,
-            _ => return None,
-        };
+        // Read at max `READ_LIMIT` bytes from the given file.
+        // A typical shebang line has a length less than 32 characters;
+        // e.g. '#!/bin/bash' - 11B / `#!/usr/bin/env python3` - 22B
+        // It is *very* unlikely the file contains a valid shebang syntax
+        // if we don't find a newline character after searching the first 128B.
+        const READ_LIMIT: usize = 128;
 
-        let mut buf = BufReader::new(file);
-        let mut line = String::new();
-        let _ = buf.read_line(&mut line);
+        let mut file = File::open(entry).ok()?;
+        let mut buf = [0; READ_LIMIT];
 
-        let mut words = line.split_whitespace();
+        let len = file.read(&mut buf).ok()?;
+        let buf = &buf[..len];
+
+        let first_line = buf.split(|b| *b == b'\n').next()?;
+        let first_line = std::str::from_utf8(first_line).ok()?;
+
+        let mut words = first_line.split_whitespace();
         match words.next() {
             {# First match against any shebang paths, and then check if the
                language matches any found in the environment shebang path. #}
