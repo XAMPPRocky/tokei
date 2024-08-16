@@ -4,13 +4,13 @@ use arbitrary::Arbitrary;
 /// information about the language, such as multi line comments, single line
 /// comments, string literal syntax, whether a given language allows nesting
 /// comments.
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize)]
 #[derive(Arbitrary, Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 #[non_exhaustive]
 #[allow(clippy::upper_case_acronyms)]
 pub enum LanguageType {
-    {% for key, _ in languages -%}
-        #[allow(missing_docs)] {{key}},
+    {% for key, value in languages -%}
+        #[allow(missing_docs)] {% if value.name is defined %} #[serde(alias = "{{value.name}}")] {% else %} #[serde(alias = "{{key}}")] {% endif %} {{key}},
     {% endfor %}
 }
 
@@ -59,7 +59,7 @@ impl LanguageType {
     /// Provides every variant in a Vec
     pub fn list() -> &'static [(Self, &'static [&'static str])] {
         &[{% for key, val in languages -%}
-            ({{key}}, 
+            ({{key}},
             {% if val.extensions %} &[{% for extension in val.extensions %}"{{extension}}", {% endfor %}],
             {% else %} &[],
             {% endif %}),
@@ -278,7 +278,7 @@ impl LanguageType {
     {
         let entry = entry.as_ref();
 
-        if let Some(filename) = fsutils::get_filename(&entry) {
+        if let Some(filename) = fsutils::get_filename(entry) {
             match &*filename {
                 {% for key, value in languages -%}
                     {%- if value.filenames -%}
@@ -292,7 +292,7 @@ impl LanguageType {
             }
         }
 
-        match fsutils::get_extension(&entry) {
+        match fsutils::get_extension(entry) {
             Some(extension) => LanguageType::from_file_extension(extension.as_str()),
             None => LanguageType::from_shebang(&entry),
         }
@@ -307,6 +307,7 @@ impl LanguageType {
     ///
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
+    #[must_use]
     pub fn from_file_extension(extension: &str) -> Option<Self> {
         match extension {
             {% for key, value in languages -%}
@@ -321,6 +322,31 @@ impl LanguageType {
         }
     }
 
+    /// Get language from its name.
+    ///
+    /// ```no_run
+    /// use tokei::LanguageType;
+    ///
+    /// let rust = LanguageType::from_name("Rust");
+    ///
+    /// assert_eq!(rust, Some(LanguageType::Rust));
+    /// ```
+    #[must_use]
+    pub fn from_name(name: &str) -> Option<Self> {
+        match name {
+            {% for key, value in languages -%}
+                {% if value.name and value.name != key -%}
+                    | "{{value.name}}"
+                {% endif -%}
+                    | "{{key}}" => Some({{key}}),
+            {% endfor %}
+            unknown => {
+                warn!("Unknown language name: {}", unknown);
+                None
+            },
+        }
+    }
+
     /// Get language from its MIME type if available.
     ///
     /// ```no_run
@@ -330,6 +356,7 @@ impl LanguageType {
     ///
     /// assert_eq!(lang, Some(LanguageType::JavaScript));
     /// ```
+    #[must_use]
     pub fn from_mime(mime: &str) -> Option<Self> {
         match mime {
             {% for key, value in languages -%}
@@ -378,7 +405,13 @@ impl LanguageType {
                     match word {
                         {% for key, value in languages -%}
                             {%- if value.env -%}
-                                {%- for item in value.env  %}| "{{item}}" {% endfor %}=> Some({{key}}),
+                                {%- for item in value.env  %}
+                                    {% if loop.index == 1 %}
+                                        _ if word.starts_with("{{item}}")
+                                    {% else %}
+                                        || word.starts_with("{{item}}")
+                                    {% endif %}
+                                {% endfor %}=> Some({{key}}),
                             {% endif -%}
                         {%- endfor %}
                         env => {

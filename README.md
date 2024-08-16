@@ -1,9 +1,15 @@
 # Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
 [![Mean Bean CI](https://github.com/XAMPPRocky/tokei/workflows/Mean%20Bean%20CI/badge.svg)](https://github.com/XAMPPRocky/tokei/actions?query=workflow%3A%22Mean+Bean+CI%22)
-[![crates.io](https://img.shields.io/crates/d/tokei.svg)](https://crates.io/crates/tokei)
 [![Help Wanted](https://img.shields.io/github/issues/XAMPPRocky/tokei/help%20wanted?color=green)](https://github.com/XAMPPRocky/tokei/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 [![Lines Of Code](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/XAMPPRocky/tokei)
 [![Documentation](https://docs.rs/tokei/badge.svg)](https://docs.rs/tokei/)
+![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
+![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
+![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
+![Chocolatey Downloads](https://img.shields.io/chocolatey/dt/tokei?label=Downloads%20(Chocolately))
+[![dependency status](https://deps.rs/repo/github/XAMPPRocky/tokei/status.svg)](https://deps.rs/repo/github/XAMPPRocky/tokei)
+[![Packaging status](https://repology.org/badge/tiny-repos/tokei.svg)](https://repology.org/project/tokei/versions)
+
 
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
@@ -12,26 +18,26 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ## Example
 ```console
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language            Files        Lines         Code     Comments       Blanks
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  BASH                    4           49           30           10            9
  JSON                    1         1332         1332            0            0
  Shell                   1           49           38            1           10
  TOML                    2           77           64            4            9
--------------------------------------------------------------------------------
+───────────────────────────────────────────────────────────────────────────────
  Markdown                5         1355            0         1074          281
  |- JSON                 1           41           41            0            0
  |- Rust                 2           53           42            6            5
  |- Shell                1           22           18            0            4
  (Total)                           1471          101         1080          290
--------------------------------------------------------------------------------
+───────────────────────────────────────────────────────────────────────────────
  Rust                   19         3416         2840          116          460
  |- Markdown            12          351            5          295           51
  (Total)                           3767         2845          411          511
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Total                  32         6745         4410         1506          829
-===============================================================================
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ## [API Documentation](https://docs.rs/tokei)
@@ -55,7 +61,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 ## Features
 
 - Tokei is **very fast**, and is able to count millions of lines of code in seconds.
-  Check out the [12.0.0 release](https://github.com/XAMPPRocky/tokei/releases/v12.0.0)
+  Check out the [11.0.0 release](https://github.com/XAMPPRocky/tokei/releases/v11.0.0)
   to see how Tokei's speed compares to others.
 
 - Tokei is **accurate**, Tokei correctly handles multi line comments,
@@ -82,7 +88,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 
 ### Package Managers
 
-#### Linux
+#### Unix
 ```console
 # Alpine Linux (since 3.13)
 apk add tokei
@@ -102,6 +108,8 @@ pkgin install tokei
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
+# Void Linux
+sudo xbps-install tokei
 ```
 
 #### macOS
@@ -115,6 +123,9 @@ sudo port install tokei
 
 #### Windows
 ```console
+# Winget
+winget install XAMPPRocky.tokei
+# Scoop
 scoop install tokei
 ```
 
@@ -137,7 +148,7 @@ cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 
 Tokei has a [configuration] file that allows you to change default behaviour.
 The file can be named `tokei.toml` or `.tokeirc`. Currently tokei looks for
-this file in three different places. The current directory,your home directory,
+this file in three different places. The current directory, your home directory,
 and your configuration directory.
 
 ## How to use Tokei
@@ -206,9 +217,6 @@ tokei with the features flag.
   ALL:
   cargo install tokei --features all
 
-  JSON:
-  cargo install tokei --features json
-
   CBOR:
   cargo install tokei --features cbor
 
@@ -226,7 +234,7 @@ $ tokei ./foo --output json
 ```
 
 #### Reading in stored formats
-Tokei can also take in the outputted formats added in the previous results to it's
+Tokei can also take in the outputted formats added in the previous results to its
 current run. Tokei can take either a path to a file, the format passed in as a
 value to the option, or from stdin.
 
@@ -265,7 +273,7 @@ OPTIONS:
     -o, --output <output>         Outputs Tokei in a specific format. Compile with additional features for more format
                                   support. [possible values: cbor, json, yaml]
     -s, --sort <sort>             Sort languages based on column [possible values: files, lines, blanks, code, comments]
-    -t, --type <types>            Filters output by language type, seperated by a comma. i.e. -t=Rust,Markdown
+    -t, --type <types>            Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown
 
 ARGS:
     <input>...    The path(s) to the file or directory to be counted.
@@ -296,6 +304,22 @@ Example show total lines:
 
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
+## Dockerized version
+Tokei is available in a small `alpine`-based docker image, buildable through [earthly](https://github.com/earthly/earthly):
+```bash
+earthly +docker
+```
+
+Once built, one can run the image with:
+```bash
+docker run --rm -v /path/to/analyze:/src tokei .
+```
+
+Or, to simply analyze the current folder (linux):
+```bash
+docker run --rm -v $(pwd):/src tokei .
+```
+
 ## Supported Languages
 
 If there is a language that you would to add to tokei feel free to make a pull
@@ -314,12 +338,16 @@ Asp
 AspNet
 Assembly
 AssemblyGAS
+ATS
 Autoconf
 AutoHotKey
 Automake
 AWK
 Bash
 Batch
+Bazel
+Bean
+Bitbake
 BrightScript
 C
 Cabal
@@ -342,6 +370,8 @@ Crystal
 CSharp
 CShell
 Css
+Cuda
+Cython
 D
 DAML
 Dart
@@ -351,6 +381,8 @@ Dockerfile
 DotNetResource
 DreamMaker
 Dust
+Ebuild
+EdgeDB
 Edn
 Elisp
 Elixir
@@ -363,6 +395,7 @@ Factor
 FEN
 Fish
 FlatBuffers
+ForgeConfig
 Forth
 FortranLegacy
 FortranModern
@@ -381,6 +414,7 @@ Gwion
 Hamlet
 Handlebars
 Happy
+Hare
 Haskell
 Haxe
 Hcl
@@ -388,13 +422,16 @@ Hex
 Hlsl
 HolyC
 Html
+Hy
 Idris
 Ini
 IntelHex
 Isabelle
 Jai
+Janet
 Java
 JavaScript
+Jq
 Json
 Jsx
 Julia
@@ -403,6 +440,7 @@ KakouneScript
 Kotlin
 Lean
 Less
+Lingua Franca
 LinkerScript
 Liquid
 Lisp
@@ -411,6 +449,7 @@ Logtalk
 Lua
 Lucius
 Madlang
+Max
 Makefile
 Markdown
 Meson
@@ -423,10 +462,14 @@ Mustache
 Nim
 Nix
 NotQuitePerl
+NuGetConfig
+Nushell
 ObjectiveC
 ObjectiveCpp
 OCaml
 Odin
+OpenSCAD
+OpenQASM
 Org
 Oz
 Pascal
@@ -435,6 +478,7 @@ Perl6
 Pest
 Php
 Po
+Poke
 Polly
 Pony
 PostCss
@@ -463,6 +507,8 @@ Scala
 Scheme
 Scons
 Sh
+ShaderLab
+Slang
 Sml
 Solidity
 SpecmanE
@@ -483,6 +529,7 @@ Toml
 Tsx
 Twig
 TypeScript
+UMPL
 UnrealDeveloperMarkdown
 UnrealPlugin
 UnrealProject
@@ -511,7 +558,9 @@ Xml
 XSL
 Xtend
 Yaml
+ZenCode
 Zig
+ZoKrates
 Zsh
 ```
 
@@ -530,6 +579,11 @@ $ tokei . -e *.d
 The canonical source of this repo is hosted on
 [GitHub](https://github.com/XAMPPRocky/tokei). If you have a GitHub account,
 please make your issues, and pull requests there.
+
+## Related Tools
+
+- [tokei-pie](https://github.com/laixintao/tokei-pie): Render tokei's output to
+  interactive sunburst chart.
 
 ## Copyright and License
 (C) Copyright 2015 by XAMPPRocky and contributors

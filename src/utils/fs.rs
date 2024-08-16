@@ -88,17 +88,17 @@ pub fn get_all_files<A: AsRef<Path>>(
     let rx_iter = rx
         .into_iter()
         .par_bridge()
-        .filter_map(|e| LanguageType::from_path(e.path(), &config).map(|l| (e, l)));
+        .filter_map(|e| LanguageType::from_path(e.path(), config).map(|l| (e, l)));
 
     let process = |(entry, language): (DirEntry, LanguageType)| {
-        let result = language.parse(entry.into_path(), &config);
+        let result = language.parse(entry.into_path(), config);
         let mut lock = languages.lock();
         let entry = lock.entry(language).or_insert_with(Language::new);
         match result {
             Ok(stats) => {
                 let func = config.for_each_fn;
                 if let Some(f) = func {
-                     f(language, stats.clone())
+                    f(language, stats.clone())
                 };
                 entry.add_report(stats)
             }
@@ -136,7 +136,7 @@ mod tests {
         language::{languages::Languages, LanguageType},
     };
 
-    const FILE_CONTENTS: &[u8] = &*b"fn main() {}";
+    const FILE_CONTENTS: &[u8] = b"fn main() {}";
     const FILE_NAME: &str = "main.rs";
     const IGNORE_PATTERN: &str = "*.rs";
     const LANGUAGE: &LanguageType = &LanguageType::Rust;
@@ -147,7 +147,7 @@ mod tests {
         let tmp_dir = TempDir::new().expect("Couldn't create temp dir");
         let path_name = tmp_dir.path().join("directory.rs");
 
-        fs::create_dir(&path_name).expect("Couldn't create directory.rs within temp");
+        fs::create_dir(path_name).expect("Couldn't create directory.rs within temp");
 
         super::get_all_files(
             &[tmp_dir.into_path().to_str().unwrap()],

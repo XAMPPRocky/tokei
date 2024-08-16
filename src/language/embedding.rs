@@ -19,6 +19,9 @@ pub static END_TEMPLATE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</template>"#)
 pub static STARTING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\S+\s"#).unwrap());
 pub static ENDING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\s?"#).unwrap());
 
+pub static STARTING_LF_BLOCK_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"\{="#).unwrap());
+pub static ENDING_LF_BLOCK_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"=}"#).unwrap());
+
 /// A memory of a regex matched.
 /// The values provided by `Self::start` and `Self::end` are in the same space as the
 /// start value supplied to `RegexCache::build`
@@ -47,7 +50,7 @@ impl<'a> std::fmt::Debug for Capture<'a> {
         f.debug_struct("Capture")
             .field("start", &self.start)
             .field("end", &self.end())
-            .field("text", &String::from_utf8_lossy(&self.text))
+            .field("text", &String::from_utf8_lossy(self.text))
             .finish()
     }
 }
@@ -61,7 +64,8 @@ pub(crate) struct RegexCache<'a> {
 /// as well as the actual matches
 pub(crate) enum RegexFamily<'a> {
     HtmlLike(HtmlLike<'a>),
-    Markdown(Markdown<'a>),
+    LinguaFranca(SimpleCapture<'a>),
+    Markdown(SimpleCapture<'a>),
     Rust,
 }
 
@@ -71,9 +75,10 @@ pub(crate) struct HtmlLike<'a> {
     start_template: Option<Box<[Capture<'a>]>>,
 }
 
-pub(crate) struct Markdown<'a> {
+pub(crate) struct SimpleCapture<'a> {
     starts: Option<Box<[Capture<'a>]>>,
 }
+
 
 impl<'a> HtmlLike<'a> {
     pub fn start_script_in_range(
@@ -101,9 +106,21 @@ impl<'a> HtmlLike<'a> {
     }
 }
 
-impl<'a> Markdown<'a> {
+impl<'a> SimpleCapture<'a> {
     pub fn starts_in_range(&'a self, start: usize, end: usize) -> Option<&Capture<'a>> {
         filter_range(self.starts.as_ref()?, start, end).and_then(|mut it| it.next())
+    }
+
+    fn make_capture(regex: &Regex, lines: &'a [u8], start: usize, end: usize) -> Option<SimpleCapture<'a>> {
+        let capture = SimpleCapture {
+            starts: save_captures(regex, lines, start, end),
+        };
+
+        if capture.starts.is_some() {
+            Some(capture)
+        } else {
+            None
+        }
     }
 }
 
@@ -139,17 +156,12 @@ impl<'a> RegexCache<'a> {
     pub(crate) fn build(lang: LanguageType, lines: &'a [u8], start: usize, end: usize) -> Self {
         let inner = match lang {
             LanguageType::Markdown | LanguageType::UnrealDeveloperMarkdown => {
-                let markdown = Markdown {
-                    starts: save_captures(&STARTING_MARKDOWN_REGEX, lines, start, end),
-                };
-
-                if markdown.starts.is_some() {
-                    Some(RegexFamily::Markdown(markdown))
-                } else {
-                    None
-                }
+                SimpleCapture::make_capture(&STARTING_MARKDOWN_REGEX, lines, start, end).map(RegexFamily::Markdown)
             }
             LanguageType::Rust => Some(RegexFamily::Rust),
+            LanguageType::LinguaFranca => {
+                SimpleCapture::make_capture(&STARTING_LF_BLOCK_REGEX, lines, start, end).map(RegexFamily::LinguaFranca)
+            },
             LanguageType::Html
             | LanguageType::RubyHtml
             | LanguageType::Svelte

@@ -9,7 +9,7 @@ int main(void) {
 }
 
 void foo() {
-	char *esc = "\"/*escaped quotes in a string and block commment*/\"";
+	char *esc = "\"/*escaped quotes in a string and block comment*/\"";
 	func1();
 	func2();
 	char *next_line =
@@ -28,7 +28,7 @@ void foo() {
 
 	char *late_start = // "
 		"wow\
-		thats pretty neat";
+		that's pretty neat";
 
 	char *late_start2 = /* " */
 		"*/ still just a string"; // but this is a line comment

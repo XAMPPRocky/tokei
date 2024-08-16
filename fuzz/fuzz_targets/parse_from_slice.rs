@@ -25,13 +25,14 @@ pub fn parse_from_slice(input: FuzzInput, check_total: bool) {
         no_ignore_vcs: None,
         sort: None,
         types: None,
+        for_each_fn: None,
     };
 
     // check that parsing doesn't panic
     let stats = input.lang.parse_from_slice(input.data, config);
 
     if check_total {
-        // verify that the parsed total lines is not more than the total occurences of \n and \r\n.
+        // verify that the parsed total lines is not more than the total occurrences of \n and \r\n.
         // if/when all of the current discrepancies are fixed, we could make this stronger by checking it is equal.
         if let Ok(s) = str::from_utf8(input.data) {
             assert!(

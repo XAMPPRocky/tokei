@@ -1,0 +1,37 @@
+// 37 lines 26 code 3 comments 8 blanks
+use crate::ast::{ExprSymbol, Opcode};
+use crate::tok9::Tok;
+
+grammar<'input>(input: &'input str);
+
+// line comment
+pub Expr: Box<ExprSymbol<'input>> = { // comment 1
+    Expr r##"verbatim2"## Factor => Box::new(ExprSymbol::Op(<>)),
+    Factor, // comment 2
+};
+
+Factor: Box<ExprSymbol<'input>> = { // comment 3
+    Factor "FactorOp" Term => Box::new(ExprSymbol::Op(<>)),
+    Term,
+};
+
+// comment 4
+
+Term: Box<ExprSymbol<'input>> = {
+    r#"verbatim"# => Box::new(ExprSymbol::NumSymbol(<>)),
+    "(" <Expr> ")"
+};
+
+extern {
+    type Location = usize;
+    type Error = ();
+
+    enum Tok<'input> {
+        r#"verbatim"# => Tok::NumSymbol(<&'input str>),
+        "FactorOp" => Tok::FactorOp(<Opcode>),
+        r##"verbatim2"## => Tok::ExprOp(<Opcode>),
+        "(" => Tok::ParenOpen,
+        ")" => Tok::ParenClose,
+    }
+}
+

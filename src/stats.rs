@@ -1,6 +1,8 @@
-use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
-
+use crate::consts::{
+    BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, LINES_COLUMN_WIDTH,
+};
 use crate::LanguageType;
+use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
 
 /// A struct representing stats about a single blob of code.
 #[derive(Clone, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -18,17 +20,20 @@ pub struct CodeStats {
 
 impl CodeStats {
     /// Creates a new blank `CodeStats`.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
 
     /// Get the total lines in a blob of code.
+    #[must_use]
     pub fn lines(&self) -> usize {
         self.blanks + self.code + self.comments
     }
 
     /// Creates a new `CodeStats` from an existing one with all of the child
     /// blobs merged.
+    #[must_use]
     pub fn summarise(&self) -> Self {
         let mut summary = self.clone();
 
@@ -46,12 +51,18 @@ impl CodeStats {
 
 impl ops::AddAssign for CodeStats {
     fn add_assign(&mut self, rhs: Self) {
+        self.add_assign(&rhs);
+    }
+}
+
+impl ops::AddAssign<&'_ CodeStats> for CodeStats {
+    fn add_assign(&mut self, rhs: &'_ CodeStats) {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.comments += rhs.comments;
 
-        for (language, stats) in rhs.blobs {
-            *self.blobs.entry(language).or_default() += stats;
+        for (language, stats) in &rhs.blobs {
+            *self.blobs.entry(*language).or_default() += stats;
         }
     }
 }
@@ -70,8 +81,9 @@ impl Report {
     /// Create a new `Report` from a [`PathBuf`].
     ///
     /// [`PathBuf`]: //doc.rust-lang.org/std/path/struct.PathBuf.html
+    #[must_use]
     pub fn new(name: PathBuf) -> Self {
-        Report {
+        Self {
             name,
             ..Self::default()
         }
@@ -85,6 +97,7 @@ impl ops::AddAssign<CodeStats> for Report {
 }
 
 #[doc(hidden)]
+#[must_use]
 pub fn find_char_boundary(s: &str, index: usize) -> usize {
     for i in 0..4 {
         if s.is_char_boundary(index + i) {
@@ -98,7 +111,7 @@ macro_rules! display_stats {
     ($f:expr, $this:expr, $name:expr, $max:expr) => {
         write!(
             $f,
-            " {: <max$} {:>12} {:>12} {:>12} {:>12}",
+            " {: <max$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             $name,
             $this.stats.lines(),
             $this.stats.code,
@@ -114,7 +127,8 @@ impl fmt::Display for Report {
         let name = self.name.to_string_lossy();
         let name_length = name.len();
 
-        let max_len = f.width().unwrap_or(25);
+        // Added 2 to max length to cover wider Files column (see https://github.com/XAMPPRocky/tokei/issues/891).
+        let max_len = f.width().unwrap_or(27) + 2;
 
         if name_length <= max_len {
             display_stats!(f, self, name, max_len)

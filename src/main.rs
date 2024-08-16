@@ -3,22 +3,30 @@ extern crate log;
 
 mod cli;
 mod cli_utils;
+mod consts;
 mod input;
 
 use std::{error::Error, io, process};
 
 use tokei::{Config, Languages, Sort};
 
-use crate::{cli::Cli, cli_utils::*, input::*};
+use crate::{
+    cli::Cli,
+    cli_utils::Printer,
+    consts::{
+        BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FALLBACK_ROW_LEN,
+        LANGUAGE_COLUMN_WIDTH, LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH,
+    },
+    input::add_input,
+};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut cli = Cli::from_args();
 
     if cli.print_languages {
-        Cli::print_supported_languages();
+        Cli::print_supported_languages()?;
         process::exit(0);
     }
-
     let config = cli.override_config(Config::from_config_files());
     let mut languages = Languages::new();
 
@@ -53,11 +61,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     if cli.streaming == Some(crate::cli::Streaming::Simple) {
         println!(
-            "#{:^10} {:^80} {:^12} {:^12} {:^12} {:^12}",
+            "#{:^LANGUAGE_COLUMN_WIDTH$} {:^PATH_COLUMN_WIDTH$} {:^LINES_COLUMN_WIDTH$} {:^CODE_COLUMN_WIDTH$} {:^COMMENTS_COLUMN_WIDTH$} {:^BLANKS_COLUMN_WIDTH$}",
             "language", "path", "lines", "code", "comments", "blanks"
         );
         println!(
-            "{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}",
+            "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             (0..10).map(|_| "#").collect::<String>(),
             (0..80).map(|_| "#").collect::<String>(),
             (0..12).map(|_| "#").collect::<String>(),
@@ -90,13 +98,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     printer.print_header()?;
 
+    let mut is_sorted = false;
     if let Some(sort_category) = cli.sort.or(config.sort) {
         for (_, ref mut language) in &mut languages {
-            language.sort_by(sort_category)
+            language.sort_by(sort_category);
         }
 
         let mut languages: Vec<_> = languages.iter().collect();
-
         match sort_category {
             Sort::Blanks => languages.sort_by(|a, b| b.1.blanks.cmp(&a.1.blanks)),
             Sort::Comments => languages.sort_by(|a, b| b.1.comments.cmp(&a.1.comments)),
@@ -104,17 +112,17 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Files => languages.sort_by(|a, b| b.1.reports.len().cmp(&a.1.reports.len())),
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
-
+        is_sorted = true;
         if cli.sort_reverse {
-            printer.print_results(languages.into_iter().rev(), cli.compact)?
+            printer.print_results(languages.into_iter().rev(), cli.compact, is_sorted)?;
         } else {
-            printer.print_results(languages.into_iter(), cli.compact)?
+            printer.print_results(languages.into_iter(), cli.compact, is_sorted)?;
         }
     } else {
-        printer.print_results(languages.iter(), cli.compact)?
+        printer.print_results(languages.iter(), cli.compact, is_sorted)?;
     }
 
-    printer.print_total(languages)?;
+    printer.print_total(&languages)?;
 
     Ok(())
 }

@@ -1,5 +1,7 @@
 use std::{env, fs, path::PathBuf};
 
+use etcetera::BaseStrategy;
+
 use crate::language::LanguageType;
 use crate::sort::Sort;
 use crate::stats::Report;
@@ -74,11 +76,11 @@ impl Config {
     /// The current directory's configuration will take priority over the configuration
     /// directory.
     ///
-    /// |Platform | Value | Example |
-    /// | ------- | ----- | ------- |
-    /// | Linux   | `$XDG_DATA_HOME` or `$HOME`/.local/share | /home/alice/.local/share |
-    /// | macOS   | `$HOME`/Library/Application Support | /Users/Alice/Library/Application Support |
-    /// | Windows | `{FOLDERID_RoamingAppData}` | C:\Users\Alice\AppData\Roaming |
+    /// |Platform | Value                                 | Example                        |
+    /// | ------- | ------------------------------------- | ------------------------------ |
+    /// | Linux   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config            |
+    /// | macOS   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /Users/alice/.config           |
+    /// | Windows | `{FOLDERID_RoamingAppData}`           | C:\Users\Alice\AppData\Roaming |
     ///
     /// # Example
     /// ```toml
@@ -90,24 +92,28 @@ impl Config {
     // /// extensions = ["py3"]
     /// ```
     pub fn from_config_files() -> Self {
-        let conf_dir = dirs_next::config_dir()
+        let conf_dir = etcetera::choose_base_strategy()
+            .ok()
+            .map(|basedirs| basedirs.config_dir())
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
-        let home_dir = dirs_next::home_dir()
+        let home_dir = etcetera::home_dir()
+            .ok()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
         let current_dir = env::current_dir()
             .ok()
             .and_then(Self::get_config)
-            .unwrap_or_else(Self::default);
+            .unwrap_or_default();
 
         #[allow(clippy::or_fun_call)]
         Config {
             columns: current_dir
                 .columns
                 .or(home_dir.columns.or(conf_dir.columns)),
+            hidden: current_dir.hidden.or(home_dir.hidden.or(conf_dir.hidden)),
             //languages: current_dir.languages.or(conf_dir.languages),
             treat_doc_strings_as_comments: current_dir.treat_doc_strings_as_comments.or(home_dir
                 .treat_doc_strings_as_comments
