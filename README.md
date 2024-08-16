@@ -519,6 +519,7 @@ SpecmanE
 Spice
 Sql
 SRecode
+Stata
 Stratego
 Svelte
 Svg
