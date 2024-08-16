@@ -1202,6 +1202,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["php"]
     },
+    "PlantUml": {
+      "name": "PlantUML",
+      "line_comment": ["'"],
+      "multi_line_comments": [["/'", "'/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["puml"]
+    },
     "Po": {
         "name": "PO File",
         "line_comment": ["#"],

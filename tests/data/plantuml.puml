@@ -1,0 +1,35 @@
+' 35 lines 10 code 13 comments 12 blanks
+' plantuml line comments must start at the beginning of a line.
+' plantuml block comments must either start on a newline or start and end on the same line as they start.
+' strings cannot span multiple lines.
+' single quotes are a valid string wrapper '', but not when they are the first non-whitespace characters on a line
+
+' comment at start uml
+@startuml
+
+!include <C4/C4_Container>
+
+'' this is also a comment
+
+rectangle "this is a string" as r
+/' this
+is a multi-line
+comment '/
+
+/' this is also a multi-line comment '/
+Container(C, "This is some more text", "text")
+
+node n /' this is a multi-line comment at the end of a line '/
+
+/' this is /' a valid '/ block comment '/
+
+component "'this is not a comment"
+
+/' this is a multi-line comment at the start of a line '/ interface i
+
+boundary "/' this is not a multi-line comment '/"
+
+System(s, "this is /' not part of a comment", "'/ this is also not part of a comment", "/' '/ /' neither is this")
+
+' comment after start uml
+@enduml
