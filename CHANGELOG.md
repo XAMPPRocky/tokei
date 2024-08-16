@@ -6,6 +6,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.2](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.1...v13.0.0-alpha.2) - 2024-08-16
+
+### Added
+- --files argument now sorts alphabetically ([#1059](https://github.com/XAMPPRocky/tokei/pull/1059))
+- add support for LALRPOP ([#1077](https://github.com/XAMPPRocky/tokei/pull/1077))
+
+### Fixed
+- read hidden from config file ([#1093](https://github.com/XAMPPRocky/tokei/pull/1093))
+
+### Other
+- add cangjie language support ([#1127](https://github.com/XAMPPRocky/tokei/pull/1127)) ([#1128](https://github.com/XAMPPRocky/tokei/pull/1128))
+- Add support for JSLT ([#1129](https://github.com/XAMPPRocky/tokei/pull/1129))
+- Add Arturo support ([#1108](https://github.com/XAMPPRocky/tokei/pull/1108))
+- Support Bazel's MODULE files and *.bzlmod files ([#1130](https://github.com/XAMPPRocky/tokei/pull/1130))
+- read only first 128B from the file when searching for shebang ([#1040](https://github.com/XAMPPRocky/tokei/pull/1040))
+- add OpenCL as a languages.json entry ([#980](https://github.com/XAMPPRocky/tokei/pull/980))
+- Add GetText Portable Object (PO) files ([#814](https://github.com/XAMPPRocky/tokei/pull/814))
+- Support godot shader ([#1118](https://github.com/XAMPPRocky/tokei/pull/1118))
+- Add Modelica language ([#1061](https://github.com/XAMPPRocky/tokei/pull/1061))
+- Add menhir support ([#781](https://github.com/XAMPPRocky/tokei/pull/781))
+- Update README.md
+- [issue_1114] remove Cargo.lock from .gitignore ([#1115](https://github.com/XAMPPRocky/tokei/pull/1115))
+- [issue_891] give more space for Files column ([#933](https://github.com/XAMPPRocky/tokei/pull/933))
+- GitHub Action to publish docker images ([#1096](https://github.com/XAMPPRocky/tokei/pull/1096))
+- Support MoonBit language. ([#1095](https://github.com/XAMPPRocky/tokei/pull/1095))
+- Add OpenSCAD ([#1097](https://github.com/XAMPPRocky/tokei/pull/1097))
+- add jinja extension for Jinja2 ([#1083](https://github.com/XAMPPRocky/tokei/pull/1083))
+- Fix slang ([#1089](https://github.com/XAMPPRocky/tokei/pull/1089))
+- Temporarily remove Hare
+- Support .pyi python file ([#1075](https://github.com/XAMPPRocky/tokei/pull/1075))
+- add luau extension to lua ([#1066](https://github.com/XAMPPRocky/tokei/pull/1066))
+- Adding support for Snakemake ([#1045](https://github.com/XAMPPRocky/tokei/pull/1045))
+- Add Janet to languages.json ([#1042](https://github.com/XAMPPRocky/tokei/pull/1042))
+- Add OpenQASM support ([#1041](https://github.com/XAMPPRocky/tokei/pull/1041))
+- typst ([#1037](https://github.com/XAMPPRocky/tokei/pull/1037))
+- Add the ZoKrates language ([#1035](https://github.com/XAMPPRocky/tokei/pull/1035))
+- Add PRQL ([#1030](https://github.com/XAMPPRocky/tokei/pull/1030))
+- remove refs ([#1006](https://github.com/XAMPPRocky/tokei/pull/1006))
+- Add lingua franca language ([#993](https://github.com/XAMPPRocky/tokei/pull/993))
+- Add support for Razor Components ([#992](https://github.com/XAMPPRocky/tokei/pull/992))
+- Add arch's PKGBUILD files ([#972](https://github.com/XAMPPRocky/tokei/pull/972))
+- Add Hare support ([#971](https://github.com/XAMPPRocky/tokei/pull/971))
+- Add Max support ([#963](https://github.com/XAMPPRocky/tokei/pull/963))
+- Add support for Chapel ([#960](https://github.com/XAMPPRocky/tokei/pull/960))
+- Add language support for Slang ([#956](https://github.com/XAMPPRocky/tokei/pull/956))
+- Update TypeScript language ([#953](https://github.com/XAMPPRocky/tokei/pull/953))
+- Added support for Circom ([#949](https://github.com/XAMPPRocky/tokei/pull/949))
+- link to earthly project ([#1078](https://github.com/XAMPPRocky/tokei/pull/1078))
+
 ## [13.0.0-alpha.1](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.0...v13.0.0-alpha.1) - 2024-03-04
 
 ### Fixed
