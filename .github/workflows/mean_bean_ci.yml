@@ -21,7 +21,7 @@ jobs:
           repo: cross
           matches: ${{ matrix.platform }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: cross-${{ matrix.platform }}
           path: ${{ steps.cross.outputs.install_path }}
@@ -37,7 +37,7 @@ jobs:
     # artifacts are downloaded first.
     needs: install-cross
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
         shell: bash
       - run: ci/build.bash cargo ${{ matrix.target }}
@@ -63,8 +63,8 @@ jobs:
     runs-on: macos-latest
     needs: install-cross
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
         with:
           name: cross-apple-darwin
           path: /usr/local/bin/
@@ -92,9 +92,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: install-cross
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download Cross
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: cross-linux-musl
           path: /tmp/
@@ -135,8 +135,8 @@ jobs:
           - i686-unknown-linux-musl
           # - mips-unknown-linux-gnu
           # - mips-unknown-linux-musl
-          - mips64-unknown-linux-gnuabi64
-          - mips64el-unknown-linux-gnuabi64
+          # - mips64-unknown-linux-gnuabi64
+          # - mips64el-unknown-linux-gnuabi64
           # - mipsel-unknown-linux-gnu
           # - mipsel-unknown-linux-musl
           - powerpc-unknown-linux-gnu
@@ -145,17 +145,17 @@ jobs:
           - x86_64-unknown-linux-gnu
           - x86_64-unknown-linux-musl
           # Android
-          - aarch64-linux-android
-          - arm-linux-androideabi
-          - armv7-linux-androideabi
-          - i686-linux-android
-          - x86_64-linux-android
+          # - aarch64-linux-android
+          # - arm-linux-androideabi
+          # - armv7-linux-androideabi
+          # - i686-linux-android
+          # - x86_64-linux-android
           # *BSD
           # The FreeBSD targets can have issues linking so they are disabled
           # by default.
           # - i686-unknown-freebsd
           # - x86_64-unknown-freebsd
-          - x86_64-unknown-netbsd
+          # - x86_64-unknown-netbsd
           # Solaris
           # - sparcv9-sun-solaris
           # - x86_64-sun-solaris

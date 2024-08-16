@@ -1,0 +1,10 @@
+REM 10 lines 4 code 3 comments 3 blanks
+START  59
+
+REM Comment on a line
+%XY:=42
+
+rem This is also a comment
+IF FOO= "foo" GOTO 10
+
+END

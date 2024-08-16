@@ -6,6 +6,10 @@
 ![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
 ![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
 ![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
+![Chocolatey Downloads](https://img.shields.io/chocolatey/dt/tokei?label=Downloads%20(Chocolately))
+[![dependency status](https://deps.rs/repo/github/XAMPPRocky/tokei/status.svg)](https://deps.rs/repo/github/XAMPPRocky/tokei)
+[![Packaging status](https://repology.org/badge/tiny-repos/tokei.svg)](https://repology.org/project/tokei/versions)
+
 
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
@@ -57,7 +61,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 ## Features
 
 - Tokei is **very fast**, and is able to count millions of lines of code in seconds.
-  Check out the [12.0.0 release](https://github.com/XAMPPRocky/tokei/releases/v12.0.0)
+  Check out the [11.0.0 release](https://github.com/XAMPPRocky/tokei/releases/v11.0.0)
   to see how Tokei's speed compares to others.
 
 - Tokei is **accurate**, Tokei correctly handles multi line comments,
@@ -104,6 +108,8 @@ pkgin install tokei
 nix-env -i tokei
 # OpenSUSE
 sudo zypper install tokei
+# Void Linux
+sudo xbps-install tokei
 ```
 
 #### macOS
@@ -117,6 +123,9 @@ sudo port install tokei
 
 #### Windows
 ```console
+# Winget
+winget install XAMPPRocky.tokei
+# Scoop
 scoop install tokei
 ```
 
@@ -295,6 +304,22 @@ Example show total lines:
 
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
+## Dockerized version
+Tokei is available in a small `alpine`-based docker image, buildable through [earthly](https://github.com/earthly/earthly):
+```bash
+earthly +docker
+```
+
+Once built, one can run the image with:
+```bash
+docker run --rm -v /path/to/analyze:/src tokei .
+```
+
+Or, to simply analyze the current folder (linux):
+```bash
+docker run --rm -v $(pwd):/src tokei .
+```
+
 ## Supported Languages
 
 If there is a language that you would to add to tokei feel free to make a pull
@@ -320,6 +345,9 @@ Automake
 AWK
 Bash
 Batch
+Bazel
+Bean
+Bitbake
 BrightScript
 C
 Cabal
@@ -353,6 +381,8 @@ Dockerfile
 DotNetResource
 DreamMaker
 Dust
+Ebuild
+EdgeDB
 Edn
 Elisp
 Elixir
@@ -384,6 +414,7 @@ Gwion
 Hamlet
 Handlebars
 Happy
+Hare
 Haskell
 Haxe
 Hcl
@@ -391,13 +422,16 @@ Hex
 Hlsl
 HolyC
 Html
+Hy
 Idris
 Ini
 IntelHex
 Isabelle
 Jai
+Janet
 Java
 JavaScript
+Jq
 Json
 Jsx
 Julia
@@ -406,6 +440,7 @@ KakouneScript
 Kotlin
 Lean
 Less
+Lingua Franca
 LinkerScript
 Liquid
 Lisp
@@ -414,6 +449,7 @@ Logtalk
 Lua
 Lucius
 Madlang
+Max
 Makefile
 Markdown
 Meson
@@ -426,10 +462,14 @@ Mustache
 Nim
 Nix
 NotQuitePerl
+NuGetConfig
+Nushell
 ObjectiveC
 ObjectiveCpp
 OCaml
 Odin
+OpenSCAD
+OpenQASM
 Org
 Oz
 Pascal
@@ -467,6 +507,7 @@ Scheme
 Scons
 Sh
 ShaderLab
+Slang
 Sml
 Solidity
 SpecmanE
@@ -518,6 +559,7 @@ Xtend
 Yaml
 ZenCode
 Zig
+ZoKrates
 Zsh
 ```
 
