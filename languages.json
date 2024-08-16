@@ -208,6 +208,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["h"]
     },
+    "Cil": {
+      "name": "CIL (SELinux)",
+      "line_comment": [";"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["cil"]
+    },
     "Circom": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
