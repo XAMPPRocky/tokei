@@ -117,7 +117,7 @@ pub fn get_all_files<A: AsRef<Path>>(
 }
 
 pub(crate) fn get_extension(path: &Path) -> Option<String> {
-    path.extension().map(|e| e.to_string_lossy().to_lowercase())
+    path.extension().map(|e| e.to_string_lossy().to_string())
 }
 
 pub(crate) fn get_filename(path: &Path) -> Option<String> {
