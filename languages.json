@@ -1000,6 +1000,12 @@
     "Max": {
       "extensions": ["maxpat"]
     },
+    "Mdx": {
+      "name": "MDX",
+      "literate": true,
+      "important_syntax": ["```"],
+      "extensions": ["mdx"]
+    },
     "Menhir": {
       "nested": true,
       "quotes": [["\\\"", "\\\""]],
