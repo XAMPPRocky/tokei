@@ -151,6 +151,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["bean", "beancount"]
     },
+    "Bicep" : {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["'", "'"], ["'''", "'''"]],
+      "extensions": ["bicep", "bicepparam"]
+    },
     "Bitbake": {
       "name": "Bitbake",
       "line_comment": ["#"],
