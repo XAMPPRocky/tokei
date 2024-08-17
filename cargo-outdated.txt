@@ -1,0 +1,387 @@
+Name                                              Project       Compat             Latest             Kind         Platform
+----                                              -------       ------             ------             ----         --------
+aho-corasick                                      1.0.2         1.1.3              1.1.3              Normal       ---
+aho-corasick->memchr                              2.5.0         2.7.4              2.7.4              Normal       ---
+aho-corasick->memchr                              2.5.0         2.7.4              Removed            Normal       ---
+aho-corasick->memchr                              2.5.0         Removed            Removed            Normal       ---
+android_system_properties->libc                   0.2.155       0.2.156            0.2.156            Normal       ---
+arbitrary                                         1.3.0         1.3.2              1.3.2              Normal       ---
+arbitrary->derive_arbitrary                       1.3.1         1.3.2              1.3.2              Normal       ---
+atty->hermit-abi                                  0.1.19        ---                Removed            Normal       cfg(target_os = "hermit")
+atty->libc                                        0.2.155       0.2.156            Removed            Normal       cfg(unix)
+atty->winapi                                      0.3.9         ---                Removed            Normal       cfg(windows)
+bstr->memchr                                      2.5.0         2.7.4              2.7.4              Normal       ---
+bstr->serde                                       1.0.180       1.0.208            1.0.208            Normal       ---
+cc->jobserver                                     0.1.26        0.1.32             0.1.32             Normal       ---
+cc->jobserver                                     0.1.26        Removed            Removed            Normal       ---
+cc->libc                                          0.2.155       0.2.156            0.2.156            Normal       cfg(unix)
+cc->libc                                          0.2.155       Removed            Removed            Normal       cfg(unix)
+chrono->iana-time-zone                            0.1.57        0.1.60             0.1.60             Normal       cfg(unix)
+chrono->num-traits                                0.2.16        0.2.19             0.2.19             Normal       ---
+chrono->winapi                                    0.3.9         Removed            Removed            Normal       cfg(windows)
+chrono-tz->chrono                                 0.4.26        0.4.38             0.4.38             Normal       ---
+chrono-tz->chrono-tz-build                        0.0.2         0.3.0              0.3.0              Build        ---
+chrono-tz->phf                                    0.10.1        0.11.2             0.11.2             Normal       ---
+chrono-tz-build->parse-zoneinfo                   0.3.0         0.3.1              0.3.1              Normal       ---
+chrono-tz-build->phf                              0.10.1        0.11.2             0.11.2             Normal       ---
+chrono-tz-build->phf_codegen                      0.10.0        0.11.2             0.11.2             Normal       ---
+clap                                              3.2.25        ---                4.5.16             Normal       ---
+clap->atty                                        0.2.14        ---                Removed            Normal       ---
+clap->bitflags                                    1.3.2         ---                Removed            Normal       ---
+clap->clap_lex                                    0.2.4         ---                Removed            Normal       ---
+clap->indexmap                                    1.9.3         ---                Removed            Normal       ---
+clap->once_cell                                   1.18.0        1.19.0             Removed            Normal       ---
+clap->strsim                                      0.10.0        ---                Removed            Normal       ---
+clap->termcolor                                   1.2.0         1.4.1              Removed            Normal       ---
+clap->terminal_size                               0.2.6         ---                Removed            Normal       ---
+clap->textwrap                                    0.16.0        0.16.1             Removed            Normal       ---
+clap_lex->os_str_bytes                            6.5.1         6.6.1              Removed            Normal       ---
+colored                                           2.0.4         2.1.0              2.1.0              Normal       ---
+colored->is-terminal                              0.4.9         Removed            Removed            Normal       ---
+colored->lazy_static                              1.4.0         1.5.0              1.5.0              Normal       ---
+cpufeatures->libc                                 0.2.155       0.2.156            0.2.156            Normal       aarch64-linux-android
+crossbeam-channel                                 0.5.8         0.5.13             0.5.13             Normal       ---
+crossbeam-channel->cfg-if                         1.0.0         Removed            Removed            Normal       ---
+crossbeam-channel->crossbeam-utils                0.8.16        0.8.20             0.8.20             Normal       ---
+crossbeam-channel->crossbeam-utils                0.8.16        Removed            Removed            Normal       ---
+crossbeam-deque->cfg-if                           1.0.0         Removed            Removed            Normal       ---
+crossbeam-deque->crossbeam-epoch                  0.9.15        0.9.18             0.9.18             Normal       ---
+crossbeam-deque->crossbeam-utils                  0.8.16        0.8.20             0.8.20             Normal       ---
+crossbeam-epoch->autocfg                          1.1.0         Removed            Removed            Build        ---
+crossbeam-epoch->cfg-if                           1.0.0         Removed            Removed            Normal       ---
+crossbeam-epoch->crossbeam-utils                  0.8.16        0.8.20             0.8.20             Normal       ---
+crossbeam-epoch->memoffset                        0.9.0         Removed            Removed            Normal       ---
+crossbeam-epoch->scopeguard                       1.2.0         Removed            Removed            Normal       ---
+crossbeam-utils->cfg-if                           1.0.0         Removed            Removed            Normal       ---
+crypto-common->typenum                            1.16.0        1.17.0             1.17.0             Normal       ---
+dashmap                                           5.5.0         5.5.3              6.0.1              Normal       ---
+dashmap->hashbrown                                0.14.0        0.14.5             0.14.5             Normal       ---
+dashmap->lock_api                                 0.4.10        0.4.12             0.4.12             Normal       ---
+dashmap->once_cell                                1.18.0        1.19.0             1.19.0             Normal       ---
+dashmap->parking_lot_core                         0.9.8         0.9.10             0.9.10             Normal       ---
+dashmap->serde                                    1.0.180       1.0.208            1.0.208            Normal       ---
+derive_arbitrary->proc-macro2                     1.0.66        1.0.86             1.0.86             Normal       ---
+derive_arbitrary->quote                           1.0.32        1.0.36             1.0.36             Normal       ---
+derive_arbitrary->syn                             2.0.28        2.0.74             2.0.74             Normal       ---
+encoding_rs_io->encoding_rs                       0.8.32        0.8.34             0.8.34             Normal       ---
+env_logger                                        0.10.0        0.10.2             0.11.5             Normal       ---
+env_logger->is-terminal                           0.4.9         0.4.13             Removed            Normal       ---
+env_logger->log                                   0.4.19        0.4.22             0.4.22             Normal       ---
+env_logger->regex                                 1.9.1         1.10.6             Removed            Normal       ---
+env_logger->termcolor                             1.2.0         1.4.1              Removed            Normal       ---
+errno->errno-dragonfly                            0.1.2         Removed            Removed            Normal       cfg(target_os = "dragonfly")
+errno->libc                                       0.2.155       0.2.156            0.2.156            Normal       cfg(target_os = "hermit")
+errno->libc                                       0.2.155       0.2.156            Removed            Normal       cfg(target_os = "hermit")
+errno->libc                                       0.2.155       Removed            Removed            Normal       cfg(target_os = "hermit")
+errno->windows-sys                                0.48.0        0.52.0             0.52.0             Normal       cfg(windows)
+errno->windows-sys                                0.48.0        0.52.0             Removed            Normal       cfg(windows)
+errno->windows-sys                                0.48.0        Removed            Removed            Normal       cfg(windows)
+errno-dragonfly->cc                               1.0.81        Removed            Removed            Build        ---
+errno-dragonfly->libc                             0.2.155       Removed            Removed            Normal       ---
+etcetera->home                                    0.5.5         0.5.9              0.5.9              Normal       ---
+form_urlencoded->percent-encoding                 2.3.0         2.3.1              2.3.1              Normal       ---
+generic-array->typenum                            1.16.0        1.17.0             1.17.0             Normal       ---
+generic-array->version_check                      0.9.4         0.9.5              0.9.5              Build        ---
+getrandom->libc                                   0.2.155       0.2.156            0.2.156            Normal       cfg(unix)
+git2                                              0.17.2        ---                0.19.0             Development  ---
+git2->bitflags                                    1.3.2         ---                2.6.0              Normal       ---
+git2->libc                                        0.2.155       0.2.156            0.2.156            Normal       ---
+git2->libgit2-sys                                 0.15.2+1.6.4  ---                0.17.0+1.8.1       Normal       ---
+git2->log                                         0.4.19        0.4.22             0.4.22             Normal       ---
+git2->url                                         2.4.0         2.5.2              2.5.2              Normal       ---
+globset->aho-corasick                             1.0.2         1.1.3              1.1.3              Normal       ---
+globset->bstr                                     1.6.0         1.10.0             1.10.0             Normal       ---
+globset->fnv                                      1.0.7         Removed            Removed            Normal       ---
+globset->log                                      0.4.19        0.4.22             0.4.22             Normal       ---
+globset->regex                                    1.9.1         Removed            Removed            Normal       ---
+globwalk->bitflags                                1.3.2         2.6.0              2.6.0              Normal       ---
+globwalk->ignore                                  0.4.20        0.4.22             0.4.22             Normal       ---
+globwalk->walkdir                                 2.3.3         2.5.0              2.5.0              Normal       ---
+grep-matcher->memchr                              2.5.0         2.7.4              2.7.4              Normal       ---
+grep-searcher                                     0.1.11        0.1.13             0.1.13             Normal       ---
+grep-searcher->bstr                               1.6.0         1.10.0             1.10.0             Normal       ---
+grep-searcher->bytecount                          0.6.3         Removed            Removed            Normal       ---
+grep-searcher->encoding_rs                        0.8.32        0.8.34             0.8.34             Normal       ---
+grep-searcher->grep-matcher                       0.1.6         0.1.7              0.1.7              Normal       ---
+grep-searcher->log                                0.4.19        0.4.22             0.4.22             Normal       ---
+grep-searcher->memmap2                            0.5.10        0.9.4              0.9.4              Normal       ---
+hermit-abi->libc                                  0.2.155       0.2.156            Removed            Normal       ---
+home->windows-sys                                 0.48.0        0.52.0             0.52.0             Normal       cfg(windows)
+humansize->libm                                   0.2.7         0.2.8              0.2.8              Normal       ---
+iana-time-zone->core-foundation-sys               0.8.4         0.8.7              0.8.7              Normal       cfg(any(target_os = "macos", target_os = "ios"))
+iana-time-zone->js-sys                            0.3.64        0.3.70             0.3.70             Normal       cfg(target_arch = "wasm32")
+iana-time-zone->wasm-bindgen                      0.2.87        0.2.93             0.2.93             Normal       cfg(target_arch = "wasm32")
+iana-time-zone->windows                           0.48.0        Removed            Removed            Normal       cfg(target_os = "windows")
+iana-time-zone-haiku->cc                          1.0.81        1.1.13             1.1.13             Build        ---
+idna->unicode-bidi                                0.3.13        0.3.15             0.3.15             Normal       ---
+idna->unicode-normalization                       0.1.22        0.1.23             0.1.23             Normal       ---
+ignore                                            0.4.20        0.4.22             0.4.22             Normal       ---
+ignore->globset                                   0.4.12        0.4.14             0.4.14             Normal       ---
+ignore->lazy_static                               1.4.0         Removed            Removed            Normal       ---
+ignore->log                                       0.4.19        0.4.22             0.4.22             Normal       ---
+ignore->memchr                                    2.5.0         2.7.4              2.7.4              Normal       ---
+ignore->regex                                     1.9.1         Removed            Removed            Normal       ---
+ignore->thread_local                              1.1.4         Removed            Removed            Normal       ---
+ignore->walkdir                                   2.3.3         2.5.0              2.5.0              Normal       ---
+ignore->winapi-util                               0.1.5         0.1.9              0.1.9              Normal       cfg(windows)
+indexmap->autocfg                                 1.1.0         1.3.0              Removed            Build        ---
+indexmap->hashbrown                               0.12.3        ---                Removed            Normal       ---
+indexmap->hashbrown                               0.14.0        0.14.5             0.14.5             Normal       ---
+io-lifetimes->hermit-abi                          0.3.2         0.3.9              Removed            Normal       cfg(target_os = "hermit")
+io-lifetimes->libc                                0.2.155       0.2.156            Removed            Normal       cfg(not(windows))
+io-lifetimes->windows-sys                         0.48.0        ---                Removed            Normal       cfg(windows)
+is-terminal->hermit-abi                           0.3.2         0.4.0              Removed            Normal       cfg(target_os = "hermit")
+is-terminal->hermit-abi                           0.3.2         Removed            Removed            Normal       cfg(target_os = "hermit")
+is-terminal->rustix                               0.38.6        Removed            Removed            Normal       cfg(not(any(windows, target_os = "hermit", target_os = "unknown")))
+is-terminal->windows-sys                          0.48.0        0.52.0             Removed            Normal       cfg(windows)
+is-terminal->windows-sys                          0.48.0        Removed            Removed            Normal       cfg(windows)
+itertools->either                                 1.9.0         1.13.0             1.13.0             Normal       ---
+jobserver->libc                                   0.2.155       0.2.156            0.2.156            Normal       cfg(unix)
+jobserver->libc                                   0.2.155       Removed            Removed            Normal       cfg(unix)
+js-sys->wasm-bindgen                              0.2.87        0.2.93             0.2.93             Normal       ---
+json5->pest                                       2.7.2         2.7.11             2.7.11             Normal       ---
+json5->pest_derive                                2.7.2         2.7.11             2.7.11             Normal       ---
+json5->serde                                      1.0.180       1.0.208            1.0.208            Normal       ---
+libgit2-sys->cc                                   1.0.81        1.1.13             1.1.13             Build        ---
+libgit2-sys->libc                                 0.2.155       0.2.156            0.2.156            Normal       ---
+libgit2-sys->libz-sys                             1.1.12        1.1.19             1.1.19             Normal       ---
+libgit2-sys->pkg-config                           0.3.27        0.3.30             0.3.30             Build        ---
+libz-sys->cc                                      1.0.81        1.1.13             1.1.13             Build        ---
+libz-sys->libc                                    0.2.155       0.2.156            0.2.156            Normal       ---
+libz-sys->pkg-config                              0.3.27        0.3.30             0.3.30             Build        ---
+lock_api->autocfg                                 1.1.0         1.3.0              1.3.0              Build        ---
+log                                               0.4.19        0.4.22             0.4.22             Normal       ---
+memmap2->libc                                     0.2.155       0.2.156            0.2.156            Normal       cfg(unix)
+memoffset->autocfg                                1.1.0         Removed            Removed            Build        ---
+num-format->itoa                                  1.0.9         1.0.11             1.0.11             Normal       ---
+num-traits->autocfg                               1.1.0         1.3.0              1.3.0              Build        ---
+num-traits->libm                                  0.2.7         0.2.8              0.2.8              Normal       ---
+num_cpus->hermit-abi                              0.3.2         Removed            Removed            Normal       cfg(target_os = "hermit")
+num_cpus->libc                                    0.2.155       Removed            Removed            Normal       cfg(not(windows))
+once_cell                                         1.18.0        1.19.0             1.19.0             Normal       ---
+parking_lot                                       0.12.1        0.12.3             0.12.3             Normal       ---
+parking_lot->lock_api                             0.4.10        0.4.12             0.4.12             Normal       ---
+parking_lot->parking_lot_core                     0.9.8         0.9.10             0.9.10             Normal       ---
+parking_lot_core->libc                            0.2.155       0.2.156            0.2.156            Normal       cfg(unix)
+parking_lot_core->redox_syscall                   0.3.5         0.5.3              0.5.3              Normal       cfg(target_os = "redox")
+parking_lot_core->smallvec                        1.11.0        1.13.2             1.13.2             Normal       ---
+parking_lot_core->windows-targets                 0.48.1        0.52.6             0.52.6             Normal       cfg(windows)
+parse-zoneinfo->regex                             1.9.1         1.10.6             1.10.6             Normal       ---
+pest->thiserror                                   1.0.44        1.0.63             1.0.63             Normal       ---
+pest_derive->pest                                 2.7.2         2.7.11             2.7.11             Normal       ---
+pest_derive->pest_generator                       2.7.2         2.7.11             2.7.11             Normal       ---
+pest_generator->pest                              2.7.2         2.7.11             2.7.11             Normal       ---
+pest_generator->pest_meta                         2.7.2         2.7.11             2.7.11             Normal       ---
+pest_generator->proc-macro2                       1.0.66        1.0.86             1.0.86             Normal       ---
+pest_generator->quote                             1.0.32        1.0.36             1.0.36             Normal       ---
+pest_generator->syn                               2.0.28        2.0.74             2.0.74             Normal       ---
+pest_meta->once_cell                              1.18.0        1.19.0             1.19.0             Normal       ---
+pest_meta->pest                                   2.7.2         2.7.11             2.7.11             Normal       ---
+pest_meta->sha2                                   0.10.7        0.10.8             0.10.8             Build        ---
+phf->phf_shared                                   0.10.0        0.11.2             0.11.2             Normal       ---
+phf_codegen->phf_generator                        0.10.0        0.11.2             0.11.2             Normal       ---
+phf_codegen->phf_shared                           0.10.0        0.11.2             0.11.2             Normal       ---
+phf_generator->phf_shared                         0.10.0        0.11.2             0.11.2             Normal       ---
+phf_shared->siphasher                             0.3.10        0.3.11             0.3.11             Normal       ---
+phf_shared->uncased                               0.9.9         Removed            Removed            Normal       ---
+proc-macro2->unicode-ident                        1.0.11        1.0.12             1.0.12             Normal       ---
+proptest                                          1.2.0         1.5.0              1.5.0              Development  ---
+proptest->bitflags                                1.3.2         2.6.0              2.6.0              Normal       ---
+proptest->byteorder                               1.4.3         Removed            Removed            Normal       ---
+proptest->lazy_static                             1.4.0         1.5.0              1.5.0              Normal       ---
+proptest->num-traits                              0.2.16        0.2.19             0.2.19             Normal       ---
+proptest->regex-syntax                            0.6.29        0.8.4              0.8.4              Normal       ---
+proptest->tempfile                                3.7.0         3.12.0             3.12.0             Normal       ---
+quote->proc-macro2                                1.0.66        1.0.86             1.0.86             Normal       ---
+rand->libc                                        0.2.155       0.2.156            0.2.156            Normal       cfg(unix)
+rand_chacha->ppv-lite86                           0.2.17        0.2.20             0.2.20             Normal       ---
+rand_core->getrandom                              0.2.10        0.2.15             0.2.15             Normal       ---
+rayon                                             1.7.0         1.10.0             1.10.0             Normal       ---
+rayon->either                                     1.9.0         1.13.0             1.13.0             Normal       ---
+rayon->rayon-core                                 1.11.0        1.12.1             1.12.1             Normal       ---
+rayon-core->crossbeam-channel                     0.5.8         Removed            Removed            Normal       ---
+rayon-core->crossbeam-deque                       0.8.3         0.8.5              0.8.5              Normal       ---
+rayon-core->crossbeam-utils                       0.8.16        0.8.20             0.8.20             Normal       ---
+rayon-core->num_cpus                              1.16.0        Removed            Removed            Normal       ---
+redox_syscall->bitflags                           1.3.2         2.6.0              2.6.0              Normal       ---
+redox_syscall->bitflags                           1.3.2         Removed            Removed            Normal       ---
+regex                                             1.9.1         1.10.6             1.10.6             Normal       ---
+regex->aho-corasick                               1.0.2         1.1.3              1.1.3              Normal       ---
+regex->aho-corasick                               1.0.2         1.1.3              Removed            Normal       ---
+regex->aho-corasick                               1.0.2         Removed            Removed            Normal       ---
+regex->memchr                                     2.5.0         2.7.4              2.7.4              Normal       ---
+regex->memchr                                     2.5.0         2.7.4              Removed            Normal       ---
+regex->memchr                                     2.5.0         Removed            Removed            Normal       ---
+regex->regex-automata                             0.3.4         0.4.7              0.4.7              Normal       ---
+regex->regex-automata                             0.3.4         0.4.7              Removed            Normal       ---
+regex->regex-automata                             0.3.4         Removed            Removed            Normal       ---
+regex->regex-syntax                               0.7.4         0.8.4              0.8.4              Normal       ---
+regex->regex-syntax                               0.7.4         0.8.4              Removed            Normal       ---
+regex->regex-syntax                               0.7.4         Removed            Removed            Normal       ---
+regex-automata->aho-corasick                      1.0.2         1.1.3              1.1.3              Normal       ---
+regex-automata->aho-corasick                      1.0.2         1.1.3              Removed            Normal       ---
+regex-automata->aho-corasick                      1.0.2         Removed            Removed            Normal       ---
+regex-automata->memchr                            2.5.0         2.7.4              2.7.4              Normal       ---
+regex-automata->memchr                            2.5.0         2.7.4              Removed            Normal       ---
+regex-automata->memchr                            2.5.0         Removed            Removed            Normal       ---
+regex-automata->regex-syntax                      0.7.4         0.8.4              0.8.4              Normal       ---
+regex-automata->regex-syntax                      0.7.4         0.8.4              Removed            Normal       ---
+regex-automata->regex-syntax                      0.7.4         Removed            Removed            Normal       ---
+rustix->bitflags                                  1.3.2         ---                Removed            Normal       ---
+rustix->bitflags                                  2.3.3         2.6.0              2.6.0              Normal       ---
+rustix->bitflags                                  2.3.3         Removed            Removed            Normal       ---
+rustix->errno                                     0.3.2         0.3.9              0.3.9              Development  ---
+rustix->errno                                     0.3.2         0.3.9              Removed            Development  ---
+rustix->errno                                     0.3.2         Removed            Removed            Development  ---
+rustix->io-lifetimes                              1.0.11        ---                Removed            Normal       ---
+rustix->libc                                      0.2.155       0.2.156            0.2.156            Development  ---
+rustix->libc                                      0.2.155       0.2.156            Removed            Development  ---
+rustix->libc                                      0.2.155       Removed            Removed            Development  ---
+rustix->linux-raw-sys                             0.3.8         ---                Removed            Normal       cfg(all(any(target_os = "android", target_os = "linux"), any(rustix_use_libc, miri, not(all(target_os = "linux", any(target_arch = "x86", all(target_arch = "x86_64", target_pointer_width = "64"), all(target_endian = "little", any(target_arch = "arm", all(target_arch = "aarch64", target_pointer_width = "64"), target_arch = "powerpc64", target_arch = "riscv64", target_arch = "mips", target_arch = "mips64"))))))))
+rustix->linux-raw-sys                             0.4.5         0.4.14             0.4.14             Normal       cfg(all(any(target_os = "android", target_os = "linux"), any(rustix_use_libc, miri, not(all(target_os = "linux", target_endian = "little", any(target_arch = "arm", all(target_arch = "aarch64", target_pointer_width = "64"), target_arch = "riscv64", all(rustix_use_experimental_asm, target_arch = "powerpc64"), all(rustix_use_experimental_asm, target_arch = "mips"), all(rustix_use_experimental_asm, target_arch = "mips32r6"), all(rustix_use_experimental_asm, target_arch = "mips64"), all(rustix_use_experimental_asm, target_arch = "mips64r6"), target_arch = "x86", all(target_arch = "x86_64", target_pointer_width = "64")))))))
+rustix->linux-raw-sys                             0.4.5         Removed            Removed            Normal       cfg(all(any(target_os = "android", target_os = "linux"), any(rustix_use_libc, miri, not(all(target_os = "linux", target_endian = "little", any(target_arch = "arm", all(target_arch = "aarch64", target_pointer_width = "64"), target_arch = "riscv64", all(rustix_use_experimental_asm, target_arch = "powerpc64"), all(rustix_use_experimental_asm, target_arch = "mips"), all(rustix_use_experimental_asm, target_arch = "mips32r6"), all(rustix_use_experimental_asm, target_arch = "mips64"), all(rustix_use_experimental_asm, target_arch = "mips64r6"), target_arch = "x86", all(target_arch = "x86_64", target_pointer_width = "64")))))))
+rustix->windows-sys                               0.48.0        ---                Removed            Normal       cfg(windows)
+rustix->windows-sys                               0.48.0        0.52.0             0.52.0             Normal       cfg(windows)
+rustix->windows-sys                               0.48.0        Removed            Removed            Normal       cfg(windows)
+rusty-fork->tempfile                              3.7.0         3.12.0             3.12.0             Normal       ---
+same-file->winapi-util                            0.1.5         0.1.9              0.1.9              Normal       cfg(windows)
+serde                                             1.0.180       1.0.208            1.0.208            Normal       ---
+serde->serde_derive                               1.0.180       1.0.208            1.0.208            Normal       ---
+serde_cbor->half                                  1.8.2         1.8.3              1.8.3              Normal       ---
+serde_cbor->serde                                 1.0.180       1.0.208            1.0.208            Normal       ---
+serde_derive->proc-macro2                         1.0.66        1.0.86             1.0.86             Normal       cfg(not(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu")))
+serde_derive->quote                               1.0.32        1.0.36             1.0.36             Normal       cfg(not(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu")))
+serde_derive->syn                                 2.0.28        2.0.74             2.0.74             Normal       cfg(not(all(target_arch = "x86_64", target_os = "linux", target_env = "gnu")))
+serde_json                                        1.0.104       1.0.125            1.0.125            Normal       ---
+serde_json->itoa                                  1.0.9         1.0.11             1.0.11             Normal       ---
+serde_json->ryu                                   1.0.15        1.0.18             1.0.18             Normal       ---
+serde_json->serde                                 1.0.180       1.0.208            1.0.208            Normal       ---
+serde_spanned->serde                              1.0.180       1.0.208            1.0.208            Normal       ---
+serde_yaml                                        0.9.25        0.9.34+deprecated  0.9.34+deprecated  Normal       ---
+serde_yaml->indexmap                              2.0.0         2.4.0              2.4.0              Normal       ---
+serde_yaml->itoa                                  1.0.9         1.0.11             1.0.11             Normal       ---
+serde_yaml->ryu                                   1.0.15        1.0.18             1.0.18             Normal       ---
+serde_yaml->serde                                 1.0.180       1.0.208            1.0.208            Normal       ---
+serde_yaml->unsafe-libyaml                        0.2.9         0.2.11             0.2.11             Normal       ---
+sha2->cpufeatures                                 0.2.9         0.2.13             0.2.13             Normal       cfg(any(target_arch = "aarch64", target_arch = "x86_64", target_arch = "x86"))
+slug->deunicode                                   0.4.4         1.6.0              1.6.0              Normal       ---
+strum                                             0.25.0        ---                0.26.3             Development  ---
+strum_macros                                      0.25.1        0.25.3             0.26.4             Development  ---
+strum_macros->heck                                0.4.1         ---                0.5.0              Normal       ---
+strum_macros->proc-macro2                         1.0.66        1.0.86             1.0.86             Normal       ---
+strum_macros->quote                               1.0.32        1.0.36             1.0.36             Normal       ---
+strum_macros->rustversion                         1.0.14        1.0.17             1.0.17             Normal       ---
+strum_macros->syn                                 2.0.28        2.0.74             2.0.74             Normal       ---
+syn->proc-macro2                                  1.0.66        1.0.86             1.0.86             Normal       ---
+syn->quote                                        1.0.32        1.0.36             1.0.36             Normal       ---
+syn->unicode-ident                                1.0.11        1.0.12             1.0.12             Normal       ---
+table_formatter->colored                          2.0.4         2.1.0              2.1.0              Normal       ---
+table_formatter->thiserror                        1.0.44        1.0.63             1.0.63             Normal       ---
+tempfile                                          3.7.0         3.12.0             3.12.0             Development  ---
+tempfile->fastrand                                2.0.0         2.1.0              2.1.0              Normal       ---
+tempfile->redox_syscall                           0.3.5         Removed            Removed            Normal       cfg(target_os = "redox")
+tempfile->rustix                                  0.38.6        0.38.34            0.38.34            Normal       cfg(any(unix, target_os = "wasi"))
+tempfile->windows-sys                             0.48.0        0.59.0             0.59.0             Normal       cfg(windows)
+tera                                              1.19.0        1.20.0             1.20.0             Build        ---
+tera->chrono                                      0.4.26        0.4.38             0.4.38             Normal       ---
+tera->chrono-tz                                   0.6.1         0.9.0              0.9.0              Normal       ---
+tera->globwalk                                    0.8.1         0.9.1              0.9.1              Normal       ---
+tera->lazy_static                                 1.4.0         1.5.0              1.5.0              Normal       ---
+tera->percent-encoding                            2.3.0         2.3.1              2.3.1              Normal       ---
+tera->pest                                        2.7.2         2.7.11             2.7.11             Normal       ---
+tera->pest_derive                                 2.7.2         2.7.11             2.7.11             Normal       ---
+tera->regex                                       1.9.1         1.10.6             1.10.6             Normal       ---
+tera->serde                                       1.0.180       1.0.208            1.0.208            Normal       ---
+tera->serde_json                                  1.0.104       1.0.125            1.0.125            Normal       ---
+tera->slug                                        0.1.4         0.1.6              0.1.6              Normal       ---
+tera->thread_local                                1.1.4         Removed            Removed            Normal       ---
+term_size->libc                                   0.2.155       0.2.156            0.2.156            Normal       cfg(not(target_os = "windows"))
+termcolor->winapi-util                            0.1.5         0.1.9              Removed            Normal       cfg(windows)
+terminal_size->rustix                             0.37.23       0.37.27            Removed            Normal       cfg(not(windows))
+terminal_size->windows-sys                        0.48.0        ---                Removed            Normal       cfg(windows)
+textwrap->terminal_size                           0.2.6         ---                Removed            Normal       ---
+thiserror->thiserror-impl                         1.0.44        1.0.63             1.0.63             Normal       ---
+thiserror-impl->proc-macro2                       1.0.66        1.0.86             1.0.86             Normal       ---
+thiserror-impl->quote                             1.0.32        1.0.36             1.0.36             Normal       ---
+thiserror-impl->syn                               2.0.28        2.0.74             2.0.74             Normal       ---
+thread_local->once_cell                           1.18.0        Removed            Removed            Normal       ---
+toml                                              0.7.6         0.7.8              0.8.19             Normal       ---
+toml->serde                                       1.0.180       1.0.208            1.0.208            Normal       ---
+toml->serde_spanned                               0.6.3         0.6.7              0.6.7              Normal       ---
+toml->toml_datetime                               0.6.3         0.6.8              0.6.8              Normal       ---
+toml->toml_edit                                   0.19.14       0.19.15            0.22.20            Normal       ---
+toml_datetime->serde                              1.0.180       1.0.208            1.0.208            Normal       ---
+toml_edit->indexmap                               2.0.0         2.4.0              2.4.0              Normal       ---
+toml_edit->serde                                  1.0.180       1.0.208            1.0.208            Normal       ---
+toml_edit->serde_spanned                          0.6.3         0.6.7              0.6.7              Normal       ---
+toml_edit->toml_datetime                          0.6.3         0.6.8              0.6.8              Normal       ---
+toml_edit->winnow                                 0.5.3         0.5.40             0.6.18             Normal       ---
+uncased->version_check                            0.9.4         Removed            Removed            Build        ---
+unicode-normalization->tinyvec                    1.6.0         1.8.0              1.8.0              Normal       ---
+url->form_urlencoded                              1.2.0         1.2.1              1.2.1              Normal       ---
+url->idna                                         0.4.0         0.5.0              0.5.0              Normal       ---
+url->percent-encoding                             2.3.0         2.3.1              2.3.1              Normal       ---
+wait-timeout->libc                                0.2.155       0.2.156            0.2.156            Normal       cfg(unix)
+walkdir->winapi-util                              0.1.5         0.1.9              0.1.9              Normal       cfg(windows)
+wasm-bindgen->wasm-bindgen-macro                  0.2.87        0.2.93             0.2.93             Normal       ---
+wasm-bindgen-backend->bumpalo                     3.13.0        3.16.0             3.16.0             Normal       ---
+wasm-bindgen-backend->log                         0.4.19        0.4.22             0.4.22             Normal       ---
+wasm-bindgen-backend->once_cell                   1.18.0        1.19.0             1.19.0             Normal       ---
+wasm-bindgen-backend->proc-macro2                 1.0.66        1.0.86             1.0.86             Normal       ---
+wasm-bindgen-backend->quote                       1.0.32        1.0.36             1.0.36             Normal       ---
+wasm-bindgen-backend->syn                         2.0.28        2.0.74             2.0.74             Normal       ---
+wasm-bindgen-backend->wasm-bindgen-shared         0.2.87        0.2.93             0.2.93             Normal       ---
+wasm-bindgen-macro->quote                         1.0.32        1.0.36             1.0.36             Normal       ---
+wasm-bindgen-macro->wasm-bindgen-macro-support    0.2.87        0.2.93             0.2.93             Normal       ---
+wasm-bindgen-macro-support->proc-macro2           1.0.66        1.0.86             1.0.86             Normal       ---
+wasm-bindgen-macro-support->quote                 1.0.32        1.0.36             1.0.36             Normal       ---
+wasm-bindgen-macro-support->syn                   2.0.28        2.0.74             2.0.74             Normal       ---
+wasm-bindgen-macro-support->wasm-bindgen-backend  0.2.87        0.2.93             0.2.93             Normal       ---
+wasm-bindgen-macro-support->wasm-bindgen-shared   0.2.87        0.2.93             0.2.93             Normal       ---
+winapi->winapi-i686-pc-windows-gnu                0.4.0         ---                Removed            Normal       i686-pc-windows-gnu
+winapi->winapi-i686-pc-windows-gnu                0.4.0         Removed            Removed            Normal       i686-pc-windows-gnu
+winapi->winapi-x86_64-pc-windows-gnu              0.4.0         ---                Removed            Normal       x86_64-pc-windows-gnu
+winapi->winapi-x86_64-pc-windows-gnu              0.4.0         Removed            Removed            Normal       x86_64-pc-windows-gnu
+winapi-util->winapi                               0.3.9         Removed            Removed            Normal       cfg(windows)
+windows->windows-targets                          0.48.1        Removed            Removed            Normal       ---
+windows-sys->windows-targets                      0.48.1        0.48.5             0.48.5             Normal       ---
+windows-sys->windows-targets                      0.48.1        0.48.5             Removed            Normal       ---
+windows-sys->windows-targets                      0.48.1        0.52.6             0.52.6             Normal       ---
+windows-sys->windows-targets                      0.48.1        0.52.6             Removed            Normal       ---
+windows-sys->windows-targets                      0.48.1        Removed            Removed            Normal       ---
+windows-targets->windows_aarch64_gnullvm          0.48.0        0.48.5             0.48.5             Normal       aarch64-pc-windows-gnullvm
+windows-targets->windows_aarch64_gnullvm          0.48.0        0.48.5             Removed            Normal       aarch64-pc-windows-gnullvm
+windows-targets->windows_aarch64_gnullvm          0.48.0        0.52.6             0.52.6             Normal       aarch64-pc-windows-gnullvm
+windows-targets->windows_aarch64_gnullvm          0.48.0        0.52.6             Removed            Normal       aarch64-pc-windows-gnullvm
+windows-targets->windows_aarch64_gnullvm          0.48.0        Removed            Removed            Normal       aarch64-pc-windows-gnullvm
+windows-targets->windows_aarch64_msvc             0.48.0        0.48.5             0.48.5             Normal       cfg(all(target_arch = "aarch64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_aarch64_msvc             0.48.0        0.48.5             Removed            Normal       cfg(all(target_arch = "aarch64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_aarch64_msvc             0.48.0        0.52.6             0.52.6             Normal       cfg(all(target_arch = "aarch64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_aarch64_msvc             0.48.0        0.52.6             Removed            Normal       cfg(all(target_arch = "aarch64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_aarch64_msvc             0.48.0        Removed            Removed            Normal       cfg(all(target_arch = "aarch64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_i686_gnu                 0.48.0        0.48.5             0.48.5             Normal       cfg(all(target_arch = "x86", target_env = "gnu", not(windows_raw_dylib)))
+windows-targets->windows_i686_gnu                 0.48.0        0.48.5             Removed            Normal       cfg(all(target_arch = "x86", target_env = "gnu", not(windows_raw_dylib)))
+windows-targets->windows_i686_gnu                 0.48.0        0.52.6             0.52.6             Normal       cfg(all(target_arch = "x86", target_env = "gnu", not(windows_raw_dylib)))
+windows-targets->windows_i686_gnu                 0.48.0        0.52.6             Removed            Normal       cfg(all(target_arch = "x86", target_env = "gnu", not(windows_raw_dylib)))
+windows-targets->windows_i686_gnu                 0.48.0        Removed            Removed            Normal       cfg(all(target_arch = "x86", target_env = "gnu", not(windows_raw_dylib)))
+windows-targets->windows_i686_msvc                0.48.0        0.48.5             0.48.5             Normal       cfg(all(target_arch = "x86", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_i686_msvc                0.48.0        0.48.5             Removed            Normal       cfg(all(target_arch = "x86", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_i686_msvc                0.48.0        0.52.6             0.52.6             Normal       cfg(all(target_arch = "x86", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_i686_msvc                0.48.0        0.52.6             Removed            Normal       cfg(all(target_arch = "x86", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_i686_msvc                0.48.0        Removed            Removed            Normal       cfg(all(target_arch = "x86", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_x86_64_gnu               0.48.0        0.48.5             0.48.5             Normal       cfg(all(target_arch = "x86_64", target_env = "gnu", not(target_abi = "llvm"), not(windows_raw_dylib)))
+windows-targets->windows_x86_64_gnu               0.48.0        0.48.5             Removed            Normal       cfg(all(target_arch = "x86_64", target_env = "gnu", not(target_abi = "llvm"), not(windows_raw_dylib)))
+windows-targets->windows_x86_64_gnu               0.48.0        0.52.6             0.52.6             Normal       cfg(all(target_arch = "x86_64", target_env = "gnu", not(target_abi = "llvm"), not(windows_raw_dylib)))
+windows-targets->windows_x86_64_gnu               0.48.0        0.52.6             Removed            Normal       cfg(all(target_arch = "x86_64", target_env = "gnu", not(target_abi = "llvm"), not(windows_raw_dylib)))
+windows-targets->windows_x86_64_gnu               0.48.0        Removed            Removed            Normal       cfg(all(target_arch = "x86_64", target_env = "gnu", not(target_abi = "llvm"), not(windows_raw_dylib)))
+windows-targets->windows_x86_64_gnullvm           0.48.0        0.48.5             0.48.5             Normal       x86_64-pc-windows-gnullvm
+windows-targets->windows_x86_64_gnullvm           0.48.0        0.48.5             Removed            Normal       x86_64-pc-windows-gnullvm
+windows-targets->windows_x86_64_gnullvm           0.48.0        0.52.6             0.52.6             Normal       x86_64-pc-windows-gnullvm
+windows-targets->windows_x86_64_gnullvm           0.48.0        0.52.6             Removed            Normal       x86_64-pc-windows-gnullvm
+windows-targets->windows_x86_64_gnullvm           0.48.0        Removed            Removed            Normal       x86_64-pc-windows-gnullvm
+windows-targets->windows_x86_64_msvc              0.48.0        0.48.5             0.48.5             Normal       cfg(all(target_arch = "x86_64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_x86_64_msvc              0.48.0        0.48.5             Removed            Normal       cfg(all(target_arch = "x86_64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_x86_64_msvc              0.48.0        0.52.6             0.52.6             Normal       cfg(all(target_arch = "x86_64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_x86_64_msvc              0.48.0        0.52.6             Removed            Normal       cfg(all(target_arch = "x86_64", target_env = "msvc", not(windows_raw_dylib)))
+windows-targets->windows_x86_64_msvc              0.48.0        Removed            Removed            Normal       cfg(all(target_arch = "x86_64", target_env = "msvc", not(windows_raw_dylib)))
+winnow->memchr                                    2.5.0         2.7.4              2.7.4              Normal       ---
