@@ -6,10 +6,7 @@
 ![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
 ![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
 ![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
-![Chocolatey Downloads](https://img.shields.io/chocolatey/dt/tokei?label=Downloads%20(Chocolately))
 [![dependency status](https://deps.rs/repo/github/XAMPPRocky/tokei/status.svg)](https://deps.rs/repo/github/XAMPPRocky/tokei)
-[![Packaging status](https://repology.org/badge/tiny-repos/tokei.svg)](https://repology.org/project/tokei/versions)
-
 
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
@@ -327,6 +324,7 @@ request. Languages are defined in [`languages.json`](./languages.json), and you 
 read how to add and test your language in our [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ```
+8th
 Abap
 ActionScript
 Ada
@@ -347,7 +345,6 @@ Bash
 Batch
 Bazel
 Bean
-Bicep
 Bitbake
 BrightScript
 C
@@ -355,7 +352,6 @@ Cabal
 Cassius
 Ceylon
 CHeader
-Cil
 Clojure
 ClojureC
 ClojureScript
@@ -373,10 +369,8 @@ CSharp
 CShell
 Css
 Cuda
-CUE
 Cython
 D
-D2
 DAML
 Dart
 DeviceTree
@@ -395,6 +389,7 @@ Elvish
 EmacsDevEnv
 Emojicode
 Erlang
+Euphoria
 Factor
 FEN
 Fish
@@ -408,7 +403,6 @@ FSharp
 Fstar
 GDB
 GdScript
-GdShader
 Gherkin
 Gleam
 Glsl
@@ -424,7 +418,6 @@ Haskell
 Haxe
 Hcl
 Hex
-hledger
 Hlsl
 HolyC
 Html
@@ -458,12 +451,10 @@ Madlang
 Max
 Makefile
 Markdown
-Mdx
 Meson
 Mint
 Mlatu
 ModuleDef
-MonkeyC
 MoonScript
 MsBuild
 Mustache
@@ -484,8 +475,9 @@ Pascal
 Perl
 Perl6
 Pest
+Smalltalk
+Phix
 Php
-Po
 Poke
 Polly
 Pony
@@ -494,9 +486,9 @@ PowerShell
 Processing
 Prolog
 Protobuf
-PRQL
 PSL
 PureScript
+Pyret
 Python
 Qcl
 Qml
@@ -524,14 +516,12 @@ SpecmanE
 Spice
 Sql
 SRecode
-Stata
 Stratego
 Svelte
 Svg
 Swift
 Swig
 SystemVerilog
-Tact
 Tcl
 Tex
 Text
@@ -563,6 +553,7 @@ VisualStudioSolution
 Vue
 WebAssembly
 Wolfram
+Wren
 Xaml
 XcodeConfig
 Xml

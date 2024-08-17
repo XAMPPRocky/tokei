@@ -1,8 +1,0 @@
-; 8 lines 3 code 3 comments 2 blanks
-; this is a comment
-; this is another comment
-
-a1: 2
-a2: 3.14 ; pi
-
-a3: 213213      ; another number

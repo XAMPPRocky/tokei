@@ -381,23 +381,16 @@ impl LanguageType {
     /// assert_eq!(rust, Some(LanguageType::Rust));
     /// ```
     pub fn from_shebang<P: AsRef<Path>>(entry: P) -> Option<Self> {
-        // Read at max `READ_LIMIT` bytes from the given file.
-        // A typical shebang line has a length less than 32 characters;
-        // e.g. '#!/bin/bash' - 11B / `#!/usr/bin/env python3` - 22B
-        // It is *very* unlikely the file contains a valid shebang syntax
-        // if we don't find a newline character after searching the first 128B.
-        const READ_LIMIT: usize = 128;
+        let file = match File::open(entry) {
+            Ok(file) => file,
+            _ => return None,
+        };
 
-        let mut file = File::open(entry).ok()?;
-        let mut buf = [0; READ_LIMIT];
+        let mut buf = BufReader::new(file);
+        let mut line = String::new();
+        let _ = buf.read_line(&mut line);
 
-        let len = file.read(&mut buf).ok()?;
-        let buf = &buf[..len];
-
-        let first_line = buf.split(|b| *b == b'\n').next()?;
-        let first_line = std::str::from_utf8(first_line).ok()?;
-
-        let mut words = first_line.split_whitespace();
+        let mut words = line.split_whitespace();
         match words.next() {
             {# First match against any shebang paths, and then check if the
                language matches any found in the environment shebang path. #}

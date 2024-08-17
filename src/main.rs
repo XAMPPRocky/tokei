@@ -3,7 +3,6 @@ extern crate log;
 
 mod cli;
 mod cli_utils;
-mod consts;
 mod input;
 
 use std::{error::Error, io, process};
@@ -12,11 +11,7 @@ use tokei::{Config, Languages, Sort};
 
 use crate::{
     cli::Cli,
-    cli_utils::Printer,
-    consts::{
-        BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FALLBACK_ROW_LEN,
-        LANGUAGE_COLUMN_WIDTH, LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH,
-    },
+    cli_utils::{Printer, FALLBACK_ROW_LEN},
     input::add_input,
 };
 
@@ -61,11 +56,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     if cli.streaming == Some(crate::cli::Streaming::Simple) {
         println!(
-            "#{:^LANGUAGE_COLUMN_WIDTH$} {:^PATH_COLUMN_WIDTH$} {:^LINES_COLUMN_WIDTH$} {:^CODE_COLUMN_WIDTH$} {:^COMMENTS_COLUMN_WIDTH$} {:^BLANKS_COLUMN_WIDTH$}",
+            "#{:^10} {:^80} {:^12} {:^12} {:^12} {:^12}",
             "language", "path", "lines", "code", "comments", "blanks"
         );
         println!(
-            "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}",
             (0..10).map(|_| "#").collect::<String>(),
             (0..80).map(|_| "#").collect::<String>(),
             (0..12).map(|_| "#").collect::<String>(),
