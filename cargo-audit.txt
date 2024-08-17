@@ -1,20 +1,7 @@
     Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
       Loaded 648 security advisories (from /home/nick/.cargo/advisory-db)
     Updating crates.io index
-    Scanning Cargo.lock for vulnerabilities (199 crate dependencies)
-Crate:     libgit2-sys
-Version:   0.15.2+1.6.4
-Title:     Memory corruption, denial of service, and arbitrary code execution in libgit2
-Date:      2024-02-06
-ID:        RUSTSEC-2024-0013
-URL:       https://rustsec.org/advisories/RUSTSEC-2024-0013
-Severity:  8.6 (high)
-Solution:  Upgrade to >=0.16.2
-Dependency tree:
-libgit2-sys 0.15.2+1.6.4
-└── git2 0.17.2
-    └── tokei 13.0.0-alpha.1
-
+    Scanning Cargo.lock for vulnerabilities (203 crate dependencies)
 Crate:     serde_cbor
 Version:   0.11.2
 Warning:   unmaintained
@@ -37,28 +24,4 @@ Dependency tree:
 term_size 0.3.2
 └── tokei 13.0.0-alpha.1
 
-Crate:     atty
-Version:   0.2.14
-Warning:   unsound
-Title:     Potential unaligned read
-Date:      2021-07-04
-ID:        RUSTSEC-2021-0145
-URL:       https://rustsec.org/advisories/RUSTSEC-2021-0145
-Dependency tree:
-atty 0.2.14
-└── clap 3.2.25
-    └── tokei 13.0.0-alpha.1
-
-Crate:     unsafe-libyaml
-Version:   0.2.9
-Warning:   unsound
-Title:     Unaligned write of u64 on 32-bit and 16-bit platforms
-Date:      2023-12-20
-ID:        RUSTSEC-2023-0075
-URL:       https://rustsec.org/advisories/RUSTSEC-2023-0075
-Dependency tree:
-unsafe-libyaml 0.2.9
-└── serde_yaml 0.9.25
-    └── tokei 13.0.0-alpha.1
-
-warning: 4 allowed warnings found
+warning: 2 allowed warnings found
