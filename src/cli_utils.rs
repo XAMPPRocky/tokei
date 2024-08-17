@@ -348,8 +348,7 @@ impl<W: Write> Printer<W> {
 
                 if self.list_files {
                     self.print_subrow()?;
-                    let mut reports: Vec<&Report> =
-                        language.reports.iter().map(|report| &*report).collect();
+                    let mut reports: Vec<&Report> = language.reports.iter().collect();
                     if !is_sorted {
                         reports.sort_by(|&a, &b| a.name.cmp(&b.name));
                     }

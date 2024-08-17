@@ -135,7 +135,6 @@ impl Config {
             no_ignore_vcs: current_dir
                 .no_ignore_vcs
                 .or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
-            ..Self::default()
         }
     }
 }
