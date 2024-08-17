@@ -2,7 +2,7 @@ use std::{
     borrow::Cow,
     fmt,
     fs::File,
-    io::{self, Read},
+    io::{self, BufRead, BufReader, Read},
     path::{Path, PathBuf},
     str::FromStr,
 };

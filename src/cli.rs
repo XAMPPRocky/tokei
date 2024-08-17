@@ -8,10 +8,6 @@ use tokei::{Config, LanguageType, Sort};
 
 use crate::{
     cli_utils::{crate_version, parse_or_exit, NumberFormatStyle},
-    consts::{
-        BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, LANGUAGE_COLUMN_WIDTH,
-        LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH,
-    },
     input::Format,
 };
 
@@ -417,7 +413,7 @@ impl Cli {
             }),
             Some(Streaming::Simple) => Some(|l: LanguageType, e| {
                 println!(
-                    "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                    "{:>10} {:<80} {:>12} {:>12} {:>12} {:>12}",
                     l.name(),
                     e.name.to_string_lossy().to_string(),
                     e.stats.lines(),
