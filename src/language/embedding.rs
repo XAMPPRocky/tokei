@@ -79,7 +79,6 @@ pub(crate) struct SimpleCapture<'a> {
     starts: Option<Box<[Capture<'a>]>>,
 }
 
-
 impl<'a> HtmlLike<'a> {
     pub fn start_script_in_range(
         &'a self,
@@ -111,7 +110,12 @@ impl<'a> SimpleCapture<'a> {
         filter_range(self.starts.as_ref()?, start, end).and_then(|mut it| it.next())
     }
 
-    fn make_capture(regex: &Regex, lines: &'a [u8], start: usize, end: usize) -> Option<SimpleCapture<'a>> {
+    fn make_capture(
+        regex: &Regex,
+        lines: &'a [u8],
+        start: usize,
+        end: usize,
+    ) -> Option<SimpleCapture<'a>> {
         let capture = SimpleCapture {
             starts: save_captures(regex, lines, start, end),
         };
@@ -156,12 +160,14 @@ impl<'a> RegexCache<'a> {
     pub(crate) fn build(lang: LanguageType, lines: &'a [u8], start: usize, end: usize) -> Self {
         let inner = match lang {
             LanguageType::Markdown | LanguageType::UnrealDeveloperMarkdown => {
-                SimpleCapture::make_capture(&STARTING_MARKDOWN_REGEX, lines, start, end).map(RegexFamily::Markdown)
+                SimpleCapture::make_capture(&STARTING_MARKDOWN_REGEX, lines, start, end)
+                    .map(RegexFamily::Markdown)
             }
             LanguageType::Rust => Some(RegexFamily::Rust),
             LanguageType::LinguaFranca => {
-                SimpleCapture::make_capture(&STARTING_LF_BLOCK_REGEX, lines, start, end).map(RegexFamily::LinguaFranca)
-            },
+                SimpleCapture::make_capture(&STARTING_LF_BLOCK_REGEX, lines, start, end)
+                    .map(RegexFamily::LinguaFranca)
+            }
             LanguageType::Html
             | LanguageType::RubyHtml
             | LanguageType::Svelte

@@ -29,7 +29,7 @@ macro_rules! supported_formats {
         ///
         /// To enable all formats compile with the `all` feature.
         #[cfg_attr(test, derive(strum_macros::EnumIter))]
-        #[derive(Debug)]
+        #[derive(Debug, Clone)]
         pub enum Format {
             Json,
             $(

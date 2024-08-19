@@ -1,8 +1,6 @@
-use std::mem;
 use std::process;
 
-use clap::Arg;
-use clap::{crate_description, ArgMatches};
+use clap::{crate_description, value_parser, Arg, ArgAction, ArgMatches};
 use colored::Colorize;
 use tokei::{Config, LanguageType, Sort};
 
@@ -59,8 +57,8 @@ pub struct Cli {
 
 impl Cli {
     pub fn from_args() -> Self {
-        let matches = clap::App::new("tokei")
-            .version(&*crate_version())
+        let matches = clap::Command::new("tokei")
+            .version(crate_version())
             .author("Erin P. <xampprocky@gmail.com> + Contributors")
             .about(concat!(
                 crate_description!(),
@@ -71,7 +69,7 @@ impl Cli {
                 Arg::new("columns")
                     .long("columns")
                     .short('c')
-                    .takes_value(true)
+                    .value_parser(value_parser!(usize))
                     .conflicts_with("output")
                     .help(
                         "Sets a strict column width of the output, only available for \
@@ -82,8 +80,7 @@ impl Cli {
                 Arg::new("exclude")
                     .long("exclude")
                     .short('e')
-                    .takes_value(true)
-                    .multiple_values(true)
+                    .num_args(0..)
                     .help("Ignore all files & directories matching the pattern."),
             )
             .arg(
@@ -96,7 +93,6 @@ impl Cli {
                 Arg::new("file_input")
                     .long("input")
                     .short('i')
-                    .takes_value(true)
                     .help(
                         "Gives statistics from a previous tokei run. Can be given a file path, \
                         or \"stdin\" to read from stdin.",
@@ -109,7 +105,7 @@ impl Cli {
             )
             .arg(
                 Arg::new("input")
-                    .min_values(1)
+                    .num_args(1..)
                     .conflicts_with("languages")
                     .help("The path(s) to the file or directory to be counted.(default current directory)"),
             )
@@ -140,8 +136,13 @@ impl Cli {
                 Arg::new("output")
                     .long("output")
                     .short('o')
-                    .takes_value(true)
-                    .possible_values(Format::all())
+                    .value_parser(|x: &str| {
+                        if Format::all().contains(&x) {
+                            Ok(x.to_string())
+                        } else {
+                            Err(format!("Invalid output format: {x:?}"))
+                        }
+                    })
                     .help(
                         "Outputs Tokei in a specific format. Compile with additional features for \
                         more format support.",
@@ -150,8 +151,7 @@ impl Cli {
             .arg(
                 Arg::new("streaming")
                     .long("streaming")
-                    .takes_value(true)
-                    .possible_values(["simple", "json"])
+                    .value_parser(["simple", "json"])
                     .ignore_case(true)
                     .help(
                         "prints the (language, path, lines, blanks, code, comments) records as \
@@ -162,8 +162,7 @@ impl Cli {
                 Arg::new("sort")
                     .long("sort")
                     .short('s')
-                    .takes_value(true)
-                    .possible_values(["files", "lines", "blanks", "code", "comments"])
+                    .value_parser(["files", "lines", "blanks", "code", "comments"])
                     .ignore_case(true)
                     .conflicts_with("rsort")
                     .help("Sort languages based on column"),
@@ -172,8 +171,7 @@ impl Cli {
                 Arg::new("rsort")
                     .long("rsort")
                     .short('r')
-                    .takes_value(true)
-                    .possible_values(["files", "lines", "blanks", "code", "comments"])
+                    .value_parser(["files", "lines", "blanks", "code", "comments"])
                     .ignore_case(true)
                     .conflicts_with("sort")
                     .help("Reverse sort languages based on column"),
@@ -182,7 +180,7 @@ impl Cli {
                 Arg::new("types")
                     .long("types")
                     .short('t')
-                    .takes_value(true)
+                    .action(ArgAction::Append)
                     .help(
                         "Filters output by language type, separated by a comma. i.e. \
                         -t=Rust,Markdown",
@@ -198,8 +196,7 @@ impl Cli {
                 Arg::new("num_format_style")
                     .long("num-format")
                     .short('n')
-                    .takes_value(true)
-                    .possible_values(NumberFormatStyle::all())
+                    .value_parser(["commas", "dots", "plain", "underscores"])
                     .conflicts_with("output")
                     .help(
                         "Format of printed numbers, i.e., plain (1234, default), \
@@ -211,7 +208,7 @@ impl Cli {
                 Arg::new("verbose")
                     .long("verbose")
                     .short('v')
-                    .multiple_occurrences(true)
+                    .action(ArgAction::Count)
                     .help(
                         "Set log output level:
                         1: to show unknown file extensions,
@@ -221,26 +218,29 @@ impl Cli {
             )
             .get_matches();
 
-        let columns = matches.value_of("columns").map(parse_or_exit::<usize>);
-        let files = matches.is_present("files");
-        let hidden = matches.is_present("hidden");
-        let no_ignore = matches.is_present("no_ignore");
-        let no_ignore_parent = matches.is_present("no_ignore_parent");
-        let no_ignore_dot = matches.is_present("no_ignore_dot");
-        let no_ignore_vcs = matches.is_present("no_ignore_vcs");
-        let print_languages = matches.is_present("languages");
-        let verbose = matches.occurrences_of("verbose");
-        let compact = matches.is_present("compact");
-        let types = matches.value_of("types").map(|e| {
-            e.split(',')
-                .map(str::parse::<LanguageType>)
-                .filter_map(Result::ok)
-                .collect()
+        let columns = matches.get_one::<usize>("columns").cloned();
+        let files = matches.get_flag("files");
+        let hidden = matches.get_flag("hidden");
+        let no_ignore = matches.get_flag("no_ignore");
+        let no_ignore_parent = matches.get_flag("no_ignore_parent");
+        let no_ignore_dot = matches.get_flag("no_ignore_dot");
+        let no_ignore_vcs = matches.get_flag("no_ignore_vcs");
+        let print_languages = matches.get_flag("languages");
+        let verbose = matches.get_count("verbose") as u64;
+        let compact = matches.get_flag("compact");
+        let types = matches.get_many("types").map(|e| {
+            e.flat_map(|x: &String| {
+                x.split(',')
+                    .map(str::parse::<LanguageType>)
+                    .filter_map(Result::ok)
+                    .collect::<Vec<_>>()
+            })
+            .collect()
         });
 
         let num_format_style: NumberFormatStyle = matches
-            .value_of("num_format_style")
-            .map(parse_or_exit::<NumberFormatStyle>)
+            .get_one::<NumberFormatStyle>("num_format_style")
+            .cloned()
             .unwrap_or_default();
 
         let number_format = match num_format_style.get_format() {
@@ -253,18 +253,20 @@ impl Cli {
 
         // Sorting category should be restricted by clap but parse before we do
         // work just in case.
-        let sort = matches
-            .value_of("sort")
-            .or_else(|| matches.value_of("rsort"))
-            .map(parse_or_exit::<Sort>);
-        let sort_reverse = matches.value_of("rsort").is_some();
+        let (sort, sort_reverse) = if let Some(sort) = matches.get_one::<Sort>("sort") {
+            (Some(*sort), false)
+        } else {
+            let sort = matches.get_one::<Sort>("rsort");
+            (sort.cloned(), sort.is_some())
+        };
 
         // Format category is overly accepting by clap (so the user knows what
         // is supported) but this will fail if support is not compiled in and
         // give a useful error to the user.
-        let output = matches.value_of("output").map(parse_or_exit::<Format>);
+        let output = matches.get_one("output").cloned();
         let streaming = matches
-            .value_of("streaming")
+            .get_one("streaming")
+            .cloned()
             .map(parse_or_exit::<Streaming>);
 
         crate::cli_utils::setup_logger(verbose);
@@ -295,20 +297,20 @@ impl Cli {
     }
 
     pub fn file_input(&self) -> Option<&str> {
-        self.matches.value_of("file_input")
+        self.matches.get_one("file_input").cloned()
     }
 
     pub fn ignored_directories(&self) -> Vec<&str> {
         let mut ignored_directories: Vec<&str> = Vec::new();
-        if let Some(user_ignored) = self.matches.values_of("exclude") {
+        if let Some(user_ignored) = self.matches.get_many::<&str>("exclude") {
             ignored_directories.extend(user_ignored);
         }
         ignored_directories
     }
 
     pub fn input(&self) -> Vec<&str> {
-        match self.matches.values_of("input") {
-            Some(vs) => vs.collect(),
+        match self.matches.get_many::<&str>("input") {
+            Some(vs) => vs.cloned().collect(),
             None => vec!["."],
         }
     }
@@ -330,14 +332,18 @@ impl Cli {
                 padding = Padding::NONE,
                 width = Some(lang_w)
             )
-            .with_formatter(vec![table_formatter::table::FormatterFunc::Normal(Colorize::bold)]),
+            .with_formatter(vec![table_formatter::table::FormatterFunc::Normal(
+                Colorize::bold,
+            )]),
             cell!(
                 "Extensions",
                 align = Align::Left,
                 padding = Padding::new(3, 0),
                 width = Some(suffix_w)
             )
-            .with_formatter(vec![table_formatter::table::FormatterFunc::Normal(Colorize::bold)]),
+            .with_formatter(vec![table_formatter::table::FormatterFunc::Normal(
+                Colorize::bold,
+            )]),
         ];
         let content = LanguageType::list()
             .iter()
@@ -429,7 +435,7 @@ impl Cli {
             _ => None,
         };
 
-        config.types = mem::replace(&mut self.types, None).or(config.types);
+        config.types = self.types.take().or(config.types);
 
         config
     }

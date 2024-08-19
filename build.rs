@@ -1,6 +1,6 @@
 extern crate ignore;
-extern crate serde_json;
 extern crate json5;
+extern crate serde_json;
 
 use std::ffi::OsStr;
 use std::fs;

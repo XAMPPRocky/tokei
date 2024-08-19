@@ -294,7 +294,7 @@ impl LanguageType {
 
         match fsutils::get_extension(entry) {
             Some(extension) => LanguageType::from_file_extension(extension.as_str()),
-            None => LanguageType::from_shebang(&entry),
+            None => LanguageType::from_shebang(entry),
         }
     }
 
