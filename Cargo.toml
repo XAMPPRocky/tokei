@@ -22,7 +22,7 @@ repository = "https://github.com/XAMPPRocky/tokei.git"
 version = "13.0.0-alpha.2"
 
 [features]
-all = ["cbor", "json", "yaml"]
+all = ["cbor", "yaml"]
 cbor = ["hex", "serde_cbor"]
 default = []
 json = []
