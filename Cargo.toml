@@ -22,9 +22,10 @@ repository = "https://github.com/XAMPPRocky/tokei.git"
 version = "13.0.0-alpha.2"
 
 [features]
-all = ["cbor", "yaml"]
+all = ["cbor", "json", "yaml"]
 cbor = ["hex", "serde_cbor"]
 default = []
+json = []
 yaml = ["serde_yaml"]
 
 [profile.release]
