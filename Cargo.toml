@@ -25,7 +25,6 @@ version = "13.0.0-alpha.2"
 all = ["cbor", "yaml"]
 cbor = ["hex", "serde_cbor"]
 default = []
-json = []
 yaml = ["serde_yaml"]
 
 [profile.release]
