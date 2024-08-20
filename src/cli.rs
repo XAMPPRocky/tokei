@@ -87,6 +87,7 @@ impl Cli {
                 Arg::new("files")
                     .long("files")
                     .short('f')
+                    .action(ArgAction::SetTrue)
                     .help("Will print out statistics on individual files."),
             )
             .arg(
@@ -101,6 +102,7 @@ impl Cli {
             .arg(
                 Arg::new("hidden")
                     .long("hidden")
+                    .action(ArgAction::SetTrue)
                     .help("Count hidden files."),
             )
             .arg(
@@ -113,25 +115,46 @@ impl Cli {
                 Arg::new("languages")
                     .long("languages")
                     .short('l')
+                    .action(ArgAction::SetTrue)
                     .conflicts_with("input")
                     .help("Prints out supported languages and their extensions."),
             )
-            .arg(Arg::new("no_ignore").long("no-ignore").help(
-                "Don't respect ignore files (.gitignore, .ignore, etc.). This implies \
-                --no-ignore-parent, --no-ignore-dot, and --no-ignore-vcs.",
-            ))
-            .arg(Arg::new("no_ignore_parent").long("no-ignore-parent").help(
-                "Don't respect ignore files (.gitignore, .ignore, etc.) in parent \
-                directories.",
-            ))
-            .arg(Arg::new("no_ignore_dot").long("no-ignore-dot").help(
-                "Don't respect .ignore and .tokeignore files, including this in \
-                parent directories.",
-            ))
-            .arg(Arg::new("no_ignore_vcs").long("no-ignore-vcs").help(
-                "Don't respect VCS ignore files (.gitignore, .hgignore, etc.) including \
-                those in parent directories.",
-            ))
+            .arg(Arg::new("no_ignore")
+                .long("no-ignore")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "\
+                        Don't respect ignore files (.gitignore, .ignore, etc.). This implies \
+                        --no-ignore-parent, --no-ignore-dot, and --no-ignore-vcs.\
+                    ",
+                ))
+            .arg(Arg::new("no_ignore_parent")
+                .long("no-ignore-parent")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "\
+                        Don't respect ignore files (.gitignore, .ignore, etc.) in parent \
+                        directories.\
+                    ",
+                ))
+            .arg(Arg::new("no_ignore_dot")
+                .long("no-ignore-dot")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "\
+                        Don't respect .ignore and .tokeignore files, including this in \
+                        parent directories.\
+                    ",
+                ))
+            .arg(Arg::new("no_ignore_vcs")
+                .long("no-ignore-vcs")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "\
+                        Don't respect VCS ignore files (.gitignore, .hgignore, etc.) including \
+                        those in parent directories.\
+                    ",
+                ))
             .arg(
                 Arg::new("output")
                     .long("output")
@@ -190,6 +213,7 @@ impl Cli {
                 Arg::new("compact")
                     .long("compact")
                     .short('C')
+                    .action(ArgAction::SetTrue)
                     .help("Do not print statistics about embedded languages."),
             )
             .arg(
