@@ -2,7 +2,7 @@ use std::{
     borrow::Cow,
     fmt,
     fs::File,
-    io::{self, BufRead, BufReader, Read},
+    io::{self, Read},
     path::{Path, PathBuf},
     str::FromStr,
 };
@@ -16,6 +16,7 @@ use crate::{
 
 use encoding_rs_io::DecodeReaderBytesBuilder;
 use grep_searcher::{LineIter, LineStep};
+use once_cell::sync::Lazy;
 use rayon::prelude::*;
 use serde::Serialize;
 
@@ -25,8 +26,9 @@ include!(concat!(env!("OUT_DIR"), "/language_type.rs"));
 
 impl Serialize for LanguageType {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer {
+    where
+        S: serde::Serializer,
+    {
         serializer.serialize_str(self.name())
     }
 }
@@ -51,7 +53,7 @@ impl LanguageType {
 
         let mut stats = Report::new(path);
 
-        stats += self.parse_from_slice(&text, config);
+        stats += self.parse_from_slice(text, config);
 
         Ok(stats)
     }
@@ -65,29 +67,30 @@ impl LanguageType {
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
         let text = text.as_ref();
 
-        if self == LanguageType::Jupyter {
+        if self == Jupyter {
             return self
                 .parse_jupyter(text.as_ref(), config)
-                .unwrap_or_else(CodeStats::new);
+                .unwrap_or_default();
         }
 
-        let syntax = SyntaxCounter::new(self);
+        let syntax = {
+            let mut syntax_mut = SyntaxCounter::new(self);
+            if self == LinguaFranca {
+                syntax_mut.lf_embedded_language = self.find_lf_target_language(text);
+            }
+            syntax_mut
+        };
 
-        if let Some(end) = syntax
-            .shared
-            .important_syntax
-            .find(text)
-            .and_then(|m| {
-                // Get the position of the last line before the important
-                // syntax.
-                text[..=m.start()]
-                    .iter()
-                    .rev()
-                    .position(|&c| c == b'\n')
-                    .filter(|&p| p != 0)
-                    .map(|p| m.start() - p)
-            })
-        {
+        if let Some(end) = syntax.shared.important_syntax.find(text).and_then(|m| {
+            // Get the position of the last line before the important
+            // syntax.
+            text[..=m.start()]
+                .iter()
+                .rev()
+                .position(|&c| c == b'\n')
+                .filter(|&p| p != 0)
+                .map(|p| m.start() - p)
+        }) {
             let (skippable_text, rest) = text.split_at(end + 1);
             let is_fortran = syntax.shared.is_fortran;
             let is_literate = syntax.shared.is_literate;
@@ -177,6 +180,10 @@ impl LanguageType {
                             LanguageContext::Rust => {
                                 // Add all the markdown blobs.
                                 *stats.blobs.entry(LanguageType::Markdown).or_default() += blob;
+                            }
+                            LanguageContext::LinguaFranca => {
+                                let child_lang = syntax.get_lf_target_language();
+                                *stats.blobs.entry(child_lang).or_default() += blob;
                             }
                             LanguageContext::Html { language } => {
                                 stats.code += 1;
@@ -275,6 +282,28 @@ impl LanguageType {
 
         Some(jupyter_stats)
     }
+
+    /// The embedded language in LF is declared in a construct that looks like this: `target C;`, `target Python`.
+    /// This is the first thing in the file (although there may be comments before).
+    fn find_lf_target_language(&self, bytes: &[u8]) -> Option<LanguageType> {
+        use regex::bytes::Regex;
+        static LF_TARGET_REGEX: Lazy<Regex> =
+            Lazy::new(|| Regex::new(r#"(?m)\btarget\s+(\w+)\s*($|;|\{)"#).unwrap());
+        LF_TARGET_REGEX.captures(bytes).and_then(|captures| {
+            let name = captures.get(1).unwrap().as_bytes();
+            if name == b"CCpp" {
+                // this is a special alias for the C target in LF
+                Some(C)
+            } else {
+                let name_str = &String::from_utf8_lossy(name);
+                let by_name = LanguageType::from_name(name_str);
+                if by_name.is_none() {
+                    trace!("LF target not recognized: {}", name_str);
+                }
+                by_name
+            }
+        })
+    }
 }
 
 #[cfg(test)]
@@ -288,22 +317,39 @@ mod tests {
         assert!(LanguageType::Rust.allows_nested());
     }
 
+    fn assert_stats(stats: &CodeStats, blanks: usize, code: usize, comments: usize) {
+        assert_eq!(stats.blanks, blanks, "expected {} blank lines", blanks);
+        assert_eq!(stats.code, code, "expected {} code lines", code);
+        assert_eq!(
+            stats.comments, comments,
+            "expected {} comment lines",
+            comments
+        );
+    }
+
     #[test]
     fn jupyter_notebook_has_correct_totals() {
         let sample_notebook =
             fs::read_to_string(Path::new("tests").join("data").join("jupyter.ipynb")).unwrap();
 
-        let CodeStats {
-            blanks,
-            code,
-            comments,
-            ..
-        } = LanguageType::Jupyter
+        let stats = LanguageType::Jupyter
             .parse_jupyter(sample_notebook.as_bytes(), &Config::default())
             .unwrap();
 
-        assert_eq!(blanks, 115);
-        assert_eq!(code, 528);
-        assert_eq!(comments, 333);
+        assert_stats(&stats, 115, 528, 333);
+    }
+
+    #[test]
+    fn lf_embedded_language_is_counted() {
+        let file_text =
+            fs::read_to_string(Path::new("tests").join("data").join("linguafranca.lf")).unwrap();
+
+        let stats = LinguaFranca.parse_from_str(file_text, &Config::default());
+
+        assert_stats(&stats, 9, 11, 8);
+
+        assert_eq!(stats.blobs.len(), 1, "num embedded languages");
+        let rust_stats = stats.blobs.get(&Rust).expect("should have a Rust entry");
+        assert_stats(rust_stats, 2, 5, 1);
     }
 }
