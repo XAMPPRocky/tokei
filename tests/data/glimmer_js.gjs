@@ -1,4 +1,4 @@
-// 28 lines, 18 code, 7 comments, 4 blanks
+// 27 lines, 18 code, 6 comments, 3 blanks
 import { helper } from '@ember/component/helper';
 import { modifier } from 'ember-modifier';
 
@@ -14,7 +14,6 @@ const setScrollPosition = modifier((element, [position]) => {
 
 <template>
   <!-- A HTML-like comment -->
-  {{!-- But also glimmer handlebars-like comments are valid in the template --}}
   <div class="scroll-container" {{setScrollPosition @scrollPos}}>
     {{#each @items as |item index|}}
       Item #{{plusOne index}}: {{item}}

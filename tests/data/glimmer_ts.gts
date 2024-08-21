@@ -1,4 +1,4 @@
-// 19 lines, 10 code, 7 comments, 3 blanks
+// 18 lines, 10 code, 6 comments, 2 blanks
 import type { TemplateOnlyComponent } from '@glimmer/component';
 
 // A single-line comment
@@ -9,7 +9,6 @@ const localVariable = 'foo';
  */
 const Greet: TemplateOnlyComponent<{ name: string }> = <template>
   <!-- A HTML-like comment -->
-  {{!-- But also glimmer handlebars-like comments are valid in the template --}}
   <p>Hello, {{@name}}! {{localVariable}}</p>
   <style>
     p {
