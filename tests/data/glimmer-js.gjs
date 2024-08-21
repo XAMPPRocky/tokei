@@ -1,4 +1,4 @@
-// 26 lines, 18 code, 4 comments, 4 blanks
+// 26 lines, 18 code, 5 comments, 4 blanks
 import { helper } from '@ember/component/helper';
 import { modifier } from 'ember-modifier';
 
