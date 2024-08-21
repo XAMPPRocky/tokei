@@ -52,7 +52,6 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
-    pub verbose: u64,
 }
 
 impl Cli {
@@ -312,7 +311,6 @@ impl Cli {
             types,
             compact,
             number_format,
-            verbose,
         };
 
         debug!("CLI Config: {:#?}", cli);

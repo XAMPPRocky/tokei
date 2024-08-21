@@ -111,10 +111,6 @@ impl NumberFormatStyle {
         }
     }
 
-    pub fn all() -> &'static [&'static str] {
-        &["commas", "dots", "plain", "underscores"]
-    }
-
     pub fn get_format(self) -> Result<num_format::CustomFormat, num_format::Error> {
         num_format::CustomFormat::builder()
             .grouping(num_format::Grouping::Standard)
