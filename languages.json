@@ -601,7 +601,7 @@
     "GlimmerJs": {
       "name": "Glimmer JS",
       "line_comment": ["//"],
-      "multi_line_comments": [["/*", "*/"]],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"], ["{{!", "}}"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "important_syntax": ["<template", "<style"],
       "extensions": ["gjs"]
@@ -609,7 +609,7 @@
     "GlimmerTs": {
       "name": "Glimmer TS",
       "line_comment": ["//"],
-      "multi_line_comments": [["/*", "*/"]],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"], ["{{!", "}}"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "important_syntax": ["<template", "<style"],
       "extensions": ["gts"]
