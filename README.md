@@ -424,6 +424,7 @@ Haskell
 Haxe
 Hcl
 Hex
+HiCAD
 hledger
 Hlsl
 HolyC
