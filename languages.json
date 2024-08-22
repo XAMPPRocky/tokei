@@ -598,6 +598,22 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["gleam"]
     },
+    "GlimmerJs": {
+      "name": "Glimmer JS",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "important_syntax": ["<template", "<style"],
+      "extensions": ["gjs"]
+    },
+    "GlimmerTs": {
+      "name": "Glimmer TS",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "important_syntax": ["<template", "<style"],
+      "extensions": ["gts"]
+    },
     "Glsl": {
       "name": "GLSL",
       "line_comment": ["//"],

@@ -171,7 +171,9 @@ impl<'a> RegexCache<'a> {
             LanguageType::Html
             | LanguageType::RubyHtml
             | LanguageType::Svelte
-            | LanguageType::Vue => {
+            | LanguageType::Vue
+            | LanguageType::GlimmerJs
+            | LanguageType::GlimmerTs => {
                 let html = HtmlLike {
                     start_script: save_captures(&START_SCRIPT, lines, start, end),
                     start_style: save_captures(&START_STYLE, lines, start, end),
