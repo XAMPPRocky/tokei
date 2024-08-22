@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.4](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.3...v13.0.0-alpha.4) - 2024-08-22
+
+### Fixed
+- fix issue https://github.com/XAMPPRocky/tokei/issues/1145 ([#1146](https://github.com/XAMPPRocky/tokei/pull/1146))
+
+### Other
+- Add support for Glimmer JS/TS ([#1052](https://github.com/XAMPPRocky/tokei/pull/1052))
+- Fix issue [#1141](https://github.com/XAMPPRocky/tokei/pull/1141) ([#1142](https://github.com/XAMPPRocky/tokei/pull/1142))
+
 ## [13.0.0-alpha.3](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.2...v13.0.0-alpha.3) - 2024-08-20
 
 ### Fixed
