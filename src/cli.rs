@@ -1,4 +1,4 @@
-use std::process;
+use std::{process, str::FromStr};
 
 use clap::{crate_description, value_parser, Arg, ArgAction, ArgMatches};
 use colored::Colorize;
@@ -276,12 +276,19 @@ impl Cli {
 
         // Sorting category should be restricted by clap but parse before we do
         // work just in case.
-        let (sort, sort_reverse) = if let Some(sort) = matches.get_one::<Sort>("sort") {
-            (Some(*sort), false)
+        let (sort, sort_reverse) = if let Some(sort) = matches.get_one::<String>("sort") {
+            (Some(sort.clone()), false)
         } else {
-            let sort = matches.get_one::<Sort>("rsort");
+            let sort = matches.get_one::<String>("rsort");
             (sort.cloned(), sort.is_some())
         };
+        let sort = sort.map(|x| match Sort::from_str(&x) {
+            Ok(sort) => sort,
+            Err(e) => {
+                eprintln!("Error:\n{}", e);
+                process::exit(1);
+            }
+        });
 
         // Format category is overly accepting by clap (so the user knows what
         // is supported) but this will fail if support is not compiled in and
