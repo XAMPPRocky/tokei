@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.5](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.4...v13.0.0-alpha.5) - 2024-08-23
+
+### Fixed
+- fix issue https://github.com/XAMPPRocky/tokei/issues/1147 ([#1149](https://github.com/XAMPPRocky/tokei/pull/1149))
+
+### Other
+- Fix issue [#1145](https://github.com/XAMPPRocky/tokei/pull/1145) (part 2) ([#1148](https://github.com/XAMPPRocky/tokei/pull/1148))
+
 ## [13.0.0-alpha.4](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.3...v13.0.0-alpha.4) - 2024-08-22
 
 ### Fixed
