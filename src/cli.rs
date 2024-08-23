@@ -331,8 +331,8 @@ impl Cli {
     }
 
     pub fn input(&self) -> Vec<&str> {
-        match self.matches.get_many::<&str>("input") {
-            Some(vs) => vs.cloned().collect(),
+        match self.matches.get_many::<String>("input") {
+            Some(vs) => vs.map(|x| x.as_str()).collect(),
             None => vec!["."],
         }
     }
