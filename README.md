@@ -349,6 +349,7 @@ Bazel
 Bean
 Bicep
 Bitbake
+BQN
 BrightScript
 C
 Cabal
