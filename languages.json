@@ -33,6 +33,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["als"]
     },
+    "Apl": {
+      "name": "APL",
+      "line_comment": ["⍝"],
+      "extensions": ["apl", "aplf", "apls"],
+      "quotes": [["'", "'"]],
+    },
     "Arduino": {
       "name": "Arduino C++",
       "line_comment": ["//"],
