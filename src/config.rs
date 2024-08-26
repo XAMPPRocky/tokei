@@ -113,6 +113,7 @@ impl Config {
             columns: current_dir
                 .columns
                 .or(home_dir.columns.or(conf_dir.columns)),
+            hidden: current_dir.hidden.or(home_dir.hidden.or(conf_dir.hidden)),
             //languages: current_dir.languages.or(conf_dir.languages),
             treat_doc_strings_as_comments: current_dir.treat_doc_strings_as_comments.or(home_dir
                 .treat_doc_strings_as_comments
@@ -134,7 +135,6 @@ impl Config {
             no_ignore_vcs: current_dir
                 .no_ignore_vcs
                 .or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
-            ..Self::default()
         }
     }
 }

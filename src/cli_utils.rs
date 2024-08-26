@@ -13,10 +13,14 @@ use num_format::ToFormattedString;
 use crate::input::Format;
 use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
 
-pub const FALLBACK_ROW_LEN: usize = 79;
-const NO_LANG_HEADER_ROW_LEN: usize = 67;
-const NO_LANG_ROW_LEN: usize = 61;
-const NO_LANG_ROW_LEN_NO_SPACES: usize = 54;
+use crate::consts::{
+    BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
+    LINES_COLUMN_WIDTH,
+};
+
+const NO_LANG_HEADER_ROW_LEN: usize = 69;
+const NO_LANG_ROW_LEN: usize = 63;
+const NO_LANG_ROW_LEN_NO_SPACES: usize = 56;
 const IDENT_INACCURATE: &str = "(!)";
 
 pub fn crate_version() -> String {
@@ -107,10 +111,6 @@ impl NumberFormatStyle {
         }
     }
 
-    pub fn all() -> &'static [&'static str] {
-        &["commas", "dots", "plain", "underscores"]
-    }
-
     pub fn get_format(self) -> Result<num_format::CustomFormat, num_format::Error> {
         num_format::CustomFormat::builder()
             .grouping(num_format::Grouping::Standard)
@@ -151,9 +151,11 @@ impl<W> Printer<W> {
 impl<W: Write> Printer<W> {
     pub fn print_header(&mut self) -> io::Result<()> {
         self.print_row()?;
+
+        let files_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {:<6$} {:>12} {:>12} {:>12} {:>12} {:>12}",
+            " {:<6$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             "Language".bold().blue(),
             "Files".bold().blue(),
             "Lines".bold().blue(),
@@ -181,7 +183,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>6} {:>12} {:>12} {:>12} {:>12}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             language
                 .reports
                 .len()
@@ -201,7 +203,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>6} {:>12} {:>12} {:>12} {:>12}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             language
                 .children
                 .values()
@@ -250,7 +252,7 @@ impl<W: Write> Printer<W> {
             write!(
                 self.writer,
                 " {:<len$}",
-                name.bold(),
+                name.bold().magenta(),
                 len = lang_section_len
             )?;
         }
@@ -282,7 +284,7 @@ impl<W: Write> Printer<W> {
         } else {
             writeln!(
                 self.writer,
-                " {:>6} {:>12} {:>12} {:>12} {:>12}",
+                " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
                 stats.len().to_formatted_string(&self.number_format),
                 (code + comments + blanks).to_formatted_string(&self.number_format),
                 code.to_formatted_string(&self.number_format),
@@ -312,7 +314,12 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    pub fn print_results<'a, I>(&mut self, languages: I, compact: bool) -> io::Result<()>
+    pub fn print_results<'a, I>(
+        &mut self,
+        languages: I,
+        compact: bool,
+        is_sorted: bool,
+    ) -> io::Result<()>
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     {
@@ -337,16 +344,17 @@ impl<W: Write> Printer<W> {
 
                 if self.list_files {
                     self.print_subrow()?;
-
+                    let mut reports: Vec<&Report> = language.reports.iter().collect();
+                    if !is_sorted {
+                        reports.sort_by(|&a, &b| a.name.cmp(&b.name));
+                    }
                     if compact {
-                        for report in &language.reports {
+                        for &report in &reports {
                             writeln!(self.writer, "{:1$}", report, self.path_length)?;
                         }
                     } else {
-                        let (a, b): (Vec<_>, Vec<_>) = language
-                            .reports
-                            .iter()
-                            .partition(|r| r.stats.blobs.is_empty());
+                        let (a, b): (Vec<&Report>, Vec<&Report>) =
+                            reports.iter().partition(|&r| r.stats.blobs.is_empty());
                         for reports in &[&a, &b] {
                             let mut first = true;
                             for report in reports.iter() {
@@ -406,7 +414,7 @@ impl<W: Write> Printer<W> {
 
         writeln!(
             self.writer,
-            " {:>6} {:>12} {:>12} {:>12} {:>12}",
+            " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             " ",
             stats.lines().to_formatted_string(&self.number_format),
             stats.code.to_formatted_string(&self.number_format),
@@ -456,9 +464,10 @@ impl<W: Write> Printer<W> {
         max_len: usize,
         report: &Report,
     ) -> io::Result<()> {
+        let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {: <max$} {:>12} {:>12} {:>12} {:>12}",
+            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
             name,
             report
                 .stats

@@ -1,0 +1,36 @@
+// 36 lines 16 code 9 comments 11 blanks
+
+target Rust;
+
+// A C style comment
+import KeyboardEvents from "KeyboardEvents.lf";
+
+/* A block comment */
+  # a python like comment
+
+main reactor Snake(grid_side: usize(32),
+                   food_limit: u32(2)) {
+
+    // counts as 2 lines of Rust code and one blank
+    preamble {=
+        use crate::snakes::*;
+
+        use rand::prelude::*;
+    =}
+
+    /// rust doc comment
+    keyboard = new KeyboardEvents();
+
+    // T
+    state snake: CircularSnake ({= CircularSnake::new(grid_side) =});
+    state grid: SnakeGrid ({= SnakeGrid::new(grid_side, &snake) =});
+    state food_on_grid: u32(0);
+
+
+    // 1 line of rust code
+    reaction(shutdown) {=
+        // comment in Rust
+
+        println!("New high score: {}", self.snake.len());
+    =}
+}

@@ -6,6 +6,10 @@
 ![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
 ![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
 ![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
+![Chocolatey Downloads](https://img.shields.io/chocolatey/dt/tokei?label=Downloads%20(Chocolately))
+[![dependency status](https://deps.rs/repo/github/XAMPPRocky/tokei/status.svg)](https://deps.rs/repo/github/XAMPPRocky/tokei)
+[![Packaging status](https://repology.org/badge/tiny-repos/tokei.svg)](https://repology.org/project/tokei/versions)
+
 
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
@@ -301,7 +305,7 @@ Example show total lines:
 The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
 
 ## Dockerized version
-Tokei is available in a small `alpine`-based docker image, buildable through:
+Tokei is available in a small `alpine`-based docker image, buildable through [earthly](https://github.com/earthly/earthly):
 ```bash
 earthly +docker
 ```
@@ -343,6 +347,7 @@ Bash
 Batch
 Bazel
 Bean
+Bicep
 Bitbake
 BrightScript
 C
@@ -350,6 +355,7 @@ Cabal
 Cassius
 Ceylon
 CHeader
+Cil
 Clojure
 ClojureC
 ClojureScript
@@ -367,8 +373,10 @@ CSharp
 CShell
 Css
 Cuda
+CUE
 Cython
 D
+D2
 DAML
 Dart
 DeviceTree
@@ -400,6 +408,7 @@ FSharp
 Fstar
 GDB
 GdScript
+GdShader
 Gherkin
 Gleam
 Glsl
@@ -410,10 +419,12 @@ Gwion
 Hamlet
 Handlebars
 Happy
+Hare
 Haskell
 Haxe
 Hcl
 Hex
+hledger
 Hlsl
 HolyC
 Html
@@ -423,6 +434,7 @@ Ini
 IntelHex
 Isabelle
 Jai
+Janet
 Java
 JavaScript
 Jq
@@ -434,6 +446,7 @@ KakouneScript
 Kotlin
 Lean
 Less
+Lingua Franca
 LinkerScript
 Liquid
 Lisp
@@ -442,12 +455,15 @@ Logtalk
 Lua
 Lucius
 Madlang
+Max
 Makefile
 Markdown
+Mdx
 Meson
 Mint
 Mlatu
 ModuleDef
+MonkeyC
 MoonScript
 MsBuild
 Mustache
@@ -460,6 +476,8 @@ ObjectiveC
 ObjectiveCpp
 OCaml
 Odin
+OpenSCAD
+OpenQASM
 Org
 Oz
 Pascal
@@ -467,6 +485,7 @@ Perl
 Perl6
 Pest
 Php
+Po
 Poke
 Polly
 Pony
@@ -475,6 +494,7 @@ PowerShell
 Processing
 Prolog
 Protobuf
+PRQL
 PSL
 PureScript
 Python
@@ -497,18 +517,21 @@ Scheme
 Scons
 Sh
 ShaderLab
+Slang
 Sml
 Solidity
 SpecmanE
 Spice
 Sql
 SRecode
+Stata
 Stratego
 Svelte
 Svg
 Swift
 Swig
 SystemVerilog
+Tact
 Tcl
 Tex
 Text
@@ -548,6 +571,7 @@ Xtend
 Yaml
 ZenCode
 Zig
+ZoKrates
 Zsh
 ```
 

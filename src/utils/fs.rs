@@ -136,7 +136,7 @@ mod tests {
         language::{languages::Languages, LanguageType},
     };
 
-    const FILE_CONTENTS: &[u8] = &*b"fn main() {}";
+    const FILE_CONTENTS: &[u8] = b"fn main() {}";
     const FILE_NAME: &str = "main.rs";
     const IGNORE_PATTERN: &str = "*.rs";
     const LANGUAGE: &LanguageType = &LanguageType::Rust;
@@ -147,7 +147,7 @@ mod tests {
         let tmp_dir = TempDir::new().expect("Couldn't create temp dir");
         let path_name = tmp_dir.path().join("directory.rs");
 
-        fs::create_dir(&path_name).expect("Couldn't create directory.rs within temp");
+        fs::create_dir(path_name).expect("Couldn't create directory.rs within temp");
 
         super::get_all_files(
             &[tmp_dir.into_path().to_str().unwrap()],

@@ -1,9 +1,9 @@
 VERSION 0.6
-FROM alpine:3.14
+FROM alpine:3.19
 WORKDIR /src
 
 build:
-    FROM rust:alpine3.14
+    FROM rust:alpine3.19
     RUN apk update \
         && apk add \
             git \
@@ -21,4 +21,5 @@ docker:
     WORKDIR /src
     ENTRYPOINT [ "tokei" ]
     CMD [ "--help" ]
-    SAVE IMAGE tokei
+    ARG image_name=tokei:latest
+    SAVE IMAGE --push $image_name
