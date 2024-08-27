@@ -1521,6 +1521,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["shader", "cginc"]
     },
+    "SIL": {
+      "name": "SIL",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"], ["/+", "+/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["sil"]
+    },
     "Slang": {
       "name": "Slang",
       "line_comment": ["//"],
