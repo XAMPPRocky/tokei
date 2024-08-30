@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.6](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.5...v13.0.0-alpha.6) - 2024-08-30
+
+### Other
+- add slint language support ([#1054](https://github.com/XAMPPRocky/tokei/pull/1054))
+- Add Pyret support ([#1032](https://github.com/XAMPPRocky/tokei/pull/1032))
+- Recognize GNUmakefile ([#1021](https://github.com/XAMPPRocky/tokei/pull/1021))
+
 ## [13.0.0-alpha.5](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.4...v13.0.0-alpha.5) - 2024-08-23
 
 ### Fixed
