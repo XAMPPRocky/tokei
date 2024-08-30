@@ -1649,6 +1649,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["sv", "svh"]
     },
+    "Slint": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["slint"]
+    },
     "Tact": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
