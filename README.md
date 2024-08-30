@@ -497,6 +497,7 @@ Protobuf
 PRQL
 PSL
 PureScript
+Pyret
 Python
 Qcl
 Qml
