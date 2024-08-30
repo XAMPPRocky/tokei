@@ -1006,7 +1006,7 @@
     "Makefile": {
       "line_comment": ["#"],
       "extensions": ["makefile", "mak", "mk"],
-      "filenames": ["makefile"]
+      "filenames": ["gnumakefile", "makefile"]
     },
     "Markdown": {
       "literate": true,
