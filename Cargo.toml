@@ -20,13 +20,13 @@ readme = "README.md"
 repository = "https://github.com/XAMPPRocky/tokei.git"
 version = "13.0.0-alpha.5"
 rust-version = "1.71"
-edition = "2018"
+edition = "2021"
 
 [features]
 all = ["cbor", "yaml"]
-cbor = ["hex", "serde_cbor"]
+cbor = ["dep:hex", "dep:serde_cbor"]
 default = []
-yaml = ["serde_yaml"]
+yaml = ["dep:serde_yaml"]
 
 [profile.release]
 lto = "thin"
