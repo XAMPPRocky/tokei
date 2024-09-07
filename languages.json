@@ -836,7 +836,7 @@
       "line_comment": ["//", "#"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["jsonnet", "libsonnet"]
+      "extensions": ["jsonnet", "libjsonnet"]
     },
     "Jsx": {
       "name": "JSX",
