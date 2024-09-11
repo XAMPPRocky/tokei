@@ -583,6 +583,7 @@ Xml
 XSL
 Xtend
 Yaml
+YamlScript
 ZenCode
 Zig
 ZoKrates
