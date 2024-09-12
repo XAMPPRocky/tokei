@@ -1277,6 +1277,12 @@
       ],
       "extensions": ["ps1", "psm1", "psd1", "ps1xml", "cdxml", "pssc", "psc1"]
     },
+    "PRACTICE": {
+      "name": "Lauterbach PRACTICE Script",
+      "line_comment": [";", "//"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["cmm"]
+    },
     "Processing": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
