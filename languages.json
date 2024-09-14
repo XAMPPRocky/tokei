@@ -716,7 +716,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["hlsl"]
+      "extensions": ["hlsl", "fx", "fxsub"]
     },
     "HolyC": {
       "line_comment": ["//"],
