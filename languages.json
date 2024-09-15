@@ -1947,6 +1947,11 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["gdshader"]
-    }
+    },
+		"Fennel": {
+			"name": "Fennel",
+			"line_comment": [";;"],
+			"extensions": ["fnl"]
+		}
   }
 }
