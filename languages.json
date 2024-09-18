@@ -1224,6 +1224,14 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["pest"]
     },
+    "Phix": {
+      "line_comment": ["--", "//", "#!"],
+      "multi_line_comments": [["/*", "*/"], ["--/*", "--*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "verbatim_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["`", "`"]],
+      "extensions": ["e","exw"]
+    },
     "Php": {
       "name": "PHP",
       "line_comment": ["#", "//"],
