@@ -1074,7 +1074,7 @@
     "MoonBit": {
       "line_comment": ["//"],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["mbt"]
+      "extensions": ["mbt", "mbti"]
     },
     "MoonScript": {
       "line_comment": ["--"],
