@@ -542,6 +542,7 @@ Toml
 Tsx
 Twig
 TypeScript
+TypeLanguage
 UMPL
 UnrealDeveloperMarkdown
 UnrealPlugin
