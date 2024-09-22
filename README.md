@@ -395,6 +395,7 @@ Elvish
 EmacsDevEnv
 Emojicode
 Erlang
+Expect
 Factor
 FEN
 Fish
