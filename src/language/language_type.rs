@@ -49,10 +49,24 @@ impl LanguageType {
             }
             s
         };
+        let inner_type = {
+            let path = path.display().to_string();
+            match path {
+                p if p.contains("test") => Some(LanguageType::Tests),
+                p if p.contains("example") => Some(LanguageType::Examples),
+                p if p.contains("bench") => Some(LanguageType::Benchmarks),
+                _ => None,
+            }
+        };
 
         let mut stats = Report::new(path);
 
-        stats += self.parse_from_slice(&text, config);
+        let file_stats = self.parse_from_slice(&text, config);
+        if let Some(inner_type) = inner_type {
+            *stats.stats.blobs.entry(inner_type).or_default() += file_stats;
+        } else {
+            stats += file_stats;
+        }
 
         Ok(stats)
     }
@@ -155,6 +169,31 @@ impl LanguageType {
                 line.trim()
             };
             trace!("{}", String::from_utf8_lossy(line));
+
+            let is_test = line == b"#[cfg(test)]" || line == b"#[test]";
+            if is_test {
+                let test_start = end + 1;
+                let rest = &lines[test_start..];
+                let mut brace_depth: isize = 0;
+                let mut test_length = 0;
+                for c in rest {
+                    test_length += 1;
+                    match c {
+                        b'{' => brace_depth += 1,
+                        b'}' => brace_depth -= 1,
+                        b'\n' if brace_depth <= 0 => break,
+                        _ => {}
+                    }
+                }
+                let test_bytes = &rest[..test_length];
+                let syntax = SyntaxCounter::new(self);
+                let mut test_stats =
+                    self.parse_lines(config, test_bytes, Default::default(), syntax);
+                test_stats.code += 1; // The #[cfg(test)] directive.
+                *stats.blobs.entry(LanguageType::Tests).or_default() += test_stats;
+                stepper = LineStep::new(b'\n', test_start + test_length, lines.len());
+                continue;
+            }
 
             if syntax.try_perform_single_line_analysis(line, &mut stats) {
                 continue;
