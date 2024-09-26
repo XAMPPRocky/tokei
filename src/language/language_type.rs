@@ -49,24 +49,11 @@ impl LanguageType {
             }
             s
         };
-        let inner_type = {
-            let path = path.display().to_string();
-            match path {
-                p if p.contains("test") => Some(LanguageType::Tests),
-                p if p.contains("example") => Some(LanguageType::Examples),
-                p if p.contains("bench") => Some(LanguageType::Benchmarks),
-                _ => None,
-            }
-        };
 
         let mut stats = Report::new(path);
 
         let file_stats = self.parse_from_slice(&text, config);
-        if let Some(inner_type) = inner_type {
-            *stats.stats.blobs.entry(inner_type).or_default() += file_stats;
-        } else {
-            stats += file_stats;
-        }
+        stats += file_stats;
 
         Ok(stats)
     }

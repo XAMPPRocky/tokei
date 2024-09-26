@@ -1,4 +1,4 @@
-//! 48 lines 36 code 6 comments 6 blanks
+//! 53 lines 40 code 7 comments 6 blanks
 //! ```rust
 //! fn main () {
 //!     // Comment
@@ -13,7 +13,8 @@ fn main() {
 \"##;
     // comment
     loop {
-        if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */
+        if x.len() >= 2 && x[0] == '*' && x[1] == '/' {
+            // found the */
             break;
         }
     }
@@ -46,3 +47,7 @@ fn foo() {
     let c = 6; // */
 }
 
+#[cfg(test)]
+pub fn my_dummy_test() {
+    let d = 8;
+}
