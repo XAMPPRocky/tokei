@@ -862,6 +862,13 @@
       "name": "Jupyter Notebooks",
       "extensions": ["ipynb"]
     },
+    "Justfile": {
+      "shebangs": ["#!/usr/bin/env just --justfile"],
+      "env": ["just"],
+      "line_comment": ["#"],
+      "extensions": ["just"],
+      "filenames": ["justfile"]
+    },
     "K": {
       "name": "K",
       "nested": true,
