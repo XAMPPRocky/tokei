@@ -333,6 +333,7 @@ Ada
 Agda
 Alex
 Alloy
+APL
 Asn1
 Asp
 AspNet
