@@ -874,6 +874,12 @@
       "name": "Jupyter Notebooks",
       "extensions": ["ipynb"]
     },
+    "Juvix": {
+      "nested": true,
+      "line_comment": ["--"],
+      "multi_line_comments": [["{-", "-}"]],
+      "extensions": ["juvix"]
+    },
     "K": {
       "name": "K",
       "nested": true,

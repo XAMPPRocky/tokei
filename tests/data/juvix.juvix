@@ -1,0 +1,22 @@
+{-- This is documentation --}
+module juvix;
+
+-- this is a line comment
+
+{-
+
+this is a block comment
+
+-}
+
+------------ many dashes in comment
+
+{-
+  {-
+  nested block comment
+  -}
+-}
+
+import Stdlib.Prelude open;
+
+main : Nat := 123;
