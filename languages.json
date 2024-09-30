@@ -169,6 +169,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["bb", "bbclass", "bbappend", "inc", "conf"]
     },
+    "Bqn": {
+      "name": "BQN",
+      "line_comment": ["#"],
+      "extensions": ["bqn"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+    },
     "BrightScript": {
       "quotes": [["\\\"", "\\\""]],
       "line_comment": ["'", "REM"],
