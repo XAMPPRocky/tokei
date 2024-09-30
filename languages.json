@@ -862,7 +862,7 @@
       "name": "Jupyter Notebooks",
       "extensions": ["ipynb"]
     },
-    "Justfile": {
+    "Just": {
       "shebangs": ["#!/usr/bin/env just --justfile"],
       "env": ["just"],
       "line_comment": ["#"],
