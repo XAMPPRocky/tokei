@@ -6,6 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.6](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.5...v13.0.0-alpha.6) - 2024-09-30
+
+### Added
+
+- add `mbti` extension for MoonBit ([#1168](https://github.com/XAMPPRocky/tokei/pull/1168))
+
+### Other
+
+- Update README.md with HiCAD from d4a1814 ([#1143](https://github.com/XAMPPRocky/tokei/pull/1143))
+- Add BQN support ([#1151](https://github.com/XAMPPRocky/tokei/pull/1151))
+- add more extensions for `Hlsl` ([#1164](https://github.com/XAMPPRocky/tokei/pull/1164))
+- Add Phix ([#1167](https://github.com/XAMPPRocky/tokei/pull/1167))
+- Add APL support ([#1152](https://github.com/XAMPPRocky/tokei/pull/1152))
+- Add support for SIL ([#1153](https://github.com/XAMPPRocky/tokei/pull/1153))
+- Use `OR` operator in Cargo.toml `license` field ([#1165](https://github.com/XAMPPRocky/tokei/pull/1165))
+- Disable legacy Cargo features ([#1158](https://github.com/XAMPPRocky/tokei/pull/1158))
+- add slint language support ([#1054](https://github.com/XAMPPRocky/tokei/pull/1054))
+- Add Pyret support ([#1032](https://github.com/XAMPPRocky/tokei/pull/1032))
+- Recognize GNUmakefile ([#1021](https://github.com/XAMPPRocky/tokei/pull/1021))
+
 ## [13.0.0-alpha.5](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.4...v13.0.0-alpha.5) - 2024-08-23
 
 ### Fixed
