@@ -525,6 +525,7 @@ ShaderLab
 Slang
 Sml
 Solidity
+Spade
 SpecmanE
 Spice
 Sql
