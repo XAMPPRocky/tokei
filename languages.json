@@ -1699,6 +1699,14 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["tera"]
     },
+    "Templ": {
+      "name": "Templ",
+      "line_comment": ["//"],
+      "multi_line_comments": [["<!--", "-->"], ["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "important_syntax": ["templ", "script", "css"],
+      "extensions": ["templ", "tmpl"]
+    },
     "Tex": {
       "name": "TeX",
       "line_comment": ["%"],

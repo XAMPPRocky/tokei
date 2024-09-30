@@ -539,6 +539,7 @@ SystemVerilog
 Slint
 Tact
 Tcl
+Templ
 Tex
 Text
 Thrift
