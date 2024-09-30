@@ -485,6 +485,7 @@ Pascal
 Perl
 Perl6
 Pest
+Phix
 Php
 Po
 Poke
