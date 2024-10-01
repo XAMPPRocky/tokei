@@ -362,6 +362,7 @@ Autoconf
 AutoHotKey
 Automake
 AWK
+Ballerina
 Bash
 Batch
 Bazel
