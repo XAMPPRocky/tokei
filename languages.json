@@ -1971,6 +1971,13 @@
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["zok"]
     },
+    "Octave": {
+      "name": "Octave",
+      "line_comment": ["%"],
+      "quotes": [["'", "'"]],
+      "multi_line_comments": [["%{", "%}"]],
+      "extensions": ["m"]
+    },
     "Zsh": {
       "shebangs": ["#!/bin/zsh"],
       "line_comment": ["#"],
