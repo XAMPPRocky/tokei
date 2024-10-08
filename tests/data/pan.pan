@@ -1,4 +1,4 @@
-# 21 lines 11 code 4 comments 6 blanks
+# language: "pan" 21 lines 11 code 4 comments 6 blanks
 
 # Pan example code, see https://quattor-pan.readthedocs.io/en/stable/pan-book/index.html
 

@@ -1,4 +1,4 @@
-// 12 lines 7 code 3 comments 2 blanks
+// language: "pony" 12 lines 7 code 3 comments 2 blanks
 
 /* com-
     -ment */

@@ -2,7 +2,7 @@
 	Test file for the Logtalk programming language
 	(copied by the author from a Logtalk distribution example)
 
-	65 lines 27 code 18 comments 20 blanks
+	language: "logtalk" 65 lines 27 code 18 comments 20 blanks
 */
 
 

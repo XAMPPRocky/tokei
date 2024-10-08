@@ -134,6 +134,8 @@ use super::*;
             let contents = fs::read_to_string("{1}").unwrap();
 
             println!("{{}} {1}", name);
+            assert_eq!(get_language!(contents), name);
+            println!("{{}} LANGUAGE MATCHES", name);
             assert_eq!(get_digit!(LINES, contents), language.lines());
             println!("{{}} LINES MATCH", name);
             assert_eq!(get_digit!(CODE, contents), language.code);
