@@ -296,6 +296,11 @@
       "multi_line_comments": [["(*", "*)"]],
       "extensions": ["v"]
     },
+    "Config": {
+        "name": "Generic config file",
+        "line_comment": ["#"],
+        "extensions": ["conf"]
+    },
     "Cpp": {
       "name": "C++",
       "line_comment": ["//"],
