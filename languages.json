@@ -112,7 +112,7 @@
     },
     "Autoconf": {
       "line_comment": ["#", "dnl"],
-      "extensions": ["in"]
+      "filenames": ["configure.ac", "configure.in"]
     },
     "Autoit": {
       "line_comment": [";"],
