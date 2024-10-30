@@ -578,7 +578,7 @@
       "quotes": [["\\\"", "\\\""]],
       "line_comment": ["//"],
       "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["fst"]
+      "extensions": ["fst", "fsti"]
     },
     "Futhark": {
       "line_comment": ["--"],
