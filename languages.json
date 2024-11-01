@@ -1546,6 +1546,11 @@
       ],
       "filenames": ["sconstruct", "sconscript"]
     },
+    "SeLinuxPolicySourceFile": {
+      "name": "SELinux Policy Source File",
+      "line_comment": ["#"],
+      "extensions": ["te","if","fc"]
+    },
     "Sh": {
       "name": "Shell",
       "shebangs": ["#!/bin/sh"],

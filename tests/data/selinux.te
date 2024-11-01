@@ -1,0 +1,20 @@
+# 20 lines 6 code 11 comments 3 blanks
+policy_module(corecommands)
+
+########################################
+#
+# Declarations
+#
+
+#
+# Types with the exec_type attribute are executable files.
+#
+attribute exec_type;
+
+#
+# bin_t is the type of files in the system bin/sbin directories.
+#
+type bin_t alias { ls_exec_t sbin_t };
+typealias bin_t alias { systemd_detect_virt_t systemd_run_exec_t };
+corecmd_executable_file(bin_t)
+dev_associate(bin_t)	#For /dev/MAKEDEV

@@ -521,6 +521,7 @@ Sass
 Scala
 Scheme
 Scons
+SeLinuxPolicySourceFile
 Sh
 ShaderLab
 Slang
