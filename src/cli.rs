@@ -158,13 +158,7 @@ impl Cli {
                 Arg::new("output")
                     .long("output")
                     .short('o')
-                    .value_parser(|x: &str| {
-                        if Format::all().contains(&x) {
-                            Ok(x.to_string())
-                        } else {
-                            Err(format!("Invalid output format: {x:?}"))
-                        }
-                    })
+                    .value_parser(Format::from_str)
                     .help(
                         "Outputs Tokei in a specific format. Compile with additional features for \
                         more format support.",
