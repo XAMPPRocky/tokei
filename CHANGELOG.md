@@ -1,4 +1,5 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
@@ -9,14 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [13.0.0-alpha.2](https://github.com/exercism/tokei/compare/v13.0.0-alpha.1...v13.0.0-alpha.2) - 2024-07-23
 
 ### Added
+
 - --files argument now sorts alphabetically ([#1059](https://github.com/exercism/tokei/pull/1059))
 - add support for LALRPOP ([#1077](https://github.com/exercism/tokei/pull/1077))
 
 ### Fixed
+
 - read hidden from config file ([#1093](https://github.com/exercism/tokei/pull/1093))
 - fixed language names not showing when in Light mode (light background ([#1048](https://github.com/exercism/tokei/pull/1048))
 
 ### Other
+
 - Add Cairo language support ([#18](https://github.com/exercism/tokei/pull/18))
 - add phix support ([#16](https://github.com/exercism/tokei/pull/16))
 - Add J language support ([#17](https://github.com/exercism/tokei/pull/17))
@@ -74,9 +78,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [13.0.0-alpha.1](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.0...v13.0.0-alpha.1) - 2024-03-04
 
 ### Fixed
+
 - fixed language names not showing when in Light mode (light background ([#1048](https://github.com/XAMPPRocky/tokei/pull/1048))
 
 ### Other
+
 - Create release-plz.yaml
 - Update mean_bean_ci.yml
 - Fix LD Script language data ([#1028](https://github.com/XAMPPRocky/tokei/pull/1028))
@@ -97,12 +103,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add JSON5 support for languages.json ([#986](https://github.com/XAMPPRocky/tokei/pull/986))
 - Delete Smalltalk.cs.st ([#990](https://github.com/XAMPPRocky/tokei/pull/990))
 - Add support for smalltalk ([#839](https://github.com/XAMPPRocky/tokei/pull/839))
-- Disable *-android
+- Disable \*-android
 - Add HiCAD to languages.json ([#985](https://github.com/XAMPPRocky/tokei/pull/985))
 - Add Nushell to languages.json ([#982](https://github.com/XAMPPRocky/tokei/pull/982))
+
 # 12.1.0
 
 ## Introduction
+
 Tokei is a fast and accurate code analysis CLI tool and library, allowing you to
 easily and quickly see how many blank lines, comments, and lines of code are in
 your codebase. All releases and work on Tokei and tokei.rs ([the free companion
@@ -148,7 +156,8 @@ cargo install tokei
 
 # 12.0.0
 
-## What's New? 
+## What's New?
+
 Tokei 12 comes with some of the biggest user facing changes since 1.0, now in
 the latest version tokei will now **analyse and count multiple languages
 embedded in your source code** as well as adding support for
@@ -158,6 +167,7 @@ for a limited set of languages, with plans to add more support for more in the
 future. The currently supported languages are;
 
 ### HTML + Siblings (Vue, Svelte, Etc...)
+
 Tokei will now analyse and report the source code contained in `<script>`,
 `<style>`, and `<template>` tags in HTML and other similar languages. Tokei will
 read the value of the`type` attribute from the `<script>` tag and detects the
@@ -166,25 +176,30 @@ will do the same for `<style>` and `<template>` except reading the `lang`
 attribute instead of `type` and defaulting to CSS and HTML each respectively.
 
 ### Jupyter Notebooks
+
 Tokei will now read Jupyter Notebook files (`.ipynb`) and will read the source
 code and markdown from Jupyter's JSON and output the analysed result.
 
 ### Markdown
+
 Tokei will now detect any code blocks marked with specified source language and
 count each as their respective languages or as Markdown if not present or not
 found. Now you can easily see how many code examples are included in
 your documentation.
 
 ### Rust
-Tokei will now detect blocks of rustdoc documentation  (e.g. `///`/`//!`) and
+
+Tokei will now detect blocks of rustdoc documentation (e.g. `///`/`//!`) and
 parse them as markdown.
 
 ### Verbatim Strings
+
 Tokei is now also capable of handling "verbatim" strings, which are strings that
 do not accept escape sequences like `\`. Thanks to @NickHackman for providing
 the implementation! This is initially supported for C++, C#, F#, and Rust.
 
 ## New Look
+
 To be able to show these new features, tokei's output has been changed to look
 like below. For brevity the CLI only displays one level deep in each language,
 however the library's parser is fully recursive and you can get access to the
@@ -247,6 +262,7 @@ broken down by each file with the `--files` option.
 ```
 
 ## Breaking Changes
+
 - The JSON Output and format of `Languages` has changed.
 - The JSON feature has been removed and is now included by default.
 - `Stats` has been split into `Report` and `CodeStats` to better represent the
@@ -263,6 +279,7 @@ broken down by each file with the `--files` option.
 - @dependabot Updated dependencies
 
 **Added Languages**
+
 - @alexmaco Dhall
 - @NickHackman Svelte
 - @athas Futhark
@@ -282,7 +299,6 @@ broken down by each file with the `--files` option.
 - Added `LanguageType::shebangs`, `LanguageType::from_file_extension`, and
   `LanguageType::from_shebang`. (@solanav)
 
-
 # 11.0.0
 
 **Added languages**
@@ -290,7 +306,6 @@ broken down by each file with the `--files` option.
 - @bwidawsk GNU Assembly, GDB Script
 - @isker Dust, Apache Velocity
 - @andreblanke FreeMarker
-
 
 Thanks to some major internal refactoring, Tokei has received significant
 performance improvements, and is now one of the fastest code counters across any
@@ -300,14 +315,15 @@ of counting five differently sized codebases. Redis (~220k lines), Rust (~16M
 lines), and the Unreal Engine (~37.5M lines). In every one of these benchmarks
 Tokei 11 performed the best by a noticeable margin.
 
-*All benchmarks were done on a 15-inch MacBook Pro, with a 2.7GHz Intel Core i7
+_All benchmarks were done on a 15-inch MacBook Pro, with a 2.7GHz Intel Core i7
 processor and 16GB 2133 MHz LPDDR3 RAM running macOS Catalina 10.15.3. Your
 mileage may vary, All benchmarks were done using [hyperfine], using default
-settings for all programs.*
+settings for all programs._
 
 [hyperfine]: https://github.com/sharkdp/hyperfine
 
 ### Tokei
+
 **Note** This benchmark is not accurate due to `tokei` and `loc` both taking
 less than 5ms to complete, there is a high degree of error between the times and
 should mostly be considered equivalent. However it is included because it is
@@ -316,12 +332,15 @@ notable that `scc` takes nearly 3x as long to complete on smaller codebases
 ![Graph comparing programs running on the tokei source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=1242634543&format=image)
 
 ### Redis
+
 ![Graph comparing programs running on the redis source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=2009389097&format=image)
 
 ### Rust
+
 ![Graph comparing programs running on the rust source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=424069399&format=image)
 
 ### Unreal
+
 ![Graph comparing programs running on the unreal source code](https://docs.google.com/spreadsheets/d/e/2PACX-1vRN2Um3G9Mn4Bg6UVWwgntsMy4faZMIP3EDjAfY5Y6Tav7T5z1TxVKmPu7wUNIpUSsSJDfCNH0SAKBB/pubchart?oid=439405321&format=image)
 
 # 10.1.2

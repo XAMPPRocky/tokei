@@ -244,10 +244,7 @@
     "Chapel": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [
-        ["\\\"", "\\\""],
-        ["'", "'"]
-      ],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["chpl"]
     },
     "CHeader": {
@@ -893,11 +890,7 @@
     },
     "Janet": {
       "line_comment": ["#"],
-      "quotes": [
-        ["\\\"", "\\\""],
-        ["'", "'"],
-        ["`", "`"]
-      ],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["janet"]
     },
     "Java": {
@@ -1037,14 +1030,8 @@
       "name": "LALRPOP",
       "line_comment": ["//"],
       "extensions": ["lalrpop"],
-      "quotes": [
-        ["\\\"", "\\\""],
-        ["#\\\"", "\\\"#"]
-      ],
-      "verbatim_quotes": [
-        ["r##\\\"", "\\\"##"],
-        ["r#\\\"", "\\\"#"]
-      ]
+      "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
     },
     "KvLanguage": {
       "name": "KV Language",
@@ -1107,6 +1094,15 @@
       "nested": true,
       "extensions": ["lf"]
     },
+    "LinguaFranca": {
+      "name": "Lingua Franca",
+      "line_comment": ["//", "#"],
+      "important_syntax": ["{="],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "nested": true,
+      "extensions": ["lf"]
+    },
     "LinkerScript": {
       "name": "LD Script",
       "multi_line_comments": [["/*", "*/"]],
@@ -1153,10 +1149,7 @@
     "Lua": {
       "line_comment": ["--"],
       "multi_line_comments": [["--[[", "]]"]],
-      "quotes": [
-        ["\\\"", "\\\""],
-        ["'", "'"]
-      ],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["lua", "luau"]
     },
     "Lucius": {
@@ -1335,6 +1328,13 @@
         ["'", "'"]
       ]
     },
+    "OpenScad": {
+      "name": "OpenSCAD",
+      "extensions": ["scad"],
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]]
+    },
     "OpenPolicyAgent": {
       "name": "Open Policy Agent",
       "line_comment": ["#"],
@@ -1368,10 +1368,7 @@
     "PacmanMakepkg": {
       "name": "Pacman's makepkg",
       "line_comment": ["#"],
-      "quotes": [
-        ["\\\"", "\\\""],
-        ["'", "'"]
-      ],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "filenames": ["pkgbuild"]
     },
     "Pan": {
@@ -1550,10 +1547,7 @@
     },
     "PRQL": {
       "line_comment": ["#"],
-      "quotes": [
-        ["\\\"", "\\\""],
-        ["'", "'"]
-      ],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "mime": ["application/prql"],
       "extensions": ["prql"]
     },
@@ -1643,12 +1637,8 @@
       "extensions": ["raku", "rakumod", "rakutest", "pm6", "pl6", "p6"]
     },
     "Razor": {
-      "line_comment": ["//"],
-      "multi_line_comments": [
-        ["<!--", "-->"],
-        ["@*", "*@"],
-        ["/*", "*/"]
-      ],
+      "line_comment": ["//"],      
+      "multi_line_comments": [["<!--", "-->"], ["@*", "*@"], ["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "verbatim_quotes": [["@\\\"", "\\\""]],
       "extensions": ["cshtml", "razor"]
@@ -1828,6 +1818,13 @@
         ["\\\"", "\\\""],
         ["'", "'"]
       ],
+      "extensions": ["smk", "rules"],
+      "filenames": ["snakefile"]
+    },
+    "Snakemake": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["smk", "rules"],
       "filenames": ["snakefile"]
     },
@@ -2022,11 +2019,7 @@
     "TypeScript": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [
-        ["\\\"", "\\\""],
-        ["'", "'"],
-        ["`", "`"]
-      ],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["ts", "mts", "cts"]
     },
     "Typst": {
