@@ -456,6 +456,14 @@
       "line_comment": [";"],
       "extensions": ["edn"]
     },
+    "Eight": {
+      "name": "8th",
+      "line_comment": ["\\\\ ", "-- "],
+      "multi_line_comments": [["(*", "*)"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["8th"]
+    },
     "Elisp": {
       "name": "Emacs Lisp",
       "line_comment": [";"],
