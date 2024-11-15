@@ -192,6 +192,14 @@
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["cabal"]
     },
+    "Cairo": {
+      "line_comment": ["//"],
+      "extensions": ["cairo"],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["'", "'"]
+      ]
+    },
     "Cangjie": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
