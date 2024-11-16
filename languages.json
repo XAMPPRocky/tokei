@@ -1781,6 +1781,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["typ"]
     },
+    "Uiua": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["ua"]
+    },
     "UMPL": {
       "line_comment": ["!"],
       "quotes": [["`", "`"]],
