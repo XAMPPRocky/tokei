@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.8](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.7...v13.0.0-alpha.8) - 2024-11-16
+
+### Other
+
+- Add support for Cairo language ([#1193](https://github.com/XAMPPRocky/tokei/pull/1193))
+- Add support for Uiua language ([#1191](https://github.com/XAMPPRocky/tokei/pull/1191))
+
 ## [13.0.0-alpha.7](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.6...v13.0.0-alpha.7) - 2024-11-10
 
 ### Other
