@@ -1498,6 +1498,15 @@
       "blank": true,
       "extensions": ["rst"]
     },
+    "Roc": {
+      "line_comment": ["#"],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["'", "'"]
+      ],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "extensions": ["roc"]
+    },
     "RON": {
       "name": "Rusty Object Notation",
       "line_comment": ["//"],
