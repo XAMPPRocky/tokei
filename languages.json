@@ -133,6 +133,14 @@
       "shebangs": ["#!/bin/awk -f"],
       "extensions": ["awk"]
     },
+    "Ballerina": {
+      "line_comment": ["//", "#"],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["`", "`"]
+      ],
+      "extensions": ["bal"]
+    },
     "Bash": {
       "name": "BASH",
       "shebangs": ["#!/bin/bash"],
