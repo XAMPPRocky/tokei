@@ -1107,6 +1107,12 @@
       "extensions": ["def"],
       "line_comment": [";"]
     },
+    "Mojo": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["mojo", "🔥"]
+    },
     "MonkeyC": {
       "name": "Monkey C",
       "extensions": ["mc"],
