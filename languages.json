@@ -1807,6 +1807,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "extensions": ["ts", "mts", "cts"]
     },
+    "TypeLanguage": {
+      "name": "Type Language",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["tl"]
+    },
     "Typst": {
       "nested": true,
       "line_comment": ["//"],
