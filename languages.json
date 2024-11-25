@@ -474,6 +474,7 @@
     },
     "Eiffel": {
       "line_comment": ["-- "],
+      "doc_quotes": [["--|", ""],
       "extensions": ["e"]
     },
     "Eighth": {
