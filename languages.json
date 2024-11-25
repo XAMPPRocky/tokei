@@ -472,6 +472,10 @@
       "line_comment": [";"],
       "extensions": ["edn"]
     },
+    "Eiffel": {
+      "line_comment": ["-- "],
+      "extensions": ["e"]
+    },
     "Eighth": {
       "name": "8th",
       "line_comment": ["\\\\ ", "-- "],
