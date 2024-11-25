@@ -1,4 +1,4 @@
-# 89 lines 71 code 3 comments 15 blanks
+# language: "graphql" 89 lines 71 code 3 comments 15 blanks
 
 """
 A simple GraphQL schema which is well described. This is not a comment.
