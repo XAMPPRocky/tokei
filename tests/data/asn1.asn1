@@ -1,25 +1,34 @@
--- 25 lines 16 code 3 comments 6 blanks
-note
-	description: "eiffel_tokei application root class"
-	date: "$Date$"
-	revision: "$Revision$"
+-- 34 lines 16 code 11 comments 7 blanks
+PKCS-12 {
+    iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-12(12)
+        modules(0) pkcs-12(1) }
 
-class
-	APPLICATION
+    -- PKCS #12 v1.1 ASN.1 Module
+    -- Revised October 27, 2012
 
-inherit
-	ARGUMENTS_32
+    -- This module has been checked for conformance with the ASN.1 standard
+    -- by the OSS ASN.1 Tools
 
-create
-	make
+    DEFINITIONS IMPLICIT TAGS ::=
 
-feature {NONE} -- Initialization
+    BEGIN
 
-	make
-			-- Run application.
-		do
-			--| Add your code here
-			print ("Hello Eiffel World!%N")
-		end
+    PFX ::= SEQUENCE {
+        version INTEGER {v3(3)}(v3,...),
+        authSafe OCTET STRING,
+        macData MacData /* " " */ OPTIONAL
+    }
 
-end
+    /*
+     * Multi line
+     *
+     */
+
+    MacData ::= SEQUENCE {
+        mac OBJECT IDENTIFIER,
+        macSalt OCTET STRING,
+        iterations INTEGER DEFAULT 1
+        -- Note: The default is for historical reasons and its use is
+        -- deprecated.
+    }
+END
