@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix alternative output formats ([#1188](https://github.com/XAMPPRocky/tokei/pull/1188))
 - Add missing extension `fsti` for F* ([#1184](https://github.com/XAMPPRocky/tokei/pull/1184))
 
+## Added
+- Add ClojureDart support 
+
 ## [13.0.0-alpha.6](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.5...v13.0.0-alpha.6) - 2024-10-11
 
 ### Added

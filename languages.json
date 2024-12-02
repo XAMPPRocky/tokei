@@ -263,6 +263,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["cljc"]
     },
+    "ClojureDart": {
+      "line_comment": [";"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["cljd"]
+    },
     "ClojureScript": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""]],
