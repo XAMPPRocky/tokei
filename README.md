@@ -360,6 +360,7 @@ CHeader
 Cil
 Clojure
 ClojureC
+ClojureDart
 ClojureScript
 CMake
 Cobol
