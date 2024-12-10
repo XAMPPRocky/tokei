@@ -468,6 +468,7 @@ Mint
 Mlatu
 ModuleDef
 MonkeyC
+MoonBit
 MoonScript
 MsBuild
 Mustache
