@@ -213,7 +213,7 @@ impl Cli {
                 Arg::new("num_format_style")
                     .long("num-format")
                     .short('n')
-                    .value_parser(["commas", "dots", "plain", "underscores"])
+                    .value_parser(value_parser!(NumberFormatStyle))
                     .conflicts_with("output")
                     .help(
                         "Format of printed numbers, i.e., plain (1234, default), \
