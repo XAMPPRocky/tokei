@@ -1,0 +1,24 @@
+// 24 lines, 18 code, 2 comments, 4 blanks
+
+// Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model Notification {
+  id Int @id @default(autoincrement())
+  title String
+  message String
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  email String
+}
