@@ -8,6 +8,7 @@ mod input;
 
 use std::{error::Error, io, process};
 
+use cli_utils::Column;
 use tokei::{Config, Languages, Sort};
 
 use crate::{
@@ -90,6 +91,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         cli.files,
         io::BufWriter::new(io::stdout()),
         cli.number_format,
+        vec![
+            Column::Files,
+            Column::Blanks,
+            Column::Comments,
+            Column::Lines,
+            Column::Code,
+        ],
     );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
