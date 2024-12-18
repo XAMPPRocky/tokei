@@ -11,7 +11,7 @@ use colored::Colorize;
 use num_format::ToFormattedString;
 
 use crate::input::Format;
-use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
+use tokei::{CodeStats, Column, Language, LanguageType, Report};
 
 use crate::consts::{
     BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
@@ -119,264 +119,6 @@ impl NumberFormatStyle {
     }
 }
 
-#[derive(Clone, Copy)]
-pub enum Column {
-    Language,
-    Files,
-    Lines,
-    Code,
-    Comments,
-    Blanks,
-}
-
-impl Column {
-    fn print_header(self, mut writer: impl Write) -> io::Result<usize> {
-        let mut len = 0;
-        match self {
-            Column::Language => {
-                let s = "Language";
-                len += s.len();
-                write!(writer, "{}", s.bold().blue())?;
-            }
-            Column::Files => {
-                let s = "Files";
-                len += s.len().max(FILES_COLUMN_WIDTH);
-                write!(writer, "{:>FILES_COLUMN_WIDTH$}", s.bold().blue())?;
-            }
-            Column::Lines => {
-                let s = "Lines";
-                len += s.len().max(LINES_COLUMN_WIDTH);
-                write!(writer, "{:>LINES_COLUMN_WIDTH$}", s.bold().blue())?;
-            }
-            Column::Code => {
-                let s = "Code";
-                len += s.len().max(CODE_COLUMN_WIDTH);
-                write!(writer, "{:>CODE_COLUMN_WIDTH$}", s.bold().blue())?;
-            }
-            Column::Comments => {
-                let s = "Comments";
-                len += s.len().max(COMMENTS_COLUMN_WIDTH);
-                write!(writer, "{:>COMMENTS_COLUMN_WIDTH$}", s.bold().blue(),)?;
-            }
-            Column::Blanks => {
-                let s = "Blanks";
-                len += s.len().max(BLANKS_COLUMN_WIDTH);
-                write!(writer, "{:>BLANKS_COLUMN_WIDTH$}", s.bold().blue())?;
-            }
-        };
-        Ok(len)
-    }
-
-    fn print_language(
-        self,
-        mut writer: impl Write,
-        language: &Language,
-        number_format: &num_format::CustomFormat,
-    ) -> io::Result<usize> {
-        let mut len = 0;
-        match self {
-            Column::Language => unreachable!(),
-            Column::Files => {
-                let s = language.reports.len().to_formatted_string(number_format);
-                len += s.len().max(FILES_COLUMN_WIDTH);
-                write!(writer, "{:>FILES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Lines => {
-                let s = language.lines().to_formatted_string(number_format);
-                len += s.len().max(LINES_COLUMN_WIDTH);
-                write!(writer, "{:>LINES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Code => {
-                let s = language.code.to_formatted_string(number_format);
-                len += s.len().max(CODE_COLUMN_WIDTH);
-                write!(writer, "{:>CODE_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Comments => {
-                let s = language.comments.to_formatted_string(number_format);
-                len += s.len().max(COMMENTS_COLUMN_WIDTH);
-                write!(writer, "{:>COMMENTS_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Blanks => {
-                let s = language.blanks.to_formatted_string(number_format);
-                len += s.len().max(BLANKS_COLUMN_WIDTH);
-                write!(writer, "{:>BLANKS_COLUMN_WIDTH$}", s)?;
-            }
-        }
-
-        Ok(len)
-    }
-
-    fn print_language_in_print_total(
-        self,
-        mut writer: impl Write,
-        language: &Language,
-        number_format: &num_format::CustomFormat,
-    ) -> io::Result<usize> {
-        let mut len = 0;
-        match self {
-            Column::Language => unreachable!(),
-            Column::Files => {
-                let s = language
-                    .children
-                    .values()
-                    .map(Vec::len)
-                    .sum::<usize>()
-                    .to_formatted_string(number_format);
-                len += s.len().max(FILES_COLUMN_WIDTH);
-                write!(writer, "{:>FILES_COLUMN_WIDTH$}", s.blue())?;
-            }
-            Column::Lines => {
-                let s = language.lines().to_formatted_string(number_format);
-                len += s.len().max(LINES_COLUMN_WIDTH);
-                write!(writer, "{:>LINES_COLUMN_WIDTH$}", s.blue())?;
-            }
-            Column::Code => {
-                let s = language.code.to_formatted_string(number_format);
-                len += s.len().max(CODE_COLUMN_WIDTH);
-                write!(writer, "{:>CODE_COLUMN_WIDTH$}", s.blue())?;
-            }
-            Column::Comments => {
-                let s = language.comments.to_formatted_string(number_format);
-                len += s.len().max(COMMENTS_COLUMN_WIDTH);
-                write!(writer, "{:>COMMENTS_COLUMN_WIDTH$}", s.blue())?;
-            }
-            Column::Blanks => {
-                let s = language.blanks.to_formatted_string(number_format);
-                len += s.len().max(BLANKS_COLUMN_WIDTH);
-                write!(writer, "{:>BLANKS_COLUMN_WIDTH$}", s.blue())?;
-            }
-        }
-
-        Ok(len)
-    }
-
-    fn print_code_stats(
-        self,
-        mut writer: impl Write,
-        stats: &[CodeStats],
-        number_format: &num_format::CustomFormat,
-        code: usize,
-        comments: usize,
-        blanks: usize,
-    ) -> io::Result<usize> {
-        let mut len = 0;
-        match self {
-            Column::Language => unreachable!(),
-            Column::Files => {
-                let s = stats.len().to_formatted_string(number_format);
-                len += s.len().max(FILES_COLUMN_WIDTH);
-                write!(writer, "{:>FILES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Lines => {
-                let s = (code + comments + blanks).to_formatted_string(number_format);
-                len += s.len().max(LINES_COLUMN_WIDTH);
-                write!(writer, "{:>LINES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Code => {
-                let s = code.to_formatted_string(number_format);
-                len += s.len().max(CODE_COLUMN_WIDTH);
-                write!(writer, "{:>CODE_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Comments => {
-                let s = comments.to_formatted_string(number_format);
-                len += s.len().max(COMMENTS_COLUMN_WIDTH);
-                write!(writer, "{:>COMMENTS_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Blanks => {
-                let s = blanks.to_formatted_string(number_format);
-                len += s.len().max(BLANKS_COLUMN_WIDTH);
-                write!(writer, "{:>BLANKS_COLUMN_WIDTH$}", s)?;
-            }
-        }
-
-        Ok(len)
-    }
-
-    fn print_report_total_formatted(
-        self,
-        mut writer: impl Write,
-        name: &str,
-        report: &Report,
-        max_len: usize,
-        number_format: &num_format::CustomFormat,
-    ) -> io::Result<usize> {
-        let mut len = 0;
-        match self {
-            Column::Language => {
-                let s = name;
-                len += s.len().max(max_len);
-                write!(writer, "{:<max_len$}", s)?;
-            }
-            Column::Files => {
-                let s = "";
-                len += s.len().max(FILES_COLUMN_WIDTH);
-                write!(writer, "{:>FILES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Lines => {
-                let s = report.stats.lines().to_formatted_string(number_format);
-                len += s.len().max(LINES_COLUMN_WIDTH);
-                write!(writer, "{:>LINES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Code => {
-                let s = report.stats.code.to_formatted_string(number_format);
-                len += s.len().max(CODE_COLUMN_WIDTH);
-                write!(writer, "{:>CODE_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Comments => {
-                let s = report.stats.comments.to_formatted_string(number_format);
-                len += s.len().max(COMMENTS_COLUMN_WIDTH);
-                write!(writer, "{:>COMMENTS_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Blanks => {
-                let s = report.stats.blanks.to_formatted_string(number_format);
-                len += s.len().max(BLANKS_COLUMN_WIDTH);
-                write!(writer, "{:>BLANKS_COLUMN_WIDTH$}", s)?;
-            }
-        }
-
-        Ok(len)
-    }
-
-    fn print_report(
-        self,
-        mut writer: impl Write,
-        stats: &CodeStats,
-        number_format: &num_format::CustomFormat,
-    ) -> io::Result<usize> {
-        let mut len = 0;
-        match self {
-            Column::Language => unreachable!(),
-            Column::Files => {
-                let s = "";
-                len += s.len().max(FILES_COLUMN_WIDTH);
-                write!(writer, "{:>FILES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Lines => {
-                let s = stats.lines().to_formatted_string(number_format);
-                len += s.len().max(LINES_COLUMN_WIDTH);
-                write!(writer, "{:>LINES_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Code => {
-                let s = stats.code.to_formatted_string(number_format);
-                len += s.len().max(CODE_COLUMN_WIDTH);
-                write!(writer, "{:>CODE_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Comments => {
-                let s = stats.comments.to_formatted_string(number_format);
-                len += s.len().max(COMMENTS_COLUMN_WIDTH);
-                write!(writer, "{:>COMMENTS_COLUMN_WIDTH$}", s)?;
-            }
-            Column::Blanks => {
-                let s = stats.blanks.to_formatted_string(number_format);
-                len += s.len().max(BLANKS_COLUMN_WIDTH);
-                write!(writer, "{:>BLANKS_COLUMN_WIDTH$}", s)?;
-            }
-        }
-
-        Ok(len)
-    }
-}
-
 pub struct RowPrinter<'a> {
     length: usize,
     output_columns: &'a [Column],
@@ -398,12 +140,37 @@ impl<'a> RowPrinter<'a> {
         }
     }
 
+    fn column_width(&self, col: Column) -> usize {
+        match col {
+            Column::Files => FILES_COLUMN_WIDTH,
+            Column::Lines => LINES_COLUMN_WIDTH,
+            Column::Code => CODE_COLUMN_WIDTH,
+            Column::Comments => COMMENTS_COLUMN_WIDTH,
+            Column::Blanks => BLANKS_COLUMN_WIDTH,
+        }
+    }
+
     pub fn print_header(mut self, writer: impl Write) -> io::Result<()> {
         self.row_start.push(b' ');
-        self.printed_left = 1 + Column::Language.print_header(&mut self.row_start)?;
+
+        let s = "Language";
+        self.printed_left = 1 + s.len();
+        write!(&mut self.row_start, "{}", s.bold().blue())?;
+
         for col in self.output_columns {
             self.row_end.push(b' ');
-            self.printed_right += 1 + col.print_header(&mut self.row_end)?;
+            self.printed_right += 1;
+
+            let s = match col {
+                Column::Files => "Files",
+                Column::Lines => "Lines",
+                Column::Code => "Code",
+                Column::Comments => "Comments",
+                Column::Blanks => "Blanks",
+            };
+            let sze = self.column_width(*col);
+            self.printed_right += s.len().max(sze);
+            write!(&mut self.row_end, "{:>sze$}", s.bold().blue())?;
         }
 
         self.write(writer)?;
@@ -458,8 +225,18 @@ impl<'a> RowPrinter<'a> {
     ) -> io::Result<()> {
         for col in self.output_columns {
             self.row_end.push(b' ');
-            self.printed_right +=
-                1 + col.print_language(&mut self.row_end, language, number_format)?;
+            self.printed_right += 1;
+
+            let s = match col {
+                Column::Files => language.reports.len().to_formatted_string(number_format),
+                Column::Lines => language.lines().to_formatted_string(number_format),
+                Column::Code => language.code.to_formatted_string(number_format),
+                Column::Comments => language.comments.to_formatted_string(number_format),
+                Column::Blanks => language.blanks.to_formatted_string(number_format),
+            };
+            let sze = self.column_width(*col);
+            self.printed_right += s.len().max(sze);
+            write!(&mut self.row_end, "{:>sze$}", s)?;
         }
 
         self.write(writer)?;
@@ -474,11 +251,23 @@ impl<'a> RowPrinter<'a> {
     ) -> io::Result<()> {
         for col in self.output_columns {
             self.row_end.push(b' ');
-            self.printed_right += 1 + col.print_language_in_print_total(
-                &mut self.row_end,
-                language,
-                number_format,
-            )?;
+            self.printed_right += 1;
+
+            let s = match col {
+                Column::Files => language
+                    .children
+                    .values()
+                    .map(Vec::len)
+                    .sum::<usize>()
+                    .to_formatted_string(number_format),
+                Column::Lines => language.lines().to_formatted_string(number_format),
+                Column::Code => language.code.to_formatted_string(number_format),
+                Column::Comments => language.comments.to_formatted_string(number_format),
+                Column::Blanks => language.blanks.to_formatted_string(number_format),
+            };
+            let sze = self.column_width(*col);
+            self.printed_right += s.len().max(sze);
+            write!(&mut self.row_end, "{:>sze$}", s.blue())?;
         }
 
         self.write(writer)?;
@@ -496,14 +285,18 @@ impl<'a> RowPrinter<'a> {
     ) -> io::Result<()> {
         for col in self.output_columns {
             self.row_end.push(b' ');
-            self.printed_right += 1 + col.print_code_stats(
-                &mut self.row_end,
-                stats,
-                number_format,
-                code,
-                comments,
-                blanks,
-            )?;
+            self.printed_right += 1;
+
+            let s = match col {
+                Column::Files => stats.len().to_formatted_string(number_format),
+                Column::Lines => (code + comments + blanks).to_formatted_string(number_format),
+                Column::Code => code.to_formatted_string(number_format),
+                Column::Comments => comments.to_formatted_string(number_format),
+                Column::Blanks => blanks.to_formatted_string(number_format),
+            };
+            let sze = self.column_width(*col);
+            self.printed_right += s.len().max(sze);
+            write!(&mut self.row_end, "{:>sze$}", s)?;
         }
 
         self.write(writer)?;
@@ -520,23 +313,25 @@ impl<'a> RowPrinter<'a> {
     ) -> io::Result<()> {
         for col in self.output_columns {
             self.row_end.push(b' ');
-            self.printed_right += 1 + col.print_report_total_formatted(
-                &mut self.row_end,
-                &name,
-                report,
-                max_len,
-                number_format,
-            )?;
+            self.printed_right += 1;
+
+            let s = match col {
+                Column::Files => "".to_string(),
+                Column::Lines => report.stats.lines().to_formatted_string(number_format),
+                Column::Code => report.stats.code.to_formatted_string(number_format),
+                Column::Comments => report.stats.comments.to_formatted_string(number_format),
+                Column::Blanks => report.stats.blanks.to_formatted_string(number_format),
+            };
+            let sze = self.column_width(*col);
+            self.printed_right += s.len().max(sze);
+            write!(&mut self.row_end, "{:>sze$}", s)?;
         }
 
         self.row_start.push(b' ');
-        self.printed_left = 1 + Column::Language.print_report_total_formatted(
-            &mut self.row_start,
-            &name,
-            report,
-            max_len.min(self.length - self.printed_right - 2),
-            number_format,
-        )?;
+
+        let max_len = max_len.min(self.length - self.printed_right - 2);
+        self.printed_left = 1 + name.len().max(max_len);
+        write!(&mut self.row_start, "{:<max_len$}", name)?;
 
         self.write(writer)?;
         Ok(())
@@ -550,7 +345,18 @@ impl<'a> RowPrinter<'a> {
     ) -> io::Result<()> {
         for col in self.output_columns {
             self.row_end.push(b' ');
-            self.printed_right += 1 + col.print_report(&mut self.row_end, stats, number_format)?;
+            self.printed_right += 1;
+
+            let s = match col {
+                Column::Files => "".to_string(),
+                Column::Lines => stats.lines().to_formatted_string(number_format),
+                Column::Code => stats.code.to_formatted_string(number_format),
+                Column::Comments => stats.comments.to_formatted_string(number_format),
+                Column::Blanks => stats.blanks.to_formatted_string(number_format),
+            };
+            let sze = self.column_width(*col);
+            self.printed_right += s.len().max(sze);
+            write!(&mut self.row_end, "{:>sze$}", s)?;
         }
 
         self.write(writer)?;
