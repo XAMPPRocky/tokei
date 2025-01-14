@@ -108,7 +108,7 @@ impl Cli {
                 Arg::new("input")
                     .num_args(1..)
                     .conflicts_with("languages")
-                    .help("The path(s) to the file or directory to be counted.(default current directory)"),
+                    .help("The path(s) to the file or directory to be counted. (default current directory)"),
             )
             .arg(
                 Arg::new("languages")
