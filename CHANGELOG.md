@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.9](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.8...v13.0.0-alpha.9) - 2025-01-14
+
+### Other
+
+- Relax lifetime constraints in language::embedding ([#1225](https://github.com/XAMPPRocky/tokei/pull/1225))
+
 ## [13.0.0-alpha.8](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.7...v13.0.0-alpha.8) - 2025-01-14
 
 ### Other
