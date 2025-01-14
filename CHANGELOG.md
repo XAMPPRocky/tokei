@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.8](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.7...v13.0.0-alpha.8) - 2025-01-14
+
+### Other
+
+- add Mojo support ([#1107](https://github.com/XAMPPRocky/tokei/pull/1107)) ([#1185](https://github.com/XAMPPRocky/tokei/pull/1185))
+- Add support for 8th language ([#1192](https://github.com/XAMPPRocky/tokei/pull/1192))
+- Add support for `Roc` language ([#1197](https://github.com/XAMPPRocky/tokei/pull/1197))
+- Add support for Ballerina language ([#1196](https://github.com/XAMPPRocky/tokei/pull/1196))
+- Remove 'conf' extension from the Bitbake config. ([#1001](https://github.com/XAMPPRocky/tokei/pull/1001))
+- Add support for Cairo language ([#1193](https://github.com/XAMPPRocky/tokei/pull/1193))
+- Add support for Uiua language ([#1191](https://github.com/XAMPPRocky/tokei/pull/1191))
+
 ## [13.0.0-alpha.7](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.6...v13.0.0-alpha.7) - 2024-11-10
 
 ### Other
