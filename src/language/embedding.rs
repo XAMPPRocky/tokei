@@ -80,33 +80,37 @@ pub(crate) struct SimpleCapture<'a> {
 }
 
 impl<'a> HtmlLike<'a> {
-    pub fn start_script_in_range(
-        &'a self,
+    pub fn start_script_in_range<'this>(
+        &'this self,
         start: usize,
         end: usize,
-    ) -> Option<impl Iterator<Item = &'a Capture<'a>>> {
+    ) -> Option<impl Iterator<Item = &'this Capture<'a>>> {
         filter_range(self.start_script.as_ref()?, start, end)
     }
 
-    pub fn start_style_in_range(
-        &'a self,
+    pub fn start_style_in_range<'this>(
+        &'this self,
         start: usize,
         end: usize,
-    ) -> Option<impl Iterator<Item = &'a Capture<'a>>> {
+    ) -> Option<impl Iterator<Item = &'this Capture<'a>>> {
         filter_range(self.start_style.as_ref()?, start, end)
     }
 
-    pub fn start_template_in_range(
-        &'a self,
+    pub fn start_template_in_range<'this>(
+        &'this self,
         start: usize,
         end: usize,
-    ) -> Option<impl Iterator<Item = &'a Capture<'a>>> {
+    ) -> Option<impl Iterator<Item = &'this Capture<'a>>> {
         filter_range(self.start_template.as_ref()?, start, end)
     }
 }
 
 impl<'a> SimpleCapture<'a> {
-    pub fn starts_in_range(&'a self, start: usize, end: usize) -> Option<&Capture<'a>> {
+    pub fn starts_in_range<'this>(
+        &'this self,
+        start: usize,
+        end: usize,
+    ) -> Option<&'this Capture<'a>> {
         filter_range(self.starts.as_ref()?, start, end).and_then(|mut it| it.next())
     }
 
@@ -128,11 +132,11 @@ impl<'a> SimpleCapture<'a> {
     }
 }
 
-fn filter_range<'a>(
-    dataset: &'a [Capture<'a>],
+fn filter_range<'dataset, 'cap>(
+    dataset: &'dataset [Capture<'cap>],
     start: usize,
     end: usize,
-) -> Option<impl Iterator<Item = &'a Capture<'a>>> {
+) -> Option<impl Iterator<Item = &'dataset Capture<'cap>>> {
     let pos = dataset
         .binary_search_by_key(&start, |cap| cap.start())
         .ok()?;
