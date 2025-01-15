@@ -496,6 +496,7 @@ Polly
 Pony
 PostCss
 PowerShell
+Prisma
 Processing
 Prolog
 Protobuf
