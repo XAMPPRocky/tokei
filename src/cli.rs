@@ -141,7 +141,7 @@ impl Cli {
                 .action(ArgAction::SetTrue)
                 .help(
                     "\
-                        Don't respect .ignore and .tokeignore files, including this in \
+                        Don't respect .ignore and .tokeignore files, including those in \
                         parent directories.\
                     ",
                 ))
