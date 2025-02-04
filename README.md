@@ -71,7 +71,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei has huge range of languages, supporting over **150** languages, and
   their various extensions.
 
-- Tokei can output in multiple formats(**CBOR**, **JSON**, **YAML**)
+- Tokei can output in multiple formats (**CBOR**, **JSON**, **YAML**)
   allowing Tokei's output to be easily stored, and reused. These can also be
   reused in tokei combining a previous run's statistics with another set.
 
@@ -293,7 +293,7 @@ Tokei's URL scheme is as follows.
 https://tokei.rs/b1/{host: values: github|gitlab}/{Repo Owner eg: XAMPPRocky}/{Repo name eg: tokei}
 ```
 
-By default the badge will show the repo's LoC(_Lines of Code_), you can also
+By default the badge will show the repo's LoC (_Lines of Code_), you can also
 specify for it to show a different category, by using the `?category=` query
 string. It can be either `code`, `blanks`, `files`, `lines`, `comments`,
 Example show total lines:
