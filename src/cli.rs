@@ -256,8 +256,8 @@ impl Cli {
         });
 
         let num_format_style: NumberFormatStyle = matches
-            .get_one::<NumberFormatStyle>("num_format_style")
-            .cloned()
+            .get_one::<String>("num_format_style")
+            .and_then(|s| NumberFormatStyle::from_str(s).ok())
             .unwrap_or_default();
 
         let number_format = match num_format_style.get_format() {
