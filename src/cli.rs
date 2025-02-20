@@ -256,8 +256,8 @@ impl Cli {
         });
 
         let num_format_style: NumberFormatStyle = matches
-            .get_one::<NumberFormatStyle>("num_format_style")
-            .cloned()
+            .get_one::<String>("num_format_style")
+            .map(parse_or_exit)
             .unwrap_or_default();
 
         let number_format = match num_format_style.get_format() {
@@ -268,30 +268,21 @@ impl Cli {
             }
         };
 
-        // Sorting category should be restricted by clap but parse before we do
-        // work just in case.
-        let (sort, sort_reverse) = if let Some(sort) = matches.get_one::<String>("sort") {
-            (Some(sort.clone()), false)
-        } else {
-            let sort = matches.get_one::<String>("rsort");
-            (sort.cloned(), sort.is_some())
-        };
-        let sort = sort.map(|x| match Sort::from_str(&x) {
-            Ok(sort) => sort,
-            Err(e) => {
-                eprintln!("Error:\n{}", e);
-                process::exit(1);
-            }
-        });
+        let mut sort_reverse = false;
+        let sort = matches.get_one::<String>("sort");
+        let rsort = matches.get_one::<String>("rsort");
+
+        if rsort.is_some() {
+            sort_reverse = true;
+        }
+
+        let sort = sort.or(rsort).map(parse_or_exit);
 
         // Format category is overly accepting by clap (so the user knows what
         // is supported) but this will fail if support is not compiled in and
         // give a useful error to the user.
         let output = matches.get_one("output").cloned();
-        let streaming = matches
-            .get_one("streaming")
-            .cloned()
-            .map(parse_or_exit::<Streaming>);
+        let streaming = matches.get_one::<String>("streaming").map(parse_or_exit);
 
         crate::cli_utils::setup_logger(verbose);
 
