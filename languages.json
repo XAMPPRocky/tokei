@@ -1159,10 +1159,8 @@
       "extensions": ["nix"]
     },
     "Noir": {
-      "name": "Noir",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "nested": true,
       "important_syntax": ["///", "//!"],
       "extensions": ["nr"],
       "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
