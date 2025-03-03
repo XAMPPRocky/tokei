@@ -1,4 +1,4 @@
-//! 39 lines 25 code 11 comments 3 blanks
+//! 40 lines 25 code 12 comments 3 blanks
 //! ```noir
 //! fn main() {
 //!     // Comment
@@ -23,6 +23,7 @@ fn main(x: [Field; 3]) {
     );
 }
 
+/// This function has been documented
 fn foo() {
     let this_ends = "a \"test/*.";
     call1();
