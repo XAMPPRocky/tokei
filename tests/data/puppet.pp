@@ -1,4 +1,4 @@
-# 18 lines 14 code 3 comments 1 blanks
+# language: "puppet" 18 lines 14 code 3 comments 1 blanks
 class example::class(
   $param1,
   $param2=2,

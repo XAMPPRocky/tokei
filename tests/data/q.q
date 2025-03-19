@@ -1,4 +1,4 @@
-// 14 lines 5 code 5 comments 4 blanks
+// language: "q" 14 lines 5 code 5 comments 4 blanks
 
 /calc nav for sets of portfolios,ETFs,indices,..
 
