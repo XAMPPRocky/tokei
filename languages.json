@@ -1974,6 +1974,7 @@
       "name": "WESL",
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
       "extensions": ["wesl"]
     },
     "WGSL": {
