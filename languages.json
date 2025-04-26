@@ -1947,7 +1947,7 @@
       "extensions": ["sln"]
     },
     "VisualStudioSolutionSlnx": {
-      "name": "Visual Studio Solution",
+      "name": "Visual Studio Solution (slnx)",
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["slnx"]
