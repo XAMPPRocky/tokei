@@ -472,6 +472,11 @@
       "line_comment": [";"],
       "extensions": ["edn"]
     },
+    "Elle": {
+      "line_comment": ["//", "#!"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""]],
+      "extensions": ["le"]
+    },
     "Eighth": {
       "name": "8th",
       "line_comment": ["\\\\ ", "-- "],
