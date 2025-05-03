@@ -472,11 +472,6 @@
       "line_comment": [";"],
       "extensions": ["edn"]
     },
-    "Elle": {
-      "line_comment": ["//", "#!"],
-      "quotes": [["'", "'"], ["\\\"", "\\\""], ["`", "`"]],
-      "extensions": ["le"]
-    },
     "Eighth": {
       "name": "8th",
       "line_comment": ["\\\\ ", "-- "],
@@ -499,6 +494,11 @@
         ["'", "'"]
       ],
       "extensions": ["ex", "exs"]
+    },
+    "Elle": {
+      "line_comment": ["//", "#!"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""], ["`", "`"]],
+      "extensions": ["le"]
     },
     "Elm": {
       "nested": true,
