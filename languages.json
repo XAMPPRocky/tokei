@@ -1679,7 +1679,7 @@
     "Stata": {
       "line_comment": ["//", "*"],
       "multi_line_comments": [["/*", "*/"]],
-      "extensions": ["do"]
+      "extensions": ["do", "ado"]
     },
     "Stratego": {
       "name": "Stratego/XT",
