@@ -46,6 +46,9 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
+    println!("{:?}", config);
+    println!("{:?}", cli);
+
     let columns = cli
         .columns
         .or(config.columns)

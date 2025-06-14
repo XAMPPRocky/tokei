@@ -16,6 +16,9 @@ pub struct CodeStats {
     pub comments: usize,
     /// Language blobs that were contained inside this blob.
     pub blobs: BTreeMap<LanguageType, CodeStats>,
+
+    /// The token count of in the blob.
+    pub tokens: usize,
 }
 
 impl CodeStats {
@@ -60,6 +63,7 @@ impl ops::AddAssign<&'_ CodeStats> for CodeStats {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.comments += rhs.comments;
+        self.tokens += rhs.tokens;
 
         for (language, stats) in &rhs.blobs {
             *self.blobs.entry(*language).or_default() += stats;

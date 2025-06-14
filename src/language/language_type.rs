@@ -108,28 +108,35 @@ impl LanguageType {
                         // first character in the column, so removing starting whitespace
                         // could cause a miscount.
                         let line = if is_fortran { line } else { line.trim() };
+                        let tokens = Self::count_tokens(&String::from_utf8_lossy(line));
                         if line.trim().is_empty() {
-                            (1, 0, 0)
+                            (1, 0, 0, tokens)
                         } else if is_literate
                             || comments.iter().any(|c| line.starts_with(c.as_bytes()))
                         {
-                            (0, 0, 1)
+                            (0, 0, 1, tokens)
                         } else {
-                            (0, 1, 0)
+                            (0, 1, 0, tokens)
                         }
                     })
-                    .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
+                    .reduce(|| (0, 0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2, a.3 + b.3))
             };
 
-            let (mut stats, (blanks, code, comments)) = rayon::join(parse_lines, simple_parse);
+            let (mut stats, (blanks, code, comments, tokens)) = rayon::join(parse_lines, simple_parse);
 
             stats.blanks += blanks;
             stats.code += code;
             stats.comments += comments;
+            stats.tokens += tokens;
             stats
         } else {
             self.parse_lines(config, text, CodeStats::new(), syntax)
         }
+    }
+
+    fn count_tokens(text: &str) -> usize {
+        let bpe = tiktoken_rs::p50k_base().unwrap();
+        bpe.encode_with_special_tokens(text).len()
     }
 
     #[inline]
@@ -210,6 +217,9 @@ impl LanguageType {
                 trace!("Code No.{}", stats.code);
             }
         }
+
+        let tokens = Self::count_tokens(&String::from_utf8_lossy(lines));
+        stats.tokens += tokens;
 
         stats
     }

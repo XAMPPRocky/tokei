@@ -15,11 +15,11 @@ use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
 
 use crate::consts::{
     BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
-    LINES_COLUMN_WIDTH,
+    LINES_COLUMN_WIDTH, TOKENS_COLUMN_WIDTH,
 };
 
-const NO_LANG_HEADER_ROW_LEN: usize = 69;
-const NO_LANG_ROW_LEN: usize = 63;
+const NO_LANG_HEADER_ROW_LEN: usize = 69 + 13;
+const NO_LANG_ROW_LEN: usize = 63 + 13;
 const NO_LANG_ROW_LEN_NO_SPACES: usize = 56;
 const IDENT_INACCURATE: &str = "(!)";
 
@@ -155,13 +155,14 @@ impl<W: Write> Printer<W> {
         let files_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {:<6$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {:<7$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             "Language".bold().blue(),
             "Files".bold().blue(),
             "Lines".bold().blue(),
             "Code".bold().blue(),
             "Comments".bold().blue(),
             "Blanks".bold().blue(),
+            "Tokens".bold().blue(),
             self.columns - NO_LANG_HEADER_ROW_LEN
         )?;
         self.print_row()
@@ -183,7 +184,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             language
                 .reports
                 .len()
@@ -192,6 +193,7 @@ impl<W: Write> Printer<W> {
             language.code.to_formatted_string(&self.number_format),
             language.comments.to_formatted_string(&self.number_format),
             language.blanks.to_formatted_string(&self.number_format),
+            language.tokens.to_formatted_string(&self.number_format),
         )
     }
 
@@ -203,7 +205,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             language
                 .children
                 .values()
@@ -227,6 +229,7 @@ impl<W: Write> Printer<W> {
                 .blanks
                 .to_formatted_string(&self.number_format)
                 .blue(),
+            language.tokens.to_formatted_string(&self.number_format).blue(),
         )
     }
 
