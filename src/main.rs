@@ -15,7 +15,7 @@ use crate::{
     cli_utils::Printer,
     consts::{
         BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FALLBACK_ROW_LEN,
-        LANGUAGE_COLUMN_WIDTH, LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH,
+        LANGUAGE_COLUMN_WIDTH, LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH, TOKENS_COLUMN_WIDTH,
     },
     input::add_input,
 };
@@ -64,17 +64,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     if cli.streaming == Some(crate::cli::Streaming::Simple) {
         println!(
-            "#{:^LANGUAGE_COLUMN_WIDTH$} {:^PATH_COLUMN_WIDTH$} {:^LINES_COLUMN_WIDTH$} {:^CODE_COLUMN_WIDTH$} {:^COMMENTS_COLUMN_WIDTH$} {:^BLANKS_COLUMN_WIDTH$}",
-            "language", "path", "lines", "code", "comments", "blanks"
+            "#{:^LANGUAGE_COLUMN_WIDTH$} {:^PATH_COLUMN_WIDTH$} {:^LINES_COLUMN_WIDTH$} {:^CODE_COLUMN_WIDTH$} {:^COMMENTS_COLUMN_WIDTH$} {:^BLANKS_COLUMN_WIDTH$} {:^TOKENS_COLUMN_WIDTH$}",
+            "language", "path", "lines", "code", "comments", "blanks", "tokens"
         );
         println!(
-            "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             (0..10).map(|_| "#").collect::<String>(),
             (0..80).map(|_| "#").collect::<String>(),
             (0..12).map(|_| "#").collect::<String>(),
             (0..12).map(|_| "#").collect::<String>(),
             (0..12).map(|_| "#").collect::<String>(),
-            (0..12).map(|_| "#").collect::<String>()
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
         );
     }
 

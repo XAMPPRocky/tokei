@@ -1,5 +1,5 @@
 use crate::consts::{
-    BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, LINES_COLUMN_WIDTH,
+    BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, LINES_COLUMN_WIDTH, TOKENS_COLUMN_WIDTH,
 };
 use crate::LanguageType;
 use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
@@ -115,12 +115,13 @@ macro_rules! display_stats {
     ($f:expr, $this:expr, $name:expr, $max:expr) => {
         write!(
             $f,
-            " {: <max$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {: <max$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             $name,
             $this.stats.lines(),
             $this.stats.code,
             $this.stats.comments,
             $this.stats.blanks,
+            $this.stats.tokens,
             max = $max
         )
     };
