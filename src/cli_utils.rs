@@ -470,7 +470,6 @@ impl<W: Write> Printer<W> {
         report: &Report,
     ) -> io::Result<()> {
         let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
-        println!("max_len: {max_len}, {name}");
         writeln!(
             self.writer,
             " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",

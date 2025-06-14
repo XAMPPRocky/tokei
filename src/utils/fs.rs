@@ -91,10 +91,7 @@ pub fn get_all_files<A: AsRef<Path>>(
         .filter_map(|e| LanguageType::from_path(e.path(), config).map(|l| (e, l)));
 
     let process = |(entry, language): (DirEntry, LanguageType)| {
-        let path = entry.into_path();
-        let path_clone = path.clone();
-        let result = language.parse(path, config);
-        println!("parse result of {path_clone:?}: {result:?}");
+        let result = language.parse(entry.into_path(), config);
         let mut lock = languages.lock();
         let entry = lock.entry(language).or_insert_with(Language::new);
         match result {
