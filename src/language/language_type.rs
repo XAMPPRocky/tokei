@@ -108,7 +108,7 @@ impl LanguageType {
                         // first character in the column, so removing starting whitespace
                         // could cause a miscount.
                         let line = if is_fortran { line } else { line.trim() };
-                        let tokens = Self::count_tokens(&String::from_utf8_lossy(line));
+                        let tokens = crate::tokens::count_tokens_from_bytes(line);
                         if line.trim().is_empty() {
                             (1, 0, 0, tokens)
                         } else if is_literate
@@ -132,11 +132,6 @@ impl LanguageType {
         } else {
             self.parse_lines(config, text, CodeStats::new(), syntax)
         }
-    }
-
-    fn count_tokens(text: &str) -> usize {
-        let bpe = tiktoken_rs::p50k_base().unwrap();
-        bpe.encode_with_special_tokens(text).len()
     }
 
     #[inline]
@@ -218,7 +213,7 @@ impl LanguageType {
             }
         }
 
-        let tokens = Self::count_tokens(&String::from_utf8_lossy(lines));
+        let tokens = crate::tokens::count_tokens_from_bytes(lines);
         stats.tokens += tokens;
 
         stats
