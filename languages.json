@@ -957,6 +957,15 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["moon"]
     },
+    "Move": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "important_syntax": ["///", "//!"],
+      "extensions": ["move"],
+      "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
+    },
     "MsBuild": {
       "name": "MSBuild",
       "multi_line_comments": [["<!--", "-->"]],
