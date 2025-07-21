@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.9](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.8...v13.0.0-alpha.9) - 2025-07-21
+
+### Other
+
+- Update README.md
+- Fix CRLF or mixed CRLF/LF line terminations in Markdown files ([#1219](https://github.com/XAMPPRocky/tokei/pull/1219))
+- Fix a minor typo in CLI help text ([#1217](https://github.com/XAMPPRocky/tokei/pull/1217))
+- Fix a missing space in CLI help text ([#1218](https://github.com/XAMPPRocky/tokei/pull/1218))
+- Relax lifetime constraints in language::embedding ([#1225](https://github.com/XAMPPRocky/tokei/pull/1225))
+
 ## [13.0.0-alpha.8](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.7...v13.0.0-alpha.8) - 2025-01-14
 
 ### Other
