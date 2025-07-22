@@ -54,6 +54,7 @@ mod consts;
 mod language;
 mod sort;
 mod stats;
+mod tokens;
 
 pub use self::{
     config::Config,
