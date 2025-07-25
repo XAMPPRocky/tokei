@@ -8,10 +8,12 @@ mod input;
 
 use std::{error::Error, io, process};
 
+use clap::Command;
+use clap_complete::{generate, Generator, Shell};
 use tokei::{Config, Languages, Sort};
 
 use crate::{
-    cli::Cli,
+    cli::{build_cli, Cli},
     cli_utils::Printer,
     consts::{
         BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FALLBACK_ROW_LEN,
@@ -20,7 +22,24 @@ use crate::{
     input::add_input,
 };
 
+fn print_completions<G: Generator>(generator: G, cmd: &mut Command) {
+    generate(
+        generator,
+        cmd,
+        cmd.get_name().to_string(),
+        &mut io::stdout(),
+    );
+}
+
 fn main() -> Result<(), Box<dyn Error>> {
+    let matches = build_cli().get_matches();
+
+    if let Some(generator) = matches.get_one::<Shell>("gencompletions").copied() {
+        let mut cmd = build_cli();
+        eprintln!("Generating completion file for {generator}...");
+        print_completions(generator, &mut cmd);
+    }
+
     let mut cli = Cli::from_args();
 
     if cli.print_languages {
