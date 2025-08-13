@@ -1917,6 +1917,12 @@
       "name": "Verilog Args File",
       "extensions": ["irunargs", "xrunargs"]
     },
+    "Veryl": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["veryl"]
+    },
     "Vhdl": {
       "name": "VHDL",
       "line_comment": ["--"],
