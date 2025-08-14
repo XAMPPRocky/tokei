@@ -37,7 +37,7 @@
       "name": "APL",
       "line_comment": ["⍝"],
       "extensions": ["apl", "aplf", "apls"],
-      "quotes": [["'", "'"]],
+      "quotes": [["'", "'"]]
     },
     "Arduino": {
       "name": "Arduino C++",
@@ -181,7 +181,7 @@
       "name": "BQN",
       "line_comment": ["#"],
       "extensions": ["bqn"],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
     "BrightScript": {
       "quotes": [["\\\"", "\\\""]],
@@ -1146,6 +1146,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["nextflow", "nf"]
+    },
+    "Nickel": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["m%\\\"", "\\\"%"], ["-s%\\\"", "\\\"%"]],
+      "extensions": ["ncl"]
     },
     "Nim": {
       "line_comment": ["#"],
