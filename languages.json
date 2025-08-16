@@ -1762,7 +1762,7 @@
     "Tex": {
       "name": "TeX",
       "line_comment": ["%"],
-      "extensions": ["tex", "sty"]
+      "extensions": ["tex", "sty", "dtx", "ins"]
     },
     "Text": {
       "name": "Plain Text",
