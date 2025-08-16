@@ -667,7 +667,7 @@
     "Go": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
+      "quotes": [["\\\"", "\\\""], ["`", "`"]],
       "extensions": ["go"]
     },
     "Gohtml": {
