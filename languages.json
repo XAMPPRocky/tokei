@@ -364,6 +364,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["cu"]
     },
+    "CudaHeader": {
+      "name": "CUDA Header",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["cuh"]
+    },
     "Cue": {
       "name": "CUE",
       "line_comment": ["//"],
