@@ -107,6 +107,7 @@ impl Languages {
             total.comments += language.comments;
             total.blanks += language.blanks;
             total.code += language.code;
+            total.tokens += language.tokens;
             total.inaccurate |= language.inaccurate;
             total.children.insert(*ty, language.reports.clone());
         }
