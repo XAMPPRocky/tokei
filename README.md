@@ -68,7 +68,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei has huge range of languages, supporting over **150** languages, and
   their various extensions.
 
-- Tokei can output in multiple formats(**CBOR**, **JSON**, **YAML**)
+- Tokei can output in multiple formats(**CBOR**, **JSON**, **YAML**, **CSV**)
   allowing Tokei's output to be easily stored, and reused. These can also be
   reused in tokei combining a previous run's statistics with another set.
 
@@ -219,12 +219,16 @@ tokei with the features flag.
 
   YAML:
   cargo install tokei --features yaml
+
+  CSV:
+  cargo install tokei --features csv
 ```
 
 **Currently supported formats**
 - JSON `--output json`
 - YAML `--output yaml`
 - CBOR `--output cbor`
+- CSV `--output csv`
 
 ```shell
 $ tokei ./foo --output json
@@ -268,7 +272,7 @@ OPTIONS:
     -i, --input <file_input>      Gives statistics from a previous tokei run. Can be given a file path, or "stdin" to
                                   read from stdin.
     -o, --output <output>         Outputs Tokei in a specific format. Compile with additional features for more format
-                                  support. [possible values: cbor, json, yaml]
+                                  support. [possible values: cbor, json, yaml, csv]
     -s, --sort <sort>             Sort languages based on column [possible values: files, lines, blanks, code, comments]
     -t, --type <types>            Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown
 
