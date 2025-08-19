@@ -42,6 +42,7 @@ json5 = "0.4.1"
 aho-corasick = "1.1.3"
 arbitrary = { version = "1.3.2", features = ["derive"] }
 clap = { version = "4", features = ["cargo", "string", "wrap_help"] }
+clap_complete = "4"
 colored = "2.1.0"
 crossbeam-channel = "0.5.13"
 encoding_rs_io = "0.1.7"

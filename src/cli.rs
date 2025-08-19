@@ -1,6 +1,7 @@
 use std::{process, str::FromStr};
 
-use clap::{crate_description, value_parser, Arg, ArgAction, ArgMatches};
+use clap::{crate_description, value_parser, Arg, ArgAction, ArgMatches, Command};
+use clap_complete::Shell;
 use colored::Colorize;
 use tokei::{Config, LanguageType, Sort};
 
@@ -54,71 +55,68 @@ pub struct Cli {
     pub number_format: num_format::CustomFormat,
 }
 
-impl Cli {
-    pub fn from_args() -> Self {
-        let matches = clap::Command::new("tokei")
-            .version(crate_version())
-            .author("Erin P. <xampprocky@gmail.com> + Contributors")
-            .about(concat!(
-                crate_description!(),
-                "\n",
-                "Support this project on GitHub Sponsors: https://github.com/sponsors/XAMPPRocky"
-            ))
-            .arg(
-                Arg::new("columns")
-                    .long("columns")
-                    .short('c')
-                    .value_parser(value_parser!(usize))
-                    .conflicts_with("output")
-                    .help(
-                        "Sets a strict column width of the output, only available for \
+pub fn build_cli() -> Command {
+    Command::new("tokei")
+        .version(crate_version())
+        .author("Erin P. <xampprocky@gmail.com> + Contributors")
+        .about(concat!(
+            crate_description!(),
+            "\n",
+            "Support this project on GitHub Sponsors: https://github.com/sponsors/XAMPPRocky"
+        ))
+        .arg(
+            Arg::new("columns")
+                .long("columns")
+                .short('c')
+                .value_parser(value_parser!(usize))
+                .conflicts_with("output")
+                .help(
+                    "Sets a strict column width of the output, only available for \
                         terminal output.",
-                    ),
-            )
-            .arg(
-                Arg::new("exclude")
-                    .long("exclude")
-                    .short('e')
-                    .action(ArgAction::Append)
-                    .help("Ignore all files & directories matching the pattern."),
-            )
-            .arg(
-                Arg::new("files")
-                    .long("files")
-                    .short('f')
-                    .action(ArgAction::SetTrue)
-                    .help("Will print out statistics on individual files."),
-            )
-            .arg(
-                Arg::new("file_input")
-                    .long("input")
-                    .short('i')
-                    .help(
-                        "Gives statistics from a previous tokei run. Can be given a file path, \
+                ),
+        )
+        .arg(
+            Arg::new("exclude")
+                .long("exclude")
+                .short('e')
+                .action(ArgAction::Append)
+                .help("Ignore all files & directories matching the pattern."),
+        )
+        .arg(
+            Arg::new("files")
+                .long("files")
+                .short('f')
+                .action(ArgAction::SetTrue)
+                .help("Will print out statistics on individual files."),
+        )
+        .arg(Arg::new("file_input").long("input").short('i').help(
+            "Gives statistics from a previous tokei run. Can be given a file path, \
                         or \"stdin\" to read from stdin.",
-                    ),
-            )
-            .arg(
-                Arg::new("hidden")
-                    .long("hidden")
-                    .action(ArgAction::SetTrue)
-                    .help("Count hidden files."),
-            )
-            .arg(
-                Arg::new("input")
-                    .num_args(1..)
-                    .conflicts_with("languages")
-                    .help("The path(s) to the file or directory to be counted. (default current directory)"),
-            )
-            .arg(
-                Arg::new("languages")
-                    .long("languages")
-                    .short('l')
-                    .action(ArgAction::SetTrue)
-                    .conflicts_with("input")
-                    .help("Prints out supported languages and their extensions."),
-            )
-            .arg(Arg::new("no_ignore")
+        ))
+        .arg(
+            Arg::new("hidden")
+                .long("hidden")
+                .action(ArgAction::SetTrue)
+                .help("Count hidden files."),
+        )
+        .arg(
+            Arg::new("input")
+                .num_args(1..)
+                .conflicts_with("languages")
+                .help(
+                "The path(s) to the file or directory to be counted. (default current directory)",
+            ),
+        )
+        .arg(
+            Arg::new("languages")
+                .long("languages")
+                .short('l')
+                .action(ArgAction::SetTrue)
+                .conflicts_with("input")
+                .help("Prints out supported languages and their extensions."),
+        )
+        .arg(
+            Arg::new("no_ignore")
                 .long("no-ignore")
                 .action(ArgAction::SetTrue)
                 .help(
@@ -126,8 +124,10 @@ impl Cli {
                         Don't respect ignore files (.gitignore, .ignore, etc.). This implies \
                         --no-ignore-parent, --no-ignore-dot, and --no-ignore-vcs.\
                     ",
-                ))
-            .arg(Arg::new("no_ignore_parent")
+                ),
+        )
+        .arg(
+            Arg::new("no_ignore_parent")
                 .long("no-ignore-parent")
                 .action(ArgAction::SetTrue)
                 .help(
@@ -135,8 +135,10 @@ impl Cli {
                         Don't respect ignore files (.gitignore, .ignore, etc.) in parent \
                         directories.\
                     ",
-                ))
-            .arg(Arg::new("no_ignore_dot")
+                ),
+        )
+        .arg(
+            Arg::new("no_ignore_dot")
                 .long("no-ignore-dot")
                 .action(ArgAction::SetTrue)
                 .help(
@@ -144,8 +146,10 @@ impl Cli {
                         Don't respect .ignore and .tokeignore files, including those in \
                         parent directories.\
                     ",
-                ))
-            .arg(Arg::new("no_ignore_vcs")
+                ),
+        )
+        .arg(
+            Arg::new("no_ignore_vcs")
                 .long("no-ignore-vcs")
                 .action(ArgAction::SetTrue)
                 .help(
@@ -153,88 +157,100 @@ impl Cli {
                         Don't respect VCS ignore files (.gitignore, .hgignore, etc.) including \
                         those in parent directories.\
                     ",
-                ))
-            .arg(
-                Arg::new("output")
-                    .long("output")
-                    .short('o')
-                    .value_parser(Format::from_str)
-                    .help(
-                        "Outputs Tokei in a specific format. Compile with additional features for \
+                ),
+        )
+        .arg(
+            Arg::new("output")
+                .long("output")
+                .short('o')
+                .value_parser(Format::from_str)
+                .help(
+                    "Outputs Tokei in a specific format. Compile with additional features for \
                         more format support.",
-                    ),
-            )
-            .arg(
-                Arg::new("streaming")
-                    .long("streaming")
-                    .value_parser(["simple", "json"])
-                    .ignore_case(true)
-                    .help(
-                        "prints the (language, path, lines, blanks, code, comments) records as \
+                ),
+        )
+        .arg(
+            Arg::new("streaming")
+                .long("streaming")
+                .value_parser(["simple", "json"])
+                .ignore_case(true)
+                .help(
+                    "prints the (language, path, lines, blanks, code, comments) records as \
                         simple lines or as Json for batch processing",
-                    ),
-            )
-            .arg(
-                Arg::new("sort")
-                    .long("sort")
-                    .short('s')
-                    .value_parser(["files", "lines", "blanks", "code", "comments"])
-                    .ignore_case(true)
-                    .conflicts_with("rsort")
-                    .help("Sort languages based on column"),
-            )
-            .arg(
-                Arg::new("rsort")
-                    .long("rsort")
-                    .short('r')
-                    .value_parser(["files", "lines", "blanks", "code", "comments"])
-                    .ignore_case(true)
-                    .conflicts_with("sort")
-                    .help("Reverse sort languages based on column"),
-            )
-            .arg(
-                Arg::new("types")
-                    .long("types")
-                    .short('t')
-                    .action(ArgAction::Append)
-                    .help(
-                        "Filters output by language type, separated by a comma. i.e. \
+                ),
+        )
+        .arg(
+            Arg::new("sort")
+                .long("sort")
+                .short('s')
+                .value_parser(["files", "lines", "blanks", "code", "comments"])
+                .ignore_case(true)
+                .conflicts_with("rsort")
+                .help("Sort languages based on column"),
+        )
+        .arg(
+            Arg::new("rsort")
+                .long("rsort")
+                .short('r')
+                .value_parser(["files", "lines", "blanks", "code", "comments"])
+                .ignore_case(true)
+                .conflicts_with("sort")
+                .help("Reverse sort languages based on column"),
+        )
+        .arg(
+            Arg::new("types")
+                .long("types")
+                .short('t')
+                .action(ArgAction::Append)
+                .help(
+                    "Filters output by language type, separated by a comma. i.e. \
                         -t=Rust,Markdown",
-                    ),
-            )
-            .arg(
-                Arg::new("compact")
-                    .long("compact")
-                    .short('C')
-                    .action(ArgAction::SetTrue)
-                    .help("Do not print statistics about embedded languages."),
-            )
-            .arg(
-                Arg::new("num_format_style")
-                    .long("num-format")
-                    .short('n')
-                    .value_parser(["commas", "dots", "plain", "underscores"])
-                    .conflicts_with("output")
-                    .help(
-                        "Format of printed numbers, i.e., plain (1234, default), \
+                ),
+        )
+        .arg(
+            Arg::new("compact")
+                .long("compact")
+                .short('C')
+                .action(ArgAction::SetTrue)
+                .help("Do not print statistics about embedded languages."),
+        )
+        .arg(
+            Arg::new("num_format_style")
+                .long("num-format")
+                .short('n')
+                .value_parser(["commas", "dots", "plain", "underscores"])
+                .conflicts_with("output")
+                .help(
+                    "Format of printed numbers, i.e., plain (1234, default), \
                         commas (1,234), dots (1.234), or underscores (1_234). Cannot be \
                         used with --output.",
-                    ),
-            )
-            .arg(
-                Arg::new("verbose")
-                    .long("verbose")
-                    .short('v')
-                    .action(ArgAction::Count)
-                    .help(
-                        "Set log output level:
+                ),
+        )
+        .arg(
+            Arg::new("verbose")
+                .long("verbose")
+                .short('v')
+                .action(ArgAction::Count)
+                .help(
+                    "Set log output level:
                         1: to show unknown file extensions,
                         2: reserved for future debugging,
                         3: enable file level trace. Not recommended on multiple files",
-                    ),
-            )
-            .get_matches();
+                ),
+        )
+        .arg(
+            Arg::new("gencompletions")
+                .long("gencompletions")
+                .short('g')
+                .action(ArgAction::Set)
+                .value_parser(value_parser!(Shell))
+                .help("Generate completions for the specified shell."),
+        )
+}
 
+impl Cli {
+    pub fn from_args() -> Self {
+        let matches = build_cli().get_matches();
         let columns = matches.get_one::<usize>("columns").cloned();
         let files = matches.get_flag("files");
         let hidden = matches.get_flag("hidden");
