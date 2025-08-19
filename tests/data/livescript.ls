@@ -1,4 +1,4 @@
-# 28 lines, 10 code, 12 comments, 6 blanks
+# language: "livescript" 28 lines, 10 code, 12 comments, 6 blanks
 
 /*
  * /* Nested comment

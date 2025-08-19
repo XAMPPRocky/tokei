@@ -1,4 +1,4 @@
-;; 10 lines 8 code 1 comments 1 blanks
+;; language: "webassembly" 10 lines 8 code 1 comments 1 blanks
 
 (module
   (import "console" "log" (func $log (param i32 i32)))
