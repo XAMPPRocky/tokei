@@ -1,4 +1,4 @@
-/* 47 lines 37 code 3 comments 7 blanks */
+/* 46 lines 37 code 3 comments 7 blanks */
 
 import <cstdio>;
 
