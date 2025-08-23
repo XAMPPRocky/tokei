@@ -1,6 +1,6 @@
 /* 46 lines 37 code 3 comments 6 blanks */
 
-import <cardio>;
+#include <stdio.h>
 
 // bubble_sort_function
 void bubble_sort(int a[10], int n) {

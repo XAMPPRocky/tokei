@@ -332,6 +332,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["R\\\"(", ")\\\""]],
       "extensions": ["cppm", "ixx", "ccm", "mpp", "mxx", "cxxm", "hppm", "hxxm"]
     },
     "Crystal": {
