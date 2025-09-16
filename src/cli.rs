@@ -319,7 +319,7 @@ impl Cli {
         cli
     }
 
-    pub fn file_input(&self) -> Option<&str> {
+    pub fn file_input(&self) -> Option<String> {
         self.matches.get_one("file_input").cloned()
     }
 
