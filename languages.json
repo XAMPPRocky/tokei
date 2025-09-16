@@ -912,6 +912,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["k"]
     },
+    "KaitaiStructYaml": {
+      "name": "Kaitai Struct YAML",
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["ksy"]
+    },
     "KakouneScript": {
       "name": "Kakoune script",
       "line_comment": ["#"],
