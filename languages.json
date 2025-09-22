@@ -128,6 +128,12 @@
       "line_comment": ["#"],
       "extensions": ["am"]
     },
+    "AvaloniaXaml": {
+      "name": "AXAML",
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["axaml"]
+    },
     "AWK": {
       "line_comment": ["#"],
       "shebangs": ["#!/bin/awk -f"],
