@@ -1891,9 +1891,9 @@
       "extensions": ["vala"]
     },
     "VB6": {
-      "name": "VB6",
+      "name": "VB6/VBA",
       "line_comment": ["'"],
-      "extensions": ["frm", "bas", "cls"]
+      "extensions": ["frm", "bas", "cls", "ctl", "dsr"]
     },
     "VBScript": {
       "name": "VBScript",
