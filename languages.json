@@ -924,6 +924,14 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["kak"]
     },
+    "KDL": {
+      "nested": true,
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "extensions": ["kdl"],
+      "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "verbatim_quotes": [["#\\\"", "\\\"#"], ["#\\\"\\\"\\\"", "\\\"\\\"\\\"#"]]
+    },
     "Kotlin": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
