@@ -8,7 +8,7 @@ use crate::{
     cli_utils::{crate_version, parse_or_exit, NumberFormatStyle},
     consts::{
         BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, LANGUAGE_COLUMN_WIDTH,
-        LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH,
+        LINES_COLUMN_WIDTH, PATH_COLUMN_WIDTH, TOKENS_COLUMN_WIDTH,
     },
     input::Format,
 };
@@ -446,13 +446,14 @@ impl Cli {
             }),
             Some(Streaming::Simple) => Some(|l: LanguageType, e| {
                 println!(
-                    "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                    "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
                     l.name(),
                     e.name.to_string_lossy().to_string(),
                     e.stats.lines(),
                     e.stats.code,
                     e.stats.comments,
-                    e.stats.blanks
+                    e.stats.blanks,
+                    e.stats.tokens,
                 );
             }),
             _ => None,
