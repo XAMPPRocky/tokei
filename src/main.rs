@@ -30,7 +30,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let config = cli.override_config(Config::from_config_files());
     let mut languages = Languages::new();
 
-    if let Some(input) = cli.file_input() {
+    if let Some(input) = cli.file_input().as_ref() {
         if !add_input(input, &mut languages) {
             Cli::print_input_parse_failure(input);
             process::exit(1);

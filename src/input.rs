@@ -162,6 +162,10 @@ supported_formats!(
     (yaml, "yaml", Yaml [serde_yaml]) =>
         serde_yaml::from_str,
         serde_yaml::to_string,
+
+    (csv, "csv", Csv [csv]) =>
+        serialize_csv::from_str,
+        serialize_csv::to_string,
 );
 
 pub fn add_input(input: &str, languages: &mut Languages) -> bool {
@@ -202,6 +206,271 @@ pub fn add_input(input: &str, languages: &mut Languages) -> bool {
 
 fn convert_input(contents: &str) -> Option<LanguageMap> {
     self::Format::parse(contents)
+}
+
+#[cfg(feature = "csv")]
+mod serialize_csv {
+    //! CSV serialization
+    //!
+    //! Linearizes hierarchical blob structures into flat CSV format.
+    //!
+    //! Files contain Reports with CodeStats that have nested blobs:
+    //!
+    //! ```
+    //! README.md (Markdown)
+    //!   └─ Rust (code block)
+    //!       └─ Markdown (comment nested within Rust)
+    //! ```
+    //!
+    //! are flattened using `nested` column:
+    //!
+    //! | File      | Language | Nested          | Lines | Code | Comments | Blanks |
+    //! |-----------|----------|-----------------|-------|------|----------|--------|
+    //! | README.md | Markdown | ""              | 100   | 80   | 15       | 5      |
+    //! | README.md | Markdown | "Rust"          | 50    | 45   | 3        | 2      |
+    //! | README.md | Markdown | "Rust,Markdown" | 20    | 18   | 1        | 1      |
+    //!
+    //! using depth-first traversal of the CodeStats blob tree.
+
+    use std::collections::hash_map::Entry;
+    use std::collections::BTreeMap;
+    use std::collections::HashMap;
+    use std::error::Error;
+    use std::path::PathBuf;
+
+    use super::LanguageMap;
+    use super::Output;
+    use serde::Deserialize;
+    use serde::Deserializer;
+    use serde::Serialize;
+    use tokei::CodeStats;
+    use tokei::Language;
+    use tokei::LanguageType;
+    use tokei::Report;
+
+    /// CSV record for language statistics.
+    ///
+    /// Represents either:
+    /// - Primary file stats (nested = empty)  
+    /// - Nested blob stats (nested = path to blob)
+    #[derive(Debug, Serialize, Deserialize)]
+    #[serde(rename_all = "PascalCase")]
+    struct Record {
+        file: PathBuf,
+        /// File's primary language (constant for all blobs)
+        language: LanguageType,
+        /// Comma-separated nested path (e.g., "Rust,Markdown")
+        #[serde(
+            serialize_with = "Record::serialize_nested_langs",
+            deserialize_with = "Record::deserialize_nested_langs"
+        )]
+        nested: Vec<LanguageType>,
+        lines: usize,
+        code: usize,
+        comments: usize,
+        blanks: usize,
+        /// Accuracy flag
+        inaccurate: bool,
+    }
+
+    impl Record {
+        fn new(
+            file: PathBuf,
+            language: LanguageType,
+            nested: Vec<LanguageType>,
+            inaccurate: bool,
+            stats: &CodeStats,
+        ) -> Self {
+            Self {
+                file,
+                language,
+                nested,
+                lines: stats.lines(),
+                code: stats.code,
+                comments: stats.comments,
+                blanks: stats.blanks,
+                inaccurate,
+            }
+        }
+
+        fn serialize_nested_langs<S>(
+            nested: &[LanguageType],
+            serializer: S,
+        ) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer,
+        {
+            if nested.is_empty() {
+                return serializer.serialize_str("");
+            }
+            let s = nested
+                .iter()
+                .map(LanguageType::to_string)
+                .collect::<Vec<String>>()
+                .join(",");
+            serializer.serialize_str(&s)
+        }
+
+        fn deserialize_nested_langs<'de, D>(deserializer: D) -> Result<Vec<LanguageType>, D::Error>
+        where
+            D: Deserializer<'de>,
+        {
+            let s = String::deserialize(deserializer)?;
+            let s = s.trim();
+
+            if s.is_empty() {
+                return Ok(Vec::new());
+            }
+
+            s.split(',')
+                .map(|x| {
+                    LanguageType::from_name(x.trim())
+                        .ok_or_else(|| serde::de::Error::custom(format!("Unknown language {x}")))
+                })
+                .collect()
+        }
+
+        fn to_code_stats(&self) -> CodeStats {
+            let mut cs = CodeStats::new();
+
+            cs.blanks = self.blanks;
+            cs.code = self.code;
+            cs.comments = self.comments;
+
+            cs
+        }
+
+        fn to_report(&self) -> Report {
+            let mut report = Report::new(self.file.clone());
+            report.stats += self.to_code_stats();
+            report
+        }
+    }
+
+    /// Recursively serializes blob tree to CSV records.
+    ///
+    /// Depth-first traversal maintaining current path in `nested` vector.
+    fn serialize_blobs(
+        csv: &mut csv::Writer<Vec<u8>>,
+        file: &PathBuf,
+        primary: LanguageType,
+        nested: &mut Vec<LanguageType>,
+        blobs: &BTreeMap<LanguageType, CodeStats>,
+    ) -> Result<(), Box<dyn Error>> {
+        for (lang_type, stats) in blobs {
+            nested.push(*lang_type);
+
+            csv.serialize(Record::new(
+                file.clone(),
+                primary,
+                nested.clone(),
+                false,
+                stats,
+            ))?;
+
+            serialize_blobs(csv, file, primary, nested, &stats.blobs)?;
+            nested.pop();
+        }
+
+        Ok(())
+    }
+
+    pub(super) fn to_string(output: &Output) -> Result<String, Box<dyn Error>> {
+        let mut csv = csv::Writer::from_writer(vec![]);
+
+        for (lang_type, lang) in &output.languages {
+            for report in &lang.reports {
+                csv.serialize(Record::new(
+                    report.name.clone(),
+                    *lang_type,
+                    Vec::new(),
+                    lang.inaccurate,
+                    &report.stats,
+                ))?;
+                let mut nested = Vec::new();
+                serialize_blobs(
+                    &mut csv,
+                    &report.name,
+                    *lang_type,
+                    &mut nested,
+                    &report.stats.blobs,
+                )?;
+            }
+        }
+
+        Ok(String::from_utf8(csv.into_inner()?)?)
+    }
+
+    /// Parses CSV string into Output structure
+    ///
+    /// Reconstructs hierarchical blob structure from linearized CSV.
+    ///
+    /// Steps:
+    /// 1. Parse CSV records, group by file
+    /// 2. Use `nested` field as navigation path to rebuild blob tree
+    /// 3. Sort by original order, aggregate statistics
+    ///
+    /// Example (simplified):
+    ///
+    /// | File      | Language | Nested          | Lines |
+    /// |-----------|----------|-----------------|-------|
+    /// | README.md | Markdown | ""              | 100   |
+    /// | README.md | Markdown | "Rust"          | 50    |
+    /// | README.md | Markdown | "Rust,Markdown" | 20    |
+    ///
+    /// becomes:
+    ///
+    /// ```
+    /// README.md (Markdown) {
+    ///   stats: 100 lines
+    ///   blobs: {
+    ///     Rust: {
+    ///       stats: 50 lines  
+    ///       blobs: { Markdown: { 20 lines } }
+    ///     }
+    ///   }
+    /// }
+    /// ```
+    pub(super) fn from_str(s: &str) -> Result<Output, Box<dyn Error>> {
+        let mut csv = csv::Reader::from_reader(s.as_bytes());
+        let mut files: HashMap<PathBuf, (usize, LanguageType, Report)> = HashMap::new();
+
+        // Parse CSV records and group by file
+        for (idx, record) in csv.deserialize::<Record>().enumerate() {
+            let record = record?;
+            match files.entry(record.file.clone()) {
+                Entry::Occupied(mut entry) => {
+                    let (_, _, report) = entry.get_mut();
+
+                    // Navigate blob tree path, create missing nodes
+                    let stats = record.nested.iter().fold(&mut report.stats, |stats, lang| {
+                        stats.blobs.entry(*lang).or_default()
+                    });
+                    *stats += record.to_code_stats();
+                }
+                Entry::Vacant(entry) => {
+                    entry.insert((idx, record.language, record.to_report()));
+                }
+            }
+        }
+
+        let mut languages = LanguageMap::new();
+        let mut totals = Language::new();
+
+        // Sort by original order and aggregate
+        let mut sorted_files: Vec<_> = files.into_values().collect();
+        sorted_files.sort_unstable_by_key(|(idx, _, _)| *idx);
+
+        for (_, lang_type, report) in sorted_files {
+            totals.add_report(report.clone());
+            languages.entry(lang_type).or_default().add_report(report);
+        }
+
+        languages.values_mut().for_each(Language::total);
+        totals.total();
+
+        Ok(Output { languages, totals })
+    }
 }
 
 #[cfg(test)]
