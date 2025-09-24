@@ -1,0 +1,24 @@
+// 24 lines 14 code 6 comments 4 blanks
+
+/// Module A
+module ModuleA (
+    i_clk: input  clock, /// Clock
+    i_rst: input  reset, /// Reset
+    i_dat: input  logic,
+    o_dat: output logic,
+) {
+    // 
+    always_ff {
+        if_reset { // /*
+            o_dat = 0; // */
+        } else {
+
+            o_dat += i_dat;
+        }
+    }
+
+    /* /* */ */
+
+    /*
+    */
+}
