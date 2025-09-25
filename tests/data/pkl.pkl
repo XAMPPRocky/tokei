@@ -1,0 +1,32 @@
+// 32 lines 14 code 11 comments 7 blanks
+/// Doc comments
+/// not_a_real = "assignment"
+/// Pkl docs: <https://pkl-lang.org>
+module example.MyAppConfig
+
+/* Multiline comment on one line */
+local function myFunction() = new {
+    string = """
+      Everything in here is a string.
+      /* not a comment */
+      // not a comment
+      """
+
+    other = #"Everything in here is a string. Quotes like " don't start a new string "#
+
+    // comment
+
+    a = 4 // /*
+    b = 5
+    c = 6 // */
+
+    /*
+    * Multiline comment on multiple lines
+    */
+}
+
+/// The hostname for the application
+host: String = "foo"
+
+/// The port to listen on
+port: UInt16(this > 1000) = 1001
