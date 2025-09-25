@@ -313,11 +313,6 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["cfc"]
     },
-    "Coq": {
-      "quotes": [["\\\"", "\\\""]],
-      "multi_line_comments": [["(*", "*)"]],
-      "extensions": ["v"]
-    },
     "Cpp": {
       "name": "C++",
       "line_comment": ["//"],
@@ -1526,6 +1521,11 @@
       ],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["roc"]
+    },
+     "Rocq": {
+      "quotes": [["\\\"", "\\\""]],
+      "multi_line_comments": [["(*", "*)"]],
+      "extensions": ["v"]
     },
     "RON": {
       "name": "Rusty Object Notation",
