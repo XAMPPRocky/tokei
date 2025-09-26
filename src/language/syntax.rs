@@ -476,9 +476,9 @@ impl SyntaxCounter {
                     end_of_code += 1;
                 }
                 let block_contents = &lines[start_of_code..end_of_code];
-                warn!("JavaScript in Bruno: {:?}", String::from_utf8_lossy(block_contents));
+                trace!("JavaScript in Bruno: {:?}", String::from_utf8_lossy(block_contents));
                 let stats = LanguageType::JavaScript.parse_from_slice(
-                    block_contents.trim_first_and_last_line_of_whitespace(),
+                    block_contents.trim(),
                     config,
                 );
                 trace!("-> stats: {:?}", stats);
