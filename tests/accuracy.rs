@@ -85,4 +85,37 @@ mod config {
     }
 }
 
+mod no_comments {
+    use tokei::*;
+
+    #[test]
+    fn bruno() {
+        let mut languages = Languages::new();
+        let config = Config::default();
+
+        languages.get_statistics(&["tests/no_comments/bruno.bru"], &[], &config);
+
+        if languages.len() != 1 {
+            panic!(
+                "wrong languages detected: expected just Bruno, found {:?}",
+                languages.into_iter().collect::<Vec<_>>()
+            );
+        }
+
+        let (_, language) = languages.into_iter().next().unwrap();
+
+        assert_eq!(language.lines(), 27);
+        assert_eq!(language.blanks, 6);
+        assert_eq!(language.comments, 0);
+        assert_eq!(language.code, 21);
+
+        let scripts = &language.children[&LanguageType::JavaScript][0];
+        assert_eq!(scripts.stats.lines(), 12);
+        assert_eq!(scripts.stats.blanks, 1);
+        assert_eq!(scripts.stats.comments, 0);
+        assert_eq!(scripts.stats.code, 11);
+    }
+}
+
+
 include!(concat!(env!("OUT_DIR"), "/tests.rs"));
