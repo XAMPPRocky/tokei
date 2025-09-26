@@ -1,3 +1,4 @@
+use std::io::BufRead;
 use std::sync::Arc;
 
 use aho_corasick::AhoCorasick;
@@ -6,10 +7,7 @@ use grep_searcher::LineStep;
 use log::Level::Trace;
 use once_cell::sync::Lazy;
 
-use super::embedding::{
-    RegexCache, RegexFamily, ENDING_LF_BLOCK_REGEX, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE,
-    END_TEMPLATE,
-};
+use super::embedding::{RegexCache, RegexFamily, ENDING_BRUNO_REGEX, ENDING_LF_BLOCK_REGEX, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE, END_TEMPLATE};
 use crate::LanguageType::LinguaFranca;
 use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
 
@@ -62,6 +60,7 @@ pub(crate) enum LanguageContext {
         language: LanguageType,
     },
     Rust,
+    Bruno
 }
 
 #[derive(Clone, Debug)]
@@ -462,6 +461,26 @@ impl SyntaxCounter {
 
                 Some(FileContext::new(
                     LanguageContext::LinguaFranca,
+                    end_of_code,
+                    stats,
+                ))
+            }
+            RegexFamily::Bruno(bru) => {
+                let opening_tag = bru.starts_in_range(start, end)?;
+                let start_of_code = opening_tag.end();
+                // let end_of_code = lines.lines().filter_map(Result::ok).take_while(|l| l.trim_end() != "}").map(|l| l.len() + 1).sum();
+                let closing_tag = ENDING_BRUNO_REGEX.find(&lines[start_of_code..]);
+                let end_of_code = closing_tag.map_or_else(|| lines.len(), |tag| start_of_code + tag.start());
+                let block_contents = &lines[start_of_code..end_of_code];
+                warn!("JavaScript in Bruno: {:?}", String::from_utf8_lossy(block_contents));
+                let stats = LanguageType::JavaScript.parse_from_slice(
+                    block_contents.trim_first_and_last_line_of_whitespace(),
+                    config,
+                );
+                trace!("-> stats: {:?}", stats);
+
+                Some(FileContext::new(
+                    LanguageContext::Bruno,
                     end_of_code,
                     stats,
                 ))
