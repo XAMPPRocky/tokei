@@ -22,7 +22,7 @@ pub static ENDING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\s
 pub static STARTING_LF_BLOCK_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"\{="#).unwrap());
 pub static ENDING_LF_BLOCK_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"=}"#).unwrap());
 
-pub static STARTING_BRUNO_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^script:[^{]+ \{"#).unwrap());
+pub static STARTING_BRUNO_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"^(script:[^{]+|tests) \{"#).unwrap());
 pub static ENDING_BRUNO_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"\n}"#).unwrap());
 
 /// A memory of a regex matched.

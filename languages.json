@@ -196,7 +196,7 @@
     },
     "Bruno": {
       "name": "Bruno",
-      "important_syntax": ["script:"],
+      "important_syntax": ["script:", "tests"],
       "quotes": [["\\\"", "\\\""]],
       "doc_quotes": [["'''", "'''"]],
       "extensions": ["bru"]
