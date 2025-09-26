@@ -194,6 +194,13 @@
       "line_comment": ["'", "REM"],
       "extensions": ["brs"]
     },
+    "Bruno": {
+      "name": "Bruno",
+      "important_syntax": ["script:"],
+      "quotes": [["\\\"", "\\\""]],
+      "doc_quotes": [["'''", "'''"]],
+      "extensions": ["bru"]
+    },
     "C": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
