@@ -117,5 +117,4 @@ mod no_comments {
     }
 }
 
-
 include!(concat!(env!("OUT_DIR"), "/tests.rs"));
