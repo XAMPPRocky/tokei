@@ -468,9 +468,13 @@ impl SyntaxCounter {
             RegexFamily::Bruno(bru) => {
                 let opening_tag = bru.starts_in_range(start, end)?;
                 let start_of_code = opening_tag.end();
-                // let end_of_code = lines.lines().filter_map(Result::ok).take_while(|l| l.trim_end() != "}").map(|l| l.len() + 1).sum();
                 let closing_tag = ENDING_BRUNO_REGEX.find(&lines[start_of_code..]);
-                let end_of_code = closing_tag.map_or_else(|| lines.len(), |tag| start_of_code + tag.start());
+                let mut end_of_code = closing_tag.map_or_else(|| lines.len(), |tag| start_of_code + tag.start());
+                if end_of_code < lines.len() {
+                    // count the newline after the closing squiggle bracket as part of the code block
+                    // otherwise, tokei adds a blank line to the count for every code block!
+                    end_of_code += 1;
+                }
                 let block_contents = &lines[start_of_code..end_of_code];
                 warn!("JavaScript in Bruno: {:?}", String::from_utf8_lossy(block_contents));
                 let stats = LanguageType::JavaScript.parse_from_slice(
