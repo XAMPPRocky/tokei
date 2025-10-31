@@ -40,8 +40,7 @@ impl LanguageType {
         }
     }
 
-    pub(crate) fn is_fortran(self) -> bool {
-        self == LanguageType::FortranModern ||
+    pub(crate) fn is_fixed_form_fortran(self) -> bool {
         self == LanguageType::FortranLegacy
     }
 
