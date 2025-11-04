@@ -1,4 +1,9 @@
-use std::{collections::BTreeMap, path::Path};
+use std::{
+    collections::BTreeMap,
+    path::{Path, PathBuf},
+};
+
+use gix_attributes::{self, parse::Kind};
 
 use ignore::{overrides::OverrideBuilder, DirEntry, WalkBuilder, WalkState::Continue};
 
@@ -10,6 +15,12 @@ use crate::{
 };
 
 const IGNORE_FILE: &str = ".tokeignore";
+const GITATTRIBUTES: &str = ".gitattributes";
+const LINGUIST_IGNORES: &[&str] = &[
+    "linguist-vendored",
+    "linguist-generated",
+    "linguist-documentation",
+];
 
 pub fn get_all_files<A: AsRef<Path>>(
     paths: &[A],
@@ -20,26 +31,36 @@ pub fn get_all_files<A: AsRef<Path>>(
     let languages = parking_lot::Mutex::new(languages);
     let (tx, rx) = crossbeam_channel::unbounded();
 
-    let mut paths = paths.iter();
-    let mut walker = WalkBuilder::new(paths.next().unwrap());
+    let mut paths_iter = paths.iter();
+    let mut walker = WalkBuilder::new(paths_iter.next().unwrap());
 
-    for path in paths {
+    for path in paths_iter {
         walker.add(path);
-    }
-
-    if !ignored_directories.is_empty() {
-        let mut overrides = OverrideBuilder::new(".");
-
-        for ignored in ignored_directories {
-            rs_error!(overrides.add(&format!("!{}", ignored)));
-        }
-
-        walker.overrides(overrides.build().expect("Excludes provided were invalid"));
     }
 
     let ignore = config.no_ignore.map(|b| !b).unwrap_or(true);
     let ignore_dot = ignore && config.no_ignore_dot.map(|b| !b).unwrap_or(true);
+    let ignore_parent = ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true);
     let ignore_vcs = ignore && config.no_ignore_vcs.map(|b| !b).unwrap_or(true);
+    let ignore_linguist = ignore && config.no_ignore_linguist.map(|b| !b).unwrap_or(true);
+
+    let mut overrides = OverrideBuilder::new(".");
+    if !ignored_directories.is_empty() {
+        for ignored in ignored_directories {
+            rs_error!(overrides.add(&flip_rule(ignored)));
+        }
+    }
+    if !ignore_linguist {
+        get_linguist_overrides(&mut overrides, paths, ignore_parent);
+    }
+    match overrides.build() {
+        Ok(overrides) => {
+            walker.overrides(overrides);
+        }
+        Err(err) => {
+            error!("Error reading overrides: {err}");
+        }
+    };
 
     // Custom ignore files always work even if the `ignore` option is false,
     // so we only add if that option is not present.
@@ -53,7 +74,7 @@ pub fn get_all_files<A: AsRef<Path>>(
         .git_ignore(ignore_vcs)
         .hidden(config.hidden.map(|b| !b).unwrap_or(true))
         .ignore(ignore_dot)
-        .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true));
+        .parents(ignore_parent);
 
     walker.build_parallel().run(move || {
         let tx = tx.clone();
@@ -116,12 +137,53 @@ pub fn get_all_files<A: AsRef<Path>>(
     }
 }
 
+pub(crate) fn get_linguist_overrides<A: AsRef<Path>>(
+    overrides: &mut OverrideBuilder,
+    paths: &[A],
+    ignore_parent: bool,
+) {
+    let gitattribute_files: Vec<PathBuf> = paths
+        .iter()
+        .flat_map(|path| {
+            if ignore_parent {
+                vec![path.as_ref()]
+            } else {
+                path.as_ref().ancestors().collect::<Vec<&Path>>()
+            }
+        })
+        .map(|dir| dir.join(GITATTRIBUTES))
+        .filter(|candidate| candidate.exists())
+        .collect();
+
+    for file in gitattribute_files {
+        let content = rs_error!(std::fs::read(&file));
+        for assignment in gix_attributes::parse(&content) {
+            let (kind, attributes, __line_number) = rs_error!(assignment);
+            if attributes.filter_map(Result::ok).any(|attr| {
+                LINGUIST_IGNORES
+                    .iter()
+                    .any(|lin| *lin == attr.name.as_str())
+            }) {
+                if let Kind::Pattern(pattern) = kind {
+                    rs_error!(overrides.add(&flip_rule(rs_error!(str::from_utf8(&pattern.text)))));
+                }
+            }
+        }
+    }
+}
+
 pub(crate) fn get_extension(path: &Path) -> Option<String> {
     path.extension().map(|e| e.to_string_lossy().to_lowercase())
 }
 
 pub(crate) fn get_filename(path: &Path) -> Option<String> {
     path.file_name().map(|e| e.to_string_lossy().to_lowercase())
+}
+
+pub(crate) fn flip_rule(rule: &str) -> String {
+    rule.strip_prefix('!')
+        .map(|x| x.to_owned())
+        .unwrap_or(format!("!{}", rule))
 }
 
 #[cfg(test)]
