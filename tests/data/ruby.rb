@@ -1,4 +1,4 @@
-# 20 lines 9 code 8 comments 3 blanks
+# language: "ruby" 20 lines 9 code 8 comments 3 blanks
 x = 3
 if x < 2
   p = "Smaller"

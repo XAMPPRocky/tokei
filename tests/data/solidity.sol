@@ -1,4 +1,4 @@
-// 14 lines 6 code 7 comments 1 blanks
+// language: "solidity" 14 lines 6 code 7 comments 1 blanks
 pragma solidity >=0.4.22 <0.6.0;
 
 // Comment line

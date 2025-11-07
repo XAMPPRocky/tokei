@@ -1,4 +1,4 @@
-// 142 lines 123 code 17 comments 2 blanks
+// language: "stan" 142 lines 123 code 17 comments 2 blanks
 // Example code from https://github.com/TheEconomist/us-potus-model/blob/85be55ae7b0bc68cb155a9ca975e155837eb4851/scripts/model/poll_model_2020.stan
 data{
   int N_national_polls;    // Number of polls

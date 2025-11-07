@@ -6,12 +6,13 @@ use std::fs;
 
 use once_cell::sync::Lazy;
 use regex::Regex;
-use tokei::{Config, Languages};
+use tokei::{Config, Languages, LanguageType};
 
 static LINES: Lazy<Regex> = Lazy::new(|| Regex::new(r"\d+ lines").unwrap());
 static CODE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\d+ code").unwrap());
 static COMMENTS: Lazy<Regex> = Lazy::new(|| Regex::new(r"\d+ comments").unwrap());
 static BLANKS: Lazy<Regex> = Lazy::new(|| Regex::new(r"\d+ blanks").unwrap());
+static LANGUAGE: Lazy<Regex> = Lazy::new(|| Regex::new(r#"language: "([^"]+)"#).unwrap());
 
 macro_rules! get_digit {
     ($regex:expr, $text:expr) => {{
@@ -23,6 +24,13 @@ macro_rules! get_digit {
             .unwrap()
             .parse::<usize>()
             .unwrap()
+    }};
+}
+
+macro_rules! get_language {
+    ($text:expr) => {{
+        let matched = LANGUAGE.captures(&$text).expect("Couldn't find language");
+        matched.get(1).unwrap().as_str().parse::<LanguageType>().unwrap()
     }};
 }
 
