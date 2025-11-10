@@ -50,7 +50,7 @@ pub fn get_all_files<A: AsRef<Path>>(
             rs_error!(overrides.add(&flip_rule(ignored)));
         }
     }
-    if !ignore_linguist {
+    if ignore_linguist {
         get_linguist_overrides(&mut overrides, paths, ignore_parent);
     }
     match overrides.build() {
@@ -192,7 +192,7 @@ mod tests {
 
     use tempfile::TempDir;
 
-    use super::IGNORE_FILE;
+    use super::{GITATTRIBUTES, IGNORE_FILE};
     use crate::{
         config::Config,
         language::{languages::Languages, LanguageType},
@@ -503,6 +503,41 @@ mod tests {
         assert!(languages.get(LANGUAGE).is_none());
 
         config.no_ignore_vcs = Some(true);
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn no_ignore_linguist() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        fs::write(
+            dir.path().join(GITATTRIBUTES),
+            format!("{} linguist-generated", IGNORE_PATTERN),
+        )
+        .unwrap();
+        fs::write(dir.path().join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+        dbg!(config.no_ignore_linguist);
+
+        assert!(languages.get(LANGUAGE).is_none());
+
+        config.no_ignore_linguist = Some(true);
 
         super::get_all_files(
             &[dir.path().to_str().unwrap()],
