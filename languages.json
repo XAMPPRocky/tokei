@@ -541,7 +541,7 @@
     "Fennel" : {
       "line_comment": [";", ";;"],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["fnl"]
+      "extensions": ["fnl", "fnlm"]
     },
     "Fish": {
       "shebangs": ["#!/bin/fish"],
