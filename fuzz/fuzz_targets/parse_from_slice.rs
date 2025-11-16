@@ -23,6 +23,7 @@ pub fn parse_from_slice(input: FuzzInput, check_total: bool) {
         no_ignore_parent: None,
         no_ignore_dot: None,
         no_ignore_vcs: None,
+        no_ignore_linguist: None,
         sort: None,
         types: None,
         for_each_fn: None,

@@ -38,6 +38,9 @@ pub struct Config {
     /// Don't respect VCS ignore files (.gitignore, .hgignore, etc.), including those in
     /// parent directories. *Default:* `false`.
     pub no_ignore_vcs: Option<bool>,
+    /// Don't respect linguist-vendored, linguist-generated, and linguist-documentation statements,
+    /// including those in parent directories. *Default:* `false`
+    pub no_ignore_linguist: Option<bool>,
     /// Whether to treat doc strings in languages as comments.  *Default:*
     /// `false`.
     pub treat_doc_strings_as_comments: Option<bool>,
@@ -135,6 +138,9 @@ impl Config {
             no_ignore_vcs: current_dir
                 .no_ignore_vcs
                 .or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
+            no_ignore_linguist: current_dir
+                .no_ignore_linguist
+                .or(home_dir.no_ignore_linguist.or(conf_dir.no_ignore_linguist)),
         }
     }
 }
