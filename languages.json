@@ -148,7 +148,6 @@
       "extensions": ["bal"]
     },
     "Bash": {
-      "name": "BASH",
       "shebangs": ["#!/bin/bash"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
