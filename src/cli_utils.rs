@@ -265,10 +265,10 @@ impl<W: Write> Printer<W> {
 
     fn print_code_stats(
         &mut self,
-        language_type: LanguageType,
+        language_name: &str,
         stats: &[CodeStats],
     ) -> io::Result<()> {
-        self.print_language_name(false, &language_type.to_string(), Some(" |-"))?;
+        self.print_language_name(false, language_name, Some(" |-"))?;
         let mut code = 0;
         let mut comments = 0;
         let mut blanks = 0;
@@ -295,9 +295,9 @@ impl<W: Write> Printer<W> {
     }
 
     fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
-        for (language, reports) in &parent.children {
+        for (language_name, reports) in &parent.children {
             self.print_code_stats(
-                *language,
+                language_name,
                 &reports
                     .iter()
                     .map(|r| r.stats.summarise())

@@ -20,8 +20,9 @@ pub struct Language {
     pub comments: usize,
     /// A collection of statistics of individual files.
     pub reports: Vec<Report>,
-    /// A map of any languages found in the reports.
-    pub children: BTreeMap<LanguageType, Vec<Report>>,
+    /// A map of any languages found in the reports (embedded languages like Rust in Markdown).
+    /// Keys are language names as strings.
+    pub children: BTreeMap<String, Vec<Report>>,
     /// Whether this language had problems with file parsing
     pub inaccurate: bool,
 }
@@ -52,7 +53,10 @@ impl Language {
             let mut new_report = Report::new(report.name.clone());
             new_report.stats = stats.clone();
 
-            self.children.entry(*lang).or_default().push(new_report);
+            self.children
+                .entry(lang.to_string())
+                .or_default()
+                .push(new_report);
         }
 
         self.reports.push(report);
