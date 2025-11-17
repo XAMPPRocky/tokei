@@ -52,11 +52,12 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
+    pub classifications: Option<Vec<String>>,
 }
 
 impl Cli {
-    pub fn from_args() -> Self {
-        let matches = clap::Command::new("tokei")
+    fn build_command() -> clap::Command {
+        clap::Command::new("tokei")
             .version(crate_version())
             .author("Erin P. <xampprocky@gmail.com> + Contributors")
             .styles(clap_cargo::style::CLAP_STYLING)
@@ -234,8 +235,24 @@ impl Cli {
                         3: enable file level trace. Not recommended on multiple files",
                     ),
             )
-            .get_matches();
+            .arg(
+                Arg::new("classifier")
+                    .long("classify")
+                    .short('k')
+                    .action(ArgAction::Append)
+                    .help(
+                        "Classify files into categories via glob pattern. Format:
+- <CategoryName>:<pattern> (applies to files from all languages)
+- <Language>:<CategoryName>:<pattern> (matches only that language)
+- <FolderName> (shorthand for <FolderName>:<FolderName>/**/*, \
+i.e. adding a category for all files in that particular folder)
+E.g., --classify Tests:**/*.test.js or --classify \
+JavaScript:Benchmarks:**/*_bench.* or --classify tests",
+                    ),
+            )
+    }
 
+    fn from_matches(matches: ArgMatches) -> Self {
         let columns = matches.get_one::<usize>("columns").cloned();
         let files = matches.get_flag("files");
         let hidden = matches.get_flag("hidden");
@@ -244,7 +261,6 @@ impl Cli {
         let no_ignore_dot = matches.get_flag("no_ignore_dot");
         let no_ignore_vcs = matches.get_flag("no_ignore_vcs");
         let print_languages = matches.get_flag("languages");
-        let verbose = matches.get_count("verbose") as u64;
         let compact = matches.get_flag("compact");
         let types = matches.get_many("types").map(|e| {
             e.flat_map(|x: &String| {
@@ -294,7 +310,9 @@ impl Cli {
             .cloned()
             .map(|arg0: std::string::String| parse_or_exit::<Streaming>(&arg0));
 
-        crate::cli_utils::setup_logger(verbose);
+        let classifications = matches
+            .get_many::<String>("classifier")
+            .map(|values| values.map(|s| s.to_string()).collect());
 
         let cli = Cli {
             matches,
@@ -313,11 +331,31 @@ impl Cli {
             types,
             compact,
             number_format,
+            classifications,
         };
 
         debug!("CLI Config: {:#?}", cli);
 
         cli
+    }
+
+    pub fn from_args() -> Self {
+        let matches = Self::build_command().get_matches();
+        // setup logger here and not in from_args_with, as setting it up
+        // multiple times in tests will panic
+        let verbose = matches.get_count("verbose") as u64;
+        crate::cli_utils::setup_logger(verbose);
+        Self::from_matches(matches)
+    }
+
+    #[cfg(test)]
+    fn from_args_with<I, T>(args: I) -> Self
+    where
+        I: IntoIterator<Item = T>,
+        T: Into<std::ffi::OsString> + Clone,
+    {
+        let matches = Self::build_command().try_get_matches_from(args).unwrap();
+        Self::from_matches(matches)
     }
 
     pub fn file_input(&self) -> Option<String> {
@@ -488,5 +526,60 @@ Or use the 'all' feature:
                 all = self::Format::all_feature_names().join(",")
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_classify_flag_single_pattern() {
+        let cli = Cli::from_args_with(&["tokei", "--classify", "Tests:**/*.test.*", "."]);
+
+        assert!(cli.classifications.is_some());
+        let classifications = cli.classifications.unwrap();
+        assert_eq!(classifications.len(), 1);
+        assert_eq!(classifications[0], "Tests:**/*.test.*");
+    }
+
+    #[test]
+    fn test_classify_flag_multiple_patterns() {
+        let cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "Tests:**/*.test.*",
+            "--classify",
+            "Benchmarks:**/*_bench.*",
+            ".",
+        ]);
+
+        assert!(cli.classifications.is_some());
+        let classifications = cli.classifications.unwrap();
+        assert_eq!(classifications.len(), 2);
+        assert_eq!(classifications[0], "Tests:**/*.test.*");
+        assert_eq!(classifications[1], "Benchmarks:**/*_bench.*");
+    }
+
+    #[test]
+    fn test_classify_flag_language_specific() {
+        let cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "JavaScript:Benchmarks:**/*_bench.js",
+            ".",
+        ]);
+
+        assert!(cli.classifications.is_some());
+        let classifications = cli.classifications.unwrap();
+        assert_eq!(classifications.len(), 1);
+        assert_eq!(classifications[0], "JavaScript:Benchmarks:**/*_bench.js");
+    }
+
+    #[test]
+    fn test_classify_flag_not_provided() {
+        let cli = Cli::from_args_with(&["tokei", "."]);
+
+        assert!(cli.classifications.is_none());
     }
 }
