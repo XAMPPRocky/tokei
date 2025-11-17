@@ -448,6 +448,7 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
     /// * `no_ignore_dot`
     /// * `no_ignore_vcs`
     /// * `types`
+    /// * `classifications`
     pub fn override_config(&mut self, mut config: Config) -> Config {
         config.hidden = if self.hidden {
             Some(true)
@@ -498,6 +499,7 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
         };
 
         config.types = self.types.take().or(config.types);
+        config.classifications = self.classifications.take().or(config.classifications);
 
         config
     }
@@ -581,5 +583,76 @@ mod tests {
         let cli = Cli::from_args_with(&["tokei", "."]);
 
         assert!(cli.classifications.is_none());
+    }
+
+    #[test]
+    fn test_classifications_flow_from_cli_to_config() {
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "Tests:**/*.test.*",
+            "--classify",
+            "Generated:**/*.generated.*",
+            ".",
+        ]);
+
+        // Verify CLI has the classifications
+        assert!(cli.classifications.is_some());
+        let cli_classifications = cli.classifications.as_ref().unwrap();
+        assert_eq!(cli_classifications.len(), 2);
+
+        // Create an empty config
+        let config = Config::default();
+        assert!(config.classifications.is_none());
+
+        // Override config with CLI values
+        let config = cli.override_config(config);
+
+        // Verify classifications flowed to config
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*");
+        assert_eq!(config_classifications[1], "Generated:**/*.generated.*");
+    }
+
+    #[test]
+    fn test_cli_classifications_override_config_classifications() {
+        let mut cli = Cli::from_args_with(&["tokei", "--classify", "Tests:**/*.test.*", "."]);
+
+        // Create a config with different classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["OldPattern:**/*.old.*".to_string()]);
+
+        // Override config with CLI values (CLI should win)
+        let config = cli.override_config(config);
+
+        // Verify CLI classifications replaced config classifications
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 1);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*");
+    }
+
+    #[test]
+    fn test_config_classifications_preserved_when_no_cli_override() {
+        let mut cli = Cli::from_args_with(&["tokei", "."]);
+
+        // Create a config with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec![
+            "Tests:**/*.test.*".to_string(),
+            "Generated:**/*.gen.*".to_string(),
+        ]);
+
+        // Override config with CLI values (no CLI classifications provided)
+        let config = cli.override_config(config);
+
+        // Verify config classifications are preserved
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*");
+        assert_eq!(config_classifications[1], "Generated:**/*.gen.*");
     }
 }
