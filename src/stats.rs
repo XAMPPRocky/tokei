@@ -75,6 +75,10 @@ pub struct Report {
     pub stats: CodeStats,
     /// File name.
     pub name: PathBuf,
+    /// Classification category for this file (e.g., "Tests", "Generated", "Benchmarks").
+    /// If None, the file is not classified.
+    #[serde(default)]
+    pub classification: Option<String>,
 }
 
 impl Report {
@@ -139,5 +143,16 @@ impl fmt::Display for Report {
             formatted.push_str(&name[from..]);
             display_stats!(f, self, formatted, max_len)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn report_default_classification_is_none() {
+        let report = Report::new(PathBuf::from("test.js"));
+        assert_eq!(report.classification, None);
     }
 }
