@@ -1042,6 +1042,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["lucius"]
     },
+    "M1Assembly": {
+      "name": "M1 Assembly",
+      "extensions": ["m1"],
+      "line_comment": ["#", ";"],
+      "quotes": [["\\\"", "\\\""]]
+    },
     "M4": {
       "extensions": ["m4"],
       "line_comment": ["#", "dnl"],

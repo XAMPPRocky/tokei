@@ -455,6 +455,7 @@ LLVM
 Logtalk
 Lua
 Lucius
+M1Assembly
 Madlang
 Max
 Makefile
