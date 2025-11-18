@@ -290,9 +290,9 @@ impl Cli {
         // give a useful error to the user.
         let output = matches.get_one("output").cloned();
         let streaming = matches
-            .get_one("streaming")
+            .get_one::<String>("streaming")
             .cloned()
-            .map(parse_or_exit::<Streaming>);
+            .map(|arg0: std::string::String| parse_or_exit::<Streaming>(&arg0));
 
         crate::cli_utils::setup_logger(verbose);
 
@@ -320,7 +320,7 @@ impl Cli {
         cli
     }
 
-    pub fn file_input(&self) -> Option<&str> {
+    pub fn file_input(&self) -> Option<String> {
         self.matches.get_one("file_input").cloned()
     }
 

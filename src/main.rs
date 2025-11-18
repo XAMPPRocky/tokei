@@ -31,8 +31,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut languages = Languages::new();
 
     if let Some(input) = cli.file_input() {
-        if !add_input(input, &mut languages) {
-            Cli::print_input_parse_failure(input);
+        if !add_input(&input, &mut languages) {
+            Cli::print_input_parse_failure(&input);
             process::exit(1);
         }
     }
