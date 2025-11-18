@@ -423,6 +423,9 @@ Haskell
 Haxe
 Hcl
 Hex
+Hex0
+Hex1
+Hex2
 HiCAD
 hledger
 Hlsl

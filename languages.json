@@ -748,6 +748,18 @@
       "blank": true,
       "extensions": ["hex"]
     },
+    "Hex0": {
+      "extensions": ["hex0"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex1": {
+      "extensions": ["hex1"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex2": {
+      "extensions": ["hex2"],
+      "line_comment": ["#", ";"]
+    },
     "HiCad": {
       "name": "HICAD",
       "line_comment": ["REM", "rem"],

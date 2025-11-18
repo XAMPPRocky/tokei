@@ -1,0 +1,589 @@
+# 589 lines 387 code 91 comments 111 blanks
+# SPDX-FileCopyrightText: 2016 Jeremiah Orians <jeremiah@pdp10.guru>
+# SPDX-FileCopyrightText: 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+## ELF Header
+# :ELF_base
+7F 45 4C 46        ## e_ident[EI_MAG0-3] ELF's magic number
+
+02                 ## e_ident[EI_CLASS] Indicating 64 bit
+01                 ## e_ident[EI_DATA] Indicating little endianness
+01                 ## e_ident[EI_VERSION] Indicating original elf
+
+03                 ## e_ident[EI_OSABI] Set at 3 because FreeBSD is strict
+00                 ## e_ident[EI_ABIVERSION] Set at 0 because none cares
+
+00 00 00 00 00 00 00 ## e_ident[EI_PAD]
+02 00              ## e_type Indicating Executable
+3E 00              ## e_machine Indicating AMD64
+01 00 00 00        ## e_version Indicating original elf
+
+78 00 60 00 00 00 00 00 ## e_entry Address of the entry point (Number of bytes this header is + Base Address)
+40 00 00 00 00 00 00 00 ## e_phoff Address of program header table
+00 00 00 00 00 00 00 00 ## e_shoff Address of section header table
+
+00 00 00 00        ## e_flags
+40 00              ## e_ehsize Indicating our 64 Byte header
+
+38 00              ## e_phentsize size of a program header table
+01 00              ## e_phnum number of entries in program table
+
+00 00              ## e_shentsize size of a section header table
+00 00              ## e_shnum number of entries in section table
+
+00 00              ## e_shstrndx index of the section names
+
+## Program Header
+# :ELF_program_headers
+01 00 00 00             ## p_type
+07 00 00 00             ## ph_flags: PF-X|PF-W|PF-R = 7
+00 00 00 00 00 00 00 00 ## p_offset
+
+00 00 60 00 00 00 00 00 ## p_vaddr
+00 00 60 00 00 00 00 00 ## p_physaddr
+
+EF 05 00 00 00 00 00 00 ## p_filesz
+EF 05 00 00 00 00 00 00 ## p_memsz
+
+01 00 00 00 00 00 00 00 ## Required alignment
+
+# :ELF_text
+
+# Where the ELF Header is going to hit
+# Simply jump to _start
+# Our main function
+
+	# Register usage:
+	# RAX, RDX, RSI, RDI => Temps
+	# R15 => Flag
+	# R14 => High bits
+	# R13 => IP
+	# R12 => MALLOC
+	# R11 => HEAD
+
+	# Struct format: (size 24)
+	# NEXT => 0
+	# TARGET => 8
+	# NAME => 16
+
+# :_start
+	48C7C7 00000000             ; mov_rdi, %0                 # Get current pointer
+	E8 %w                       ; call %malloc                # Get current HEAP
+	4889C7                      ; mov_rdi,rax                 # Using current
+	4989C4                      ; mov_r12,rax                 # Setup MALLOC
+	4881C7 00008000             ; add_rdi, %8388608           # Create space for temp [8MB]
+	E8 %w                       ; call %malloc                # Give ourselves 8192000 bytes to work with
+
+	4C8925 %T                   ; mov_[rip+DWORD],r12 %scratch # Allocate space for scratch area
+	4981C4 00080000             ; add_r12, %0x800             # 2 KiB of scratch
+
+	58                          ; pop_rax                     # Get the number of arguments
+	5F                          ; pop_rdi                     # Get the program name
+	5F                          ; pop_rdi                     # Get the actual input name
+	48C7C6 00000000             ; mov_rsi, %0                 # prepare read_only
+	48C7C0 02000000             ; mov_rax, %2                 # the syscall number for open()
+	0F05                        ; syscall                     # Now open that damn file
+	4989C1                      ; mov_r9,rax                  # Preserve the file pointer we were given
+
+	5F                          ; pop_rdi                     # Get the actual output name
+	48C7C6 41020000             ; mov_rsi, %577               # Prepare file as O_WRONLY|O_CREAT|O_TRUNC
+	48C7C2 C0010000             ; mov_rdx, %448               # Prepare file as RWX for owner only (700 in octal)
+	48C7C0 02000000             ; mov_rax, %2                 # the syscall number for open()
+	0F05                        ; syscall                     # Now open that damn file
+	4883F8 00                   ; cmp_rax, !0                 # Check for missing output
+	0F8F %R                     ; jg %_start_out              # Have real input
+	48C7C0 01000000             ; mov_rax, %1                 # Use stdout
+
+:R # :_start_out
+	4989C2                      ; mov_r10,rax                 # Preserve the file pointer we were given
+
+	E8 %H                       ; call %ClearScratch          # Zero scratch
+	49C7C7 FFFFFFFF             ; mov_r15, %-1                # Our flag for byte processing
+	49C7C6 00000000             ; mov_r14, %0                 # temp storage for the sum
+	49C7C5 00006000             ; mov_r13, %0x00600000        # Our starting IP
+	49C7C3 00000000             ; mov_r11, %0                 # HEAD = NULL
+	E8 %a                       ; call %First_pass            # Process it
+
+	# rewind input file
+	4C89CF                      ; mov_rdi,r9                  # Using our input file
+	48C7C6 00000000             ; mov_rsi, %0                 # Offset Zero
+	48C7C2 00000000             ; mov_rdx, %0                 # Whence Zero
+	48C7C0 08000000             ; mov_rax, %8                 # lseek
+	4153                        ; push_r11                    # Protect HEAD
+	0F05                        ; syscall
+	415B                        ; pop_r11                     # Restore HEAD
+
+	49C7C7 FFFFFFFF             ; mov_r15, %-1                # Our flag for byte processing
+	49C7C6 00000000             ; mov_r14, %0                 # temp storage for the sum
+	49C7C5 00006000             ; mov_r13, %0x00600000        # Our starting IP
+	E8 %k                       ; call %Second_pass           # Process it
+
+	E9 %v                       ; jmp %Done
+
+:a # :First_pass
+	E8 %x                       ; call %Read_byte
+
+	# Deal with EOF
+	4883F8 FC                   ; cmp_rax, !-4
+	0F84 %i                     ; je %First_pass_done
+
+	# Check for :
+	4883F8 3A                   ; cmp_rax, !0x3A
+	0F85 %b                     ; jne %First_pass_0
+
+	# Deal with label
+	E9 %C                       ; jmp %StoreLabel
+
+:b # :First_pass_0
+	# Check for !
+	4883F8 21                   ; cmp_rax, !0x21
+	0F84 %h                     ; je %First_pass_pointer
+
+	# Check for @
+	4883F8 40                   ; cmp_rax, !0x40
+	0F84 %h                     ; je %First_pass_pointer
+
+	# Check for $
+	4883F8 24                   ; cmp_rax, !0x24
+	0F84 %h                     ; je %First_pass_pointer
+
+	# Check for %
+	4883F8 25                   ; cmp_rax, !0x25
+	0F84 %h                     ; je %First_pass_pointer
+
+	# Check for &
+	4883F8 26                   ; cmp_rax, !0x26
+	0F84 %h                     ; je %First_pass_pointer
+
+	# Deal with everything else
+	E8 %j                       ; call %hex                   # Process our char
+
+	# Deal with EOF
+	4883F8 FC                   ; cmp_rax, !-4
+	0F84 %i                     ; je %First_pass_done
+
+	# deal with -1 values
+	4883F8 00                   ; cmp_rax, !0
+	0F8C %a                     ; jl %First_pass
+
+	# deal with toggle
+	4983FF 00                   ; cmp_r15, !0
+	0F84 %c                     ; je %First_pass_1
+	4983C5 01                   ; add_r13, !1                 # Increment IP
+
+:c # :First_pass_1
+	49F7D7                      ; not_r15
+	E9 %a                       ; jmp %First_pass
+
+:d # :Update_Pointer
+	# Check for !
+	4883F8 21                   ; cmp_rax, !0x21
+	0F84 %g                     ; je %Update_Pointer_1
+
+	# Check for @
+	4883F8 40                   ; cmp_rax, !0x40
+	0F84 %f                     ; je %Update_Pointer_2
+
+	# Check for $
+	4883F8 24                   ; cmp_rax, !0x24
+	0F84 %f                     ; je %Update_Pointer_2
+
+	# Check for %
+	4883F8 25                   ; cmp_rax, !0x25
+	0F84 %e                     ; je %Update_Pointer_4
+
+	# Check for &
+	4883F8 26                   ; cmp_rax, !0x26
+	0F84 %e                     ; je %Update_Pointer_4
+
+	# deal with bad input
+	E8 %Q                       # call %fail
+
+:e # :Update_Pointer_4
+	4983C5 02                   ; add_r13, !2                 # Increment IP
+:f # :Update_Pointer_2
+	4983C5 01                   ; add_r13, !1                 # Increment IP
+:g # :Update_Pointer_1
+	4983C5 01                   ; add_r13, !1                 # Increment IP
+	C3                          ; ret
+
+:h # :First_pass_pointer
+	# Deal with Pointer to label
+	E8 %d                       ; call %Update_Pointer        # Increment IP
+	488B1D %T                   ; mov_rbx,[rip+DWORD] %scratch # Using scratch
+	E8 %A                       ; call %consume_token         # Read token
+	E8 %H                       ; call %ClearScratch          # Throw away token
+	4883F8 3E                   ; cmp_rax, !0x3E              # check for '>'
+	0F85 %a                     ; jne %First_pass             # Loop again
+
+	# Deal with %label>label case
+	488B1D %T                   ; mov_rbx,[rip+DWORD] %scratch # Write to scratch
+	E8 %A                       ; call %consume_token         # get token
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	E9 %a                       ; jmp %First_pass             # Loop again
+
+:i # :First_pass_done
+	C3                          ; ret
+
+:j # :hex
+	# deal with EOF
+	4883F8 FC                   ; cmp_rax, !-4
+	0F84 %n                     ; je %EOF
+	# deal with line comments starting with #
+	4883F8 23                   ; cmp_rax, !0x23
+	0F84 %s                     ; je %ascii_comment
+	# deal with line comments starting with ;
+	4883F8 3B                   ; cmp_rax, !0x3B
+	0F84 %s                     ; je %ascii_comment
+	# deal all ascii less than 0
+	4883F8 30                   ; cmp_rax, !0x30
+	0F8C %r                     ; jl %ascii_other
+	# deal with 0-9
+	4883F8 3A                   ; cmp_rax, !0x3A
+	0F8C %o                     ; jl %ascii_num
+	# deal with all ascii less than A
+	4883F8 41                   ; cmp_rax, !0x41
+	0F8C %r                     ; jl %ascii_other
+	# deal with A-F
+	4883F8 47                   ; cmp_rax, !0x47
+	0F8C %q                     ; jl %ascii_high
+	# deal with all ascii less than a
+	4883F8 61                   ; cmp_rax, !0x61
+	0F8C %r                     ; jl %ascii_other
+	# deal with a-f
+	4883F8 67                   ; cmp_rax, !0x67
+	0F8C %p                     ; jl %ascii_low
+	# The rest that remains needs to be ignored
+	E9 %r                       ; jmp %ascii_other
+
+:k # :Second_pass
+	E8 %x                       ; call %Read_byte
+
+	# Deal with EOF
+	4883F8 FC                   ; cmp_rax, !-4
+	0F84 %m                     ; je %Second_pass_done
+
+	# Simply drop the label
+	4883F8 3A                   ; cmp_rax, !0x3A
+	0F85 %l                     ; jne %Second_pass_0
+
+	488B1D %T                   ; mov_rbx,[rip+DWORD] %scratch # Using scratch
+	E8 %A                       ; call %consume_token         # Read token
+	E8 %H                       ; call %ClearScratch          # Throw away token
+
+	E9 %k                       ; jmp %Second_pass
+
+:l # :Second_pass_0
+	# Deal with % pointer
+	4883F8 25                   ; cmp_rax, !0x25
+	0F84 %L                     ; je %StorePointer_rel4
+
+	# Deal with @ pointer
+	4883F8 40                   ; cmp_rax, !0x40
+	0F84 %M                     ; je %StorePointer_rel2
+
+	# Deal with ! pointer
+	4883F8 21                   ; cmp_rax, !0x21
+	0F84 %N                     ; je %StorePointer_rel1
+
+	# Deal with & pointer
+	4883F8 26                   ; cmp_rax, !0x26
+	0F84 %O                     ; je %StorePointer_abs4
+
+	# Deal with $ pointer
+	4883F8 24                   ; cmp_rax, !0x24
+	0F84 %P                     ; je %StorePointer_abs2
+
+# :Second_pass_1
+	# Deal with everything else
+	E8 %j                       ; call %hex                   # Process our char
+
+	# Deal with EOF
+	4883F8 FC                   ; cmp_rax, !-4
+	0F84 %m                     ; je %Second_pass_done
+
+	# deal with -1 values
+	4883F8 00                   ; cmp_rax, !0
+	0F8C %k                     ; jl %Second_pass
+
+	# deal with toggle
+	4983FF 00                   ; cmp_r15, !0
+	0F84 %u                     ; je %print
+
+	# process first byte of pair
+	4989C6                      ; mov_r14,rax
+	49C7C7 00000000             ; mov_r15, %0
+	E9 %k                       ; jmp %Second_pass
+
+:m # :Second_pass_done
+:n # :EOF
+	C3                          ; ret
+
+:o # :ascii_num
+	83E8 30                     ; sub_rax, !0x30
+	C3                          ; ret
+:p # :ascii_low
+	83E8 57                     ; sub_rax, !0x57
+	C3                          ; ret
+:q # :ascii_high
+	83E8 37                     ; sub_rax, !0x37
+	C3                          ; ret
+:r # :ascii_other
+	48C7C0 FFFFFFFF             ; mov_rax, %-1
+	C3                          ; ret
+:s # :ascii_comment
+	E8 %x                       ; call %Read_byte
+	4883F8 0D                   ; cmp_rax, !0x0D
+	0F84 %t                     ; je %ascii_comment_cr
+	4883F8 0A                   ; cmp_rax, !0x0A
+	0F85 %s                     ; jne %ascii_comment
+:t # :ascii_comment_cr
+	48C7C0 FFFFFFFF             ; mov_rax, %-1
+	C3                          ; ret
+
+# process second byte of pair
+:u # :print
+	# update the sum and store in output
+	49C1E6 04                   ; shl_r14, !4
+	4C01F0                      ; add_rax,r14
+
+	# flip the toggle
+	49F7D7                      ; not_r15
+
+	# Print our first Hex
+	48C7C2 01000000             ; mov_rdx, %1                 # set the size of chars we want
+	E8 %z                       ; call %print_chars
+
+	4983C5 01                   ; add_r13, !1                 # Increment IP
+	E9 %k                       ; jmp %Second_pass
+
+:v # :Done
+	# program completed Successfully
+	48C7C7 00000000             ; mov_rdi, %0                 # All is well
+	48C7C0 3C000000             ; mov_rax, %0x3C              # put the exit syscall number in eax
+	0F05                        ; syscall                     # Call it a good day
+
+
+# Malloc isn't actually required if the program being built fits in the initial memory
+# However, it doesn't take much to add it.
+# Requires a value in RDI
+:w # :malloc
+	48C7C0 0C000000             ; mov_rax, %12                # the Syscall # for SYS_BRK
+	4153                        ; push_r11                    # Protect r11
+	0F05                        ; syscall                     # call the Kernel
+	415B                        ; pop_r11                     # Restore r11
+	C3                          ; ret
+
+
+:x # :Read_byte
+	# Attempt to read 1 byte from STDIN
+	48C7C2 01000000             ; mov_rdx, %1                 # set the size of chars we want
+	488D35 %S                   ; lea_rsi,[rip+DWORD] %write  # Where to put it
+	4C89CF                      ; mov_rdi,r9                  # Where are we reading from
+	48C7C0 00000000             ; mov_rax, %0                 # the syscall number for read
+	4153                        ; push_r11                    # Protect r11
+	0F05                        ; syscall                     # call the Kernel
+	415B                        ; pop_r11                     # Restore r11
+
+	4885C0                      ; test_rax,rax                # check what we got
+	0F84 %y                     ; je %Read_byte_1             # Got EOF call it done
+
+	# load byte
+	8A05 %S                     ; mov_al,[rip+DWORD] %write   # load char
+	480FB6C0                    ; movzx_rax,al                # We have to zero extend it to use it
+	C3                          ; ret
+
+# Deal with EOF
+:y # :Read_byte_1
+	48C7C0 FCFFFFFF             ; mov_rax, %-4                # Put EOF in rax
+	C3                          ; ret
+
+:z # :print_chars
+	50                          ; push_rax                    # Push address of chars onto stack
+	4889E6                      ; mov_rsi,rsp                 # What we are writing
+	4C89D7                      ; mov_rdi,r10                 # Write to target file
+	48C7C0 01000000             ; mov_rax, %1                 # the syscall number for write
+	4153                        ; push_r11                    # Protect HEAD
+	0F05                        ; syscall                     # call the Kernel
+	415B                        ; pop_r11                     # Restore HEAD
+	58                          ; pop_rax                     # deallocate stack
+	C3                          ; ret
+
+	# Receives pointer in RBX
+	# Writes out char and updates RBX
+:A # :consume_token
+	E8 %x                       ; call %Read_byte             # Consume_token
+
+	# Check for \t
+	4883F8 09                   ; cmp_rax, !0x09
+	0F84 %B                     ; je %consume_token_done
+
+	# Check for \n
+	4883F8 0A                   ; cmp_rax, !0x0A
+	0F84 %B                     ; je %consume_token_done
+
+	# Check for ' '
+	4883F8 20                   ; cmp_rax, !0x20
+	0F84 %B                     ; je %consume_token_done
+
+	# Check for '>'
+	4883F8 3E                   ; cmp_rax, !0x3E
+	0F84 %B                     ; je %consume_token_done
+
+	# Looks like we are still reading token
+	8803                        ; mov_[rbx],al                # Store char
+	4883C3 01                   ; add_rbx, !1                 # Point to next spot
+	E9 %A                       ; jmp %consume_token          # loop until done
+
+:B # :consume_token_done
+	48C7C1 00000000             ; mov_rcx, %0                 # Pad with nulls
+	48890B                      ; mov_[rbx],rcx
+	4883C3 08                   ; add_rbx, !8
+	C3                          ; ret
+
+:C # :StoreLabel
+	4C89E0                      ; mov_rax,r12                 # ENTRY
+	4981C4 18000000             ; add_r12, %24                # CALLOC
+	4C8968 08                   ; mov_[rax+BYTE],r13 !8       # ENTRY->TARGET = IP
+	4C8918                      ; mov_[rax],r11               # ENTRY->NEXT = JUMP_TABLE
+	4989C3                      ; mov_r11,rax                 # JUMP_TABLE = ENTRY
+	4D8963 10                   ; mov_[r11+BYTE],r12 !16      # ENTRY->NAME = TOKEN
+	4C89E3                      ; mov_rbx,r12                 # Write Starting after struct
+	E8 %A                       ; call %consume_token         # Collect whole string
+	4989DC                      ; mov_r12,rbx                 # Update HEAP
+	E9 %a                       ; jmp %First_pass
+
+:D # :GetTarget
+	488B3D %T                   ; mov_rdi,[rip+DWORD] %scratch # Reset scratch
+	4C89D9                      ; mov_rcx,r11                 # Grab JUMP_TABLE
+	488B71 10                   ; mov_rsi,[rcx+BYTE] !16      # I->NAME
+:E # :GetTarget_loop
+	8A06                        ; mov_al,[rsi]                # I->NAME[0]
+	8A1F                        ; mov_bl,[rdi]                # scratch[0]
+	480FB6DB                    ; movzx_rbx,bl                # Zero extend
+	480FB6C0                    ; movzx_rax,al                # Zero extend
+	38D8                        ; cmp_al,bl                   # IF TOKEN == I->NAME
+	0F85 %F                     ; jne %GetTarget_miss         # Oops
+
+	4883C6 01                   ; add_rsi, !1
+	4881C7 01000000             ; add_rdi, %1
+	3C 00                       ; cmp_al, !0
+	0F85 %E                     ; jne %GetTarget_loop         # Loop until
+	E9 %G                       ; jmp %GetTarget_done         # Match
+
+	# Miss
+:F # :GetTarget_miss
+	488B09                      ; mov_rcx,[rcx]               # I = I->NEXT
+	4883F9 00                   ; cmp_rcx, !0                 # IF NULL == I
+	0F84 %Q                     ; je %fail                    # Abort hard
+
+	488B71 10                   ; mov_rsi,[rcx+BYTE] !16      # I->NAME
+	488B3D %T                   ; mov_rdi,[rip+DWORD] %scratch # Reset scratch
+	E9 %E                       ; jmp %GetTarget_loop
+
+:G # :GetTarget_done
+	488B41 08                   ; mov_rax,[rcx+BYTE] !8       # Get address
+	C3                          ; ret
+
+:H # :ClearScratch
+	50                          ; push_rax                    # Protect against changes
+	53                          ; push_rbx                    # And overwrites
+	51                          ; push_rcx                    # While we work
+	488B1D %T                   ; mov_rbx,[rip+DWORD] %scratch # Where our scratch is
+	48C7C0 00000000             ; mov_rax, %0                 # Using null
+
+:I # :ClearScratch_loop
+	488B0B                      ; mov_rcx,[rbx]               # Get current value
+	8803                        ; mov_[rbx],al                # Because we want null
+	4883C3 01                   ; add_rbx, !1                 # Increment
+	4883F9 00                   ; cmp_rcx, !0                 # Check if we hit null
+	0F85 %I                     ; jne %ClearScratch_loop      # Keep looping
+
+	59                          ; pop_rcx                     # Don't Forget to
+	5B                          ; pop_rbx                     # Restore Damage
+	58                          ; pop_rax                     # Entirely
+	C3                          ; ret
+
+:J # :StorePointer
+	E8 %d                       ; call %Update_Pointer        # Increment IP
+	488B1D %T                   ; mov_rbx,[rip+DWORD] %scratch # Write to scratch
+	E8 %A                       ; call %consume_token         # get token
+	50                          ; push_rax                    # Protect base_sep_p
+	488B05 %T                   ; mov_rax,[rip+DWORD] %scratch # Pointer to scratch
+	E8 %D                       ; call %GetTarget             # Get address of pointer
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	4C89EA                      ; mov_rdx,r13                 # base = IP
+	5B                          ; pop_rbx                     # Restore base_sep_p
+	4883FB 3E                   ; cmp_rbx, !0x3E              # If base_sep_p == '>'
+	0F85 %K                     ; jne %StorePointer_done      # If not
+
+	# Deal with %label>label case
+	50                          ; push_rax                    # We need to preserve main target
+	488B1D %T                   ; mov_rbx,[rip+DWORD] %scratch # Write to scratch
+	E8 %A                       ; call %consume_token         # get token
+	488B05 %T                   ; mov_rax,[rip+DWORD] %scratch # Pointer to scratch
+	E8 %D                       ; call %GetTarget             # Get address of pointer
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	4889C2                      ; mov_rdx,rax                 # Use our new base
+	58                          ; pop_rax                     # Restore main target
+
+:K # :StorePointer_done
+	C3                          ; ret
+
+:L # :StorePointer_rel4
+	E8 %J                       ; call %StorePointer          # Do Common
+	4829D0                      ; sub_rax,rdx                 # target - ip
+	48C7C2 04000000             ; mov_rdx, %4                 # set the size of chars we want
+	E8 %z                       ; call %print_chars
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	E9 %k                       ; jmp %Second_pass
+
+:M # :StorePointer_rel2
+	E8 %J                       ; call %StorePointer          # Do Common
+	4829D0                      ; sub_rax,rdx                 # target - ip
+	48C7C2 02000000             ; mov_rdx, %2                 # set the size of chars we want
+	E8 %z                       ; call %print_chars
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	E9 %k                       ; jmp %Second_pass
+
+:N # :StorePointer_rel1
+	E8 %J                       ; call %StorePointer          # Do Common
+	4829D0                      ; sub_rax,rdx                 # target - ip
+	48C7C2 01000000             ; mov_rdx, %1                 # set the size of chars we want
+	E8 %z                       ; call %print_chars
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	E9 %k                       ; jmp %Second_pass
+
+:O # :StorePointer_abs4
+	E8 %J                       ; call %StorePointer          # Do Common
+	48C7C2 04000000             ; mov_rdx, %4                 # set the size of chars we want
+	E8 %z                       ; call %print_chars
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	E9 %k                       ; jmp %Second_pass
+
+:P # :StorePointer_abs2
+	E8 %J                       ; call %StorePointer          # Do Common
+	48C7C2 02000000             ; mov_rdx, %2                 # set the size of chars we want
+	E8 %z                       ; call %print_chars
+	E8 %H                       ; call %ClearScratch          # Clean up after ourselves
+	E9 %k                       ; jmp %Second_pass
+
+:Q # :fail
+	# Some shit went wrong
+	48C7C7 01000000             ; mov_rdi, %1                 # All is wrong
+	48C7C0 3C000000             ; mov_rax, %0x3C              # put the exit syscall number in eax
+	0F05                        ; syscall                     # Call it a good day
+
+
+:S # :write
+	00000000                    ; NULL
+	00000000                    ; NULL
+
+:T # :scratch
+	00000000                    ; NULL
+	00000000                    ; NULL
+
+# :ELF_end
+
