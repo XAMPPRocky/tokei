@@ -936,6 +936,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["kak"]
     },
+    "Kaem": {
+      "name": "Kaem",
+      "line_comment": ["#"],
+      "extensions": ["kaem"]
+    },
     "Kotlin": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],

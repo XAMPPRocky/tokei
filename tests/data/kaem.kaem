@@ -1,0 +1,43 @@
+# 43 lines 2 code 33 comments 8 blanks 
+#! /usr/bin/env bash
+# Mes --- Maxwell Equations of Software
+# Copyright © 2017 Jan Nieuwenhuizen <janneke@gnu.org>
+# Copyright © 2017 Jeremiah Orians
+#
+# This file is part of Mes.
+#
+# Mes is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# Mes is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Mes.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+# Can also be run by kaem or any other shell of your personal choice
+# To run in kaem simply: kaem --verbose --strict
+# Warning all binaries prior to the use of blood-elf will not be readable by
+# Objdump, you may need to use ndism or gdb to view the assembly in the binary.
+
+
+
+###############################################
+# Phase-0 Build hex0 from bootstrapped binary #
+###############################################
+./bootstrap-seeds/POSIX/AMD64/hex0-seed ./AMD64/hex0_AMD64.hex0 ./AMD64/artifact/hex0
+# hex0 should have the exact same checksum as hex0-seed as they are both supposed
+# to be built from hex0_amd64.hex0 and by definition must be identical
+
+#########################################
+# Phase-0b Build minimal kaem from hex0 #
+#########################################
+./AMD64/artifact/hex0 ./AMD64/kaem-minimal.hex0 ./AMD64/artifact/kaem-0
+# for checksum validation reasons
+
