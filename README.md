@@ -423,6 +423,9 @@ Haskell
 Haxe
 Hcl
 Hex
+Hex0
+Hex1
+Hex2
 HiCAD
 hledger
 Hlsl
@@ -444,6 +447,7 @@ Julia
 Julius
 Just
 KakouneScript
+KaemFile
 Kotlin
 Lean
 Less
@@ -455,6 +459,7 @@ LLVM
 Logtalk
 Lua
 Lucius
+M1Assembly
 Madlang
 Max
 Makefile

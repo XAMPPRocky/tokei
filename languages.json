@@ -748,6 +748,18 @@
       "blank": true,
       "extensions": ["hex"]
     },
+    "Hex0": {
+      "extensions": ["hex0"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex1": {
+      "extensions": ["hex1"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex2": {
+      "extensions": ["hex2"],
+      "line_comment": ["#", ";"]
+    },
     "HiCad": {
       "name": "HICAD",
       "line_comment": ["REM", "rem"],
@@ -924,6 +936,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["kak"]
     },
+    "Kaem": {
+      "name": "Kaem",
+      "line_comment": ["#"],
+      "extensions": ["kaem"]
+    },
     "Kotlin": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -1041,6 +1058,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["lucius"]
+    },
+    "M1Assembly": {
+      "name": "M1 Assembly",
+      "extensions": ["m1"],
+      "line_comment": ["#", ";"],
+      "quotes": [["\\\"", "\\\""]]
     },
     "M4": {
       "extensions": ["m4"],
