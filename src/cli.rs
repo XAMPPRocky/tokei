@@ -53,6 +53,7 @@ pub struct Cli {
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
     pub classifications: Option<Vec<String>>,
+    pub no_classify: bool,
 }
 
 impl Cli {
@@ -250,6 +251,13 @@ E.g., --classify Tests:**/*.test.js or --classify \
 JavaScript:Benchmarks:**/*_bench.* or --classify tests",
                     ),
             )
+            .arg(
+                Arg::new("no-classify")
+                    .long("no-classify")
+                    .short('K')
+                    .action(ArgAction::SetTrue)
+                    .help("Ignore classifications from config files"),
+            )
     }
 
     fn from_matches(matches: ArgMatches) -> Self {
@@ -314,6 +322,8 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
             .get_many::<String>("classifier")
             .map(|values| values.map(|s| s.to_string()).collect());
 
+        let no_classify = matches.get_flag("no-classify");
+
         let cli = Cli {
             matches,
             columns,
@@ -332,6 +342,7 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
             compact,
             number_format,
             classifications,
+            no_classify,
         };
 
         debug!("CLI Config: {:#?}", cli);
@@ -499,7 +510,13 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
         };
 
         config.types = self.types.take().or(config.types);
-        config.classifications = self.classifications.take().or(config.classifications);
+        // allow --no-classify to disregard classifications from config files
+        // but not CLI classifcations (from --classify)
+        config.classifications = if self.no_classify {
+            self.classifications.take()
+        } else {
+            self.classifications.take().or(config.classifications)
+        };
 
         config
     }
@@ -583,6 +600,45 @@ mod tests {
         let cli = Cli::from_args_with(&["tokei", "."]);
 
         assert!(cli.classifications.is_none());
+    }
+
+    #[test]
+    fn test_no_classify_overrides_config_classifications() {
+        // Simulate config file with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["Tests:**/*.test.*".to_string()]);
+
+        // CLI with --no-classify
+        let mut cli = Cli::from_args_with(&["tokei", "--no-classify", "."]);
+
+        let result_config = cli.override_config(config);
+
+        // Config classifications should be cleared
+        assert!(result_config.classifications.is_none());
+    }
+
+    #[test]
+    fn test_no_classify_preserves_cli_classifications() {
+        // Simulate config file with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["ConfigTests:**/*.test.*".to_string()]);
+
+        // CLI with both --no-classify and --classify
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--no-classify",
+            "--classify",
+            "CliTests:**/*_test.js",
+            ".",
+        ]);
+
+        let result_config = cli.override_config(config);
+
+        // Should have only CLI classifications, config classifications should be ignored
+        assert_eq!(
+            result_config.classifications,
+            Some(vec!["CliTests:**/*_test.js".to_string()])
+        );
     }
 
     #[test]
