@@ -15,12 +15,12 @@ use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
 
 use crate::consts::{
     BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
-    LINES_COLUMN_WIDTH,
+    LINES_COLUMN_WIDTH, TOKENS_COLUMN_WIDTH,
 };
 
-const NO_LANG_HEADER_ROW_LEN: usize = 69;
-const NO_LANG_ROW_LEN: usize = 63;
-const NO_LANG_ROW_LEN_NO_SPACES: usize = 56;
+const NO_LANG_HEADER_ROW_LEN: usize = 69 + 13;
+const NO_LANG_ROW_LEN: usize = 63 + 13;
+const NO_LANG_ROW_LEN_NO_SPACES: usize = 56 + 13;
 const IDENT_INACCURATE: &str = "(!)";
 
 pub fn crate_version() -> String {
@@ -155,13 +155,14 @@ impl<W: Write> Printer<W> {
         let files_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {:<6$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {:<7$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             "Language".bold().blue(),
             "Files".bold().blue(),
             "Lines".bold().blue(),
             "Code".bold().blue(),
             "Comments".bold().blue(),
             "Blanks".bold().blue(),
+            "Tokens".bold().blue(),
             self.columns - NO_LANG_HEADER_ROW_LEN
         )?;
         self.print_row()
@@ -183,7 +184,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             language
                 .reports
                 .len()
@@ -192,6 +193,7 @@ impl<W: Write> Printer<W> {
             language.code.to_formatted_string(&self.number_format),
             language.comments.to_formatted_string(&self.number_format),
             language.blanks.to_formatted_string(&self.number_format),
+            language.tokens.to_formatted_string(&self.number_format),
         )
     }
 
@@ -203,7 +205,7 @@ impl<W: Write> Printer<W> {
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
-            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             language
                 .children
                 .values()
@@ -227,6 +229,7 @@ impl<W: Write> Printer<W> {
                 .blanks
                 .to_formatted_string(&self.number_format)
                 .blue(),
+            language.tokens.to_formatted_string(&self.number_format).blue(),
         )
     }
 
@@ -284,12 +287,13 @@ impl<W: Write> Printer<W> {
         } else {
             writeln!(
                 self.writer,
-                " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
                 stats.len().to_formatted_string(&self.number_format),
                 (code + comments + blanks).to_formatted_string(&self.number_format),
                 code.to_formatted_string(&self.number_format),
                 comments.to_formatted_string(&self.number_format),
                 blanks.to_formatted_string(&self.number_format),
+                stats.iter().map(|s| s.tokens).sum::<usize>().to_formatted_string(&self.number_format),
             )
         }
     }
@@ -414,12 +418,13 @@ impl<W: Write> Printer<W> {
 
         writeln!(
             self.writer,
-            " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             " ",
             stats.lines().to_formatted_string(&self.number_format),
             stats.code.to_formatted_string(&self.number_format),
             stats.comments.to_formatted_string(&self.number_format),
             stats.blanks.to_formatted_string(&self.number_format),
+            stats.tokens.to_formatted_string(&self.number_format),
         )
     }
 
@@ -467,7 +472,7 @@ impl<W: Write> Printer<W> {
         let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
             name,
             report
                 .stats
@@ -479,6 +484,7 @@ impl<W: Write> Printer<W> {
                 .comments
                 .to_formatted_string(&self.number_format),
             report.stats.blanks.to_formatted_string(&self.number_format),
+            report.stats.tokens.to_formatted_string(&self.number_format),
             max = max_len
         )
     }

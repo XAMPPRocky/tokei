@@ -1,7 +1,7 @@
 // Set of common pub consts.
 
 /// Fallback row length
-pub const FALLBACK_ROW_LEN: usize = 81;
+pub const FALLBACK_ROW_LEN: usize = 81 + 13;
 
 // Column widths used for console printing.
 
@@ -25,3 +25,6 @@ pub const COMMENTS_COLUMN_WIDTH: usize = 12;
 
 /// Blanks column width
 pub const BLANKS_COLUMN_WIDTH: usize = 12;
+
+/// Tokens column width
+pub const TOKENS_COLUMN_WIDTH: usize = 12;
