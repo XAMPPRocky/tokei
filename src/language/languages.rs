@@ -83,7 +83,10 @@ impl Languages {
         config: &Config,
     ) {
         utils::fs::get_all_files(paths, ignored, &mut self.inner, config);
-        self.inner.par_iter_mut().for_each(|(_, l)| l.total());
+        let extract_classified = config.classifications.is_some();
+        self.inner
+            .par_iter_mut()
+            .for_each(|(_, l)| l.total_with_classifications(extract_classified));
     }
 
     /// Constructs a new, Languages struct. Languages is always empty and does
@@ -108,7 +111,15 @@ impl Languages {
             total.blanks += language.blanks;
             total.code += language.code;
             total.inaccurate |= language.inaccurate;
-            total.children.insert(ty.to_string(), language.reports.clone());
+
+            // Collect all reports (including classified) for this language
+            let all_reports: Vec<_> = l
+                .reports
+                .iter()
+                .chain(l.classifications.values().flat_map(|v| v.iter()))
+                .cloned()
+                .collect();
+            total.children.insert(ty.to_string(), all_reports);
         }
         total
     }
@@ -162,5 +173,80 @@ impl Deref for Languages {
 impl DerefMut for Languages {
     fn deref_mut(&mut self) -> &mut BTreeMap<LanguageType, Language> {
         &mut self.inner
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::stats::Report;
+    use std::path::PathBuf;
+
+    #[test]
+    fn test_get_statistics_separates_classifications_when_enabled() {
+        // This would be an integration test, but we can't easily test it without
+        // the full file system setup. The key is that get_statistics should call
+        // total_with_classifications(true) when config.classifications is Some
+
+        // For now, just verify the logic path exists
+        let mut languages = Languages::new();
+        let config = Config {
+            classifications: Some(vec!["Tests:**/*.test.*".to_string()]),
+            ..Config::default()
+        };
+
+        // Add a language with classified reports manually
+        let mut lang = Language::new();
+        let mut report = Report::new(PathBuf::from("test.js"));
+        report.classification = Some("Tests".to_string());
+        lang.add_report(report);
+
+        languages.inner.insert(LanguageType::JavaScript, lang);
+
+        // Should separate classifications when enabled
+        let separate = config.classifications.is_some();
+        languages
+            .inner
+            .iter_mut()
+            .for_each(|(_, l)| l.total_with_classifications(separate));
+
+        let js = languages.get(&LanguageType::JavaScript).unwrap();
+        assert_eq!(js.classifications.len(), 1);
+        assert_eq!(js.reports.len(), 0);
+    }
+
+    #[test]
+    fn test_total_file_count_includes_classified_files() {
+        let mut languages = Languages::new();
+
+        // Add Clojure with 2 unclassified files and 1 test file
+        let mut clj = Language::new();
+
+        let mut prod1 = Report::new(PathBuf::from("core.clj"));
+        prod1.stats.code = 100;
+        let mut prod2 = Report::new(PathBuf::from("util.clj"));
+        prod2.stats.code = 50;
+        let mut test1 = Report::new(PathBuf::from("core_test.clj"));
+        test1.stats.code = 100;
+        test1.classification = Some("Tests".to_string());
+
+        clj.add_report(prod1);
+        clj.add_report(prod2);
+        clj.add_report(test1);
+        clj.total_with_classifications(true);
+
+        languages.inner.insert(LanguageType::Clojure, clj);
+
+        // Get the total
+        let total = languages.total();
+
+        // Total should count ALL files including classified ones
+        // 2 unclassified + 1 test = 3 files
+        // The total Language stores all files in children, so count from there
+        let total_files: usize = total.children.values().map(|v| v.len()).sum();
+        assert_eq!(
+            total_files, 3,
+            "Total should include classified files in file count"
+        );
     }
 }

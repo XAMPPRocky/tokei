@@ -180,6 +180,13 @@ impl<W: Write> Printer<W> {
         W: Write,
     {
         self.print_language_name(language.inaccurate, name, None)?;
+        // if there's no unclassified files left for this language (that is, if
+        // all reports for this language has moved to classifications) there's
+        // no line counts to report here, just zeroes, lets do nothing instead
+        if language.reports.len() == 0 {
+            writeln!(self.writer)?;
+            return Ok(());
+        }
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
@@ -267,8 +274,15 @@ impl<W: Write> Printer<W> {
         &mut self,
         language_name: &str,
         stats: &[CodeStats],
+        is_classification: bool,
     ) -> io::Result<()> {
-        self.print_language_name(false, language_name, Some(" |-"))?;
+        let prefix = if is_classification {
+            Some(" |>")
+        } else {
+            Some(" |-")
+        };
+
+        self.print_language_name(false, language_name, prefix)?;
         let mut code = 0;
         let mut comments = 0;
         let mut blanks = 0;
@@ -294,22 +308,50 @@ impl<W: Write> Printer<W> {
         }
     }
 
-    fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
-        for (language_name, reports) in &parent.children {
+    fn print_language_total(&mut self, parent: &Language, compact: bool) -> io::Result<()> {
+        // Print embedded languages (children) - skip in compact mode
+        if !compact {
+            for (language_name, reports) in &parent.children {
+                self.print_code_stats(
+                    language_name,
+                    &reports
+                        .iter()
+                        .map(|r| r.stats.summarise())
+                        .collect::<Vec<_>>(),
+                    false,
+                )?;
+            }
+        }
+
+        // Print classifications (e.g., Tests, Generated) - always show
+        for (classification_name, reports) in &parent.classifications {
             self.print_code_stats(
-                language_name,
+                classification_name,
                 &reports
                     .iter()
                     .map(|r| r.stats.summarise())
                     .collect::<Vec<_>>(),
+                true,
             )?;
         }
+
+        // Print subtotal. We only show file count when there are
+        // classifications. This maintains the existing behavior where no totals
+        // are shown for embedded languages (as they do not represent separate
+        // files). However, when also showing classified files we should show
+        // unclassified + classified file count in the total.
         let mut subtotal = tokei::Report::new("(Total)".into());
         let summary = parent.summarise();
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
         subtotal.stats.blanks += summary.blanks;
-        self.print_report_with_name(&subtotal)?;
+
+        let file_count = if !parent.classifications.is_empty() {
+            Some(parent.file_count())
+        } else {
+            None
+        };
+        self.print_report_with_name(&subtotal, file_count)?;
 
         Ok(())
     }
@@ -325,26 +367,40 @@ impl<W: Write> Printer<W> {
     {
         let (a, b): (Vec<_>, Vec<_>) = languages
             .filter(|(_, v)| !v.is_empty())
-            .partition(|(_, l)| compact || l.children.is_empty());
+            .partition(|(_, l)| compact || (l.children.is_empty() && l.classifications.is_empty()));
         let mut first = true;
 
         for languages in &[&a, &b] {
             for &(name, language) in *languages {
-                let has_children = !(compact || language.children.is_empty());
+                // In compact mode: skip children but show classifications
+                let has_children_or_classifications = if compact {
+                    !language.classifications.is_empty()
+                } else {
+                    !(language.children.is_empty() && language.classifications.is_empty())
+                };
+
                 if first {
                     first = false;
-                } else if has_children || self.list_files {
+                } else if has_children_or_classifications || self.list_files {
                     self.print_subrow()?;
                 }
 
                 self.print_language(language, name.name())?;
-                if has_children {
-                    self.print_language_total(language)?;
+                if has_children_or_classifications {
+                    self.print_language_total(language, compact)?;
                 }
 
                 if self.list_files {
                     self.print_subrow()?;
-                    let mut reports: Vec<&Report> = language.reports.iter().collect();
+                    // unclassified files are in language.reports. If
+                    // classifications are in use, matching files have been
+                    // moved to classifications
+                    let mut reports: Vec<&Report> = language
+                        .reports
+                        .iter()
+                        .chain(language.classifications.values().flat_map(|v| v.iter()))
+                        .collect();
+
                     if !is_sorted {
                         reports.sort_by(|&a, &b| a.name.cmp(&b.name));
                     }
@@ -438,12 +494,16 @@ impl<W: Write> Printer<W> {
             subtotal.stats += stats.summarise();
         }
 
-        self.print_report_with_name(report)?;
+        self.print_report_with_name(report, None)?;
 
         Ok(())
     }
 
-    fn print_report_with_name(&mut self, report: &Report) -> io::Result<()> {
+    fn print_report_with_name(
+        &mut self,
+        report: &Report,
+        file_count: Option<usize>,
+    ) -> io::Result<()> {
         let name = report.name.to_string_lossy();
         let name_length = name.len();
 
@@ -457,7 +517,7 @@ impl<W: Write> Printer<W> {
             name
         };
 
-        self.print_report_total_formatted(formatted_name, self.path_length, report)?;
+        self.print_report_total_formatted(formatted_name, self.path_length, report, file_count)?;
 
         Ok(())
     }
@@ -467,23 +527,31 @@ impl<W: Write> Printer<W> {
         name: Cow<'_, str>,
         max_len: usize,
         report: &Report,
+        file_count: Option<usize>,
     ) -> io::Result<()> {
-        let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
+        // Calculate column widths based on whether we're showing file count
+        let (name_width, lines_column_width) = if file_count.is_some() {
+            // With file count: reduce name width, use standard lines width
+            (max_len - FILES_COLUMN_WIDTH + 1, LINES_COLUMN_WIDTH)
+        } else {
+            // Without file count: keep name width, extend lines width
+            (max_len, FILES_COLUMN_WIDTH + 6)
+        };
+        write!(self.writer, " {: <width$} ", name, width = name_width)?;
+
+        if let Some(count) = file_count {
+            let count_str = count.to_formatted_string(&self.number_format);
+            write!(self.writer, "{:>FILES_COLUMN_WIDTH$} ", count_str)?;
+        }
+
         writeln!(
             self.writer,
-            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-            name,
-            report
-                .stats
-                .lines()
-                .to_formatted_string(&self.number_format),
+            "{:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            report.stats.lines().to_formatted_string(&self.number_format),
             report.stats.code.to_formatted_string(&self.number_format),
-            report
-                .stats
-                .comments
-                .to_formatted_string(&self.number_format),
+            report.stats.comments.to_formatted_string(&self.number_format),
             report.stats.blanks.to_formatted_string(&self.number_format),
-            max = max_len
+            lines_column_width = lines_column_width
         )
     }
 
@@ -492,5 +560,155 @@ impl<W: Write> Printer<W> {
         self.print_row()?;
         self.print_language_in_print_total(&total)?;
         self.print_row()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use regex::Regex;
+    use std::path::PathBuf;
+    use tokei::{Language, LanguageType};
+
+    // Test helper functions
+
+    fn default_number_format() -> num_format::CustomFormat {
+        num_format::CustomFormat::builder()
+            .grouping(num_format::Grouping::Standard)
+            .separator("")
+            .build()
+            .unwrap()
+    }
+
+    fn create_report(path: &str, code: usize, classification: Option<&str>) -> Report {
+        let mut report = Report::new(PathBuf::from(path));
+        report.stats.code = code;
+        report.classification = classification.map(|s| s.to_string());
+        report
+    }
+
+    fn create_mixed_language() -> Language {
+        let mut lang = Language::new();
+        lang.add_report(create_report("src/main.js", 100, None));
+        lang.add_report(create_report("src/utils.js", 50, None));
+        lang.add_report(create_report("src/main.test.js", 30, Some("Tests")));
+        lang.add_report(create_report("src/utils.test.js", 20, Some("Tests")));
+        lang.total_with_classifications(true);
+        lang
+    }
+
+    fn print_language_results(lang: Language, list_files: bool, compact: bool) -> String {
+        colored::control::set_override(false);
+        let mut output = Vec::new();
+        let mut printer = Printer::new(80, list_files, &mut output, default_number_format());
+
+        let mut languages_map = std::collections::BTreeMap::new();
+        languages_map.insert(LanguageType::JavaScript, lang);
+        printer
+            .print_results(languages_map.iter().map(|(k, v)| (k, v)), compact, false)
+            .unwrap();
+
+        String::from_utf8(output).unwrap()
+    }
+
+    #[test]
+    fn test_list_files_includes_classified_files() {
+        let lang = create_mixed_language();
+        let output_str = print_language_results(lang, true, false);
+
+        // Classified files should show their classification in the Files column
+        // Format: filename, then spaces, then classification (e.g., "Tests"), then spaces, then lines number
+        let test_files_lines: Vec<&str> = output_str
+            .lines()
+            .filter(|line| line.contains("test.js"))
+            .collect();
+
+        // Check that both test files have "Tests" in their output
+        assert_eq!(test_files_lines.len(), 2, "Should have 2 test files");
+        for line in &test_files_lines {
+            assert!(
+                line.contains("Tests"),
+                "Test file should have 'Tests' classification: {}",
+                line
+            );
+        }
+
+        // Unclassified files should have no classification text, just filename then spaces then numbers
+        let files_lines: Vec<&str> = output_str
+            .lines()
+            .filter(|line| {
+                (line.contains("main.js") || line.contains("utils.js")) && !line.contains("test")
+            })
+            .collect();
+
+        assert_eq!(files_lines.len(), 2, "Should have 2 unclassified files");
+        for line in &files_lines {
+            assert!(
+                !line.contains("Tests"),
+                "Unclassified file should not have 'Tests': {}",
+                line
+            );
+        }
+    }
+
+    fn get_subtotal_line(lang: &Language) -> String {
+        print_language_results(lang.clone(), true, false)
+            .lines()
+            .find(|line| line.contains("(Total)"))
+            .expect("Should have (Total) line")
+            .to_string()
+    }
+
+    #[test]
+    fn test_subtotal_has_empty_files_column_without_classifications() {
+        let mut lang = Language::new();
+        // add a report with an embedded language blob
+        let mut main_js = create_report("src/main.js", 200, None);
+        main_js
+            .stats
+            .blobs
+            .insert(LanguageType::Markdown, CodeStats::new());
+        lang.add_report(main_js);
+        lang.total();
+        let total_line = get_subtotal_line(&lang);
+
+        // Without classifications, File count column (used to hold the class name) should be empty
+        let re = Regex::new(r"\(Total\)\s+200").unwrap();
+        assert!(
+            re.is_match(&total_line),
+            "Subtotal should match (Total) followed by whitespace and 200: {}",
+            total_line
+        );
+    }
+
+    #[test]
+    fn test_subtotal_shows_file_count_with_classifications() {
+        let lang = create_mixed_language();
+
+        let total_line = get_subtotal_line(&lang);
+
+        // With classifications, subtotal SHOULD show file count (4 total)
+        assert!(
+            total_line.contains("4"),
+            "Subtotal should show total file count with classifications: {}",
+            total_line
+        );
+    }
+
+    #[test]
+    fn test_compact_mode_shows_classifications() {
+        let mut lang = Language::new();
+        lang.add_report(create_report("src/main.js", 100, None));
+        lang.add_report(create_report("src/main.test.js", 50, Some("Tests")));
+        lang.total_with_classifications(true);
+
+        let output_str = print_language_results(lang.clone(), false, true);
+
+        // In compact mode, classifications should still be shown
+        assert!(
+            output_str.contains("Tests"),
+            "Compact mode should show classifications: {}",
+            output_str
+        );
     }
 }
