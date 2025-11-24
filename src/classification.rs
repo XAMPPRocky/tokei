@@ -18,12 +18,30 @@ impl ClassificationPattern {
     /// Parse a classification pattern string.
     ///
     /// Formats:
+    /// - Folder shorthand: `folder` (e.g., `tests` → `tests:tests/**/*`)
     /// - Global: `CategoryName:pattern` (e.g., `Tests:**/*.test.*`)
     /// - Language-specific: `Language:CategoryName:pattern` (e.g., `JavaScript:Benchmarks:**/*_bench.js`)
     pub fn parse(input: &str) -> Result<Self, String> {
+        if input.is_empty() {
+            return Err("Pattern cannot be empty".to_string());
+        }
+
         let parts: Vec<&str> = input.splitn(3, ':').collect();
 
         match parts.len() {
+            1 => {
+                // Folder shorthand: "tests" -> "tests:tests/**/*"
+                let folder = parts[0].trim_end_matches('/');
+                let pattern_str = format!("{}/**/*", folder);
+                let pattern = globset::Glob::new(&pattern_str)
+                    .map_err(|e| format!("Invalid glob pattern: {}", e))?
+                    .compile_matcher();
+                Ok(ClassificationPattern {
+                    category: folder.to_string(),
+                    language: None,
+                    pattern,
+                })
+            }
             2 => {
                 // Global pattern: CategoryName:pattern
                 let pattern = globset::Glob::new(parts[1])
@@ -48,7 +66,7 @@ impl ClassificationPattern {
                     pattern,
                 })
             }
-            _ => Err(format!("Invalid pattern format: '{}'. Expected 'Category:pattern' or 'Language:Category:pattern'", input)),
+            _ => Err(format!("Invalid pattern format: '{}'", input)),
         }
     }
 }
@@ -125,8 +143,29 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_folder_shorthand() {
+        let pattern = "tests";
+        let parsed = ClassificationPattern::parse(pattern).unwrap();
+
+        assert_eq!(parsed.category, "tests");
+        assert_eq!(parsed.language, None);
+        assert!(parsed.pattern.is_match("tests/unit/app.test.js"));
+    }
+
+    #[test]
+    fn test_parse_folder_shorthand_ending_in_slash() {
+        let pattern = "tests/";
+        let parsed = ClassificationPattern::parse(pattern).unwrap();
+
+        assert_eq!(parsed.category, "tests");
+        assert_eq!(parsed.language, None);
+        assert!(parsed.pattern.is_match("tests/unit/app.test.js"));
+    }
+
+    #[test]
     fn test_parse_invalid_format() {
-        let pattern = "InvalidPattern";
+        // Empty string should still be an error
+        let pattern = "";
         let parsed = ClassificationPattern::parse(pattern);
         assert!(parsed.is_err());
     }

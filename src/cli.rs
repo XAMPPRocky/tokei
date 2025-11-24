@@ -737,12 +737,7 @@ mod tests {
 
     #[test]
     fn test_classify_unmatched_appends_after_config() {
-        let mut cli = Cli::from_args_with(&[
-            "tokei",
-            "--classify-unmatched",
-            "PROD",
-            ".",
-        ]);
+        let mut cli = Cli::from_args_with(&["tokei", "--classify-unmatched", "PROD", "."]);
 
         // Create a config with classifications
         let mut config = Config::default();
@@ -761,12 +756,7 @@ mod tests {
 
     #[test]
     fn test_classify_unmatched_with_language_prefix() {
-        let mut cli = Cli::from_args_with(&[
-            "tokei",
-            "--classify-unmatched",
-            "C#:PROD",
-            ".",
-        ]);
+        let mut cli = Cli::from_args_with(&["tokei", "--classify-unmatched", "C#:PROD", "."]);
 
         let config = Config::default();
         let config = cli.override_config(config);
