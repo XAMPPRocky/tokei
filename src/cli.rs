@@ -44,6 +44,7 @@ pub struct Cli {
     pub no_ignore_parent: bool,
     pub no_ignore_dot: bool,
     pub no_ignore_vcs: bool,
+    pub no_ignore_linguist: bool,
     pub output: Option<Format>,
     pub streaming: Option<Streaming>,
     pub print_languages: bool,
@@ -154,6 +155,15 @@ impl Cli {
                         those in parent directories.\
                     ",
                 ))
+            .arg(Arg::new("no_ignore_linguist")
+                .long("no-ignore-linguist")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "\
+                        Don't respect linguist-vendored, linguist-generated, and linguist-documentation \
+                        statements in .gitattributes files, including those in parent directories \
+                    "
+                ))
             .arg(
                 Arg::new("output")
                     .long("output")
@@ -242,6 +252,7 @@ impl Cli {
         let no_ignore_parent = matches.get_flag("no_ignore_parent");
         let no_ignore_dot = matches.get_flag("no_ignore_dot");
         let no_ignore_vcs = matches.get_flag("no_ignore_vcs");
+        let no_ignore_linguist = matches.get_flag("no_ignore_linguist");
         let print_languages = matches.get_flag("languages");
         let verbose = matches.get_count("verbose") as u64;
         let compact = matches.get_flag("compact");
@@ -304,6 +315,7 @@ impl Cli {
             no_ignore_parent,
             no_ignore_dot,
             no_ignore_vcs,
+            no_ignore_linguist,
             output,
             streaming,
             print_languages,
@@ -408,6 +420,7 @@ impl Cli {
     /// * `no_ignore_parent`
     /// * `no_ignore_dot`
     /// * `no_ignore_vcs`
+    /// * `no_ignore_linguist`
     /// * `types`
     pub fn override_config(&mut self, mut config: Config) -> Config {
         config.hidden = if self.hidden {
@@ -438,6 +451,12 @@ impl Cli {
             Some(true)
         } else {
             config.no_ignore_vcs
+        };
+
+        config.no_ignore_linguist = if self.no_ignore_linguist {
+            Some(true)
+        } else {
+            config.no_ignore_linguist
         };
 
         config.for_each_fn = match self.streaming {

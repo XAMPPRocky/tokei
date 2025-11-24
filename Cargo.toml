@@ -65,6 +65,7 @@ regex = "1.10.6"
 serde_json = "1.0.125"
 etcetera = "0.8.0"
 table_formatter = "0.6.1"
+gix-attributes = "0.28.1"
 
 [dependencies.env_logger]
 optional = true
