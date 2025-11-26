@@ -1541,6 +1541,11 @@
       "blank": true,
       "extensions": ["rst"]
     },
+    "Robot Framework": {
+      "line_comment": ["#"],
+      "important_syntax": ["***"],
+      "extensions": ["robot", "resource"]
+    },
     "Roc": {
       "line_comment": ["#"],
       "quotes": [
