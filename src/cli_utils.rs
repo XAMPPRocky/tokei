@@ -54,12 +54,12 @@ pub fn setup_logger(verbose_option: u64) {
     builder.init();
 }
 
-pub fn parse_or_exit<T>(s: &str) -> T
+pub fn parse_or_exit<T>(s: impl AsRef<str>) -> T
 where
     T: FromStr,
     T::Err: fmt::Display,
 {
-    T::from_str(s).unwrap_or_else(|e| {
+    T::from_str(s.as_ref()).unwrap_or_else(|e| {
         eprintln!("Error:\n{}", e);
         process::exit(1);
     })
