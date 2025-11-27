@@ -572,6 +572,7 @@ VisualStudioProject
 VisualStudioSolution
 Vue
 WebAssembly
+WESL
 Wolfram
 Xaml
 XcodeConfig
