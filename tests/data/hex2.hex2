@@ -1,0 +1,110 @@
+# 110 lines 78 code 7 comments 25 blanks
+# SPDX-FileCopyrightText: 2019 Jeremiah Orians <jeremiah@pdp10.guru>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+## ELF Header
+
+:ELF_base
+7F 45 4C 46        ## e_ident[EI_MAG0-3] ELF's magic number
+
+02                 ## e_ident[EI_CLASS] Indicating 64 bit
+01                 ## e_ident[EI_DATA] Indicating little endianness
+01                 ## e_ident[EI_VERSION] Indicating original elf
+
+03                 ## e_ident[EI_OSABI] Set at 3 because FreeBSD is strict
+00                 ## e_ident[EI_ABIVERSION] Set at 0 because none cares
+
+00 00 00 00 00 00 00 ## e_ident[EI_PAD]
+02 00              ## e_type Indicating Executable
+3E 00              ## e_machine Indicating AMD64
+01 00 00 00        ## e_version Indicating original elf
+
+&_start 00 00 00 00 ## e_entry Address of the entry point (Number of bytes this header is + Base Address)
+%ELF_program_headers>ELF_base 00 00 00 00 ## e_phoff Address of program header table
+00 00 00 00 00 00 00 00 ## e_shoff Address of section header table
+
+00 00 00 00        ## e_flags
+40 00              ## e_ehsize Indicating our 64 Byte header
+
+38 00              ## e_phentsize size of a program header table
+01 00              ## e_phnum number of entries in program table
+
+00 00              ## e_shentsize size of a section header table
+00 00              ## e_shnum number of entries in section table
+
+00 00              ## e_shstrndx index of the section names
+
+## Program Header
+:ELF_program_headers
+01 00 00 00             ## p_type
+07 00 00 00             ## ph_flags: PF-X|PF-W|PF-R = 7
+00 00 00 00 00 00 00 00 ## p_offset
+
+&ELF_base 00 00 00 00 ## p_vaddr
+&ELF_base 00 00 00 00 ## p_physaddr
+
+%ELF_end>ELF_base 00 00 00 00 ## p_filesz
+%ELF_end>ELF_base 00 00 00 00 ## p_memsz
+
+01 00 00 00 00 00 00 00 ## Required alignment
+
+:ELF_text
+
+:_start
+	58                          ; pop_rax                     # Get the number of arguments
+	5F                          ; pop_rdi                     # Get the program name
+	5F                          ; pop_rdi                     # Get the actual output name
+	48C7C6 41020000             ; mov_rsi, %577               # Prepare file as O_WRONLY|O_CREAT|O_TRUNC
+	48C7C2 80010000             ; mov_rdx, %384               # Prepare file as RW for owner only (600 in octal)
+	48C7C0 02000000             ; mov_rax, %2                 # the syscall number for open()
+	0F05                        ; syscall                     # Now open that file
+	4989C7                      ; mov_r15,rax                 # Preserve the file pointer we were given
+
+	48C7C0 0C000000             ; mov_rax, %12                # the Syscall # for SYS_BRK
+	48C7C7 00000000             ; mov_rdi, %0                 # Get current brk
+	0F05                        ; syscall                     # Let the kernel do the work
+	4989C6                      ; mov_r14,rax                 # Set our malloc pointer
+
+	48C7C0 0C000000             ; mov_rax, %12                # the Syscall # for SYS_BRK
+	4C89F7                      ; mov_r14,rax                 # Using current pointer
+	4881C7 00001000             ; add_rdi, %0x100000          # Allocate 1MB
+	0F05                        ; syscall                     # Let the kernel do the work
+
+:core
+	5F                          ; pop_rdi                     # Get the actual input name
+	4883FF 00                   ; cmp_rdi, !0                 # Check for null string
+	0F84 %done                  ; je %done                    # Hit null be done
+
+	48C7C6 00000000             ; mov_rsi, %0                 # prepare read_only
+	48C7C2 00000000             ; mov_rdx, %0                 # prevent any interactions
+	48C7C0 02000000             ; mov_rax, %2                 # the syscall number for open()
+	0F05                        ; syscall                     # Now open that damn file
+	4989C5                      ; mov_r13,rax                 # Protect INPUT
+:keep
+	48C7C2 00001000             ; mov_rdx, %0x100000          # set the size of chars we want
+	4C89F6                      ; mov_rsi,r14                 # Where to put it
+	4C89EF                      ; mov_rdi,r13                 # Where are we reading from
+	48C7C0 00000000             ; mov_rax, %0                 # the syscall number for read
+	0F05                        ; syscall                     # call the Kernel
+	50                          ; push_rax                    # Protect the number of bytes read
+
+	4889C2                      ; mov_rdx,rax                 # Number of bytes to write
+	4C89F6                      ; mov_rsi,r14                 # What we are writing
+	4C89FF                      ; mov_rdi,r15                 # Write to target file
+	48C7C0 01000000             ; mov_rax, %1                 # the syscall number for write
+	0F05                        ; syscall                     # call the Kernel
+
+	58                          ; pop_rax                     # Get bytes read
+	483D 00001000               ; cmp_rax, %0x100000          # Check if buffer was fully used
+	0F84 %keep                  ; je %keep                    # Keep looping if was full
+	E9 %core                    ; jmp %core                   # Otherwise move to next file
+
+:done
+	# program completed Successfully
+	48C7C7 00000000             ; mov_rdi, %0                 # All is well
+	48C7C0 3C000000             ; mov_rax, %0x3C              # put the exit syscall number in eax
+	0F05                        ; syscall                     # Call it a good day
+
+:ELF_end
+

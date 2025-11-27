@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [13.0.0-alpha.9](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.8...v13.0.0-alpha.9) - 2025-07-21
+
+### Other
+
+- Update README.md
+- Fix CRLF or mixed CRLF/LF line terminations in Markdown files ([#1219](https://github.com/XAMPPRocky/tokei/pull/1219))
+- Fix a minor typo in CLI help text ([#1217](https://github.com/XAMPPRocky/tokei/pull/1217))
+- Fix a missing space in CLI help text ([#1218](https://github.com/XAMPPRocky/tokei/pull/1218))
+- Relax lifetime constraints in language::embedding ([#1225](https://github.com/XAMPPRocky/tokei/pull/1225))
+
 ## [13.0.0-alpha.8](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.7...v13.0.0-alpha.8) - 2025-01-14
 
 ### Other
@@ -138,7 +148,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [13.0.0-alpha.1](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.0...v13.0.0-alpha.1) - 2024-03-04
 
 ### Fixed
-- fixed language names not showing when in Light mode (light background ([#1048](https://github.com/XAMPPRocky/tokei/pull/1048))
+- fixed language names not showing when in Light mode (light background) ([#1048](https://github.com/XAMPPRocky/tokei/pull/1048))
 
 ### Other
 - Create release-plz.yaml
@@ -217,7 +227,7 @@ Tokei 12 comes with some of the biggest user facing changes since 1.0, now in
 the latest version tokei will now **analyse and count multiple languages
 embedded in your source code** as well as adding support for
 **Jupyter Notebooks**. Now for the first time is able to handle and display
-different languages contained in a single source file. This currently available
+different languages contained in a single source file. This is currently available
 for a limited set of languages, with plans to add more support for more in the
 future. The currently supported languages are;
 
@@ -461,13 +471,13 @@ notable that `scc` takes nearly 3x as long to complete on smaller codebases
 - [Tokei's README has been translated
   to chinese.](https://github.com/chinanf-boy/tokei-zh#tokei-)
 - `LanguageType` now implements `Hash`.
-- Tokei now batches it's console output, this should result in a small
+- Tokei now batches its console output, this should result in a small
   performance boost.
 - There is now a `--columns` argument for manually setting tokei's output width.
 - The `--sort` argument is now case-insensitive.
 - Tokei will now mark languages who's files failed to parse correctly as
   potentially inaccurate.
-- Due to a bug in trust-ci `x86_64-unknown-netbsd` versions are will not be
+- Due to a bug in trust-ci `x86_64-unknown-netbsd` versions will not be
   available in GitHub releases. (You will still be able to install from source.)
 - Due to toml-rs's lacking enum support the TOML output option has
   been disabled.
