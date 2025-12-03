@@ -46,6 +46,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "ArkTS": {
+      "name": "Ark TypeScript",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["ets"]
+    },
     "Arturo": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""]],
