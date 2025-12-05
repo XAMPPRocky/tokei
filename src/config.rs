@@ -52,7 +52,7 @@ pub struct Config {
     /// Whether to output only the paths for downstream batch processing
     /// *Default:* false
     #[serde(skip)]
-    /// adds a closure for each function, e.g., print the result
+    /// Adds a closure for each function, e.g., print the result
     pub for_each_fn: Option<fn(LanguageType, Report)>,
 }
 
@@ -140,7 +140,7 @@ impl Config {
 }
 
 /*
-/// Configuration for a individual [`LanguageType`].
+/// Configuration for an individual [`LanguageType`].
 ///
 /// ```
 /// use std::collections::HashMap;

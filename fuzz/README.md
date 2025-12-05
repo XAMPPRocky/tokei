@@ -8,7 +8,7 @@ To launch a fuzzing job: `cargo +nightly fuzz run <target>` - it will run until 
 
 To use multiple cores: `cargo +nightly fuzz run <target> --jobs=6`
 
-To speed things up (at the expensive of missing bugs that only manifest in larger files):
+To speed things up (at the expense of missing bugs that only manifest in larger files):
 `cargo +nightly fuzz run <target> -- -max_len=200`
 
 Available fuzz targets:

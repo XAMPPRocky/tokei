@@ -59,6 +59,7 @@ impl Cli {
         let matches = clap::Command::new("tokei")
             .version(crate_version())
             .author("Erin P. <xampprocky@gmail.com> + Contributors")
+            .styles(clap_cargo::style::CLAP_STYLING)
             .about(concat!(
                 crate_description!(),
                 "\n",

@@ -46,6 +46,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
     },
+    "ArkTS": {
+      "name": "Ark TypeScript",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["ets"]
+    },
     "Arturo": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""]],
@@ -127,6 +134,12 @@
     "Automake": {
       "line_comment": ["#"],
       "extensions": ["am"]
+    },
+    "AvaloniaXaml": {
+      "name": "AXAML",
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["axaml"]
     },
     "AWK": {
       "line_comment": ["#"],
@@ -543,7 +556,7 @@
     "Fennel" : {
       "line_comment": [";", ";;"],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["fnl"]
+      "extensions": ["fnl", "fnlm"]
     },
     "Fish": {
       "shebangs": ["#!/bin/fish"],
@@ -750,6 +763,18 @@
       "blank": true,
       "extensions": ["hex"]
     },
+    "Hex0": {
+      "extensions": ["hex0"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex1": {
+      "extensions": ["hex1"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex2": {
+      "extensions": ["hex2"],
+      "line_comment": ["#", ";"]
+    },
     "HiCad": {
       "name": "HICAD",
       "line_comment": ["REM", "rem"],
@@ -926,6 +951,11 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["kak"]
     },
+    "Kaem": {
+      "name": "Kaem",
+      "line_comment": ["#"],
+      "extensions": ["kaem"]
+    },
     "Kotlin": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -1043,6 +1073,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["lucius"]
+    },
+    "M1Assembly": {
+      "name": "M1 Assembly",
+      "extensions": ["m1"],
+      "line_comment": ["#", ";"],
+      "quotes": [["\\\"", "\\\""]]
     },
     "M4": {
       "extensions": ["m4"],
@@ -1899,9 +1935,9 @@
       "extensions": ["vala"]
     },
     "VB6": {
-      "name": "VB6",
+      "name": "VB6/VBA",
       "line_comment": ["'"],
-      "extensions": ["frm", "bas", "cls"]
+      "extensions": ["frm", "bas", "cls", "ctl", "dsr"]
     },
     "VBScript": {
       "name": "VBScript",
