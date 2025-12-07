@@ -340,6 +340,14 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["hh", "hpp", "hxx", "inl", "ipp"]
     },
+    "CppModule": {
+      "name": "C++ Module",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["R\\\"(", ")\\\""]],
+      "extensions": ["cppm", "cxxm", "c++m", "ccm", "ixx"]
+    },
     "Crystal": {
       "line_comment": ["#"],
       "shebangs": ["#!/usr/bin/crystal"],
