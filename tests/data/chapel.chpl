@@ -11,7 +11,7 @@
 
 /* Cheeky // block comments */
 
-// Caculate a factorial
+// Calculate a factorial
 proc factorial(n: int): int {
     var x = 1; // this will eventually be returned
     for i in 1..n {
