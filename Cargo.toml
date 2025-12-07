@@ -18,7 +18,7 @@ license = "MIT OR Apache-2.0"
 name = "tokei"
 readme = "README.md"
 repository = "https://github.com/XAMPPRocky/tokei.git"
-version = "13.0.0"
+version = "14.0.0"
 rust-version = "1.71"
 edition = "2021"
 
