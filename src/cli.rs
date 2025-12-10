@@ -53,6 +53,7 @@ pub struct Cli {
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
     pub classifications: Option<Vec<String>>,
+    pub classify_unmatched: Option<Vec<String>>,
     pub no_classify: bool,
 }
 
@@ -258,6 +259,17 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
                     .action(ArgAction::SetTrue)
                     .help("Ignore classifications from config files"),
             )
+            .arg(
+                Arg::new("unmatched-classifier")
+                    .long("classify-unmatched")
+                    .short('u')
+                    .action(ArgAction::Append)
+                    .help(
+                        "Classify any unmatched files into a fallback category. Format: <CategoryName> (applies to all languages) \
+                        or Language:CategoryName (matches only that language). This pattern is added with lowest priority after \
+                        all other classification patterns. E.g., --classify-unmatched PROD or --classify-unmatched C#:PROD",
+                    ),
+            )
     }
 
     fn from_matches(matches: ArgMatches) -> Self {
@@ -322,6 +334,10 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
             .get_many::<String>("classifier")
             .map(|values| values.map(|s| s.to_string()).collect());
 
+        let classify_unmatched = matches
+            .get_many::<String>("unmatched-classifier")
+            .map(|values| values.map(|s| s.to_string()).collect());
+
         let no_classify = matches.get_flag("no-classify");
 
         let cli = Cli {
@@ -342,6 +358,7 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
             compact,
             number_format,
             classifications,
+            classify_unmatched,
             no_classify,
         };
 
@@ -518,6 +535,24 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
             self.classifications.take().or(config.classifications)
         };
 
+        // Append classify-unmatched patterns last (lowest priority)
+        if let Some(unmatched) = self.classify_unmatched.take() {
+            let unmatched_patterns: Vec<String> = unmatched
+                .into_iter()
+                .map(|name| format!("{}:**/*", name))
+                .collect();
+
+            config.classifications = Some(
+                config
+                    .classifications
+                    .take()
+                    .unwrap_or_default()
+                    .into_iter()
+                    .chain(unmatched_patterns)
+                    .collect(),
+            );
+        }
+
         config
     }
 
@@ -680,14 +715,49 @@ mod tests {
         let mut config = Config::default();
         config.classifications = Some(vec!["OldPattern:**/*.old.*".to_string()]);
 
-        // Override config with CLI values (CLI should win)
+    #[test]
+    fn test_classify_unmatched_appends_after_config() {
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify-unmatched",
+            "PROD",
+            ".",
+        ]);
+
+        // Create a config with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["Tests:**/*.test.*".to_string()]);
+
+        // classify-unmatched should append a catch-all pattern after config
         let config = cli.override_config(config);
 
-        // Verify CLI classifications replaced config classifications
+        // Verify order: config patterns first, then unmatched catch-all
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*"); // Config
+        assert_eq!(config_classifications[1], "PROD:**/*"); // Unmatched catch-all
+    }
+
+    #[test]
+    fn test_classify_unmatched_with_language_prefix() {
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify-unmatched",
+            "C#:PROD",
+            ".",
+        ]);
+
+        let config = Config::default();
+        let config = cli.override_config(config);
+
+        // Verify language-specific unmatched pattern
         assert!(config.classifications.is_some());
         let config_classifications = config.classifications.unwrap();
         assert_eq!(config_classifications.len(), 1);
-        assert_eq!(config_classifications[0], "Tests:**/*.test.*");
+        assert_eq!(config_classifications[0], "C#:PROD:**/*"); // Language prefix preserved
+    }
+
     }
 
     #[test]
