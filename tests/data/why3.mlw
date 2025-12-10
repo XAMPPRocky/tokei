@@ -1,0 +1,10 @@
+(* 10 lines 3 code 6 comments 1 blanks *)
+module Exercice3
+  (* comment *)
+
+  val foo (bar) : baz
+  (* comment
+     on
+     multiple lines
+  *)
+end
