@@ -532,7 +532,16 @@ JavaScript:Benchmarks:**/*_bench.* or --classify tests",
         config.classifications = if self.no_classify {
             self.classifications.take()
         } else {
-            self.classifications.take().or(config.classifications)
+            // Prepend CLI patterns before config patterns (CLI has higher priority)
+            match (self.classifications.take(), config.classifications) {
+                (Some(mut cli), Some(mut cfg)) => {
+                    cli.append(&mut cfg); // Append config to CLI (CLI first)
+                    Some(cli)
+                }
+                (Some(cli), None) => Some(cli),
+                (None, Some(cfg)) => Some(cfg),
+                (None, None) => None,
+            }
         };
 
         // Append classify-unmatched patterns last (lowest priority)
@@ -708,12 +717,23 @@ mod tests {
     }
 
     #[test]
-    fn test_cli_classifications_override_config_classifications() {
+    fn test_cli_classifications_prepend_to_config_classifications() {
         let mut cli = Cli::from_args_with(&["tokei", "--classify", "Tests:**/*.test.*", "."]);
 
         // Create a config with different classifications
         let mut config = Config::default();
-        config.classifications = Some(vec!["OldPattern:**/*.old.*".to_string()]);
+        config.classifications = Some(vec!["ConfigPattern:**/*.old.*".to_string()]);
+
+        // CLI patterns should be prepended before config patterns (CLI has higher priority)
+        let config = cli.override_config(config);
+
+        // Verify CLI classifications come first, followed by config
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*"); // CLI first
+        assert_eq!(config_classifications[1], "ConfigPattern:**/*.old.*"); // Config second
+    }
 
     #[test]
     fn test_classify_unmatched_appends_after_config() {
@@ -758,6 +778,36 @@ mod tests {
         assert_eq!(config_classifications[0], "C#:PROD:**/*"); // Language prefix preserved
     }
 
+    #[test]
+    fn test_complete_classification_priority_order() {
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "CliPattern:**/*.cli.*",
+            "--classify-unmatched",
+            "UTILS",
+            ".",
+        ]);
+
+        // Config has its own patterns
+        let mut config = Config::default();
+        config.classifications = Some(vec![
+            "ConfigTests:**/*.test.*".to_string(),
+            "ConfigGenerated:**/*.gen.*".to_string(),
+        ]);
+
+        let config = cli.override_config(config);
+
+        // Verify complete priority order
+        assert!(config.classifications.is_some());
+        let classifications = config.classifications.unwrap();
+        assert_eq!(classifications.len(), 4);
+
+        // Priority order: CLI --classify, then config, then CLI --classify-unmatched
+        assert_eq!(classifications[0], "CliPattern:**/*.cli.*"); // CLI classify (highest)
+        assert_eq!(classifications[1], "ConfigTests:**/*.test.*"); // Config
+        assert_eq!(classifications[2], "ConfigGenerated:**/*.gen.*"); // Config
+        assert_eq!(classifications[3], "UTILS:**/*"); // CLI unmatched (lowest/fallback)
     }
 
     #[test]
