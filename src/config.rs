@@ -49,6 +49,12 @@ pub struct Config {
     pub types: Option<Vec<LanguageType>>,
     // /// A map of individual language configuration.
     // pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
+    /// File classification patterns. Each pattern is in the format
+    /// `CategoryName:pattern` (applies to all languages) or
+    /// `Language:CategoryName:pattern` (applies to specific language).
+    /// E.g. `Tests:**/*.test.*` or `JavaScript:Benchmarks:**/*_bench.js`.
+    /// *Default:* `None`.
+    pub classifications: Option<Vec<String>>,
     /// Whether to output only the paths for downstream batch processing
     /// *Default:* false
     #[serde(skip)]
@@ -120,6 +126,9 @@ impl Config {
                 .or(conf_dir.treat_doc_strings_as_comments)),
             sort: current_dir.sort.or(home_dir.sort.or(conf_dir.sort)),
             types: current_dir.types.or(home_dir.types.or(conf_dir.types)),
+            classifications: current_dir
+                .classifications
+                .or(home_dir.classifications.or(conf_dir.classifications)),
             for_each_fn: current_dir
                 .for_each_fn
                 .or(home_dir.for_each_fn.or(conf_dir.for_each_fn)),
