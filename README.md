@@ -162,14 +162,11 @@ $ tokei ./foo
 [configuration]: ./tokei.example.toml
 
 #### Multiple folders
-To have tokei report on multiple folders in the same call simply add a comma,
-or a space followed by another path.
+To have tokei report on multiple folders in the same call, simply add all the
+folders you'd like tokei to examine.
 
 ```shell
 $ tokei ./foo ./bar ./baz
-```
-```shell
-$ tokei ./foo, ./bar, ./baz
 ```
 
 #### Excluding folders
