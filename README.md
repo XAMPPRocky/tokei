@@ -562,6 +562,7 @@ VBScript
 Velocity
 Verilog
 VerilogArgsFile
+Veryl
 Vhdl
 VimScript
 VisualBasic
