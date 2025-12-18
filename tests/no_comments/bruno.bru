@@ -1,0 +1,39 @@
+meta {
+  name: Echo
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://echo.free.beeceptor.com
+  body: none
+  auth: inherit
+}
+
+headers {
+  Message: {{message}}
+}
+
+assert {
+  res.status: eq 200
+}
+
+script:pre-request {
+  let greeting = "Hello";
+  let target = "world";
+  bru.setVar("message", `${greeting}, ${target}!`);
+}
+
+tests {
+  test("Check Message header", function() {
+    expect(res.getBody().headers.Message).to.equal("Hello, world!");
+  })
+
+  test("Check HTTP method", function() {
+    expect(res.getBody().method).to.equal("GET");
+  })
+}
+
+settings {
+  encodeUrl: true
+}
