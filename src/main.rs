@@ -8,7 +8,7 @@ mod input;
 
 use std::{error::Error, io, process};
 
-use tokei::{Config, Languages, Sort};
+use tokei::{Column, Config, Languages, Sort};
 
 use crate::{
     cli::Cli,
@@ -90,6 +90,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         cli.files,
         io::BufWriter::new(io::stdout()),
         cli.number_format,
+        config.output_columns.expect("`output_columns` must be set"),
     );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
