@@ -445,6 +445,7 @@ Julius
 Just
 KakouneScript
 KaemFile
+Koka
 Kotlin
 Lean
 Less

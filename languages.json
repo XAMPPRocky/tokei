@@ -956,6 +956,13 @@
       "line_comment": ["#"],
       "extensions": ["kaem"]
     },
+    "Koka": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["kk"]
+    },
     "Kotlin": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
