@@ -19,6 +19,8 @@ use crate::{
     },
     input::add_input,
 };
+#[cfg(feature = "tokens")]
+use crate::consts::TOKENS_COLUMN_WIDTH;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let mut cli = Cli::from_args();
@@ -59,7 +61,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         .unwrap_or(FALLBACK_ROW_LEN)
         .max(FALLBACK_ROW_LEN);
 
-    if cli.streaming == Some(crate::cli::Streaming::Simple) {
+    #[cfg(feature = "tokens")]
+    if cli.streaming == Some(crate::cli::Streaming::Simple) && config.show_tokens {
+        println!(
+            "#{:^LANGUAGE_COLUMN_WIDTH$} {:^PATH_COLUMN_WIDTH$} {:^LINES_COLUMN_WIDTH$} {:^CODE_COLUMN_WIDTH$} {:^COMMENTS_COLUMN_WIDTH$} {:^BLANKS_COLUMN_WIDTH$} {:^TOKENS_COLUMN_WIDTH$}",
+            "language", "path", "lines", "code", "comments", "blanks", "tokens"
+        );
+        println!(
+            "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
+            (0..10).map(|_| "#").collect::<String>(),
+            (0..80).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>(),
+            (0..12).map(|_| "#").collect::<String>()
+        );
+    } else if cli.streaming == Some(crate::cli::Streaming::Simple) {
         println!(
             "#{:^LANGUAGE_COLUMN_WIDTH$} {:^PATH_COLUMN_WIDTH$} {:^LINES_COLUMN_WIDTH$} {:^CODE_COLUMN_WIDTH$} {:^COMMENTS_COLUMN_WIDTH$} {:^BLANKS_COLUMN_WIDTH$}",
             "language", "path", "lines", "code", "comments", "blanks"
@@ -90,6 +108,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         cli.files,
         io::BufWriter::new(io::stdout()),
         cli.number_format,
+        config.show_tokens,
     );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
@@ -111,6 +130,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Code => languages.sort_by(|a, b| b.1.code.cmp(&a.1.code)),
             Sort::Files => languages.sort_by(|a, b| b.1.reports.len().cmp(&a.1.reports.len())),
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
+            Sort::Tokens => languages.sort_by(|a, b| b.1.tokens.cmp(&a.1.tokens)),
         }
         is_sorted = true;
         if cli.sort_reverse {

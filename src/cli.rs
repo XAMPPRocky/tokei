@@ -12,6 +12,8 @@ use crate::{
     },
     input::Format,
 };
+#[cfg(feature = "tokens")]
+use crate::consts::TOKENS_COLUMN_WIDTH;
 
 /// Used for sorting languages.
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -52,6 +54,7 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
+    pub show_tokens: bool,
 }
 
 impl Cli {
@@ -179,7 +182,7 @@ impl Cli {
                 Arg::new("sort")
                     .long("sort")
                     .short('s')
-                    .value_parser(["files", "lines", "blanks", "code", "comments"])
+                    .value_parser(["files", "lines", "blanks", "code", "comments", "tokens"])
                     .ignore_case(true)
                     .conflicts_with("rsort")
                     .help("Sort languages based on column"),
@@ -188,7 +191,7 @@ impl Cli {
                 Arg::new("rsort")
                     .long("rsort")
                     .short('r')
-                    .value_parser(["files", "lines", "blanks", "code", "comments"])
+                    .value_parser(["files", "lines", "blanks", "code", "comments", "tokens"])
                     .ignore_case(true)
                     .conflicts_with("sort")
                     .help("Reverse sort languages based on column"),
@@ -209,6 +212,13 @@ impl Cli {
                     .short('C')
                     .action(ArgAction::SetTrue)
                     .help("Do not print statistics about embedded languages."),
+            )
+            .arg(
+                Arg::new("tokens")
+                    .long("tokens")
+                    .short('T')
+                    .action(ArgAction::SetTrue)
+                    .help("Count and display tokens for LLM context estimation. Requires --features tokens."),
             )
             .arg(
                 Arg::new("num_format_style")
@@ -246,6 +256,7 @@ impl Cli {
         let print_languages = matches.get_flag("languages");
         let verbose = matches.get_count("verbose") as u64;
         let compact = matches.get_flag("compact");
+        let show_tokens = matches.get_flag("tokens");
         let types = matches.get_many("types").map(|e| {
             e.flat_map(|x: &String| {
                 x.split(',')
@@ -313,6 +324,7 @@ impl Cli {
             types,
             compact,
             number_format,
+            show_tokens,
         };
 
         debug!("CLI Config: {:#?}", cli);
@@ -441,9 +453,27 @@ impl Cli {
             config.no_ignore_vcs
         };
 
+        // CLI flag overrides config file
+        if self.show_tokens {
+            config.show_tokens = true;
+        }
+
         config.for_each_fn = match self.streaming {
             Some(Streaming::Json) => Some(|l: LanguageType, e| {
                 println!("{}", serde_json::json!({"language": l.name(), "stats": e}));
+            }),
+            #[cfg(feature = "tokens")]
+            Some(Streaming::Simple) if config.show_tokens => Some(|l: LanguageType, e| {
+                println!(
+                    "{:>LANGUAGE_COLUMN_WIDTH$} {:<PATH_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
+                    l.name(),
+                    e.name.to_string_lossy().to_string(),
+                    e.stats.lines(),
+                    e.stats.code,
+                    e.stats.comments,
+                    e.stats.blanks,
+                    e.stats.tokens,
+                );
             }),
             Some(Streaming::Simple) => Some(|l: LanguageType, e| {
                 println!(

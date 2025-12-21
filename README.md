@@ -79,6 +79,9 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei comes with and without color. Set the env variable NO_COLOR to 1, and
   it'll be black and white.
 
+- Tokei can optionally count **tokens** for LLM context estimation. Build with
+  `--features tokens` to enable token counting using OpenAI's tiktoken library.
+
 ## Installation
 
 ### Package Managers
@@ -183,7 +186,7 @@ Paths to exclude can also be listed in a `.tokeignore` file, using the same
 By default tokei sorts alphabetically by language name, however using `--sort`
 tokei can also sort by any of the columns.
 
-`blanks, code, comments, lines`
+`blanks, code, comments, files, lines, tokens`
 
 ```shell
 $ tokei ./foo --sort code
@@ -214,6 +217,9 @@ tokei with the features flag.
 
   YAML:
   cargo install tokei --features yaml
+
+  TOKENS (for LLM context estimation):
+  cargo install tokei --features tokens
 ```
 
 **Currently supported formats**
@@ -264,7 +270,7 @@ OPTIONS:
                                   read from stdin.
     -o, --output <output>         Outputs Tokei in a specific format. Compile with additional features for more format
                                   support. [possible values: cbor, json, yaml]
-    -s, --sort <sort>             Sort languages based on column [possible values: files, lines, blanks, code, comments]
+    -s, --sort <sort>             Sort languages based on column [possible values: files, lines, blanks, code, comments, tokens]
     -t, --type <types>            Filters output by language type, separated by a comma. i.e. -t=Rust,Markdown
 
 ARGS:

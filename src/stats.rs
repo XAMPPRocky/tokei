@@ -4,6 +4,10 @@ use crate::consts::{
 use crate::LanguageType;
 use std::{collections::BTreeMap, fmt, ops, path::PathBuf};
 
+fn is_zero(n: &usize) -> bool {
+    *n == 0
+}
+
 /// A struct representing stats about a single blob of code.
 #[derive(Clone, Debug, Default, PartialEq, serde::Deserialize, serde::Serialize)]
 #[non_exhaustive]
@@ -16,6 +20,9 @@ pub struct CodeStats {
     pub comments: usize,
     /// Language blobs that were contained inside this blob.
     pub blobs: BTreeMap<LanguageType, CodeStats>,
+    /// The number of tokens in the blob (for LLM context estimation).
+    #[serde(default, skip_serializing_if = "is_zero")]
+    pub tokens: usize,
 }
 
 impl CodeStats {
@@ -43,6 +50,7 @@ impl CodeStats {
             summary.blanks += child_summary.blanks;
             summary.comments += child_summary.comments;
             summary.code += child_summary.code;
+            summary.tokens += child_summary.tokens;
         }
 
         summary
@@ -60,6 +68,7 @@ impl ops::AddAssign<&'_ CodeStats> for CodeStats {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.comments += rhs.comments;
+        self.tokens += rhs.tokens;
 
         for (language, stats) in &rhs.blobs {
             *self.blobs.entry(*language).or_default() += stats;

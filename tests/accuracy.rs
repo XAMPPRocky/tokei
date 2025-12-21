@@ -85,4 +85,59 @@ mod config {
     }
 }
 
+#[cfg(feature = "tokens")]
+mod tokens {
+    use tokei::*;
+
+    #[test]
+    fn stats_include_tokens_when_enabled() {
+        let mut languages = Languages::new();
+        let config = Config {
+            show_tokens: true,
+            ..Config::default()
+        };
+
+        languages.get_statistics(&["tests/data/python.py"], &[], &config);
+
+        let (_, language) = languages.into_iter().next().unwrap();
+
+        // Token count should be non-zero for any non-empty file
+        assert!(language.tokens > 0, "tokens should be counted when show_tokens is true");
+    }
+
+    #[test]
+    fn stats_exclude_tokens_when_disabled() {
+        let mut languages = Languages::new();
+        let config = Config {
+            show_tokens: false,
+            ..Config::default()
+        };
+
+        languages.get_statistics(&["tests/data/python.py"], &[], &config);
+
+        let (_, language) = languages.into_iter().next().unwrap();
+
+        // Token count should be zero when disabled (not counted)
+        assert_eq!(language.tokens, 0, "tokens should not be counted when show_tokens is false");
+    }
+
+    #[test]
+    fn json_output_contains_tokens() {
+        let mut languages = Languages::new();
+        let config = Config {
+            show_tokens: true,
+            ..Config::default()
+        };
+
+        languages.get_statistics(&["tests/data/python.py"], &[], &config);
+
+        let json = serde_json::to_string(&languages).unwrap();
+
+        // JSON should contain a tokens field with a non-zero value
+        assert!(json.contains("\"tokens\":"), "JSON output should contain tokens field");
+        // Should not just be "tokens":0 since we counted them
+        assert!(!json.contains("\"tokens\":0"), "tokens should be non-zero when counted");
+    }
+}
+
 include!(concat!(env!("OUT_DIR"), "/tests.rs"));
