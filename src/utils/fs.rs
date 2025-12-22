@@ -5,6 +5,7 @@ use ignore::{overrides::OverrideBuilder, DirEntry, WalkBuilder, WalkState::Conti
 use rayon::prelude::*;
 
 use crate::{
+    classification::{self, ClassificationPattern},
     config::Config,
     language::{Language, LanguageType},
 };
@@ -19,6 +20,21 @@ pub fn get_all_files<A: AsRef<Path>>(
 ) {
     let languages = parking_lot::Mutex::new(languages);
     let (tx, rx) = crossbeam_channel::unbounded();
+
+    // Parse classification patterns
+    let classification_patterns: Vec<ClassificationPattern> = config
+        .classifications
+        .as_ref()
+        .map(|patterns| {
+            patterns
+                .iter()
+                .filter_map(|p| ClassificationPattern::parse(p).ok())
+                .collect()
+        })
+        .unwrap_or_default();
+
+    // Keep base paths as references - classification patterns are relative to these
+    let base_paths: Vec<&Path> = paths.iter().map(|p| p.as_ref()).collect();
 
     let mut paths = paths.iter();
     let mut walker = WalkBuilder::new(paths.next().unwrap());
@@ -91,11 +107,32 @@ pub fn get_all_files<A: AsRef<Path>>(
         .filter_map(|e| LanguageType::from_path(e.path(), config).map(|l| (e, l)));
 
     let process = |(entry, language): (DirEntry, LanguageType)| {
+        // Determine classification before consuming the entry
+        let classification = if !classification_patterns.is_empty() {
+            base_paths.iter().find_map(|base| {
+                entry
+                    .path()
+                    .strip_prefix(base)
+                    .ok()
+                    .and_then(|relative_to_base| {
+                        classification::classify_file(
+                            relative_to_base,
+                            &language,
+                            &classification_patterns,
+                        )
+                    })
+            })
+        } else {
+            None
+        };
+
         let result = language.parse(entry.into_path(), config);
         let mut lock = languages.lock();
         let entry = lock.entry(language).or_insert_with(Language::new);
         match result {
-            Ok(stats) => {
+            Ok(mut stats) => {
+                stats.classification = classification;
+
                 let func = config.for_each_fn;
                 if let Some(f) = func {
                     f(language, stats.clone())
@@ -482,5 +519,58 @@ mod tests {
         );
 
         assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn test_classification_during_file_processing() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        // Set up classification patterns
+        config.classifications = Some(vec![
+            "Tests:**/*.test.js".to_string(),
+            "Generated:**/*.generated.*".to_string(),
+        ]);
+
+        // Create test files
+        fs::write(dir.path().join("main.js"), b"function main() {}").unwrap();
+        fs::write(dir.path().join("main.test.js"), b"test('main', () => {})").unwrap();
+        fs::write(
+            dir.path().join("schema.generated.ts"),
+            b"export interface Schema {}",
+        )
+        .unwrap();
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        // Verify JavaScript files were processed
+        let js = languages.get(&LanguageType::JavaScript).unwrap();
+        assert_eq!(js.reports.len(), 2); // main.js and main.test.js
+
+        // Verify classifications were set
+        let main_test = js
+            .reports
+            .iter()
+            .find(|r| r.name.file_name().unwrap() == "main.test.js");
+        assert!(main_test.is_some());
+        assert_eq!(main_test.unwrap().classification, Some("Tests".to_string()));
+
+        let main = js
+            .reports
+            .iter()
+            .find(|r| r.name.file_name().unwrap() == "main.js");
+        assert!(main.is_some());
+        assert_eq!(main.unwrap().classification, None);
+
+        // Verify TypeScript generated file
+        let ts = languages.get(&LanguageType::TypeScript).unwrap();
+        assert_eq!(ts.reports.len(), 1);
+        assert_eq!(ts.reports[0].classification, Some("Generated".to_string()));
     }
 }

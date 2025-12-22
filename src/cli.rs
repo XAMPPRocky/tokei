@@ -52,11 +52,14 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
+    pub classifications: Option<Vec<String>>,
+    pub classify_unmatched: Option<Vec<String>>,
+    pub no_classify: bool,
 }
 
 impl Cli {
-    pub fn from_args() -> Self {
-        let matches = clap::Command::new("tokei")
+    fn build_command() -> clap::Command {
+        clap::Command::new("tokei")
             .version(crate_version())
             .author("Erin P. <xampprocky@gmail.com> + Contributors")
             .styles(clap_cargo::style::CLAP_STYLING)
@@ -234,8 +237,42 @@ impl Cli {
                         3: enable file level trace. Not recommended on multiple files",
                     ),
             )
-            .get_matches();
+            .arg(
+                Arg::new("classifier")
+                    .long("classify")
+                    .short('k')
+                    .action(ArgAction::Append)
+                    .help(
+                        "Classify files into categories via glob pattern. Format:
+- <CategoryName>:<pattern> (applies to files from all languages)
+- <Language>:<CategoryName>:<pattern> (matches only that language)
+- <FolderName> (shorthand for <FolderName>:<FolderName>/**/*, \
+i.e. adding a category for all files in that particular folder)
+E.g., --classify Tests:**/*.test.js or --classify \
+JavaScript:Benchmarks:**/*_bench.* or --classify tests",
+                    ),
+            )
+            .arg(
+                Arg::new("no-classify")
+                    .long("no-classify")
+                    .short('K')
+                    .action(ArgAction::SetTrue)
+                    .help("Ignore classifications from config files"),
+            )
+            .arg(
+                Arg::new("unmatched-classifier")
+                    .long("classify-unmatched")
+                    .short('u')
+                    .action(ArgAction::Append)
+                    .help(
+                        "Classify any unmatched files into a fallback category. Format: <CategoryName> (applies to all languages) \
+                        or Language:CategoryName (matches only that language). This pattern is added with lowest priority after \
+                        all other classification patterns. E.g., --classify-unmatched PROD or --classify-unmatched C#:PROD",
+                    ),
+            )
+    }
 
+    fn from_matches(matches: ArgMatches) -> Self {
         let columns = matches.get_one::<usize>("columns").cloned();
         let files = matches.get_flag("files");
         let hidden = matches.get_flag("hidden");
@@ -244,7 +281,6 @@ impl Cli {
         let no_ignore_dot = matches.get_flag("no_ignore_dot");
         let no_ignore_vcs = matches.get_flag("no_ignore_vcs");
         let print_languages = matches.get_flag("languages");
-        let verbose = matches.get_count("verbose") as u64;
         let compact = matches.get_flag("compact");
         let types = matches.get_many("types").map(|e| {
             e.flat_map(|x: &String| {
@@ -290,11 +326,19 @@ impl Cli {
         // give a useful error to the user.
         let output = matches.get_one("output").cloned();
         let streaming = matches
-            .get_one("streaming")
+            .get_one::<String>("streaming")
             .cloned()
-            .map(parse_or_exit::<Streaming>);
+            .map(|arg0: std::string::String| parse_or_exit::<Streaming>(&arg0));
 
-        crate::cli_utils::setup_logger(verbose);
+        let classifications = matches
+            .get_many::<String>("classifier")
+            .map(|values| values.map(|s| s.to_string()).collect());
+
+        let classify_unmatched = matches
+            .get_many::<String>("unmatched-classifier")
+            .map(|values| values.map(|s| s.to_string()).collect());
+
+        let no_classify = matches.get_flag("no-classify");
 
         let cli = Cli {
             matches,
@@ -313,6 +357,9 @@ impl Cli {
             types,
             compact,
             number_format,
+            classifications,
+            classify_unmatched,
+            no_classify,
         };
 
         debug!("CLI Config: {:#?}", cli);
@@ -320,7 +367,26 @@ impl Cli {
         cli
     }
 
-    pub fn file_input(&self) -> Option<&str> {
+    pub fn from_args() -> Self {
+        let matches = Self::build_command().get_matches();
+        // setup logger here and not in from_args_with, as setting it up
+        // multiple times in tests will panic
+        let verbose = matches.get_count("verbose") as u64;
+        crate::cli_utils::setup_logger(verbose);
+        Self::from_matches(matches)
+    }
+
+    #[cfg(test)]
+    fn from_args_with<I, T>(args: I) -> Self
+    where
+        I: IntoIterator<Item = T>,
+        T: Into<std::ffi::OsString> + Clone,
+    {
+        let matches = Self::build_command().try_get_matches_from(args).unwrap();
+        Self::from_matches(matches)
+    }
+
+    pub fn file_input(&self) -> Option<String> {
         self.matches.get_one("file_input").cloned()
     }
 
@@ -410,6 +476,7 @@ impl Cli {
     /// * `no_ignore_dot`
     /// * `no_ignore_vcs`
     /// * `types`
+    /// * `classifications`
     pub fn override_config(&mut self, mut config: Config) -> Config {
         config.hidden = if self.hidden {
             Some(true)
@@ -460,6 +527,40 @@ impl Cli {
         };
 
         config.types = self.types.take().or(config.types);
+        // allow --no-classify to disregard classifications from config files
+        // but not CLI classifcations (from --classify)
+        config.classifications = if self.no_classify {
+            self.classifications.take()
+        } else {
+            // Prepend CLI patterns before config patterns (CLI has higher priority)
+            match (self.classifications.take(), config.classifications) {
+                (Some(mut cli), Some(mut cfg)) => {
+                    cli.append(&mut cfg); // Append config to CLI (CLI first)
+                    Some(cli)
+                }
+                (Some(cli), None) => Some(cli),
+                (None, Some(cfg)) => Some(cfg),
+                (None, None) => None,
+            }
+        };
+
+        // Append classify-unmatched patterns last (lowest priority)
+        if let Some(unmatched) = self.classify_unmatched.take() {
+            let unmatched_patterns: Vec<String> = unmatched
+                .into_iter()
+                .map(|name| format!("{}:**/*", name))
+                .collect();
+
+            config.classifications = Some(
+                config
+                    .classifications
+                    .take()
+                    .unwrap_or_default()
+                    .into_iter()
+                    .chain(unmatched_patterns)
+                    .collect(),
+            );
+        }
 
         config
     }
@@ -488,5 +589,236 @@ Or use the 'all' feature:
                 all = self::Format::all_feature_names().join(",")
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_classify_flag_single_pattern() {
+        let cli = Cli::from_args_with(&["tokei", "--classify", "Tests:**/*.test.*", "."]);
+
+        assert!(cli.classifications.is_some());
+        let classifications = cli.classifications.unwrap();
+        assert_eq!(classifications.len(), 1);
+        assert_eq!(classifications[0], "Tests:**/*.test.*");
+    }
+
+    #[test]
+    fn test_classify_flag_multiple_patterns() {
+        let cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "Tests:**/*.test.*",
+            "--classify",
+            "Benchmarks:**/*_bench.*",
+            ".",
+        ]);
+
+        assert!(cli.classifications.is_some());
+        let classifications = cli.classifications.unwrap();
+        assert_eq!(classifications.len(), 2);
+        assert_eq!(classifications[0], "Tests:**/*.test.*");
+        assert_eq!(classifications[1], "Benchmarks:**/*_bench.*");
+    }
+
+    #[test]
+    fn test_classify_flag_language_specific() {
+        let cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "JavaScript:Benchmarks:**/*_bench.js",
+            ".",
+        ]);
+
+        assert!(cli.classifications.is_some());
+        let classifications = cli.classifications.unwrap();
+        assert_eq!(classifications.len(), 1);
+        assert_eq!(classifications[0], "JavaScript:Benchmarks:**/*_bench.js");
+    }
+
+    #[test]
+    fn test_classify_flag_not_provided() {
+        let cli = Cli::from_args_with(&["tokei", "."]);
+
+        assert!(cli.classifications.is_none());
+    }
+
+    #[test]
+    fn test_no_classify_overrides_config_classifications() {
+        // Simulate config file with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["Tests:**/*.test.*".to_string()]);
+
+        // CLI with --no-classify
+        let mut cli = Cli::from_args_with(&["tokei", "--no-classify", "."]);
+
+        let result_config = cli.override_config(config);
+
+        // Config classifications should be cleared
+        assert!(result_config.classifications.is_none());
+    }
+
+    #[test]
+    fn test_no_classify_preserves_cli_classifications() {
+        // Simulate config file with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["ConfigTests:**/*.test.*".to_string()]);
+
+        // CLI with both --no-classify and --classify
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--no-classify",
+            "--classify",
+            "CliTests:**/*_test.js",
+            ".",
+        ]);
+
+        let result_config = cli.override_config(config);
+
+        // Should have only CLI classifications, config classifications should be ignored
+        assert_eq!(
+            result_config.classifications,
+            Some(vec!["CliTests:**/*_test.js".to_string()])
+        );
+    }
+
+    #[test]
+    fn test_classifications_flow_from_cli_to_config() {
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "Tests:**/*.test.*",
+            "--classify",
+            "Generated:**/*.generated.*",
+            ".",
+        ]);
+
+        // Verify CLI has the classifications
+        assert!(cli.classifications.is_some());
+        let cli_classifications = cli.classifications.as_ref().unwrap();
+        assert_eq!(cli_classifications.len(), 2);
+
+        // Create an empty config
+        let config = Config::default();
+        assert!(config.classifications.is_none());
+
+        // Override config with CLI values
+        let config = cli.override_config(config);
+
+        // Verify classifications flowed to config
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*");
+        assert_eq!(config_classifications[1], "Generated:**/*.generated.*");
+    }
+
+    #[test]
+    fn test_cli_classifications_prepend_to_config_classifications() {
+        let mut cli = Cli::from_args_with(&["tokei", "--classify", "Tests:**/*.test.*", "."]);
+
+        // Create a config with different classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["ConfigPattern:**/*.old.*".to_string()]);
+
+        // CLI patterns should be prepended before config patterns (CLI has higher priority)
+        let config = cli.override_config(config);
+
+        // Verify CLI classifications come first, followed by config
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*"); // CLI first
+        assert_eq!(config_classifications[1], "ConfigPattern:**/*.old.*"); // Config second
+    }
+
+    #[test]
+    fn test_classify_unmatched_appends_after_config() {
+        let mut cli = Cli::from_args_with(&["tokei", "--classify-unmatched", "PROD", "."]);
+
+        // Create a config with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec!["Tests:**/*.test.*".to_string()]);
+
+        // classify-unmatched should append a catch-all pattern after config
+        let config = cli.override_config(config);
+
+        // Verify order: config patterns first, then unmatched catch-all
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*"); // Config
+        assert_eq!(config_classifications[1], "PROD:**/*"); // Unmatched catch-all
+    }
+
+    #[test]
+    fn test_classify_unmatched_with_language_prefix() {
+        let mut cli = Cli::from_args_with(&["tokei", "--classify-unmatched", "C#:PROD", "."]);
+
+        let config = Config::default();
+        let config = cli.override_config(config);
+
+        // Verify language-specific unmatched pattern
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 1);
+        assert_eq!(config_classifications[0], "C#:PROD:**/*"); // Language prefix preserved
+    }
+
+    #[test]
+    fn test_complete_classification_priority_order() {
+        let mut cli = Cli::from_args_with(&[
+            "tokei",
+            "--classify",
+            "CliPattern:**/*.cli.*",
+            "--classify-unmatched",
+            "UTILS",
+            ".",
+        ]);
+
+        // Config has its own patterns
+        let mut config = Config::default();
+        config.classifications = Some(vec![
+            "ConfigTests:**/*.test.*".to_string(),
+            "ConfigGenerated:**/*.gen.*".to_string(),
+        ]);
+
+        let config = cli.override_config(config);
+
+        // Verify complete priority order
+        assert!(config.classifications.is_some());
+        let classifications = config.classifications.unwrap();
+        assert_eq!(classifications.len(), 4);
+
+        // Priority order: CLI --classify, then config, then CLI --classify-unmatched
+        assert_eq!(classifications[0], "CliPattern:**/*.cli.*"); // CLI classify (highest)
+        assert_eq!(classifications[1], "ConfigTests:**/*.test.*"); // Config
+        assert_eq!(classifications[2], "ConfigGenerated:**/*.gen.*"); // Config
+        assert_eq!(classifications[3], "UTILS:**/*"); // CLI unmatched (lowest/fallback)
+    }
+
+    #[test]
+    fn test_config_classifications_preserved_when_no_cli_override() {
+        let mut cli = Cli::from_args_with(&["tokei", "."]);
+
+        // Create a config with classifications
+        let mut config = Config::default();
+        config.classifications = Some(vec![
+            "Tests:**/*.test.*".to_string(),
+            "Generated:**/*.gen.*".to_string(),
+        ]);
+
+        // Override config with CLI values (no CLI classifications provided)
+        let config = cli.override_config(config);
+
+        // Verify config classifications are preserved
+        assert!(config.classifications.is_some());
+        let config_classifications = config.classifications.unwrap();
+        assert_eq!(config_classifications.len(), 2);
+        assert_eq!(config_classifications[0], "Tests:**/*.test.*");
+        assert_eq!(config_classifications[1], "Generated:**/*.gen.*");
     }
 }
