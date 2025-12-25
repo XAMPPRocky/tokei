@@ -256,9 +256,9 @@ impl Cli {
             .collect()
         });
 
-        let num_format_style: NumberFormatStyle = matches
-            .get_one::<NumberFormatStyle>("num_format_style")
-            .cloned()
+        let num_format_style = matches
+            .get_one::<String>("num_format_style")
+            .map(|num_format| parse_or_exit::<NumberFormatStyle>(num_format))
             .unwrap_or_default();
 
         let number_format = match num_format_style.get_format() {
