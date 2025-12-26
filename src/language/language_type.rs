@@ -327,6 +327,31 @@ mod tests {
         );
     }
 
+    fn vue_sfc_with_script_tag(script_attrs: &str) -> String {
+        format!(
+            r#"
+<template>
+  <div>Message</div>
+</template>
+
+<script {}>
+const value = 1;
+</script>
+"#,
+            script_attrs
+        )
+    }
+
+    fn assert_vue_script_blob(script_attrs: &str, expected: LanguageType) {
+        let sfc = vue_sfc_with_script_tag(script_attrs);
+        let stats = LanguageType::Vue.parse_from_str(&sfc, &Config::default());
+        let report = stats
+            .blobs
+            .get(&expected)
+            .unwrap_or_else(|| panic!("expected {:?} blob for attrs={}", expected, script_attrs));
+        assert!(report.code > 0, "expected code lines for attrs={}", script_attrs);
+    }
+
     #[test]
     fn jupyter_notebook_has_correct_totals() {
         let sample_notebook =
@@ -351,5 +376,54 @@ mod tests {
         assert_eq!(stats.blobs.len(), 1, "num embedded languages");
         let rust_stats = stats.blobs.get(&Rust).expect("should have a Rust entry");
         assert_stats(rust_stats, 2, 5, 1);
+    }
+
+    #[test]
+    fn vue_script_lang_values_match_language() {
+        let cases = [
+            ("lang=\"ts\"", LanguageType::TypeScript),
+            ("lang=\"javascript\"", LanguageType::JavaScript),
+            ("lang=\"jsx\"", LanguageType::Jsx),
+            ("lang=\"typescript\"", LanguageType::TypeScript),
+            ("lang=\"tsx\"", LanguageType::Tsx),
+        ];
+
+        for (script_attrs, expected) in cases {
+            assert_vue_script_blob(script_attrs, expected);
+        }
+    }
+
+    #[test]
+    fn vue_script_type_values_match_language() {
+        let cases = [
+            ("type=\"application/javascript\"", LanguageType::JavaScript),
+            (
+                "type=\"text/typescript; charset=utf-8\"",
+                LanguageType::TypeScript,
+            ),
+            ("type=\"application/x-typescript\"", LanguageType::TypeScript),
+            ("type=\"text/jsx\"", LanguageType::Jsx),
+            ("type=\"text/tsx\"", LanguageType::Tsx),
+        ];
+
+        for (script_attrs, expected) in cases {
+            assert_vue_script_blob(script_attrs, expected);
+        }
+    }
+
+    #[test]
+    fn vue_script_lang_overrides_type() {
+        let sfc = vue_sfc_with_script_tag("lang=\"ts\" type=\"text/javascript\"");
+        let stats = LanguageType::Vue.parse_from_str(sfc, &Config::default());
+        let report = stats
+            .blobs
+            .get(&LanguageType::TypeScript)
+            .expect("expected TypeScript blob");
+        assert!(report.code > 0, "expected TypeScript code lines");
+    }
+
+    #[test]
+    fn vue_script_lang_unquoted_value() {
+        assert_vue_script_blob("lang=tsx", LanguageType::Tsx);
     }
 }
