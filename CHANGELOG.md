@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.0](https://github.com/XAMPPRocky/tokei/compare/v13.0.0...v14.0.0) - 2025-12-26
+
+### Added
+
+- add support for C++20 modules ([#1278](https://github.com/XAMPPRocky/tokei/pull/1278))
+- Add language support for Ark TypeScript ([#1300](https://github.com/XAMPPRocky/tokei/pull/1300))
+
+### Other
+
+- Fix downcast type mismatches in clap_builder ([#1310](https://github.com/XAMPPRocky/tokei/pull/1310))
+- remove tokei.rs references
+- Add support for Koka ([#1306](https://github.com/XAMPPRocky/tokei/pull/1306))
+- Stop recommending comma-separated CLI args ([#1305](https://github.com/XAMPPRocky/tokei/pull/1305))
+- Update clap-cargo from 0.13 to 0.18 ([#1298](https://github.com/XAMPPRocky/tokei/pull/1298))
+
 ## [13.0.0-alpha.9](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.8...v13.0.0-alpha.9) - 2025-07-21
 
 ### Other
