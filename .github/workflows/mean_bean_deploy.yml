@@ -1,7 +1,7 @@
 on:
   workflow_run:
     workflows: ["Release-plz"]
-    branches: [main]
+    branches: [master]
     types: 
       - completed
 
