@@ -543,6 +543,7 @@ VisualStudioProject
 VisualStudioSolution
 Vue
 WebAssembly
+Why3
 Wolfram
 Xaml
 XcodeConfig
