@@ -1198,6 +1198,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["nextflow", "nf"]
     },
+    "Nickel": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["m%\\\"", "\\\"%"], ["-s%\\\"", "\\\"%"]],
+      "extensions": ["ncl"]
+    },
     "Nim": {
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
