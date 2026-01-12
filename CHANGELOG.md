@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.1](https://github.com/XAMPPRocky/tokei/compare/v14.0.0...v14.0.1) - 2026-01-12
+
+### Other
+
+- Update strum/strum_macros to 0.27.2 ([#1316](https://github.com/XAMPPRocky/tokei/pull/1316))
+
 ## [14.0.0](https://github.com/XAMPPRocky/tokei/compare/v13.0.0...v14.0.0) - 2025-12-26
 
 ### Added
