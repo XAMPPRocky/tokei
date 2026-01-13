@@ -17,11 +17,49 @@ use crate::consts::{
     BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
     LINES_COLUMN_WIDTH,
 };
+#[cfg(feature = "tokens")]
+use crate::consts::TOKENS_COLUMN_WIDTH;
 
 const NO_LANG_HEADER_ROW_LEN: usize = 69;
 const NO_LANG_ROW_LEN: usize = 63;
 const NO_LANG_ROW_LEN_NO_SPACES: usize = 56;
+#[cfg(feature = "tokens")]
+const TOKENS_EXTRA_WIDTH: usize = TOKENS_COLUMN_WIDTH + 1;
 const IDENT_INACCURATE: &str = "(!)";
+
+/// Helper macro to write a stats row with optional tokens column.
+/// Takes show_tokens as a runtime parameter.
+macro_rules! write_stats {
+    ($writer:expr, $fmt:expr, $nf:expr, $show_tokens:expr; $($val:expr),+ $(,)?; tokens = $tokens:expr) => {{
+        #[cfg(feature = "tokens")]
+        if $show_tokens {
+            write!($writer, $fmt, $($val.to_formatted_string($nf)),+)?;
+            writeln!($writer, " {:>TOKENS_COLUMN_WIDTH$}", $tokens.to_formatted_string($nf))
+        } else {
+            writeln!($writer, $fmt, $($val.to_formatted_string($nf)),+)
+        }
+        #[cfg(not(feature = "tokens"))]
+        {
+            let _ = ($tokens, $show_tokens); // suppress unused warnings
+            writeln!($writer, $fmt, $($val.to_formatted_string($nf)),+)
+        }
+    }};
+    // Blue variant for totals
+    ($writer:expr, $fmt:expr, $nf:expr, $show_tokens:expr; blue $($val:expr),+ $(,)?; tokens = $tokens:expr) => {{
+        #[cfg(feature = "tokens")]
+        if $show_tokens {
+            write!($writer, $fmt, $($val.to_formatted_string($nf).blue()),+)?;
+            writeln!($writer, " {:>TOKENS_COLUMN_WIDTH$}", $tokens.to_formatted_string($nf).blue())
+        } else {
+            writeln!($writer, $fmt, $($val.to_formatted_string($nf).blue()),+)
+        }
+        #[cfg(not(feature = "tokens"))]
+        {
+            let _ = ($tokens, $show_tokens);
+            writeln!($writer, $fmt, $($val.to_formatted_string($nf).blue()),+)
+        }
+    }};
+}
 
 pub fn crate_version() -> String {
     if Format::supported().is_empty() {
@@ -127,6 +165,7 @@ pub struct Printer<W> {
     subrow: String,
     list_files: bool,
     number_format: num_format::CustomFormat,
+    show_tokens: bool,
 }
 
 impl<W> Printer<W> {
@@ -135,15 +174,29 @@ impl<W> Printer<W> {
         list_files: bool,
         writer: W,
         number_format: num_format::CustomFormat,
+        show_tokens: bool,
     ) -> Self {
+        #[cfg(feature = "tokens")]
+        let effective_columns = if show_tokens {
+            columns + TOKENS_EXTRA_WIDTH
+        } else {
+            columns
+        };
+        #[cfg(not(feature = "tokens"))]
+        let effective_columns = columns;
+
         Self {
-            columns,
+            columns: effective_columns,
             list_files,
             path_length: columns - NO_LANG_ROW_LEN_NO_SPACES,
             writer,
-            row: "━".repeat(columns),
-            subrow: "─".repeat(columns),
+            row: "━".repeat(effective_columns),
+            subrow: "─".repeat(effective_columns),
             number_format,
+            #[cfg(feature = "tokens")]
+            show_tokens,
+            #[cfg(not(feature = "tokens"))]
+            show_tokens: false,
         }
     }
 }
@@ -151,8 +204,36 @@ impl<W> Printer<W> {
 impl<W: Write> Printer<W> {
     pub fn print_header(&mut self) -> io::Result<()> {
         self.print_row()?;
-
         let files_column_width: usize = FILES_COLUMN_WIDTH + 6;
+        #[cfg(feature = "tokens")]
+        if self.show_tokens {
+            let lang_width = self.columns - NO_LANG_HEADER_ROW_LEN - TOKENS_EXTRA_WIDTH;
+            writeln!(
+                self.writer,
+                " {:<7$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>TOKENS_COLUMN_WIDTH$}",
+                "Language".bold().blue(),
+                "Files".bold().blue(),
+                "Lines".bold().blue(),
+                "Code".bold().blue(),
+                "Comments".bold().blue(),
+                "Blanks".bold().blue(),
+                "Tokens".bold().blue(),
+                lang_width
+            )?;
+        } else {
+            writeln!(
+                self.writer,
+                " {:<6$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                "Language".bold().blue(),
+                "Files".bold().blue(),
+                "Lines".bold().blue(),
+                "Code".bold().blue(),
+                "Comments".bold().blue(),
+                "Blanks".bold().blue(),
+                self.columns - NO_LANG_HEADER_ROW_LEN
+            )?;
+        }
+        #[cfg(not(feature = "tokens"))]
         writeln!(
             self.writer,
             " {:<6$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
@@ -175,58 +256,28 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_language(&mut self, language: &Language, name: &str) -> io::Result<()>
-    where
-        W: Write,
-    {
+    pub fn print_language(&mut self, language: &Language, name: &str) -> io::Result<()> {
         self.print_language_name(language.inaccurate, name, None)?;
         write!(self.writer, " ")?;
-        writeln!(
+        write_stats!(
             self.writer,
             "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-            language
-                .reports
-                .len()
-                .to_formatted_string(&self.number_format),
-            language.lines().to_formatted_string(&self.number_format),
-            language.code.to_formatted_string(&self.number_format),
-            language.comments.to_formatted_string(&self.number_format),
-            language.blanks.to_formatted_string(&self.number_format),
+            &self.number_format, self.show_tokens;
+            language.reports.len(), language.lines(), language.code, language.comments, language.blanks;
+            tokens = language.tokens
         )
     }
 
-    fn print_language_in_print_total(&mut self, language: &Language) -> io::Result<()>
-    where
-        W: Write,
-    {
+    fn print_language_in_print_total(&mut self, language: &Language) -> io::Result<()> {
         self.print_language_name(language.inaccurate, "Total", None)?;
         write!(self.writer, " ")?;
-        writeln!(
+        let files: usize = language.children.values().map(Vec::len).sum();
+        write_stats!(
             self.writer,
             "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-            language
-                .children
-                .values()
-                .map(Vec::len)
-                .sum::<usize>()
-                .to_formatted_string(&self.number_format)
-                .blue(),
-            language
-                .lines()
-                .to_formatted_string(&self.number_format)
-                .blue(),
-            language
-                .code
-                .to_formatted_string(&self.number_format)
-                .blue(),
-            language
-                .comments
-                .to_formatted_string(&self.number_format)
-                .blue(),
-            language
-                .blanks
-                .to_formatted_string(&self.number_format)
-                .blue(),
+            &self.number_format, self.show_tokens;
+            blue files, language.lines(), language.code, language.comments, language.blanks;
+            tokens = language.tokens
         )
     }
 
@@ -236,7 +287,15 @@ impl<W: Write> Printer<W> {
         name: &str,
         prefix: Option<&str>,
     ) -> io::Result<()> {
-        let mut lang_section_len = self.columns - NO_LANG_ROW_LEN - prefix.map_or(0, str::len);
+        #[cfg(feature = "tokens")]
+        let base_columns = if self.show_tokens {
+            self.columns - TOKENS_EXTRA_WIDTH
+        } else {
+            self.columns
+        };
+        #[cfg(not(feature = "tokens"))]
+        let base_columns = self.columns;
+        let mut lang_section_len = base_columns - NO_LANG_ROW_LEN - prefix.map_or(0, str::len);
         if inaccurate {
             lang_section_len -= IDENT_INACCURATE.len();
         }
@@ -263,33 +322,24 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    fn print_code_stats(
-        &mut self,
-        language_type: LanguageType,
-        stats: &[CodeStats],
-    ) -> io::Result<()> {
+    fn print_code_stats(&mut self, language_type: LanguageType, stats: &[CodeStats]) -> io::Result<()> {
         self.print_language_name(false, &language_type.to_string(), Some(" |-"))?;
-        let mut code = 0;
-        let mut comments = 0;
-        let mut blanks = 0;
-
-        for stats in stats.iter().map(tokei::CodeStats::summarise) {
-            code += stats.code;
-            comments += stats.comments;
-            blanks += stats.blanks;
+        let (mut code, mut comments, mut blanks, mut tokens) = (0, 0, 0, 0);
+        for s in stats.iter().map(tokei::CodeStats::summarise) {
+            code += s.code;
+            comments += s.comments;
+            blanks += s.blanks;
+            tokens += s.tokens;
         }
-
         if stats.is_empty() {
             Ok(())
         } else {
-            writeln!(
+            write_stats!(
                 self.writer,
                 " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-                stats.len().to_formatted_string(&self.number_format),
-                (code + comments + blanks).to_formatted_string(&self.number_format),
-                code.to_formatted_string(&self.number_format),
-                comments.to_formatted_string(&self.number_format),
-                blanks.to_formatted_string(&self.number_format),
+                &self.number_format, self.show_tokens;
+                stats.len(), code + comments + blanks, code, comments, blanks;
+                tokens = tokens
             )
         }
     }
@@ -309,6 +359,7 @@ impl<W: Write> Printer<W> {
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
         subtotal.stats.blanks += summary.blanks;
+        subtotal.stats.tokens += summary.tokens;
         self.print_report_with_name(&subtotal)?;
 
         Ok(())
@@ -404,22 +455,15 @@ impl<W: Write> Printer<W> {
         writeln!(self.writer, "{}", self.subrow.dimmed())
     }
 
-    fn print_report(
-        &mut self,
-        language_type: LanguageType,
-        stats: &CodeStats,
-        inaccurate: bool,
-    ) -> io::Result<()> {
+    fn print_report(&mut self, language_type: LanguageType, stats: &CodeStats, inaccurate: bool) -> io::Result<()> {
         self.print_language_name(inaccurate, &language_type.to_string(), Some(" |-"))?;
-
-        writeln!(
+        write!(self.writer, " {:>FILES_COLUMN_WIDTH$}", " ")?;
+        write_stats!(
             self.writer,
-            " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-            " ",
-            stats.lines().to_formatted_string(&self.number_format),
-            stats.code.to_formatted_string(&self.number_format),
-            stats.comments.to_formatted_string(&self.number_format),
-            stats.blanks.to_formatted_string(&self.number_format),
+            " {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            &self.number_format, self.show_tokens;
+            stats.lines(), stats.code, stats.comments, stats.blanks;
+            tokens = stats.tokens
         )
     }
 
@@ -432,6 +476,7 @@ impl<W: Write> Printer<W> {
         subtotal.stats.code += report.stats.code;
         subtotal.stats.comments += report.stats.comments;
         subtotal.stats.blanks += report.stats.blanks;
+        subtotal.stats.tokens += report.stats.tokens;
 
         for (language_type, stats) in &report.stats.blobs {
             self.print_report(*language_type, stats, inaccurate)?;
@@ -458,28 +503,15 @@ impl<W: Write> Printer<W> {
         Ok(())
     }
 
-    fn print_report_total_formatted(
-        &mut self,
-        name: Cow<'_, str>,
-        max_len: usize,
-        report: &Report,
-    ) -> io::Result<()> {
+    fn print_report_total_formatted(&mut self, name: Cow<'_, str>, max_len: usize, report: &Report) -> io::Result<()> {
         let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
-        writeln!(
+        write!(self.writer, " {: <max$}", name, max = max_len)?;
+        write_stats!(
             self.writer,
-            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-            name,
-            report
-                .stats
-                .lines()
-                .to_formatted_string(&self.number_format),
-            report.stats.code.to_formatted_string(&self.number_format),
-            report
-                .stats
-                .comments
-                .to_formatted_string(&self.number_format),
-            report.stats.blanks.to_formatted_string(&self.number_format),
-            max = max_len
+            " {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            &self.number_format, self.show_tokens;
+            report.stats.lines(), report.stats.code, report.stats.comments, report.stats.blanks;
+            tokens = report.stats.tokens
         )
     }
 
