@@ -4,8 +4,7 @@ use crate::LanguageType;
 use once_cell::sync::Lazy;
 use regex::bytes::Regex;
 
-pub static START_SCRIPT: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r#"<script(?:.*type="(.*)")?.*?>"#).unwrap());
+pub static START_SCRIPT: Lazy<Regex> = Lazy::new(|| Regex::new(r#"<script[^>]*>"#).unwrap());
 pub static END_SCRIPT: Lazy<Regex> = Lazy::new(|| Regex::new(r#"</script>"#).unwrap());
 
 pub static START_STYLE: Lazy<Regex> =
