@@ -2,7 +2,7 @@ use std::{process, str::FromStr};
 
 use clap::{crate_description, value_parser, Arg, ArgAction, ArgMatches};
 use colored::Colorize;
-use tokei::{Config, LanguageType, Sort};
+use tokei::{Column, Config, LanguageType, Sort};
 
 use crate::{
     cli_utils::{crate_version, parse_or_exit, NumberFormatStyle},
@@ -52,6 +52,7 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
+    pub output_columns: Option<Vec<Column>>,
 }
 
 impl Cli {
@@ -204,6 +205,17 @@ impl Cli {
                     ),
             )
             .arg(
+                Arg::new("output_columns")
+                    .long("output-columns")
+                    .action(ArgAction::Append)
+                    .value_parser(["files", "lines", "blanks", "code", "comments"])
+                    .value_delimiter(',')
+                    .help(
+                        "Filter and reorder columns in output, separated by a comma. i.e. \
+                        -t=code,files",
+                    ),
+            )
+            .arg(
                 Arg::new("compact")
                     .long("compact")
                     .short('C')
@@ -255,6 +267,15 @@ impl Cli {
             })
             .collect()
         });
+        let output_columns = matches.get_many("output_columns").map(|e| {
+            e.flat_map(|x: &String| {
+                x.split(',')
+                    .map(str::parse::<Column>)
+                    .filter_map(Result::ok)
+                    .collect::<Vec<_>>()
+            })
+            .collect()
+        });
 
         let num_format_style = matches
             .get_one::<String>("num_format_style")
@@ -299,6 +320,7 @@ impl Cli {
             types,
             compact,
             number_format,
+            output_columns,
         };
 
         debug!("CLI Config: {:#?}", cli);
@@ -396,6 +418,7 @@ impl Cli {
     /// * `no_ignore_dot`
     /// * `no_ignore_vcs`
     /// * `types`
+    /// * `output_columns`
     pub fn override_config(&mut self, mut config: Config) -> Config {
         config.hidden = if self.hidden {
             Some(true)
@@ -426,6 +449,8 @@ impl Cli {
         } else {
             config.no_ignore_vcs
         };
+
+        config.output_columns = self.output_columns.take().or(config.output_columns);
 
         config.for_each_fn = match self.streaming {
             Some(Streaming::Json) => Some(|l: LanguageType, e| {
