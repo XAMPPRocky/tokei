@@ -1,10 +1,8 @@
-module hello_world;
-import std::io;
-
-/* This is a multline comment
-   for the C3 programming language */
+/* 9 lines 6 code 2 comments 2 blanks */
 
 fn int main() {
+    int x = 5; /* Multline line comment */
     io::printn("Hello, world!");
-    return 0; // Return 0 (a single line comment).
+    int y = 4 // Single line comment.
+    return 0;
 }
