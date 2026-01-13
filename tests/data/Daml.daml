@@ -1,4 +1,4 @@
--- ! 42 lines 24 code 9 comments 9 blanks
+-- ! language: "daml" 42 lines 24 code 9 comments 9 blanks
 
 {-
 This code is derived from https://github.com/digital-asset/ex-secure-daml-infra/blob/master/daml/BobTrigger.daml

@@ -1,4 +1,4 @@
-# 20 lines 13 code 4 comments 3 blanks
+# language: "edgedb schema definition" 20 lines 13 code 4 comments 3 blanks
 
 # no module block
 type default::Movie {

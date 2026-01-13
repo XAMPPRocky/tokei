@@ -1,4 +1,4 @@
-// 24 lines 12 code 6 comments 6 blanks
+// language: "stratego/xt" 24 lines 12 code 6 comments 6 blanks
 module stratego
 
 strategies

@@ -1,4 +1,4 @@
-' 26 lines 10 code 13 comments 3 blanks
+' language: "brightscript" 26 lines 10 code 13 comments 3 blanks
 ' /**
 '  * @member difference
 '  * @memberof module:rodash

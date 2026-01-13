@@ -1,4 +1,4 @@
-// 18 lines 10 code 3 comments 5 blanks
+// language: "alloy" 18 lines 10 code 3 comments 5 blanks
 
 sig Node {
     edge: set Node

@@ -1,4 +1,4 @@
-/* 37 lines 23 code 5 comments 9 blanks */
+/* language: "java" 37 lines 23 code 5 comments 9 blanks */
 
 /*
  * Simple test class

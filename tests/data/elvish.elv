@@ -1,4 +1,4 @@
-# 16 lines, 9 code, 5 blanks, 2 comments
+# language: "elvish" 16 lines, 9 code, 5 blanks, 2 comments
 echo "This is a
 multiline string
 # with a hash

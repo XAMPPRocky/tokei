@@ -1,4 +1,4 @@
-;; 21 lines 11 code 6 comments 4 blanks
+;; language: "Emacs Lisp" 21 lines 11 code 6 comments 4 blanks
 
                                         ; This is a comment line
 ;; This too!

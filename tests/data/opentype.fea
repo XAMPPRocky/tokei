@@ -1,4 +1,4 @@
-# 54 lines 24 code 24 comments 6 blanks
+# language: "opentype feature file" 54 lines 24 code 24 comments 6 blanks
 languagesystem DFLT dflt;
 languagesystem latn dflt;
 languagesystem latn DEU;
