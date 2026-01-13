@@ -207,6 +207,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["c", "ec", "pgc"]
     },
+    "C3": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["c3"]
+    },
     "Cabal": {
       "nested": true,
       "line_comment": ["--"],
