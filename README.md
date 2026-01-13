@@ -342,6 +342,7 @@ CSharp
 CShell
 Css
 Cuda
+CudaHeader
 CUE
 Cython
 D
