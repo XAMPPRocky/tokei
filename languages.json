@@ -1209,6 +1209,14 @@
       "line_comment": ["#"],
       "extensions": ["nix"]
     },
+    "Noir": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "important_syntax": ["///", "//!"],
+      "extensions": ["nr"],
+      "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
+    },
     "NotQuitePerl": {
       "name": "Not Quite Perl",
       "line_comment": ["#"],
