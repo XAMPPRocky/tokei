@@ -516,6 +516,11 @@
       ],
       "extensions": ["ex", "exs"]
     },
+    "Elle": {
+      "line_comment": ["//", "#!"],
+      "quotes": [["'", "'"], ["\\\"", "\\\""], ["`", "`"]],
+      "extensions": ["le"]
+    },
     "Elm": {
       "nested": true,
       "line_comment": ["--"],
