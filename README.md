@@ -437,6 +437,7 @@ Makefile
 Markdown
 Mdx
 Meson
+Metal
 Mint
 Mlatu
 ModuleDef
@@ -543,6 +544,7 @@ VisualStudioProject
 VisualStudioSolution
 Vue
 WebAssembly
+WGSL
 Wolfram
 Xaml
 XcodeConfig
