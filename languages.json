@@ -447,6 +447,11 @@
       "quotes": [["\\\"", "\\\""], ["''", "''"]],
       "extensions": ["dhall"]
     },
+    "Djot": {
+      "literate": true,
+      "important_syntax": ["```"],
+      "extensions": ["dj", "djot"]
+    },
     "Dockerfile": {
       "line_comment": ["#"],
       "extensions": ["dockerfile", "dockerignore"],
