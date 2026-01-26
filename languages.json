@@ -460,8 +460,8 @@
     },
     "Dockerfile": {
       "line_comment": ["#"],
-      "extensions": ["dockerfile", "dockerignore"],
-      "filenames": ["dockerfile"],
+      "extensions": ["dockerfile", "dockerignore", "containerfile", "containerignore"],
+      "filenames": ["dockerfile", "containerfile"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
     "DotNetResource": {
