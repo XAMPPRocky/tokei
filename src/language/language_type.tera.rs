@@ -192,7 +192,7 @@ impl LanguageType {
     /// ```
     /// use tokei::LanguageType;
     /// let lang = LanguageType::Bash;
-    /// assert_eq!(lang.shebangs(), &["#!/bin/bash"]);
+    /// assert_eq!(lang.shebangs(), &["bash"]);
     /// ```
     pub fn shebangs(self) -> &'static [&'static str] {
         match self {
@@ -397,40 +397,47 @@ impl LanguageType {
         let first_line = buf.split(|b| *b == b'\n').next()?;
         let first_line = std::str::from_utf8(first_line).ok()?;
 
-        let mut words = first_line.split_whitespace();
-        match words.next() {
-            {# First match against any shebang paths, and then check if the
-               language matches any found in the environment shebang path. #}
+        // Normalize: Remove `#!` and all spaces after it, eg
+        // #! /bin/bash            => /bin/bash
+        // #!    /usr/bin/env perl => /usr/bin/env perl
+        let shebang_line = first_line.strip_prefix("#!")?.trim_start();
+        let mut words = shebang_line.split_whitespace();
+        let tool_path = words.next()?;
+
+        // Handle `env` by replacing it with the word after `env`, if any
+        let tool_name = if tool_path.ends_with("env") {
+            words.next().unwrap_or("env")
+        } else {
+            tool_path
+        };
+
+        // Extract the last part of the tool path (e.g., "bash" from "/usr/local/bin/bash")
+        let tool_name = Path::new(tool_name).file_name()?.to_str()?;
+        match tool_name {
+            // do exact match first, so perl6 => Raku instead of Perl
             {% for key, value in languages -%}
                 {%- if value.shebangs %}
-                    {%- for item in value.shebangs  %}| Some("{{item}}") {% endfor %}=> Some({{key}}),
+                    {%- for item in value.shebangs  %}| "{{item}}" {% endfor %}=> Some({{key}}),
                 {% endif -%}
             {%- endfor %}
-
-            Some("#!/usr/bin/env") => {
-                if let Some(word) = words.next() {
-                    match word {
-                        {% for key, value in languages -%}
-                            {%- if value.env -%}
-                                {%- for item in value.env  %}
-                                    {% if loop.index == 1 %}
-                                        _ if word.starts_with("{{item}}")
-                                    {% else %}
-                                        || word.starts_with("{{item}}")
-                                    {% endif %}
-                                {% endfor %}=> Some({{key}}),
-                            {% endif -%}
-                        {%- endfor %}
-                        env => {
-                            warn!("Unknown environment: {:?}", env);
-                            None
-                        }
-                    }
-                } else {
-                    None
+            _ => {
+                // then try starts_with, especially for python, so python3.13 => Python
+                // however, pythonabc will also be recognized as Python
+                match tool_name {
+                    {% for key, value in languages -%}
+                        {%- if value.shebangs -%}
+                            {%- for item in value.shebangs  %}
+                                {% if loop.index == 1 %}
+                                    _ if tool_name.starts_with("{{item}}")
+                                {% else %}
+                                    || tool_name.starts_with("{{item}}")
+                                {% endif %}
+                            {% endfor %}=> Some({{key}}),
+                        {% endif -%}
+                    {%- endfor %}
+                    _ => None,
                 }
             }
-            _ => None,
         }
     }
 }

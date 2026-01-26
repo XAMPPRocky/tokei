@@ -143,7 +143,7 @@
     },
     "AWK": {
       "line_comment": ["#"],
-      "shebangs": ["#!/bin/awk -f"],
+      "shebangs": ["awk"],
       "extensions": ["awk"]
     },
     "Ballerina": {
@@ -156,10 +156,9 @@
     },
     "Bash": {
       "name": "BASH",
-      "shebangs": ["#!/bin/bash"],
+      "shebangs": ["bash"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["bash"],
       "extensions": ["bash"]
     },
     "Batch": {
@@ -247,6 +246,10 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
       "extensions": ["ceylon"]
+    },
+    "Cgi": {
+      "name": "CGI",
+      "extensions": ["cgi"]
     },
     "Chapel": {
       "line_comment": ["//"],
@@ -356,9 +359,8 @@
     },
     "Crystal": {
       "line_comment": ["#"],
-      "shebangs": ["#!/usr/bin/crystal"],
+      "shebangs": ["crystal"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["crystal"],
       "extensions": ["cr"]
     },
     "CSharp": {
@@ -371,9 +373,9 @@
     },
     "CShell": {
       "name": "C Shell",
-      "shebangs": ["#!/bin/csh"],
+      "shebangs": ["csh"],
       "line_comment": ["#"],
-      "env": ["csh"],
+      "filenames": [".cshrc"],
       "extensions": ["csh"]
     },
     "Css": {
@@ -403,10 +405,10 @@
       "extensions": ["cue"]
     },
     "Cython": {
+      "shebangs": ["cython"],
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["cython"],
       "extensions": ["pyx", "pxd", "pxi"]
     },
     "D": {
@@ -534,9 +536,9 @@
       "extensions": ["elm"]
     },
     "Elvish": {
+      "shebangs": ["elvish"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["elvish"],
       "extensions": ["elv"]
     },
     "EmacsDevEnv": {
@@ -570,10 +572,9 @@
       "extensions": ["fnl", "fnlm"]
     },
     "Fish": {
-      "shebangs": ["#!/bin/fish"],
+      "shebangs": ["fish"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["fish"],
       "extensions": ["fish"]
     },
     "FlatBuffers": {
@@ -715,10 +716,10 @@
       "extensions": ["gql", "graphql"]
     },
     "Groovy": {
+      "shebangs": ["groovy"],
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
-      "env": ["groovy"],
       "extensions": ["groovy", "grt", "gtpl", "gvy"]
     },
     "Gwion": {
@@ -943,8 +944,7 @@
       "extensions": ["ipynb"]
     },
     "Just": {
-      "shebangs": ["#!/usr/bin/env just --justfile"],
-      "env": ["just"],
+      "shebangs": ["just"],
       "line_comment": ["#"],
       "extensions": ["just"],
       "filenames": ["justfile"]
@@ -983,10 +983,9 @@
     },
     "Ksh": {
       "name": "Korn shell",
-      "shebangs": ["#!/bin/ksh"],
+      "shebangs": ["ksh"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["ksh"],
       "extensions": ["ksh"]
     },
     "Lalrpop": {
@@ -1324,11 +1323,11 @@
       "extensions": ["pas"]
     },
     "Perl": {
-      "shebangs": ["#!/usr/bin/perl"],
+      "shebangs": ["perl"],
       "line_comment": ["#"],
       "multi_line_comments": [["=pod", "=cut"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["pl", "pm"]
+      "extensions": ["pl", "pm", "t"]
     },
     "Pest": {
       "line_comment": ["//"],
@@ -1454,10 +1453,10 @@
       "nested": true
     },
     "Python": {
+      "shebangs": ["python"],
       "line_comment": ["#"],
       "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["python", "python2", "python3"],
       "mime": ["text/x-python"],
       "extensions": ["py", "pyw", "pyi"]
     },
@@ -1493,10 +1492,10 @@
       "extensions": ["r"]
     },
     "Racket": {
+      "shebangs": ["racket"],
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "env": ["racket"],
       "extensions": ["rkt", "scrbl"]
     },
     "Rakefile": {
@@ -1507,7 +1506,7 @@
       "extensions": ["rake"]
     },
     "Raku": {
-      "shebangs": ["#!/usr/bin/raku", "#!/usr/bin/perl6"],
+      "shebangs": ["raku", "perl6"],
       "line_comment": ["#"],
       "multi_line_comments": [
         ["#`(", ")"],
@@ -1540,7 +1539,6 @@
         ["=begin SYNOPSIS", "=end SYNOPSIS"],
         ["=begin ", "=end "]
       ],
-      "env": ["raku", "perl6"],
       "extensions": ["raku", "rakumod", "rakutest", "pm6", "pl6", "p6"]
     },
     "Razor": {
@@ -1597,10 +1595,10 @@
       "extensions": ["spec"]
     },
     "Ruby": {
+      "shebangs": ["ruby"],
       "line_comment": ["#"],
       "multi_line_comments": [["=begin", "=end"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["ruby"],
       "extensions": ["rb"]
     },
     "RubyHtml": {
@@ -1649,10 +1647,9 @@
     },
     "Sh": {
       "name": "Shell",
-      "shebangs": ["#!/bin/sh"],
+      "shebangs": ["sh"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "env": ["sh"],
       "extensions": ["sh"]
     },
     "ShaderLab": {
@@ -2010,6 +2007,7 @@
     },
     "VimScript": {
       "name": "Vim Script",
+      "filenames": [".vimrc"],
       "line_comment": ["\\\""],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["vim"]
@@ -2097,7 +2095,7 @@
       "extensions": ["zok"]
     },
     "Zsh": {
-      "shebangs": ["#!/bin/zsh"],
+      "shebangs": ["zsh"],
       "line_comment": ["#"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["zsh"]
