@@ -54,6 +54,10 @@ pub struct Config {
     #[serde(skip)]
     /// Adds a closure for each function, e.g., print the result
     pub for_each_fn: Option<fn(LanguageType, Report)>,
+    /// Whether to count and display tokens for LLM context estimation.
+    /// Requires building with `--features tokens`. *Default:* `false`.
+    #[serde(default)]
+    pub show_tokens: bool,
 }
 
 impl Config {
@@ -135,6 +139,9 @@ impl Config {
             no_ignore_vcs: current_dir
                 .no_ignore_vcs
                 .or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
+            show_tokens: current_dir.show_tokens
+                || home_dir.show_tokens
+                || conf_dir.show_tokens,
         }
     }
 }
