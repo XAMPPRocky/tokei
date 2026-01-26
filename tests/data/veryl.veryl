@@ -1,0 +1,19 @@
+/// 19 lines 7 code 10 comments 2 blanks
+/// ```veryl
+/// module Hello {
+///     initial {
+///         // comment
+///         $display("Hello, world!");
+///     }
+/// }
+/// ```
+
+/* /* no nested multi-line comments */
+module ModuleA {
+	let _a: string = "*/";
+	let _b: logic = 1; // end of line comment */
+}
+
+module ModuleB {
+    let _a: string = "\"/*escaped quotes in a string and block comment*/\"";
+}
