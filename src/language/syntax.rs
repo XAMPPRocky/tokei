@@ -1,10 +1,11 @@
-use std::sync::Arc;
+use std::{str::FromStr, sync::Arc};
 
 use aho_corasick::AhoCorasick;
 use dashmap::DashMap;
 use grep_searcher::LineStep;
 use log::Level::Trace;
 use once_cell::sync::Lazy;
+use regex::bytes::Regex;
 
 use super::embedding::{
     RegexCache, RegexFamily, ENDING_LF_BLOCK_REGEX, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE,
@@ -12,6 +13,13 @@ use super::embedding::{
 };
 use crate::LanguageType::LinguaFranca;
 use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
+
+static SCRIPT_LANG_ATTR_REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r#"(?i)\blang\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))"#).unwrap()
+});
+static SCRIPT_TYPE_ATTR_REGEX: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r#"(?i)\btype\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s>]+))"#).unwrap()
+});
 
 /// Tracks the syntax of the language as well as the current state in the file.
 /// Current has what could be consider three types of mode.
@@ -120,6 +128,59 @@ impl SharedMatchers {
             verbatim_string_literals: language.verbatim_quotes(),
         }
     }
+}
+
+fn script_attribute_value<'a>(tag: &'a [u8], regex: &Regex) -> Option<&'a [u8]> {
+    let captures = regex.captures(tag)?;
+    captures
+        .get(1)
+        .or_else(|| captures.get(2))
+        .or_else(|| captures.get(3))
+        .map(|m| m.as_bytes())
+}
+
+fn language_from_script_lang(attr: &[u8]) -> Option<LanguageType> {
+    let raw = String::from_utf8_lossy(attr);
+    let trimmed = raw.trim().trim_start_matches('.');
+    if trimmed.is_empty() {
+        return None;
+    }
+    let lower = trimmed.to_lowercase();
+    LanguageType::from_str(&lower)
+        .ok()
+        .or_else(|| LanguageType::from_file_extension(&lower))
+}
+
+fn language_from_script_type(attr: &[u8]) -> Option<LanguageType> {
+    let raw = String::from_utf8_lossy(attr);
+    let trimmed = raw.split(';').next().unwrap_or("").trim();
+    if trimmed.is_empty() {
+        return None;
+    }
+    if let Some(language) = LanguageType::from_mime(trimmed) {
+        return Some(language);
+    }
+
+    let subtype = trimmed.rsplit('/').next().unwrap_or(trimmed).trim();
+    let subtype = subtype.strip_prefix("x-").unwrap_or(subtype);
+    if subtype.is_empty() {
+        return None;
+    }
+    let lower = subtype.to_lowercase();
+    LanguageType::from_file_extension(&lower)
+        .or_else(|| LanguageType::from_str(&lower).ok())
+}
+
+fn script_language_from_tag(tag: &[u8]) -> Option<LanguageType> {
+    if let Some(attr) = script_attribute_value(tag, &SCRIPT_LANG_ATTR_REGEX) {
+        if let Some(language) = language_from_script_lang(attr) {
+            return Some(language);
+        }
+    }
+    if let Some(attr) = script_attribute_value(tag, &SCRIPT_TYPE_ATTR_REGEX) {
+        return language_from_script_type(attr);
+    }
+    None
 }
 
 #[derive(Debug)]
@@ -366,8 +427,6 @@ impl SyntaxCounter {
         config: &Config,
         regex_cache: &RegexCache,
     ) -> Option<FileContext> {
-        use std::str::FromStr;
-
         // static TYPE_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"type="(.*)".*>"#).unwrap());
         if self.quote.is_some() || !self.stack.is_empty() {
             return None;
@@ -468,14 +527,11 @@ impl SyntaxCounter {
             }
             RegexFamily::HtmlLike(html) => {
                 if let Some(mut captures) = html.start_script_in_range(start, end) {
-                    let start_of_code = captures.next().unwrap().end();
+                    let start_tag = captures.next().unwrap();
+                    let start_of_code = start_tag.end();
                     let closing_tag = END_SCRIPT.find(&lines[start_of_code..])?;
                     let end_of_code = start_of_code + closing_tag.start();
-                    let language = captures
-                        .next()
-                        .and_then(|m| {
-                            LanguageType::from_mime(&String::from_utf8_lossy(m.as_bytes().trim()))
-                        })
+                    let language = script_language_from_tag(start_tag.as_bytes())
                         .unwrap_or(LanguageType::JavaScript);
                     let script_contents = &lines[start_of_code..end_of_code];
                     if script_contents.trim().is_empty() {
