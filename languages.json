@@ -2032,6 +2032,11 @@
       "multi_line_comments":[["批曰。","。"],["疏曰。","。"]],
       "extensions":["wy"]
     },
+    "Why3": {
+      "quotes": [["\\\"", "\\\""]],
+      "multi_line_comments": [["(*", "*)"]],
+      "extensions": ["mlw"]
+    },
     "WGSL": {
       "name": "WebGPU Shader Language",
       "line_comment": ["//"],
