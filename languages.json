@@ -763,10 +763,9 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["hcl", "tf", "tfvars"]
     },
-    "Headache": {
+    "Hare": {
       "line_comment": ["//"],
-      "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["ha"]
     },
     "Hex": {
