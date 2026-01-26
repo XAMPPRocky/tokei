@@ -606,13 +606,13 @@
       ]
     },
     "FortranLegacy": {
-      "name": "FORTRAN Legacy",
+      "name": "Fortran Legacy",
       "line_comment": ["c", "C", "!", "*"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["f", "for", "ftn", "f77", "pfo"]
     },
     "FortranModern": {
-      "name": "FORTRAN Modern",
+      "name": "Fortran Modern",
       "line_comment": ["!"],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["f03", "f08", "f90", "f95", "fpp"]
