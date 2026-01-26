@@ -1635,7 +1635,7 @@
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "extensions": ["scm", "ss"]
+      "extensions": ["sch", "scm", "sld", "ss"]
     },
     "Scons": {
       "line_comment": ["#"],
