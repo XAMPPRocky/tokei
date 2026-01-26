@@ -445,6 +445,7 @@ MonkeyC
 MoonScript
 MsBuild
 Mustache
+Nickel
 Nim
 Nix
 NotQuitePerl
