@@ -1121,6 +1121,10 @@
     "Max": {
       "extensions": ["maxpat"]
     },
+    "Mcfunction": {
+      "line_comment": ["#"],
+      "extensions": ["mcfunction"]
+    },
     "Mdx": {
       "name": "MDX",
       "literate": true,
