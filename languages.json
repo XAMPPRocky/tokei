@@ -2032,6 +2032,13 @@
       "multi_line_comments":[["批曰。","。"],["疏曰。","。"]],
       "extensions":["wy"]
     },
+    "Wesl": {
+      "name": "WESL",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "extensions": ["wesl"]
+    },
     "WGSL": {
       "name": "WebGPU Shader Language",
       "line_comment": ["//"],
