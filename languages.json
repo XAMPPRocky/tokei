@@ -2008,6 +2008,12 @@
       "blank": true,
       "extensions": ["sln"]
     },
+    "VisualStudioSolutionSlnx": {
+      "name": "Visual Studio Solution (slnx)",
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["slnx"]
+    },
     "VimScript": {
       "name": "Vim Script",
       "line_comment": ["\\\""],
