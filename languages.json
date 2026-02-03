@@ -2107,6 +2107,11 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "extensions": ["gdshader"]
+    },
+    "GodotTextScene": {
+        "name": "Godot TextScene",
+        "line_comment": [";"],
+        "extensions": ["tscn"]
     }
   }
 }
