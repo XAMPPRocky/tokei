@@ -1,4 +1,4 @@
-# 20 lines 10 code 6 comments 4 blanks
+# 19 lines 12 code 4 comments 3 blanks
 
 # Install nginx package
 nginx:
