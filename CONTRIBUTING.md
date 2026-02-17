@@ -147,7 +147,7 @@ In Rust for example, the first line should look like the following:
 The comment should use the syntax of the language you're testing.
 A good example of a test file is [`tests/data/rust.rs`](tests/data/rust.rs).
 
-```rust
+````rust
 //! 48 lines 36 code 6 comments 6 blanks
 //! ```rust
 //! fn main () {
@@ -197,7 +197,7 @@ fn foo() {
 }
 
 
-```
+````
 
 # Bug Reports
 
