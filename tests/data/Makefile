@@ -1,4 +1,4 @@
-# 24 lines 11 code 5 comments 8 blanks
+# language: "makefile" 24 lines 11 code 5 comments 8 blanks
 
 ##				     ##
 ## IMPORTANT COMMENT ##

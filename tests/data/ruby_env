@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-# 11 lines 3 code 6 comments 2 blanks
+# language: "ruby" 11 lines 3 code 6 comments 2 blanks
 
 =begin
   Comment that only counts if detected as ruby

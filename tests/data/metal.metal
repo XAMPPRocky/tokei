@@ -1,4 +1,4 @@
-/* 32 lines 21 code 5 comments 6 blanks */
+/* language: "metal shading language" 32 lines 21 code 5 comments 6 blanks */
 #include <metal_stdlib>
 
 // comment

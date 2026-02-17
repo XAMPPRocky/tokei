@@ -1,4 +1,4 @@
-// 37 lines 24 code 6 comments 7 blanks
+// language: "go" 37 lines 24 code 6 comments 7 blanks
 
 // Package main is a test file.
 package main

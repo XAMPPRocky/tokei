@@ -1,4 +1,4 @@
-/* 18 lines 10 code 5 comments 3 blanks */
+/* language: "nextflow" 18 lines 10 code 5 comments 3 blanks */
 
 /*
 Nextflow - hello

@@ -1,4 +1,4 @@
-<!-- 12 lines 10 code 1 comments 1 blanks -->
+<!-- language: "msbuild" 12 lines 10 code 1 comments 1 blanks -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>

@@ -1,4 +1,4 @@
-(* 11 lines 3 code 5 comments 3 blanks *)
+(* language: "f*" 11 lines 3 code 5 comments 3 blanks *)
 
 module Hello
 

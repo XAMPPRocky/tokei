@@ -1,4 +1,4 @@
-# 13 lines 8 code 3 comments 2 blanks
+# language: "open policy agent" 13 lines 8 code 3 comments 2 blanks
 
 package application.authz
 

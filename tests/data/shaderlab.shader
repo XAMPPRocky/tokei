@@ -1,4 +1,4 @@
-// 43 lines 31 code 8 comments 4 blanks
+// language: "shaderlab" 43 lines 31 code 8 comments 4 blanks
 Shader "Custom/Sample shader"
 {
     Properties

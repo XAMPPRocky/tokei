@@ -1,4 +1,4 @@
-// 23 lines 13 code 6 comments 4 blanks
+// language: "arduino c++" 23 lines 13 code 6 comments 4 blanks
 
 int led = 13;
 
