@@ -94,6 +94,7 @@ impl LanguageType {
             let (skippable_text, rest) = text.split_at(end + 1);
             let is_fortran = syntax.shared.is_fortran;
             let is_literate = syntax.shared.is_literate;
+            let is_diff = syntax.shared.is_diff;
             let comments = syntax.shared.line_comments;
             trace!(
                 "Using Simple Parse on {:?}",
@@ -107,7 +108,8 @@ impl LanguageType {
                         // FORTRAN has a rule where it only counts as a comment if it's the
                         // first character in the column, so removing starting whitespace
                         // could cause a miscount.
-                        let line = if is_fortran { line } else { line.trim() };
+                        // A leading space in a diff indicates a context line.
+                        let line = if is_fortran || is_diff { line } else { line.trim() };
                         if line.trim().is_empty() {
                             (1, 0, 0)
                         } else if is_literate
@@ -147,7 +149,8 @@ impl LanguageType {
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
-            let line = if syntax.shared.is_fortran {
+            // A leading space in a diff indicates a context line.
+            let line = if syntax.shared.is_fortran || syntax.shared.is_diff {
                 line
             } else {
                 line.trim()
