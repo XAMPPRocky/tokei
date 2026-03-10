@@ -1084,7 +1084,14 @@
       "line_comment": ["--"],
       "multi_line_comments": [["--[[", "]]"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["lua", "luau"]
+      "extensions": ["lua"]
+    },
+    "Luau": {
+      "line_comment": ["--"],
+      "multi_line_comments": [["--[[", "]]"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "verbatim_quotes": [["[[", "]]"]],
+      "extensions": ["luau"]
     },
     "Lucius": {
       "line_comment": ["//"],
