@@ -322,6 +322,7 @@ BrightScript
 C
 C3
 Cabal
+Camel
 Cassius
 Ceylon
 CHeader
