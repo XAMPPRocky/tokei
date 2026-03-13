@@ -1738,6 +1738,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["stan"]
     },
+    "Starlark": {
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["star", "fizz"]
+    },
     "Stata": {
       "line_comment": ["//", "*"],
       "multi_line_comments": [["/*", "*/"]],
