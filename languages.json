@@ -1206,8 +1206,9 @@
     "Nextflow": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
-      "quotes": [["\\\"", "\\\""]],
-      "extensions": ["nextflow", "nf"]
+      "quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"], ["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["nf"],
+      "filenames": ["nextflow.config"]
     },
     "Nim": {
       "line_comment": ["#"],
