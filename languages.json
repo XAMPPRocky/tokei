@@ -37,7 +37,7 @@
       "name": "APL",
       "line_comment": ["⍝"],
       "extensions": ["apl", "aplf", "apls"],
-      "quotes": [["'", "'"]],
+      "quotes": [["'", "'"]]
     },
     "Arduino": {
       "name": "Arduino C++",
@@ -45,6 +45,13 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ino"]
+    },
+    "ArkTS": {
+      "name": "Ark TypeScript",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
+      "extensions": ["ets"]
     },
     "Arturo": {
       "line_comment": [";"],
@@ -128,6 +135,12 @@
       "line_comment": ["#"],
       "extensions": ["am"]
     },
+    "AvaloniaXaml": {
+      "name": "AXAML",
+      "multi_line_comments": [["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["axaml"]
+    },
     "AWK": {
       "line_comment": ["#"],
       "shebangs": ["#!/bin/awk -f"],
@@ -181,7 +194,7 @@
       "name": "BQN",
       "line_comment": ["#"],
       "extensions": ["bqn"],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]]
     },
     "BrightScript": {
       "quotes": [["\\\"", "\\\""]],
@@ -193,6 +206,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["c", "ec", "pgc"]
+    },
+    "C3": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["c3"]
     },
     "Cabal": {
       "nested": true,
@@ -327,6 +346,14 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["hh", "hpp", "hxx", "inl", "ipp"]
     },
+    "CppModule": {
+      "name": "C++ Module",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["R\\\"(", ")\\\""]],
+      "extensions": ["cppm", "ixx", "ccm", "mpp", "mxx", "cxxm", "hppm", "hxxm"]
+    },
     "Crystal": {
       "line_comment": ["#"],
       "shebangs": ["#!/usr/bin/crystal"],
@@ -425,6 +452,11 @@
       "multi_line_comments": [["{-", "-}"]],
       "quotes": [["\\\"", "\\\""], ["''", "''"]],
       "extensions": ["dhall"]
+    },
+    "Djot": {
+      "literate": true,
+      "important_syntax": ["```"],
+      "extensions": ["dj", "djot"]
     },
     "Dockerfile": {
       "line_comment": ["#"],
@@ -535,7 +567,7 @@
     "Fennel" : {
       "line_comment": [";", ";;"],
       "quotes": [["\\\"", "\\\""]],
-      "extensions": ["fnl"]
+      "extensions": ["fnl", "fnlm"]
     },
     "Fish": {
       "shebangs": ["#!/bin/fish"],
@@ -742,6 +774,18 @@
       "blank": true,
       "extensions": ["hex"]
     },
+    "Hex0": {
+      "extensions": ["hex0"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex1": {
+      "extensions": ["hex1"],
+      "line_comment": ["#", ";"]
+    },
+    "Hex2": {
+      "extensions": ["hex2"],
+      "line_comment": ["#", ";"]
+    },
     "HiCad": {
       "name": "HICAD",
       "line_comment": ["REM", "rem"],
@@ -918,6 +962,18 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["kak"]
     },
+    "Kaem": {
+      "name": "Kaem",
+      "line_comment": ["#"],
+      "extensions": ["kaem"]
+    },
+    "Koka": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["kk"]
+    },
     "Kotlin": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
@@ -1035,6 +1091,12 @@
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["lucius"]
+    },
+    "M1Assembly": {
+      "name": "M1 Assembly",
+      "extensions": ["m1"],
+      "line_comment": ["#", ";"],
+      "quotes": [["\\\"", "\\\""]]
     },
     "M4": {
       "extensions": ["m4"],
@@ -1891,9 +1953,9 @@
       "extensions": ["vala"]
     },
     "VB6": {
-      "name": "VB6",
+      "name": "VB6/VBA",
       "line_comment": ["'"],
-      "extensions": ["frm", "bas", "cls"]
+      "extensions": ["frm", "bas", "cls", "ctl", "dsr"]
     },
     "VBScript": {
       "name": "VBScript",
