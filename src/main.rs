@@ -51,7 +51,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .or(config.columns)
         .or_else(|| {
             if cli.files {
-                term_size::dimensions().map(|(w, _)| w)
+                terminal_size::terminal_size().map(|(terminal_size::Width(w), _)| w as usize)
             } else {
                 None
             }
