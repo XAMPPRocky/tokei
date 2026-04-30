@@ -58,6 +58,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["art"]
     },
+    "AscendC": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["R\\\"(", ")\\\""]],
+      "extensions": ["asc"]
+    },
     "AsciiDoc": {
       "line_comment": ["//"],
       "multi_line_comments": [["////", "////"]],
