@@ -290,6 +290,16 @@ impl LanguageType {
                 {%- endfor %}
                 _ => ()
             }
+
+            {% for key, value in languages -%}
+                {%- if value.path_suffixes -%}
+                    {%- for suffix in value.path_suffixes %}
+            if filename.ends_with("{{suffix}}") {
+                return Some({{key}});
+            }
+                    {%- endfor %}
+                {% endif -%}
+            {%- endfor %}
         }
 
         match fsutils::get_extension(entry) {
