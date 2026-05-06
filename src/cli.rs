@@ -328,7 +328,7 @@ impl Cli {
     pub fn print_supported_languages() -> Result<(), Box<dyn std::error::Error>> {
         use table_formatter::table::*;
         use table_formatter::{cell, table};
-        let term_width = term_size::dimensions().map(|(w, _)| w).unwrap_or(75) - 8;
+        let term_width = terminal_size::terminal_size().map(|(terminal_size::Width(w), _)| w as usize).unwrap_or(75) - 8;
         let (lang_w, suffix_w) = if term_width <= 80 {
             (term_width / 2, term_width / 2)
         } else {

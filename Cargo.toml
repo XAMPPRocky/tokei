@@ -55,7 +55,7 @@ ignore = "0.4.22"
 log = "0.4.22"
 rayon = "1.10.0"
 serde = { version = "1.0.208", features = ["derive", "rc"] }
-term_size = "0.3.2"
+terminal_size = "0.4.4"
 toml = "0.8.19"
 parking_lot = "0.12.3"
 dashmap = { version = "6.0.1", features = ["serde"] }
