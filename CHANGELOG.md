@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [15.0.0](https://github.com/XAMPPRocky/tokei/compare/v14.0.0...v15.0.0) - 2026-05-06
+
+### Added
+
+- Added C3 programming language. ([#1319](https://github.com/XAMPPRocky/tokei/pull/1319))
+
+### Other
+
+- Add Laravel Blade language support ([#1353](https://github.com/XAMPPRocky/tokei/pull/1353))
+- Add Djot language support in languages.json ([#1321](https://github.com/XAMPPRocky/tokei/pull/1321))
+- Update strum/strum_macros to 0.27.2 ([#1316](https://github.com/XAMPPRocky/tokei/pull/1316))
+
 ## [14.0.0](https://github.com/XAMPPRocky/tokei/compare/v13.0.0...v14.0.0) - 2025-12-26
 
 ### Added
