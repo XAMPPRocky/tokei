@@ -105,6 +105,13 @@
       "multi_line_comments": [["/*", "*/"], ["<!--", "-->"]],
       "extensions": ["astro"]
     },
+    "Asymptote": {
+      "name": "Asymptote",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["asy"]
+    },
     "Ats": {
       "name": "ATS",
       "line_comment": ["//"],
