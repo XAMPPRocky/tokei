@@ -234,6 +234,12 @@
         ["'", "'"]
       ]
     },
+    "Camel": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["cml"]
+    },
     "Cangjie": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
