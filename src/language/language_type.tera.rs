@@ -20,9 +20,9 @@ impl LanguageType {
     ///
     /// ```
     /// # use tokei::*;
-    /// let bash = LanguageType::Bash;
+    /// let cpp = LanguageType::Cpp;
     ///
-    /// assert_eq!(bash.name(), "BASH");
+    /// assert_eq!(cpp.name(), "C++");
     /// ```
     pub fn name(self) -> &'static str {
         match self {
