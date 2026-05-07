@@ -1632,6 +1632,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["sass", "scss"]
     },
+    "Saltstack": {
+      "name": "SaltStack",
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["sls"]
+    },
     "Scala": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
