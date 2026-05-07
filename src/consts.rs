@@ -25,3 +25,7 @@ pub const COMMENTS_COLUMN_WIDTH: usize = 12;
 
 /// Blanks column width
 pub const BLANKS_COLUMN_WIDTH: usize = 12;
+
+/// Tokens column width
+#[cfg(feature = "tokens")]
+pub const TOKENS_COLUMN_WIDTH: usize = 12;

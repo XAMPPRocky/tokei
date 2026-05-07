@@ -126,9 +126,18 @@ impl LanguageType {
             stats.blanks += blanks;
             stats.code += code;
             stats.comments += comments;
+            #[cfg(feature = "tokens")]
+            if config.show_tokens {
+                stats.tokens = crate::tokens::count_tokens_from_bytes(text);
+            }
             stats
         } else {
-            self.parse_lines(config, text, CodeStats::new(), syntax)
+            let mut stats = self.parse_lines(config, text, CodeStats::new(), syntax);
+            #[cfg(feature = "tokens")]
+            if config.show_tokens {
+                stats.tokens = crate::tokens::count_tokens_from_bytes(text);
+            }
+            stats
         }
     }
 

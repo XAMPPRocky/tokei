@@ -18,6 +18,9 @@ pub struct Language {
     pub code: usize,
     /// The total number of comments(both single, and multi-line)
     pub comments: usize,
+    /// The total number of tokens (for LLM context estimation).
+    #[serde(default)]
+    pub tokens: usize,
     /// A collection of statistics of individual files.
     pub reports: Vec<Report>,
     /// A map of any languages found in the reports.
@@ -77,6 +80,7 @@ impl Language {
                 summary.comments += stats.comments;
                 summary.code += stats.code;
                 summary.blanks += stats.blanks;
+                summary.tokens += stats.tokens;
             }
         }
 
@@ -104,16 +108,19 @@ impl Language {
         let mut blanks = 0;
         let mut code = 0;
         let mut comments = 0;
+        let mut tokens = 0;
 
         for report in &self.reports {
             blanks += report.stats.blanks;
             code += report.stats.code;
             comments += report.stats.comments;
+            tokens += report.stats.tokens;
         }
 
         self.blanks = blanks;
         self.code = code;
         self.comments = comments;
+        self.tokens = tokens;
     }
 
     /// Checks if the language is empty. Empty meaning it doesn't have any
@@ -160,6 +167,9 @@ impl Language {
             Sort::Lines => self
                 .reports
                 .sort_by(|a, b| b.stats.lines().cmp(&a.stats.lines())),
+            Sort::Tokens => self
+                .reports
+                .sort_by(|a, b| b.stats.tokens.cmp(&a.stats.tokens)),
         }
     }
 }
@@ -169,6 +179,7 @@ impl AddAssign for Language {
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
         self.code += rhs.code;
+        self.tokens += rhs.tokens;
         self.reports.extend(mem::take(&mut rhs.reports));
         self.children.extend(mem::take(&mut rhs.children));
         self.inaccurate |= rhs.inaccurate;

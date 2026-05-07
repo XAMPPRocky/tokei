@@ -54,6 +54,8 @@ mod consts;
 mod language;
 mod sort;
 mod stats;
+#[cfg(feature = "tokens")]
+mod tokens;
 
 pub use self::{
     config::Config,
