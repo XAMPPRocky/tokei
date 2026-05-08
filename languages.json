@@ -1142,7 +1142,7 @@
         ["(*", "*)"],
         ["/*", "*/"]
       ],
-      "extensions": ["mll", "mly", "vy"]
+      "extensions": ["mll", "mly"]
     },
     "Meson": {
       "line_comment": ["#"],
@@ -2028,6 +2028,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"], ["`", "`"]],
       "important_syntax": ["<script", "<style", "<template"],
       "extensions": ["vue"]
+    },
+    "Vyper": {
+      "name": "Vyper",
+      "line_comment": ["#"],
+      "doc_quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["'''", "'''"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["vy"]
     },
     "WebAssembly": {
       "line_comment": [";;"],
