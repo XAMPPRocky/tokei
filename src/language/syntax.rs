@@ -74,6 +74,7 @@ pub(crate) struct SharedMatchers {
     pub any_comments: &'static [&'static str],
     pub is_fortran: bool,
     pub is_literate: bool,
+    pub is_diff: bool,
     pub line_comments: &'static [&'static str],
     pub any_multi_line_comments: &'static [(&'static str, &'static str)],
     pub multi_line_comments: &'static [(&'static str, &'static str)],
@@ -110,6 +111,7 @@ impl SharedMatchers {
             doc_quotes: language.doc_quotes(),
             is_fortran: language.is_fortran(),
             is_literate: language.is_literate(),
+            is_diff: language.is_diff(),
             important_syntax: init_corasick(language.important_syntax()),
             any_comments: language.any_comments(),
             line_comments: language.line_comments(),
@@ -195,6 +197,16 @@ impl SyntaxCounter {
             true
         } else if self.shared.important_syntax.is_match(line) {
             false
+        } else if self.shared.is_diff {
+            if ![" ", "#", "---", "+++"].iter().any(|start| line.starts_with(start.as_bytes())) {
+                stats.code += 1;
+                trace!("Code No.{}", stats.code);
+            } else {
+                stats.comments += 1;
+                trace!("Comment No.{}", stats.comments);
+            }
+
+            true
         } else {
             trace!("^ Skippable");
 
