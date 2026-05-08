@@ -5,7 +5,7 @@
 ![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
 ![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
 ![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
-![Chocolatey Downloads](https://img.shields.io/chocolatey/dt/tokei?label=Downloads%20(Chocolately))
+![Chocolatey Downloads](https://img.shields.io/chocolatey/dt/tokei?label=Downloads%20(Chocolatey))
 [![dependency status](https://deps.rs/repo/github/XAMPPRocky/tokei/status.svg)](https://deps.rs/repo/github/XAMPPRocky/tokei)
 [![Packaging status](https://repology.org/badge/tiny-repos/tokei.svg)](https://repology.org/project/tokei/versions)
 
