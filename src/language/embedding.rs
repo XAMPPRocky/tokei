@@ -22,6 +22,10 @@ pub static ENDING_MARKDOWN_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"```\s
 pub static STARTING_LF_BLOCK_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"\{="#).unwrap());
 pub static ENDING_LF_BLOCK_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"=}"#).unwrap());
 
+pub static STARTING_BRUNO_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r#"^(script:[^{]+|tests) \{"#).unwrap());
+pub static ENDING_BRUNO_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r#"\n}"#).unwrap());
+
 /// A memory of a regex matched.
 /// The values provided by `Self::start` and `Self::end` are in the same space as the
 /// start value supplied to `RegexCache::build`
@@ -67,6 +71,7 @@ pub(crate) enum RegexFamily<'a> {
     LinguaFranca(SimpleCapture<'a>),
     Markdown(SimpleCapture<'a>),
     Rust,
+    Bruno(SimpleCapture<'a>),
 }
 
 pub(crate) struct HtmlLike<'a> {
@@ -171,6 +176,10 @@ impl<'a> RegexCache<'a> {
             LanguageType::LinguaFranca => {
                 SimpleCapture::make_capture(&STARTING_LF_BLOCK_REGEX, lines, start, end)
                     .map(RegexFamily::LinguaFranca)
+            }
+            LanguageType::Bruno => {
+                SimpleCapture::make_capture(&STARTING_BRUNO_REGEX, lines, start, end)
+                    .map(RegexFamily::Bruno)
             }
             LanguageType::Html
             | LanguageType::RubyHtml

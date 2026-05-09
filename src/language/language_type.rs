@@ -185,6 +185,9 @@ impl LanguageType {
                                 let child_lang = syntax.get_lf_target_language();
                                 *stats.blobs.entry(child_lang).or_default() += blob;
                             }
+                            LanguageContext::Bruno => {
+                                *stats.blobs.entry(LanguageType::JavaScript).or_default() += blob;
+                            }
                             LanguageContext::Html { language } => {
                                 stats.code += 1;
                                 // Add all the markdown blobs.
