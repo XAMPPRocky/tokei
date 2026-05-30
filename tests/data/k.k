@@ -1,4 +1,4 @@
-// 8 lines 2 code 4 comments 2 blanks
+// language: "k" 8 lines 2 code 4 comments 2 blanks
 /suduko solver
 
 / initial state

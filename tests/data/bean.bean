@@ -1,4 +1,4 @@
-; 27 lines 13 code 6 comments 8 blanks
+; language: "bean" 27 lines 13 code 6 comments 8 blanks
 
 option "operating_currency" "EUR"
 

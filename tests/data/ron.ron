@@ -1,4 +1,4 @@
-// 157 lines 137 code 7 comments 13 blanks
+// language: "rusty object notation" 157 lines 137 code 7 comments 13 blanks
 
 #![enable(implicit_some)]
 Container(

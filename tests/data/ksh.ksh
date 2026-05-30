@@ -1,5 +1,5 @@
 #!/bin/ksh
-# 17 lines, 11 code, 4 comments, 2 blanks
+# language: "korn shell" 17 lines, 11 code, 4 comments, 2 blanks
 
 # first comment
 files="/etc/passwd /etc/group /etc/hosts"

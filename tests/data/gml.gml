@@ -1,4 +1,4 @@
-/* 17 lines 5 code 9 comments 3 blanks */
+/* language: "gml" 17 lines 5 code 9 comments 3 blanks */
 
 /* here's a comment */
 

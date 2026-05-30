@@ -1,4 +1,4 @@
-<!-- 13 lines 7 code 4 comments 2 blanks -->
+<!-- language: "xsl" 13 lines 7 code 4 comments 2 blanks -->
 <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     version="1.0">

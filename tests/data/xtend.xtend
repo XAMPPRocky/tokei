@@ -1,4 +1,4 @@
-// 23 lines 13 code 4 comments 6 blanks  
+// language: "xtend" 23 lines 13 code 4 comments 6 blanks  
 
 class Test {
     

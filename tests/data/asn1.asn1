@@ -1,4 +1,4 @@
--- 34 lines 16 code 11 comments 7 blanks
+-- language: "asn.1" 34 lines 16 code 11 comments 7 blanks
 PKCS-12 {
     iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) pkcs-12(12)
         modules(0) pkcs-12(1) }

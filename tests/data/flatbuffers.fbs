@@ -1,4 +1,4 @@
-// 34 lines 21 code 6 comments 7 blanks
+// language: "FlatBuffers Schema" 34 lines 21 code 6 comments 7 blanks
 
 include "another_schema.fbs";
 

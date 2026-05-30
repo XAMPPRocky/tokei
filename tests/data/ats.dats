@@ -1,4 +1,4 @@
-//! 42 lines 25 code 9 comments 8 blanks
+//! language: "ats" 42 lines 25 code 9 comments 8 blanks
 
 (*************
     Reference:

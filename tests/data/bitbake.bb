@@ -1,4 +1,4 @@
-# 23 lines 13 code 5 comments 5 blanks
+# language: "bitbake" 23 lines 13 code 5 comments 5 blanks
 #
 # This file was derived from the 'Hello World!' example recipe in the
 # Yocto Project Development Manual.

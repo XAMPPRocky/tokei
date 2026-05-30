@@ -1,4 +1,4 @@
-<!-- 36 lines, 24 code, 9 comments, 3 blanks -->
+<!-- language: "vue" 36 lines, 24 code, 9 comments, 3 blanks -->
 <template>
   <div id="app">
     <button v-on:click="clicked">

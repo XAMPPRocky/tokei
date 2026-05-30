@@ -1,4 +1,4 @@
-// 33 lines, 20 code, 10 comments, 3 blanks
+// language: "typescript" 33 lines, 20 code, 10 comments, 3 blanks
 /*
 
  Multi-line comment with blanks

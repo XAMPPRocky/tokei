@@ -1,4 +1,4 @@
-//! 40 lines 17 code 15 comments 8 blanks
+//! language: "codeql" 40 lines 17 code 15 comments 8 blanks
 
 /** 
  * @name fu 

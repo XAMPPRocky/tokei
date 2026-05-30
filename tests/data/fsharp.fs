@@ -1,4 +1,4 @@
-(* 15 lines 6 code 5 comments 4 blanks *)
+(* language: "f#" 15 lines 6 code 5 comments 4 blanks *)
 
 // Comment
 

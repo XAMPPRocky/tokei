@@ -1,4 +1,4 @@
-// 33 lines, 14 code, 12 comments, 7 blanks
+// language: "javascript" 33 lines, 14 code, 12 comments, 7 blanks
 
 /*
  * /* Nested comment

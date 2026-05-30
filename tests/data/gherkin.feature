@@ -1,4 +1,4 @@
-# 13 lines 8 code 3 comments 2 blanks
+# language: "gherkin (cucumber)" 13 lines 8 code 3 comments 2 blanks
 Feature: Guess the word
 
   # The first example has two steps
