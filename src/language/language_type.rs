@@ -65,7 +65,16 @@ impl LanguageType {
 
     /// Parses the bytes provided as the given [`LanguageType`].
     pub fn parse_from_slice<A: AsRef<[u8]>>(self, text: A, config: &Config) -> CodeStats {
-        let text = text.as_ref();
+        let mut text = text.as_ref();
+        let func = config.transform_fn;
+        let transformed: String;
+        text = match func {
+            Some(f) => {
+                transformed = f(text, &self);
+                transformed.as_bytes()
+            }
+            _ => text,
+        };
 
         if self == Jupyter {
             return self
