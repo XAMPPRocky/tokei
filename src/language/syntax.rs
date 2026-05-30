@@ -72,7 +72,7 @@ pub(crate) struct SharedMatchers {
     pub important_syntax: AhoCorasick,
     #[allow(dead_code)]
     pub any_comments: &'static [&'static str],
-    pub is_fortran: bool,
+    pub is_fixed_form_fortran: bool,
     pub is_literate: bool,
     pub line_comments: &'static [&'static str],
     pub any_multi_line_comments: &'static [(&'static str, &'static str)],
@@ -108,7 +108,7 @@ impl SharedMatchers {
             language,
             allows_nested: language.allows_nested(),
             doc_quotes: language.doc_quotes(),
-            is_fortran: language.is_fortran(),
+            is_fixed_form_fortran: language.is_fixed_form_fortran(),
             is_literate: language.is_literate(),
             important_syntax: init_corasick(language.important_syntax()),
             any_comments: language.any_comments(),
