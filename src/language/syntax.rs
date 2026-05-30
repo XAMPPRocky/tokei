@@ -334,12 +334,7 @@ impl SyntaxCounter {
         // `Some(true)` in order to respect the current configuration.
         #[allow(clippy::if_same_then_else)]
         if self.quote.is_some() {
-            if self.quote_is_doc_quote && config.treat_doc_strings_as_comments == Some(true) {
-                self.quote.map_or(false, |q| line.starts_with(q.as_bytes()))
-                    || (self.quote.is_some())
-            } else {
-                false
-            }
+            self.quote_is_doc_quote && config.treat_doc_strings_as_comments == Some(true)
         } else if self
             .shared
             .doc_quotes
