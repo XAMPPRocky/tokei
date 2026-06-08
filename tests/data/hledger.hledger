@@ -1,0 +1,18 @@
+# 18 lines 6 code 10 comments 2 blanks
+# a comment
+; another comment
+
+; ^ a blank line
+comment
+account assets             ; Declare valid account names and display order.
+a block comment
+end comment
+
+account assets:savings     ; A subaccount. This one represents a bank account.
+account assets:checking    ; Another. Note, 2+ spaces after the account name.
+account assets:receivable  ; Accounting type is inferred from english names,
+account passifs            ; or declared with a "type" tag, type:L
+account expenses           ; type:X
+                           ; A follow-on comment line, indented.
+account expenses:rent      ; Expense and revenue categories are also accounts.
+                           ; Subaccounts inherit their parent's type.

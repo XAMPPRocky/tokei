@@ -1,6 +1,6 @@
 extern crate ignore;
-extern crate serde_json;
 extern crate json5;
+extern crate serde_json;
 
 use std::ffi::OsStr;
 use std::fs;
@@ -109,7 +109,13 @@ use super::*;
         let path = path.path();
         let root = std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").unwrap());
 
-        let name = path.file_stem().unwrap().to_str().unwrap().to_lowercase();
+        let name = path
+            .file_stem()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_lowercase()
+            .replace('.', "_");
 
         if name == "jupyter" {
             continue;

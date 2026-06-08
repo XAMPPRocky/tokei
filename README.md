@@ -1,17 +1,16 @@
 # Tokei ([時計](https://en.wiktionary.org/wiki/%E6%99%82%E8%A8%88))
 [![Mean Bean CI](https://github.com/XAMPPRocky/tokei/workflows/Mean%20Bean%20CI/badge.svg)](https://github.com/XAMPPRocky/tokei/actions?query=workflow%3A%22Mean+Bean+CI%22)
 [![Help Wanted](https://img.shields.io/github/issues/XAMPPRocky/tokei/help%20wanted?color=green)](https://github.com/XAMPPRocky/tokei/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
-[![Lines Of Code](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=code)](https://github.com/XAMPPRocky/tokei)
 [![Documentation](https://docs.rs/tokei/badge.svg)](https://docs.rs/tokei/)
 ![](https://img.shields.io/crates/d/tokei?label=downloads%20%28crates.io%29)
 ![](https://img.shields.io/github/downloads/xampprocky/tokei/total?label=downloads%20%28GH%29)
 ![](https://img.shields.io/homebrew/installs/dy/tokei?color=brightgreen&label=downloads%20%28brew%29)
+![Chocolatey Downloads](https://img.shields.io/chocolatey/dt/tokei?label=Downloads%20(Chocolately))
 [![dependency status](https://deps.rs/repo/github/XAMPPRocky/tokei/status.svg)](https://deps.rs/repo/github/XAMPPRocky/tokei)
+[![Packaging status](https://repology.org/badge/tiny-repos/tokei.svg)](https://repology.org/project/tokei/versions)
+
 
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
-
-### Translations
-- [中文](https://github.com/chinanf-boy/tokei-zh#支持的语言)
 
 ## Example
 ```console
@@ -48,7 +47,6 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - [Configuration](#configuration)
 - [How to use Tokei](#how-to-use-tokei)
 - [Options](#options)
-- [Badges](#badges)
 - [Supported Languages](#supported-languages)
 - [Changelog](CHANGELOG.md)
 - [Common Issues](#common-issues)
@@ -68,7 +66,7 @@ Tokei is a program that displays statistics about your code. Tokei will show the
 - Tokei has huge range of languages, supporting over **150** languages, and
   their various extensions.
 
-- Tokei can output in multiple formats(**CBOR**, **JSON**, **YAML**)
+- Tokei can output in multiple formats (**CBOR**, **JSON**, **YAML**)
   allowing Tokei's output to be easily stored, and reused. These can also be
   reused in tokei combining a previous run's statistics with another set.
 
@@ -162,14 +160,11 @@ $ tokei ./foo
 [configuration]: ./tokei.example.toml
 
 #### Multiple folders
-To have tokei report on multiple folders in the same call simply add a comma,
-or a space followed by another path.
+To have tokei report on multiple folders in the same call, simply add all the
+folders you'd like tokei to examine.
 
 ```shell
 $ tokei ./foo ./bar ./baz
-```
-```shell
-$ tokei ./foo, ./bar, ./baz
 ```
 
 #### Excluding folders
@@ -276,31 +271,6 @@ ARGS:
     <input>...    The path(s) to the file or directory to be counted.
 ```
 
-## Badges
-Tokei has support for badges. For example
-[![](https://tokei.rs/b1/github/XAMPPRocky/tokei)](https://github.com/XAMPPRocky/tokei).
-
-```
-[![](https://tokei.rs/b1/github/XAMPPRocky/tokei)](https://github.com/XAMPPRocky/tokei).
-```
-
-Tokei's URL scheme is as follows.
-
-```
-https://tokei.rs/b1/{host: values: github|gitlab}/{Repo Owner eg: XAMPPRocky}/{Repo name eg: tokei}
-```
-
-By default the badge will show the repo's LoC(_Lines of Code_), you can also
-specify for it to show a different category, by using the `?category=` query
-string. It can be either `code`, `blanks`, `files`, `lines`, `comments`,
-Example show total lines:
-
-```
-[![](https://tokei.rs/b1/github/XAMPPRocky/tokei?category=lines)](https://github.com/XAMPPRocky/tokei).
-```
-
-The server code hosted on tokei.rs is in [XAMPPRocky/tokei_rs](https://github.com/XAMPPRocky/tokei_rs)
-
 ## Dockerized version
 Tokei is available in a small `alpine`-based docker image, buildable through [earthly](https://github.com/earthly/earthly):
 ```bash
@@ -330,6 +300,7 @@ Ada
 Agda
 Alex
 Alloy
+APL
 Asn1
 Asp
 AspNet
@@ -344,13 +315,17 @@ Bash
 Batch
 Bazel
 Bean
+Bicep
 Bitbake
+BQN
 BrightScript
 C
+C3
 Cabal
 Cassius
 Ceylon
 CHeader
+Cil
 Clojure
 ClojureC
 ClojureScript
@@ -368,8 +343,10 @@ CSharp
 CShell
 Css
 Cuda
+CUE
 Cython
 D
+D2
 DAML
 Dart
 DeviceTree
@@ -401,6 +378,7 @@ FSharp
 Fstar
 GDB
 GdScript
+GdShader
 Gherkin
 Gleam
 Glsl
@@ -416,6 +394,11 @@ Haskell
 Haxe
 Hcl
 Hex
+Hex0
+Hex1
+Hex2
+HiCAD
+hledger
 Hlsl
 HolyC
 Html
@@ -433,7 +416,10 @@ Json
 Jsx
 Julia
 Julius
+Just
 KakouneScript
+KaemFile
+Koka
 Kotlin
 Lean
 Less
@@ -445,14 +431,17 @@ LLVM
 Logtalk
 Lua
 Lucius
+M1Assembly
 Madlang
 Max
 Makefile
 Markdown
+Mdx
 Meson
 Mint
 Mlatu
 ModuleDef
+MonkeyC
 MoonScript
 MsBuild
 Mustache
@@ -473,7 +462,9 @@ Pascal
 Perl
 Perl6
 Pest
+Phix
 Php
+Po
 Poke
 Polly
 Pony
@@ -482,8 +473,10 @@ PowerShell
 Processing
 Prolog
 Protobuf
+PRQL
 PSL
 PureScript
+Pyret
 Python
 Qcl
 Qml
@@ -511,21 +504,25 @@ SpecmanE
 Spice
 Sql
 SRecode
+Stata
 Stratego
 Svelte
 Svg
 Swift
 Swig
 SystemVerilog
+Slint
+Tact
 Tcl
+Templ
 Tex
 Text
 Thrift
 Toml
 Tsx
 Twig
-TypeScript
 TypeLanguage
+TypeScript
 UMPL
 UnrealDeveloperMarkdown
 UnrealPlugin

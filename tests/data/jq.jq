@@ -2,7 +2,7 @@
 
 # A function to perform arithmetic
 def add_mul(adder; multiplier):
-  # comment chararacter in quotes
+  # comment character in quotes
   "# Result: " + ((. + adder) * multiplier | tostring);
 
 # and demonstrate it

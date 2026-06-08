@@ -1,0 +1,24 @@
+// 24 lines, 13 code, 8 comments, 3 blanks
+package test
+
+templ Foo() {
+	<div id="bar">
+	<!--
+            HTML comments are also allowed.
+        -->
+		<button class={ button() } onClick={ doSomething() }>Baz</button>
+	</div>
+}
+
+/*
+   some css class.
+*/
+css button() {
+	padding: 7px;
+	border-radius: 5px;
+}
+
+// doSomething does something
+script doSomething() {
+    alert("something")
+}

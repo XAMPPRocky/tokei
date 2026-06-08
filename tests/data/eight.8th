@@ -1,0 +1,22 @@
+\ 22 lines 9 code 8 comments 5 blanks
+
+(* multiline comments
+  (* a nested 
+     comment *)
+ *
+ *)
+
+-- here's a single line comment
+"Hello, " var, foo -- line ending comment
+
+\ here's another single line comment
+"!" var, bar \ a different line ending comment
+
+: hello   \ s --
+  foo @ s:<+ 
+  bar @ s:+
+  . cr
+;
+
+"World" hello
+bye

@@ -6,10 +6,164 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [14.0.0](https://github.com/XAMPPRocky/tokei/compare/v13.0.0...v14.0.0) - 2025-12-26
+
+### Added
+
+- add support for C++20 modules ([#1278](https://github.com/XAMPPRocky/tokei/pull/1278))
+- Add language support for Ark TypeScript ([#1300](https://github.com/XAMPPRocky/tokei/pull/1300))
+
+### Other
+
+- Fix downcast type mismatches in clap_builder ([#1310](https://github.com/XAMPPRocky/tokei/pull/1310))
+- remove tokei.rs references
+- Add support for Koka ([#1306](https://github.com/XAMPPRocky/tokei/pull/1306))
+- Stop recommending comma-separated CLI args ([#1305](https://github.com/XAMPPRocky/tokei/pull/1305))
+- Update clap-cargo from 0.13 to 0.18 ([#1298](https://github.com/XAMPPRocky/tokei/pull/1298))
+
+## [13.0.0-alpha.9](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.8...v13.0.0-alpha.9) - 2025-07-21
+
+### Other
+
+- Update README.md
+- Fix CRLF or mixed CRLF/LF line terminations in Markdown files ([#1219](https://github.com/XAMPPRocky/tokei/pull/1219))
+- Fix a minor typo in CLI help text ([#1217](https://github.com/XAMPPRocky/tokei/pull/1217))
+- Fix a missing space in CLI help text ([#1218](https://github.com/XAMPPRocky/tokei/pull/1218))
+- Relax lifetime constraints in language::embedding ([#1225](https://github.com/XAMPPRocky/tokei/pull/1225))
+
+## [13.0.0-alpha.8](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.7...v13.0.0-alpha.8) - 2025-01-14
+
+### Other
+
+- add Mojo support ([#1107](https://github.com/XAMPPRocky/tokei/pull/1107)) ([#1185](https://github.com/XAMPPRocky/tokei/pull/1185))
+- Add support for 8th language ([#1192](https://github.com/XAMPPRocky/tokei/pull/1192))
+- Add support for `Roc` language ([#1197](https://github.com/XAMPPRocky/tokei/pull/1197))
+- Add support for Ballerina language ([#1196](https://github.com/XAMPPRocky/tokei/pull/1196))
+- Remove 'conf' extension from the Bitbake config. ([#1001](https://github.com/XAMPPRocky/tokei/pull/1001))
+- Add support for Cairo language ([#1193](https://github.com/XAMPPRocky/tokei/pull/1193))
+- Add support for Uiua language ([#1191](https://github.com/XAMPPRocky/tokei/pull/1191))
+
+## [13.0.0-alpha.7](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.6...v13.0.0-alpha.7) - 2024-11-10
+
+### Other
+
+- Fix alternative output formats ([#1188](https://github.com/XAMPPRocky/tokei/pull/1188))
+- Add missing extension `fsti` for F* ([#1184](https://github.com/XAMPPRocky/tokei/pull/1184))
+
+## [13.0.0-alpha.6](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.5...v13.0.0-alpha.6) - 2024-10-11
+
+### Added
+
+- add `mbti` extension for MoonBit ([#1168](https://github.com/XAMPPRocky/tokei/pull/1168))
+
+### Other
+
+- Add language definition for Lauterbach PRACTICE Script ([#1162](https://github.com/XAMPPRocky/tokei/pull/1162))
+- Add support for justfiles ([#1175](https://github.com/XAMPPRocky/tokei/pull/1175))
+- Add Virgil ([#1178](https://github.com/XAMPPRocky/tokei/pull/1178))
+- Add templ support ([#1122](https://github.com/XAMPPRocky/tokei/pull/1122))
+- Update README.md with HiCAD from d4a1814 ([#1143](https://github.com/XAMPPRocky/tokei/pull/1143))
+- Add BQN support ([#1151](https://github.com/XAMPPRocky/tokei/pull/1151))
+- add more extensions for `Hlsl` ([#1164](https://github.com/XAMPPRocky/tokei/pull/1164))
+- Add Phix ([#1167](https://github.com/XAMPPRocky/tokei/pull/1167))
+- Add APL support ([#1152](https://github.com/XAMPPRocky/tokei/pull/1152))
+- Add support for SIL ([#1153](https://github.com/XAMPPRocky/tokei/pull/1153))
+- Use `OR` operator in Cargo.toml `license` field ([#1165](https://github.com/XAMPPRocky/tokei/pull/1165))
+- Disable legacy Cargo features ([#1158](https://github.com/XAMPPRocky/tokei/pull/1158))
+- add slint language support ([#1054](https://github.com/XAMPPRocky/tokei/pull/1054))
+- Add Pyret support ([#1032](https://github.com/XAMPPRocky/tokei/pull/1032))
+- Recognize GNUmakefile ([#1021](https://github.com/XAMPPRocky/tokei/pull/1021))
+
+## [13.0.0-alpha.5](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.4...v13.0.0-alpha.5) - 2024-08-23
+
+### Fixed
+- fix issue https://github.com/XAMPPRocky/tokei/issues/1147 ([#1149](https://github.com/XAMPPRocky/tokei/pull/1149))
+
+### Other
+- Fix issue [#1145](https://github.com/XAMPPRocky/tokei/pull/1145) (part 2) ([#1148](https://github.com/XAMPPRocky/tokei/pull/1148))
+
+## [13.0.0-alpha.4](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.3...v13.0.0-alpha.4) - 2024-08-22
+
+### Fixed
+- fix issue https://github.com/XAMPPRocky/tokei/issues/1145 ([#1146](https://github.com/XAMPPRocky/tokei/pull/1146))
+
+### Other
+- Add support for Glimmer JS/TS ([#1052](https://github.com/XAMPPRocky/tokei/pull/1052))
+- Fix issue [#1141](https://github.com/XAMPPRocky/tokei/pull/1141) ([#1142](https://github.com/XAMPPRocky/tokei/pull/1142))
+
+## [13.0.0-alpha.3](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.2...v13.0.0-alpha.3) - 2024-08-20
+
+### Fixed
+- fix issue https://github.com/XAMPPRocky/tokei/issues/1138 ([#1139](https://github.com/XAMPPRocky/tokei/pull/1139))
+
+## [13.0.0-alpha.2](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.1...v13.0.0-alpha.2) - 2024-08-19
+
+### Added
+- Add support for Monkey C ([#1081](https://github.com/XAMPPRocky/tokei/pull/1081))
+- added plantuml support ([#1125](https://github.com/XAMPPRocky/tokei/pull/1125))
+- add language Tact ([#1103](https://github.com/XAMPPRocky/tokei/pull/1103))
+- add support for bicep ([#1100](https://github.com/XAMPPRocky/tokei/pull/1100))
+- add hledger ([#1121](https://github.com/XAMPPRocky/tokei/pull/1121))
+- add SELinux CIL policy source files ([#1124](https://github.com/XAMPPRocky/tokei/pull/1124))
+- --files argument now sorts alphabetically ([#1059](https://github.com/XAMPPRocky/tokei/pull/1059))
+- add support for LALRPOP ([#1077](https://github.com/XAMPPRocky/tokei/pull/1077))
+
+### Fixed
+- read hidden from config file ([#1093](https://github.com/XAMPPRocky/tokei/pull/1093))
+
+### Other
+- Fix cargo audit issues ([#1137](https://github.com/XAMPPRocky/tokei/pull/1137))
+- Add support for MDX ([#1046](https://github.com/XAMPPRocky/tokei/pull/1046))
+- Add PRQL to README.md ([#1088](https://github.com/XAMPPRocky/tokei/pull/1088))
+- add fypp extension `.fpp` to `languages.json` for Modern Fortran ([#1060](https://github.com/XAMPPRocky/tokei/pull/1060))
+- Add support for Lex ([#1087](https://github.com/XAMPPRocky/tokei/pull/1087))
+- Add d2 ([#1091](https://github.com/XAMPPRocky/tokei/pull/1091))
+- Add support for Stata ([#1112](https://github.com/XAMPPRocky/tokei/pull/1112))
+- Add support for CUE ([#1049](https://github.com/XAMPPRocky/tokei/pull/1049))
+- bump libc from 0.2.147 to 0.2.155 ([#1104](https://github.com/XAMPPRocky/tokei/pull/1104))
+- add cangjie language support ([#1127](https://github.com/XAMPPRocky/tokei/pull/1127)) ([#1128](https://github.com/XAMPPRocky/tokei/pull/1128))
+- Add support for JSLT ([#1129](https://github.com/XAMPPRocky/tokei/pull/1129))
+- Add Arturo support ([#1108](https://github.com/XAMPPRocky/tokei/pull/1108))
+- Support Bazel's MODULE files and *.bzlmod files ([#1130](https://github.com/XAMPPRocky/tokei/pull/1130))
+- read only first 128B from the file when searching for shebang ([#1040](https://github.com/XAMPPRocky/tokei/pull/1040))
+- add OpenCL as a languages.json entry ([#980](https://github.com/XAMPPRocky/tokei/pull/980))
+- Add GetText Portable Object (PO) files ([#814](https://github.com/XAMPPRocky/tokei/pull/814))
+- Support godot shader ([#1118](https://github.com/XAMPPRocky/tokei/pull/1118))
+- Add Modelica language ([#1061](https://github.com/XAMPPRocky/tokei/pull/1061))
+- Add menhir support ([#781](https://github.com/XAMPPRocky/tokei/pull/781))
+- Update README.md
+- [issue_1114] remove Cargo.lock from .gitignore ([#1115](https://github.com/XAMPPRocky/tokei/pull/1115))
+- [issue_891] give more space for Files column ([#933](https://github.com/XAMPPRocky/tokei/pull/933))
+- GitHub Action to publish docker images ([#1096](https://github.com/XAMPPRocky/tokei/pull/1096))
+- Support MoonBit language. ([#1095](https://github.com/XAMPPRocky/tokei/pull/1095))
+- Add OpenSCAD ([#1097](https://github.com/XAMPPRocky/tokei/pull/1097))
+- add jinja extension for Jinja2 ([#1083](https://github.com/XAMPPRocky/tokei/pull/1083))
+- Fix slang ([#1089](https://github.com/XAMPPRocky/tokei/pull/1089))
+- Temporarily remove Hare
+- Support .pyi python file ([#1075](https://github.com/XAMPPRocky/tokei/pull/1075))
+- add luau extension to lua ([#1066](https://github.com/XAMPPRocky/tokei/pull/1066))
+- Adding support for Snakemake ([#1045](https://github.com/XAMPPRocky/tokei/pull/1045))
+- Add Janet to languages.json ([#1042](https://github.com/XAMPPRocky/tokei/pull/1042))
+- Add OpenQASM support ([#1041](https://github.com/XAMPPRocky/tokei/pull/1041))
+- typst ([#1037](https://github.com/XAMPPRocky/tokei/pull/1037))
+- Add the ZoKrates language ([#1035](https://github.com/XAMPPRocky/tokei/pull/1035))
+- Add PRQL ([#1030](https://github.com/XAMPPRocky/tokei/pull/1030))
+- remove refs ([#1006](https://github.com/XAMPPRocky/tokei/pull/1006))
+- Add lingua franca language ([#993](https://github.com/XAMPPRocky/tokei/pull/993))
+- Add support for Razor Components ([#992](https://github.com/XAMPPRocky/tokei/pull/992))
+- Add arch's PKGBUILD files ([#972](https://github.com/XAMPPRocky/tokei/pull/972))
+- Add Hare support ([#971](https://github.com/XAMPPRocky/tokei/pull/971))
+- Add Max support ([#963](https://github.com/XAMPPRocky/tokei/pull/963))
+- Add support for Chapel ([#960](https://github.com/XAMPPRocky/tokei/pull/960))
+- Add language support for Slang ([#956](https://github.com/XAMPPRocky/tokei/pull/956))
+- Update TypeScript language ([#953](https://github.com/XAMPPRocky/tokei/pull/953))
+- Added support for Circom ([#949](https://github.com/XAMPPRocky/tokei/pull/949))
+- link to earthly project ([#1078](https://github.com/XAMPPRocky/tokei/pull/1078))
+
 ## [13.0.0-alpha.1](https://github.com/XAMPPRocky/tokei/compare/v13.0.0-alpha.0...v13.0.0-alpha.1) - 2024-03-04
 
 ### Fixed
-- fixed language names not showing when in Light mode (light background ([#1048](https://github.com/XAMPPRocky/tokei/pull/1048))
+- fixed language names not showing when in Light mode (light background) ([#1048](https://github.com/XAMPPRocky/tokei/pull/1048))
 
 ### Other
 - Create release-plz.yaml
@@ -88,7 +242,7 @@ Tokei 12 comes with some of the biggest user facing changes since 1.0, now in
 the latest version tokei will now **analyse and count multiple languages
 embedded in your source code** as well as adding support for
 **Jupyter Notebooks**. Now for the first time is able to handle and display
-different languages contained in a single source file. This currently available
+different languages contained in a single source file. This is currently available
 for a limited set of languages, with plans to add more support for more in the
 future. The currently supported languages are;
 
@@ -332,13 +486,13 @@ notable that `scc` takes nearly 3x as long to complete on smaller codebases
 - [Tokei's README has been translated
   to chinese.](https://github.com/chinanf-boy/tokei-zh#tokei-)
 - `LanguageType` now implements `Hash`.
-- Tokei now batches it's console output, this should result in a small
+- Tokei now batches its console output, this should result in a small
   performance boost.
 - There is now a `--columns` argument for manually setting tokei's output width.
 - The `--sort` argument is now case-insensitive.
 - Tokei will now mark languages who's files failed to parse correctly as
   potentially inaccurate.
-- Due to a bug in trust-ci `x86_64-unknown-netbsd` versions are will not be
+- Due to a bug in trust-ci `x86_64-unknown-netbsd` versions will not be
   available in GitHub releases. (You will still be able to install from source.)
 - Due to toml-rs's lacking enum support the TOML output option has
   been disabled.

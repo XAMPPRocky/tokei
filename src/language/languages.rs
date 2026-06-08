@@ -64,7 +64,7 @@ impl Languages {
     /// provided by [`Language`].
     ///
     /// Takes a `&[&str]` of paths to recursively traverse, paths can be
-    /// relative, absolute or glob paths. a second `&[&str]` of paths to ignore,
+    /// relative, absolute or glob paths. A second `&[&str]` of paths to ignore,
     /// these strings use the `.gitignore` syntax, such as `target`
     /// or `**/*.bk`.
     ///

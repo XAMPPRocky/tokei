@@ -1,0 +1,154 @@
+# 154 lines 89 code 34 comments 31 blanks
+# SPDX-FileCopyrightText: 2017 Jeremiah Orians <jeremiah@pdp10.guru>
+# SPDX-FileCopyrightText: 2023 Andrius Štikonas <andrius@stikonas.eu>
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+## ELF Header
+#:ELF_base
+7F 45 4C 46        ## e_ident[EI_MAG0-3] ELF's magic number
+
+02                 ## e_ident[EI_CLASS] Indicating 64 bit
+01                 ## e_ident[EI_DATA] Indicating little endianness
+01                 ## e_ident[EI_VERSION] Indicating original elf
+
+03                 ## e_ident[EI_OSABI] Set at 3 because FreeBSD is strict
+00                 ## e_ident[EI_ABIVERSION] Set at 0 because none cares
+
+00 00 00 00 00 00 00 ## e_ident[EI_PAD]
+02 00              ## e_type Indicating Executable
+3E 00              ## e_machine Indicating AMD64
+01 00 00 00        ## e_version Indicating original elf
+
+78 00 60 00 00 00 00 00 ## e_entry Address of the entry point (Number of bytes this header is + Base Address)
+40 00 00 00 00 00 00 00 ## e_phoff Address of program header table
+00 00 00 00 00 00 00 00 ## e_shoff Address of section header table
+
+00 00 00 00        ## e_flags
+40 00              ## e_ehsize Indicating our 64 Byte header
+
+38 00              ## e_phentsize size of a program header table
+01 00              ## e_phnum number of entries in program table
+
+00 00              ## e_shentsize size of a section header table
+00 00              ## e_shnum number of entries in section table
+
+00 00              ## e_shstrndx index of the section names
+
+## Program Header
+#:ELF_program_headers
+01 00 00 00             ## p_type
+01 00 00 00             ## p_flags: PF-X = 1
+00 00 00 00 00 00 00 00 ## p_offset
+
+00 00 60 00 00 00 00 00 ## p_vaddr
+00 00 60 00 00 00 00 00 ## p_physaddr
+
+E5 00 00 00 00 00 00 00 ## p_filesz
+E5 00 00 00 00 00 00 00 ## p_memsz
+
+01 00 00 00 00 00 00 00 ## Required alignment
+
+#:ELF_text
+
+# Where the ELF Header is going to hit
+# Simply jump to _start
+# Our main function
+#:_start (0x600078)
+	58                  ; pop_rax         # Get the number of arguments
+	5F                  ; pop_rdi         # Get the program name
+	5F                  ; pop_rdi         # Get the actual input name
+	31F6                ; xor_esi,esi     # prepare read_only, rsi = 0
+	6A 02               ; push !2         # prepare syscall number
+	58                  ; pop_rax         # the syscall number for open()
+	99                  ; cdq             # Extra sure, rdx = 0
+	0F05                ; syscall         # Now open that damn file
+	5F                  ; pop_rdi         # Get the actual output name
+	50                  ; push_rax        # Preserve the file pointer we were given
+	66BE 4102           ; mov_si, @577    # Prepare file as O_WRONLY|O_CREAT|O_TRUNC
+	66BA C001           ; mov_dx, @448    # Prepare file as RWX for owner only (700 in octal)
+	6A 02               ; push !2         # prepare syscall number
+	58                  ; pop_rax         # the syscall number for open()
+	0F05                ; syscall         # Now open that damn file
+	93                  ; xchg_ebx,eax    # Preserve the file pointer we were given
+	99                  ; cdq             # rdx = 0 since file descriptor is nonnegative
+	FFC2                ; inc_edx         # rdx = 1 (count for read/write)
+
+#:loop_reset_all (0x600096)
+	31ED                ; xor_ebp,ebp     # ebp = 0 (no prior hex val)
+
+# Comment tracking is done with ecx.
+# ecx is decremented if we hit a
+# comment (';' or '#') and reset
+# if we hit a new-line.
+#:loop_reset_comment (0x600098)
+	52                  ; push_rdx
+	59                  ; pop_rcx         # Set no current comment
+#:loop_add_comment (0x60009A)
+	FFC9                ; dec_ecx
+#:loop (0x60009C)
+
+	# Read a byte
+	5F                  ; pop_rdi         # Get infile
+	54                  ; push_rsp
+	5E                  ; pop_rsi         # Set buffer
+	# rdx is already set to 1.
+	31C0                ; xor_eax,eax     # Set read syscall in rax
+	51                  ; push_rcx        # Save comment tracking
+	0F05                ; syscall         # Do the actual read
+	59                  ; pop_rcx         # Restore comment tracking
+	57                  ; push_rdi        # Re-save infile
+	85C0                ; test_eax,eax    # Check what we got
+	75 06               ; jne !cont       # No EOF
+
+	# Exit successfully
+	B0 3C               ; mov_al, !60     # Set exit syscall in rax
+	31FF                ; xor_edi,edi     # Set return success (rdi = 0)
+	0F05                ; syscall         # Exit
+
+#:cont (0x6000B0)
+	8A06                ; mov_al,[rsi]    # Move prog byte in eax
+
+	# New line check
+	3C 0A               ; cmp_al, !10     # Check new-line
+	74 E2               ; je !loop_reset_comment # If new-line, end comment handling
+
+	# In comment check
+	85C9                ; test_ecx,ecx    # Skip byte if we are in a comment
+	75 E2               ; jne !loop
+
+	# Start comment check
+	3C 23               ; cmp_al, !35     # Start of '#' comment
+	74 DC               ; je !loop_add_comment
+
+	3C 3B               ; cmp_al, !59     # Start of ';' comment
+	74 D8               ; je !loop_add_comment
+
+	# Start of hex str to int
+	2C 30               ; sub_al, !48     # Subtract ascii '0' from al
+	2C 0A               ; sub_al, !10     # Check for value in '0'-'9'
+	72 08               ; jb !write       # We have hex value, write it
+
+	2C 07               ; sub_al, !7      # Subtract ('A'-'0') from al
+	24 DF               ; and_al, !0xDF   # Remove lower case bit
+	3C 07               ; cmp_al, !7      # Check for value 'A'-'F'
+	73 CC               ; jae !loop       # We have hex value, write it
+
+#:write (0x6000D0)
+	C1E5 04             ; shl_ebp, !4     # Shift up existing hex digit
+	04 0A               ; add_al, !10     # Finish converting ascii to raw value
+	01C5                ; add_ebp,eax     # Combine the hex digits
+
+	# Check if this is first digit in hex val
+	F7DB                ; neg_ebx         # Flip sign of r10 to indicate we got a digit
+	7C C1               ; jl !loop        # Negative -> first digit, get another one
+
+	# We have both digits in low byte of ebp, good to write
+	892E                ; mov_[rsi],ebp   # Move edge to buffer
+	89DF                ; mov_edi,ebx     # Move outfile to rdi
+	B0 01               ; mov_al, !1      # Set write syscall in rax
+	0F05                ; syscall         # Do the write
+	EB B1               ; jmp !loop_reset_all # Start a fresh byte
+
+#:ELF_end (0x6000E5)
+

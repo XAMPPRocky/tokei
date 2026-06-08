@@ -1,0 +1,280 @@
+# 280 lines 197 code 47 comments 36 blanks
+## Copyright (C) 2016 Jeremiah Orians
+## This file is part of stage0.
+##
+## stage0 is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## stage0 is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with stage0.  If not, see <http://www.gnu.org/licenses/>.
+
+# M2-Planet standards
+DEFINE NULL 00000000
+
+# Registers
+DEFINE R0 0
+DEFINE R1 1
+DEFINE R2 2
+DEFINE R3 3
+DEFINE R4 4
+DEFINE R5 5
+DEFINE R6 6
+DEFINE R7 7
+DEFINE R8 8
+DEFINE R9 9
+DEFINE R10 A
+DEFINE R11 B
+DEFINE R12 C
+DEFINE BP C
+DEFINE R13 D
+DEFINE SP D
+DEFINE R14 E
+DEFINE LR E
+DEFINE R15 F
+DEFINE PC F
+
+# Register masks for push/pop16
+DEFINE {R0} 0100
+DEFINE {R1} 0200
+DEFINE {R2} 0400
+DEFINE {R3} 0800
+DEFINE {R4} 1000
+DEFINE {R8} 0001
+DEFINE {R9} 0002
+DEFINE {R10} 0004
+DEFINE {R11} 0008
+DEFINE {BP} 0010
+DEFINE {LR} 0040
+
+# Bitshift constants
+DEFINE NO_SHIFT 0
+DEFINE LEFT 1
+DEFINE RIGHT 3
+DEFINE ARITH_RIGHT 5
+
+# LOAD/STORE
+DEFINE HALF_MEMORY E1
+DEFINE MEMORY E5
+DEFINE NO_OFFSET B0
+DEFINE STORE32 08
+DEFINE STORE16 0C
+DEFINE STORE8 0C
+DEFINE LOAD32 09
+DEFINE LOADU8 0
+DEFINE LOADS8 D0
+DEFINE LOADS16 F0
+DEFINE LOAD 0D
+DEFINE LOADI8_ALWAYS 0A0E3
+DEFINE LOADI8_G 0A0C3
+DEFINE LOADI8_GE 0A0A3
+DEFINE LOADI8_EQUAL 0A003
+DEFINE LOADI8_NE 0A013
+DEFINE LOADI8_LE 0A0D3
+DEFINE LOADI8_L 0A0B3
+DEFINE LOADI8_HI 0A083
+DEFINE LOADI8_HS 0A023
+DEFINE LOADI8_LS 0A093
+DEFINE LOADI8_LO 0A033
+
+# JUMP/BRANCH
+DEFINE JUMP_ALWAYS EA
+DEFINE JUMP_EQUAL 0A
+DEFINE JUMP_NE 1A
+DEFINE CALL_ALWAYS EB
+DEFINE CALL_REG_ALWAYS FF2FE1
+DEFINE RETURN FF2FE1
+
+# Data movement
+DEFINE MOVE_ALWAYS A0E1
+DEFINE MVN_ALWAYS 0E0E1
+DEFINE MVN_LT 0E0B1
+DEFINE MVNI8_EQUAL 0E003
+DEFINE PUSH_ALWAYS 2DE9
+DEFINE POP_ALWAYS BDE8
+
+# Arithmetic/logic
+DEFINE AUX_ALWAYS E1
+DEFINE IMM_ALWAYS E3
+DEFINE ARITH_ALWAYS E2
+DEFINE ARITH_GE A2
+DEFINE ARITH_LT B2
+DEFINE ARITH_NE 12
+DEFINE ARITH2_ALWAYS E0
+DEFINE ARITH2_GE A0
+DEFINE ADC 0A
+DEFINE ADCS 0B
+DEFINE ADD 08
+DEFINE ADDS 09
+DEFINE AND 00
+DEFINE CMP 005
+DEFINE CMPI8 005
+DEFINE MUL 0
+DEFINE MULS 1
+DEFINE OR 08
+DEFINE SHIFT A0
+DEFINE SUB 04
+DEFINE RSUB 06
+DEFINE XOR 02
+
+# SYSCALL
+DEFINE SYSCALL_ALWAYS 000000EF
+
+## Copyright (C) 2016 Jeremiah Orians
+## This file is part of M2-Planet.
+##
+## M2-Planet is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## M2-Planet is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with M2-Planet.  If not, see <http://www.gnu.org/licenses/>.
+
+:_start
+	'0' SP BP NO_SHIFT MOVE_ALWAYS  ; Setup Base Pointer
+
+	;; Prepare argv
+	!4 R0 ADD BP ARITH_ALWAYS       ; ARGV_address = BP + 4
+	{R0} PUSH_ALWAYS                ; Put argv on the stack
+
+	;; Prepare envp
+	'0' BP R0 NO_SHIFT MOVE_ALWAYS  ; Address we need to load from
+	!0 R0 LOAD32 R0 MEMORY          ; Get ARGC
+	!2 R0 ADD R0 ARITH_ALWAYS       ; OFFSET = ARGC + 2
+	'0' R0 R0 '1' MOVE_ALWAYS       ; OFFSET = OFFSET * WORDSIZE
+	'0' R0 R0 ADD BP ARITH2_ALWAYS  ; ENVP_address = BP + OFFSET
+	{R0} PUSH_ALWAYS                ; Put envp on the stack
+
+	;; Stack offset
+	!4 BP ADD BP ARITH_ALWAYS       ; Fix BP
+
+	^~FUNCTION___init_malloc CALL_ALWAYS ; Setup for malloc
+
+	^~FUNCTION___init_io CALL_ALWAYS ; Setup for FILE*
+
+	^~FUNCTION_main CALL_ALWAYS     ; Jump right into main
+
+	{R1} POP_ALWAYS                 ; Fix stack
+	{R1} POP_ALWAYS                 ; Fix stack
+	{R1} POP_ALWAYS                 ; Fix stack
+	{R0} PUSH_ALWAYS                ; put return on the stack
+	{R0} PUSH_ALWAYS                ; So that _exit will have it
+	{R0} PUSH_ALWAYS                ; So that _exit will have it
+
+:FUNCTION_exit
+	^~FUNCTION___kill_io CALL_ALWAYS
+
+:FUNCTION__exit
+	!4 R0 SUB R12 ARITH_ALWAYS
+	!0 R0 LOAD32 R0 MEMORY
+	!1 R7 LOADI8_ALWAYS
+	SYSCALL_ALWAYS                  ; exit
+
+# Unsigned Divide
+:divide
+	{R4} PUSH_ALWAYS                ; Protect R4
+	{R3} PUSH_ALWAYS                ; Protect R3
+	{R2} PUSH_ALWAYS                ; Protect R2
+
+	'0' R0 R3 NO_SHIFT MOVE_ALWAYS  ; MOV R3,R0
+	'0' R1 R2 NO_SHIFT MOVE_ALWAYS  ; MOV R2,R1
+
+	!0 R0 LOADI8_ALWAYS             ; MOV R0,#0
+	!0 CMPI8 R2 IMM_ALWAYS          ; CMP R2,#0
+	!1 R0 SUB R0 ARITH_LT           ; SUBLT R0,R0,#1
+	!0 CMPI8 R3 IMM_ALWAYS          ; CMP R3,#0
+	!0 R3 RSUB R3 ARITH_LT          ; RSBLT R3,R3,#0
+	'0' R0 R0 MVN_LT                ; MVNLT R0,R0
+	'0' R0 R4 NO_SHIFT MOVE_ALWAYS  ; MOV R4,R0
+
+	!32 R0 LOADI8_ALWAYS            ; MOV  R0,#32.
+	!0 R1 LOADI8_ALWAYS             ; MOV  R1,#0
+:divide_loop
+	'0' R2 R2 ADDS R2 ARITH2_ALWAYS ; ADDS R2,R2,R2
+	'0' R1 R1 ADCS R1 ARITH2_ALWAYS ; ADCS R1,R1,R1
+	'0' R3 CMP R1 AUX_ALWAYS        ; CMP  R1,R3
+	'0' R3 R1 SUB R1 ARITH2_GE      ; SUBGE  R1,R1,R3
+	!1 R2 ADD R2 ARITH_GE           ; ADDGE  R2,R2,#1
+	!1 R0 SUB R0 ARITH_ALWAYS       ; SUB  R0,R0,#1
+	!0 CMPI8 R0 IMM_ALWAYS          ; CMP  R0,#0
+	^~divide_loop JUMP_NE           ; BNE  loop
+
+	'0' R2 R0 NO_SHIFT MOVE_ALWAYS  ; MOV R0,R2
+
+	{R2} POP_ALWAYS                 ; Restore R2
+	{R3} POP_ALWAYS                 ; Restore R3
+	{R4} POP_ALWAYS                 ; Restore R4
+	'1' LR RETURN
+
+# Signed Divide
+:divides
+	{R4} PUSH_ALWAYS                ; Protect R4
+	{R3} PUSH_ALWAYS                ; Protect R3
+	{R2} PUSH_ALWAYS                ; Protect R2
+
+	'0' R0 R3 NO_SHIFT MOVE_ALWAYS  ; MOV R3,R0
+	'0' R1 R2 NO_SHIFT MOVE_ALWAYS  ; MOV R2,R1
+
+	!0 R0 LOADI8_ALWAYS             ; MOV R0,#0
+	!0 CMPI8 R2 IMM_ALWAYS          ; CMP R2,#0
+	!0 R2 RSUB R2 ARITH_LT          ; RSBLT R2,R2,#0
+	!1 R0 SUB R0 ARITH_LT           ; SUBLT R0,R0,#1
+	!0 CMPI8 R3 IMM_ALWAYS          ; CMP R3,#0
+	!0 R3 RSUB R3 ARITH_LT          ; RSBLT R3,R3,#0
+	'0' R0 R0 MVN_LT                ; MVNLT R0,R0
+	'0' R0 R4 NO_SHIFT MOVE_ALWAYS  ; MOV R4,R0
+
+	!32 R0 LOADI8_ALWAYS            ; MOV  R0,#32.
+	!0 R1 LOADI8_ALWAYS             ; MOV  R1,#0
+:divides_loop
+	'0' R2 R2 ADDS R2 ARITH2_ALWAYS ; ADDS R2,R2,R2
+	'0' R1 R1 ADCS R1 ARITH2_ALWAYS ; ADCS R1,R1,R1
+	'0' R3 CMP R1 AUX_ALWAYS        ; CMP  R1,R3
+	'0' R3 R1 SUB R1 ARITH2_GE      ; SUBGE  R1,R1,R3
+	!1 R2 ADD R2 ARITH_GE           ; ADDGE  R2,R2,#1
+	!1 R0 SUB R0 ARITH_ALWAYS       ; SUB  R0,R0,#1
+	!0 CMPI8 R0 IMM_ALWAYS          ; CMP  R0,#0
+	^~divides_loop JUMP_NE          ; BNE  loop
+
+	!0 CMPI8 R4 IMM_ALWAYS          ; CMP R4,#0
+	!0 R2 RSUB R2 ARITH_NE          ; RSBNE R2,R2,#0
+	'0' R2 R0 NO_SHIFT MOVE_ALWAYS  ; MOV R0,R2
+
+	{R2} POP_ALWAYS                 ; Restore R2
+	{R3} POP_ALWAYS                 ; Restore R3
+	{R4} POP_ALWAYS                 ; Restore R4
+	'1' LR RETURN
+
+# Unsigned Modulus
+:modulus
+	{LR} PUSH_ALWAYS                ; Prepare to leverage divide
+	^~divide CALL_ALWAYS            ; Use divide
+	'0' R1 R0 NO_SHIFT MOVE_ALWAYS  ; MOV R0,R1
+	{LR} POP_ALWAYS                 ; Prepare for return
+	'1' LR RETURN
+
+# Signed Modulus
+:moduluss
+	{LR} PUSH_ALWAYS                ; Prepare to leverage divide
+	^~divides CALL_ALWAYS           ; Use divides
+	'0' R1 R0 NO_SHIFT MOVE_ALWAYS  ; MOV R0,R1
+	{LR} POP_ALWAYS                 ; Prepare for return
+	'1' LR RETURN
+
+:GLOBAL__envp
+	NULL
+
+:mystring
+"this is my string\n"
