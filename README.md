@@ -369,6 +369,7 @@ Factor
 FEN
 Fish
 FlatBuffers
+Fluent
 ForgeConfig
 Forth
 FortranLegacy
