@@ -190,6 +190,13 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["bb", "bbclass", "bbappend", "inc"]
     },
+    "Blade": {
+      "name": "Blade",
+      "multi_line_comments": [["{{--", "--}}"], ["<!--", "-->"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "extensions": ["blade"],
+      "path_suffixes": [".blade.php"]
+    },
     "Bqn": {
       "name": "BQN",
       "line_comment": ["#"],
