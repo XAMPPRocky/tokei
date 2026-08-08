@@ -577,6 +577,8 @@ please make your issues, and pull requests there.
 
 - [tokei-pie](https://github.com/laixintao/tokei-pie): Render tokei's output to
   interactive sunburst chart.
+- [OctoCounts](https://github.com/huanglizhuo/OctoCounts): GitHub SLOC counter
+  that adds file and line counts to GitHub repo pages using tokei.
 
 ## Copyright and License
 (C) Copyright 2015 by XAMPPRocky and contributors
