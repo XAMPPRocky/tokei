@@ -124,6 +124,8 @@ winget install XAMPPRocky.tokei
 scoop install tokei
 ```
 
+After Winget or Scoop, open a **new** terminal so `PATH` picks up the `tokei` shim. For `cargo install`, ensure `%USERPROFILE%\.cargo\bin` is on `PATH`.
+
 ### Manual
 
 #### Downloading
