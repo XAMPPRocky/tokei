@@ -369,11 +369,9 @@ impl<W: Write> Printer<W> {
                                             self.writer,
                                             "-- {} {}",
                                             report.name.display(),
-                                            "-".repeat(
-                                                self.columns
-                                                    - 4
-                                                    - report.name.display().to_string().len()
-                                            )
+                                            "-".repeat(self.columns.saturating_sub(
+                                                4 + report.name.display().to_string().len()
+                                            ))
                                         )?;
                                     }
                                     let mut new_report = (*report).clone();
@@ -488,5 +486,49 @@ impl<W: Write> Printer<W> {
         self.print_row()?;
         self.print_language_in_print_total(&total)?;
         self.print_row()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::consts::FALLBACK_ROW_LEN;
+    use std::collections::BTreeMap;
+
+    fn report(name: &str, with_blob: bool) -> Report {
+        let mut report = Report::new(name.into());
+        report.stats.code = 1;
+        if with_blob {
+            report
+                .stats
+                .blobs
+                .insert(LanguageType::Markdown, CodeStats::new());
+        }
+        report
+    }
+
+    /// A path longer than the row width must not overflow the separator's
+    /// `"-".repeat(..)` length.
+    #[test]
+    fn long_path_with_embedded_language_does_not_overflow() {
+        let long = "a".repeat(FALLBACK_ROW_LEN + 10);
+
+        let mut language = Language::new();
+        // a plain report first, so the embedded one takes the `--` separator branch
+        language.add_report(report("short.rs", false));
+        language.add_report(report(&long, true));
+
+        let mut languages = BTreeMap::new();
+        languages.insert(LanguageType::Rust, language);
+
+        let mut printer = Printer::new(
+            FALLBACK_ROW_LEN,
+            true,
+            Vec::new(),
+            NumberFormatStyle::Plain.get_format().unwrap(),
+        );
+        printer
+            .print_results(languages.iter(), false, false)
+            .unwrap();
     }
 }
