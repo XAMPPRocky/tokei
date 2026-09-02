@@ -96,9 +96,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         printer.print_inaccuracy_warning()?;
     }
 
+    let totals = cli.show_percentages.then(|| languages.total());
+
     printer.print_header()?;
 
-    let mut is_sorted = false;
     if let Some(sort_category) = cli.sort.or(config.sort) {
         for (_, ref mut language) in &mut languages {
             language.sort_by(sort_category);
@@ -112,16 +113,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             Sort::Files => languages.sort_by(|a, b| b.1.reports.len().cmp(&a.1.reports.len())),
             Sort::Lines => languages.sort_by(|a, b| b.1.lines().cmp(&a.1.lines())),
         }
-        is_sorted = true;
         if cli.sort_reverse {
-            printer.print_results(languages.into_iter().rev(), cli.compact, is_sorted)?;
-        } else {
-            printer.print_results(languages.into_iter(), cli.compact, is_sorted)?;
+            languages.reverse();
         }
+        printer.print_results(languages.into_iter(), cli.compact, true, totals.as_ref())?;
     } else {
-        printer.print_results(languages.iter(), cli.compact, is_sorted)?;
+        printer.print_results(languages.iter(), cli.compact, false, totals.as_ref())?;
     }
-
     printer.print_total(&languages)?;
 
     Ok(())
