@@ -15,6 +15,8 @@ pub enum Sort {
     Files,
     /// Sort by number of lines.
     Lines,
+    /// Sort by number of tokens.
+    Tokens,
 }
 
 impl FromStr for Sort {
@@ -31,6 +33,8 @@ impl FromStr for Sort {
             Sort::Files
         } else if s.eq_ignore_ascii_case("lines") {
             Sort::Lines
+        } else if s.eq_ignore_ascii_case("tokens") {
+            Sort::Tokens
         } else {
             return Err(format!("Unsupported sorting option: {}", s));
         })

@@ -23,11 +23,13 @@ rust-version = "1.71"
 edition = "2021"
 
 [features]
-all = ["cbor", "yaml"]
+all = ["cbor", "yaml", "tokens"]
 cbor = ["dep:hex", "dep:serde_cbor"]
 cli = ["dep:clap", "dep:colored", "dep:env_logger", "dep:num-format"]
 default = ["cli"]
 yaml = ["dep:serde_yaml"]
+# Token counting for LLM context estimation (uses tiktoken o200k_base)
+tokens = ["dep:tiktoken-rs"]
 
 [profile.release]
 lto = "thin"
@@ -66,6 +68,7 @@ serde_json = "1.0.125"
 etcetera = "0.8.0"
 table_formatter = "0.6.1"
 clap-cargo = "0.18.1"
+tiktoken-rs = { version = "0.9", optional = true }
 
 [dependencies.env_logger]
 optional = true
