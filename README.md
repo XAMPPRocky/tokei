@@ -385,6 +385,7 @@ Glsl
 Go
 Graphql
 Groovy
+GSharp
 Gwion
 Hamlet
 Handlebars

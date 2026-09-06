@@ -728,6 +728,14 @@
       "env": ["groovy"],
       "extensions": ["groovy", "grt", "gtpl", "gvy"]
     },
+    "GSharp": {
+      "name": "G#",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["`", "`"]],
+      "extensions": ["gs"]
+    },
     "Gwion": {
       "line_comment": ["#!"],
       "quotes": [["\\\"", "\\\""]],
@@ -1203,7 +1211,7 @@
       "name": "MSBuild",
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["csproj", "vbproj", "fsproj", "props", "targets"]
+      "extensions": ["csproj", "vbproj", "fsproj", "gsproj", "props", "targets"]
     },
     "Mustache": {
       "multi_line_comments": [["{{!", "}}"]],
