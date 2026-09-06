@@ -438,7 +438,7 @@ impl<W: Write> Printer<W> {
             subtotal.stats += stats.summarise();
         }
 
-        self.print_report_with_name(report)?;
+        self.print_report_with_name(&subtotal)?;
 
         Ok(())
     }
