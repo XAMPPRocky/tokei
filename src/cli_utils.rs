@@ -175,24 +175,56 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_language(&mut self, language: &Language, name: &str) -> io::Result<()>
+    pub fn print_language(
+        &mut self,
+        language: &Language,
+        name: &str,
+        totals: Option<&Language>,
+    ) -> io::Result<()>
     where
         W: Write,
     {
         self.print_language_name(language.inaccurate, name, None)?;
         write!(self.writer, " ")?;
-        writeln!(
-            self.writer,
-            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-            language
-                .reports
-                .len()
-                .to_formatted_string(&self.number_format),
-            language.lines().to_formatted_string(&self.number_format),
-            language.code.to_formatted_string(&self.number_format),
-            language.comments.to_formatted_string(&self.number_format),
-            language.blanks.to_formatted_string(&self.number_format),
-        )
+        match totals {
+            None => writeln!(
+                self.writer,
+                "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                language
+                    .reports
+                    .len()
+                    .to_formatted_string(&self.number_format),
+                language.lines().to_formatted_string(&self.number_format),
+                language.code.to_formatted_string(&self.number_format),
+                language.comments.to_formatted_string(&self.number_format),
+                language.blanks.to_formatted_string(&self.number_format),
+            ),
+            Some(totals) => {
+                let percentages_width = 5;
+                let files_column_width = FILES_COLUMN_WIDTH - percentages_width;
+                let lines_column_width = LINES_COLUMN_WIDTH - percentages_width;
+                let code_column_width = CODE_COLUMN_WIDTH - percentages_width;
+                let comments_column_width = COMMENTS_COLUMN_WIDTH - percentages_width;
+                let blanks_column_width = BLANKS_COLUMN_WIDTH-  percentages_width;
+                writeln!(
+                    self.writer,
+                    "{:>files_column_width$}/{:3}% {:>lines_column_width$}/{:3}% {:>code_column_width$}/{:3}% {:>comments_column_width$}/{:3}% {:>blanks_column_width$}/{:3}%",
+                    language
+                        .reports
+                        .len()
+                        .to_formatted_string(&self.number_format),
+                    language.reports.len() * 100 / totals.reports.len(),
+                    language.lines().to_formatted_string(&self.number_format),
+                    language.lines() * 100 / totals.lines(),
+                    language.code.to_formatted_string(&self.number_format),
+                    language.code * 100 / totals.code,
+                    language.comments.to_formatted_string(&self.number_format),
+                    language.comments * 100 / totals.comments,
+                    language.blanks.to_formatted_string(&self.number_format),
+                    language.blanks * 100 / totals.blanks,
+                )
+            }
+        }
     }
 
     fn print_language_in_print_total(&mut self, language: &Language) -> io::Result<()>
@@ -267,6 +299,7 @@ impl<W: Write> Printer<W> {
         &mut self,
         language_type: LanguageType,
         stats: &[CodeStats],
+        totals: Option<&Language>,
     ) -> io::Result<()> {
         self.print_language_name(false, &language_type.to_string(), Some(" |-"))?;
         let mut code = 0;
@@ -282,19 +315,47 @@ impl<W: Write> Printer<W> {
         if stats.is_empty() {
             Ok(())
         } else {
-            writeln!(
-                self.writer,
-                " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-                stats.len().to_formatted_string(&self.number_format),
-                (code + comments + blanks).to_formatted_string(&self.number_format),
-                code.to_formatted_string(&self.number_format),
-                comments.to_formatted_string(&self.number_format),
-                blanks.to_formatted_string(&self.number_format),
-            )
+            match totals {
+                None => writeln!(
+                    self.writer,
+                    " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                    stats.len().to_formatted_string(&self.number_format),
+                    (code + comments + blanks).to_formatted_string(&self.number_format),
+                    code.to_formatted_string(&self.number_format),
+                    comments.to_formatted_string(&self.number_format),
+                    blanks.to_formatted_string(&self.number_format),
+                ),
+                Some(totals) => {
+                    let percentages_width= 5;
+                    let files_column_width = FILES_COLUMN_WIDTH - percentages_width;
+                    let lines_column_width = LINES_COLUMN_WIDTH - percentages_width;
+                    let code_column_width = CODE_COLUMN_WIDTH - percentages_width;
+                    let comments_column_width = COMMENTS_COLUMN_WIDTH - percentages_width;
+                    let blanks_column_width = BLANKS_COLUMN_WIDTH - percentages_width;
+                    writeln!(
+                        self.writer,
+                        " {:>files_column_width$}/{:3}% {:>lines_column_width$}/{:3}% {:>code_column_width$}/{:3}% {:>comments_column_width$}/{:3}% {:>blanks_column_width$}/{:3}%",
+                        stats.len().to_formatted_string(&self.number_format),
+                        stats.len() * 100 / totals.reports.len(),
+                        (code + comments + blanks).to_formatted_string(&self.number_format),
+                        (code + comments + blanks) * 100 / (totals.code + totals.comments + totals.blanks),
+                        code.to_formatted_string(&self.number_format),
+                        code * 100 / totals.code,
+                        comments.to_formatted_string(&self.number_format),
+                        comments * 100 / totals.comments,
+                        blanks.to_formatted_string(&self.number_format),
+                        blanks * 100 / totals.blanks,
+                    )
+                }
+            }
         }
     }
 
-    fn print_language_total(&mut self, parent: &Language) -> io::Result<()> {
+    fn print_language_total(
+        &mut self,
+        parent: &Language,
+        totals: Option<&Language>,
+    ) -> io::Result<()> {
         for (language, reports) in &parent.children {
             self.print_code_stats(
                 *language,
@@ -302,6 +363,7 @@ impl<W: Write> Printer<W> {
                     .iter()
                     .map(|r| r.stats.summarise())
                     .collect::<Vec<_>>(),
+                totals,
             )?;
         }
         let mut subtotal = tokei::Report::new("(Total)".into());
@@ -309,7 +371,7 @@ impl<W: Write> Printer<W> {
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
         subtotal.stats.blanks += summary.blanks;
-        self.print_report_with_name(&subtotal)?;
+        self.print_report_with_name(&subtotal, totals)?;
 
         Ok(())
     }
@@ -319,6 +381,7 @@ impl<W: Write> Printer<W> {
         languages: I,
         compact: bool,
         is_sorted: bool,
+        totals: Option<&'a Language>,
     ) -> io::Result<()>
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
@@ -337,9 +400,9 @@ impl<W: Write> Printer<W> {
                     self.print_subrow()?;
                 }
 
-                self.print_language(language, name.name())?;
+                self.print_language(language, name.name(), totals)?;
                 if has_children {
-                    self.print_language_total(language)?;
+                    self.print_language_total(language, totals)?;
                 }
 
                 if self.list_files {
@@ -438,12 +501,16 @@ impl<W: Write> Printer<W> {
             subtotal.stats += stats.summarise();
         }
 
-        self.print_report_with_name(report)?;
+        self.print_report_with_name(report, None)?;
 
         Ok(())
     }
 
-    fn print_report_with_name(&mut self, report: &Report) -> io::Result<()> {
+    fn print_report_with_name(
+        &mut self,
+        report: &Report,
+        totals: Option<&Language>,
+    ) -> io::Result<()> {
         let name = report.name.to_string_lossy();
         let name_length = name.len();
 
@@ -453,7 +520,7 @@ impl<W: Write> Printer<W> {
             let from = find_char_boundary(&name, name_length + 1 - self.path_length);
             formatted.push_str(&name[from..]);
         }
-        self.print_report_total_formatted(name, self.path_length, report)?;
+        self.print_report_total_formatted(name, self.path_length, report, totals)?;
 
         Ok(())
     }
@@ -463,24 +530,53 @@ impl<W: Write> Printer<W> {
         name: Cow<'_, str>,
         max_len: usize,
         report: &Report,
+        totals: Option<&Language>,
     ) -> io::Result<()> {
         let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
-        writeln!(
-            self.writer,
-            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
-            name,
-            report
-                .stats
-                .lines()
-                .to_formatted_string(&self.number_format),
-            report.stats.code.to_formatted_string(&self.number_format),
-            report
-                .stats
-                .comments
-                .to_formatted_string(&self.number_format),
-            report.stats.blanks.to_formatted_string(&self.number_format),
-            max = max_len
-        )
+        match totals {
+            None => writeln!(
+                self.writer,
+                " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                name,
+                report
+                    .stats
+                    .lines()
+                    .to_formatted_string(&self.number_format),
+                report.stats.code.to_formatted_string(&self.number_format),
+                report
+                    .stats
+                    .comments
+                    .to_formatted_string(&self.number_format),
+                report.stats.blanks.to_formatted_string(&self.number_format),
+                max = max_len
+            ),
+            Some(totals) => {
+                let percentage_width = 5;
+                let code_column_width = CODE_COLUMN_WIDTH - percentage_width;
+                let comments_column_width = COMMENTS_COLUMN_WIDTH - percentage_width;
+                let blanks_column_width = BLANKS_COLUMN_WIDTH - percentage_width;
+                writeln!(
+                    self.writer,
+                    " {: <max$} {:>lines_column_width$}/{:3}% {:>code_column_width$}/{:3}% {:>comments_column_width$}/{:3}% {:>blanks_column_width$}/{:3}%",
+                    name,
+                    report
+                        .stats
+                        .lines()
+                        .to_formatted_string(&self.number_format),
+                    (report.stats.lines() * 100 / totals.lines()),
+                    report.stats.code.to_formatted_string(&self.number_format),
+                    (report.stats.code * 100 / totals.code),
+                    report
+                        .stats
+                        .comments
+                        .to_formatted_string(&self.number_format),
+                    (report.stats.comments * 100 / totals.comments),
+                    report.stats.blanks.to_formatted_string(&self.number_format),
+                    (report.stats.blanks * 100 / totals.blanks),
+                    max = max_len - percentage_width
+                )
+            }
+        }
     }
 
     pub fn print_total(&mut self, languages: &tokei::Languages) -> io::Result<()> {

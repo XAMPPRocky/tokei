@@ -52,6 +52,7 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
+    pub show_percentages: bool,
 }
 
 impl Cli {
@@ -223,6 +224,13 @@ impl Cli {
                     ),
             )
             .arg(
+                Arg::new("show_percentages")
+                    .long("percentages")
+                    .short('p')
+                    .action(ArgAction::SetTrue)
+                    .help("Show percentages for each language."),
+            )
+            .arg(
                 Arg::new("verbose")
                     .long("verbose")
                     .short('v')
@@ -246,6 +254,7 @@ impl Cli {
         let print_languages = matches.get_flag("languages");
         let verbose = matches.get_count("verbose") as u64;
         let compact = matches.get_flag("compact");
+        let show_percentages = matches.get_flag("show_percentages");
         let types = matches.get_many("types").map(|e| {
             e.flat_map(|x: &String| {
                 x.split(',')
@@ -298,6 +307,7 @@ impl Cli {
             sort_reverse,
             types,
             compact,
+            show_percentages,
             number_format,
         };
 
