@@ -1,0 +1,28 @@
+// 28 lines 14 code 9 comments 5 blanks
+
+/*
+ * fibonacci module
+ *
+ * This module contains the fibonacci function and the main function.
+ * The fibonacci function is a recursive function that computes the fibonacci number of a given number.
+ */
+
+module fib
+
+import { now } from time
+
+// fib function
+func fib(n: int): int {
+    return if n <= 1 then n else fib(n - 1) + fib(n - 2)
+}
+
+// main function
+func main(): int sync {
+    let idx = 30
+    'Start computing fibonacci({})...'->format<idx>->println
+    let start = now()
+    let res = fib(idx)
+    let duration = now() - start
+    'Fibonacci({}) = {} (computed in {:.4f} seconds)'->format<idx, res, duration>->println
+    return 0
+}
