@@ -298,6 +298,7 @@ Abap
 ActionScript
 Ada
 Agda
+AL
 Alex
 Alloy
 APL

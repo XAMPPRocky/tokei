@@ -25,6 +25,13 @@
       "multi_line_comments": [["{-", "-}"]],
       "extensions": ["agda"]
     },
+    "Al": {
+      "name": "AL",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["'", "'"]],
+      "extensions": ["al"]
+    },
     "Alex": {
       "extensions": ["x"]
     },
