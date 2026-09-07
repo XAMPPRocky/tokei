@@ -124,14 +124,8 @@ winget install XAMPPRocky.tokei
 scoop install tokei
 ```
 
-### Manual
-
-#### Downloading
-You can download prebuilt binaries in the
-[releases section](https://github.com/XAMPPRocky/tokei/releases).
-
-#### Building
-You can also build and install from source (requires the latest stable [Rust] compiler.)
+### Build from source
+The latest stable [Rust] compiler is required.
 ```console
 cargo install --git https://github.com/XAMPPRocky/tokei.git tokei
 ```
