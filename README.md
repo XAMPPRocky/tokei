@@ -13,6 +13,11 @@
 Tokei is a program that displays statistics about your code. Tokei will show the number of files, total lines within those files and code, comments, and blanks grouped by language.
 
 ## Example
+
+<p align="center">
+  <img src="media/demo.gif" alt="tokei demo — counting lines of code by language" width="600">
+</p>
+
 ```console
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  Language            Files        Lines         Code     Comments       Blanks
