@@ -1,18 +1,42 @@
-/* 18 lines 10 code 5 comments 3 blanks */
+// 42 lines 28 code 5 comments 9 blanks
 
 /*
-Nextflow - hello
-*/
+ * Multi-line block comment
+ */
 
-// comment
-cheers = Channel.from 'Bonjour', 'Ciao', 'Hello', 'Hola'
+// Single line comment
+nextflow.enable.dsl = 2
+
+params.greeting = 'Hello'
+params.name = "World"
 
 process sayHello {
-  echo true
-  input: 
-    val x from cheers
-  script:
+    input:
+    val greeting
+    val name
+
+    output:
+    stdout
+
+    script:
     """
-    echo '$x world!'
+    echo '${greeting}, ${name}!'
+    echo "// this is not a comment"
+    echo '/* also not a comment */'
     """
+}
+
+process farewell {
+    output:
+    stdout
+
+    script:
+    '''
+    echo 'Goodbye!'
+    '''
+}
+
+workflow {
+    sayHello(params.greeting, params.name) | view
+    farewell() | view
 }
