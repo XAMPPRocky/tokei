@@ -504,6 +504,7 @@ SpecmanE
 Spice
 Sql
 SRecode
+Starlark
 Stata
 Stratego
 Svelte
