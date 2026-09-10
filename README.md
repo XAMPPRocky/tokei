@@ -491,6 +491,7 @@ RPMSpecfile
 Ruby
 RubyHtml
 Rust
+Saltstack
 Sass
 Scala
 Scheme
