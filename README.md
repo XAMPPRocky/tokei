@@ -306,6 +306,7 @@ Asp
 AspNet
 Assembly
 AssemblyGAS
+Asymptote
 ATS
 Autoconf
 AutoHotKey
