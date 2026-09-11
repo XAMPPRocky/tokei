@@ -1,0 +1,17 @@
+// 17 lines 6 code 8 comments 3 blanks
+// this is a single line comment
+
+/*
+this is a multi-line
+comment
+*/
+number1 := 1
+number2 := 0.221212312312
+
+println("{typeof(number1)} | {typeof(number2)}")
+
+/* another
+   multi-line comment */
+x := "hello"
+y := "world"
+println("x: {x}, y: {y}")
