@@ -1,0 +1,35 @@
+// 35 lines 19 code 7 comments 9 blanks
+
+/*
+ * Multi-line comment
+ * describing this fixture.
+ */
+package koflow
+
+import koflow.Job
+import koflow.JobStore
+
+record Point(Int x, Int y)
+
+class Foo {
+    private String name
+
+    public constructor(String name) {
+        this.name = name // inline trailing comment
+    }
+
+    public String greet() {
+        var quote = "he said \"hi there\"" // string with escaped quotes
+        var ch = 'a'
+        var escapedChar = '\''
+        var backslash = "\\"
+
+        return quote
+    }
+}
+
+/* block comment containing a " quote and a // fake line comment */
+void noop() {
+}
+
+// trailing standalone comment
