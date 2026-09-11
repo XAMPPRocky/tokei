@@ -981,6 +981,12 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["kk"]
     },
+    "Kof": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["\\'", "\\'"]],
+      "extensions": ["kf"]
+    },
     "Kotlin": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
