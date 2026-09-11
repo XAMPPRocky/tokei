@@ -2109,6 +2109,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["zsh"]
     },
+    "Zz": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["zz"]
+    },
     "GdShader": {
       "name": "GDShader",
       "line_comment": ["//"],
