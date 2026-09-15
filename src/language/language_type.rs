@@ -92,7 +92,7 @@ impl LanguageType {
                 .map(|p| m.start() - p)
         }) {
             let (skippable_text, rest) = text.split_at(end + 1);
-            let is_fortran = syntax.shared.is_fortran;
+            let is_fixed_form_fortran = syntax.shared.is_fixed_form_fortran;
             let is_literate = syntax.shared.is_literate;
             let comments = syntax.shared.line_comments;
             trace!(
@@ -107,7 +107,7 @@ impl LanguageType {
                         // FORTRAN has a rule where it only counts as a comment if it's the
                         // first character in the column, so removing starting whitespace
                         // could cause a miscount.
-                        let line = if is_fortran { line } else { line.trim() };
+                        let line = if is_fixed_form_fortran { line } else { line.trim() };
                         if line.trim().is_empty() {
                             (1, 0, 0)
                         } else if is_literate
@@ -147,7 +147,7 @@ impl LanguageType {
             // FORTRAN has a rule where it only counts as a comment if it's the
             // first character in the column, so removing starting whitespace
             // could cause a miscount.
-            let line = if syntax.shared.is_fortran {
+            let line = if syntax.shared.is_fixed_form_fortran {
                 line
             } else {
                 line.trim()
