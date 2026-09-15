@@ -1,0 +1,67 @@
+# 67 lines 30 code 30 comments 7 blanks
+From 6c71dd734f0788fb88e116c43a03163929c2aa57 Mon Sep 17 00:00:00 2001
+From: Ben Beasley <code@musicinmybrain.net>
+Date: Mon, 12 Jan 2026 21:27:49 +0000
+Subject: [PATCH] Update strum/strum_macros to 0.27.2 (#1316)
+
+---
+ Cargo.lock | 15 ++++-----------
+ Cargo.toml |  4 ++--
+ 2 files changed, 6 insertions(+), 13 deletions(-)
+
+diff --git a/Cargo.lock b/Cargo.lock
+index 961422fc134e29eaf3e221b9c6f0f4c85679cf7e..a2b40a2ec329f9a3138db16d9024af5534031905 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1096,12 +1096,6 @@ dependencies = [
+  "windows-sys 0.52.0",
+ ]
+ 
+-[[package]]
+-name = "rustversion"
+-version = "1.0.17"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "955d28af4278de8121b7ebeb796b6a45735dc01436d898801014aced2773a3d6"
+-
+ [[package]]
+ name = "rusty-fork"
+ version = "0.3.0"
+@@ -1246,20 +1240,19 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
+ 
+ [[package]]
+ name = "strum"
+-version = "0.26.3"
++version = "0.27.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "8fec0f0aef304996cf250b31b5a10dee7980c85da9d759361292b8bca5a18f06"
++checksum = "af23d6f6c1a224baef9d3f61e287d2761385a5b88fdab4eb4c6f11aeb54c4bcf"
+ 
+ [[package]]
+ name = "strum_macros"
+-version = "0.26.4"
++version = "0.27.2"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "4c6bee85a5a24955dc440386795aa378cd9cf82acd5f764469152d2270e581be"
++checksum = "7695ce3845ea4b33927c055a39dc438a45b059f7c1b3d91d38d10355fb8cbca7"
+ dependencies = [
+  "heck",
+  "proc-macro2",
+  "quote",
+- "rustversion",
+  "syn",
+ ]
+ 
+diff --git a/Cargo.toml b/Cargo.toml
+index 076f6e9c4e57a1ddff46f253212e7e2d656cd2c0..8b195223d0831baf3b64952e4a7667d9b21edeba 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -86,7 +86,7 @@ version = "0.9.34"
+ 
+ [dev-dependencies]
+ proptest = "1.5.0"
+-strum = "0.26.3"
+-strum_macros = "0.26.4"
++strum = "0.27.2"
++strum_macros = "0.27.2"
+ tempfile = "3.12.0"
+ git2 = { version = "0.19.0", default-features = false, features = [] }

@@ -56,6 +56,10 @@ impl LanguageType {
         }
     }
 
+    pub(crate) fn is_diff(self) -> bool {
+        self == LanguageType::Diff
+    }
+
     /// Provides every variant in a Vec
     pub fn list() -> &'static [(Self, &'static [&'static str])] {
         &[{% for key, val in languages -%}
