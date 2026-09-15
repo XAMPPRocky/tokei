@@ -590,6 +590,11 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["fbs"]
     },
+    "Fluent": {
+      "line_comment": ["#"],
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["flt"]
+    },
     "ForgeConfig": {
       "name": "Forge Config",
       "line_comment": ["#", "~"],

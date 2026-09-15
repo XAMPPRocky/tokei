@@ -1,0 +1,13 @@
+# 13 lines 8 code 3 comments 2 blanks
+### Resource-level comment
+
+hello = Hello, world!
+welcome = Welcome, { $name }!
+
+# Message comment
+shared-photos =
+    { $userName } added { $photoCount } new photos to { $userGender ->
+        [male] his stream
+       *[other] their stream
+    }.
+-brand-name = Firefox
