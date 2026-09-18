@@ -152,7 +152,7 @@ fn file_entry(entry: Result<DirEntry, ignore::Error>) -> Option<DirEntry> {
         }
     };
 
-    if entry.file_type().map_or(false, |ft| ft.is_file()) {
+    if entry.file_type().is_some_and(|ft| ft.is_file()) {
         Some(entry)
     } else {
         None
@@ -197,16 +197,10 @@ fn process_file(
                 let _guard = stream_lock.lock();
                 callback(language, stats.clone());
             }
-            languages
-                .entry(language)
-                .or_insert_with(Language::new)
-                .add_report(stats);
+            languages.entry(language).or_default().add_report(stats);
         }
         Err((error, path)) => {
-            languages
-                .entry(language)
-                .or_insert_with(Language::new)
-                .mark_inaccurate();
+            languages.entry(language).or_default().mark_inaccurate();
             error!("Error reading {}:\n{}", path.display(), error);
         }
     }
