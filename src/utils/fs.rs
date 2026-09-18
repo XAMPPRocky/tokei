@@ -1,8 +1,9 @@
-use std::{collections::BTreeMap, path::Path};
+use std::{
+    collections::{btree_map::Entry, BTreeMap},
+    path::Path,
+};
 
-use ignore::{overrides::OverrideBuilder, DirEntry, WalkBuilder, WalkState::Continue};
-
-use rayon::prelude::*;
+use ignore::{overrides::OverrideBuilder, DirEntry, WalkBuilder, WalkState};
 
 use crate::{
     config::Config,
@@ -10,6 +11,7 @@ use crate::{
 };
 
 const IGNORE_FILE: &str = ".tokeignore";
+const FILES_PER_WORKER: usize = 64;
 
 pub fn get_all_files<A: AsRef<Path>>(
     paths: &[A],
@@ -17,9 +19,28 @@ pub fn get_all_files<A: AsRef<Path>>(
     languages: &mut BTreeMap<LanguageType, Language>,
     config: &Config,
 ) {
-    let languages = parking_lot::Mutex::new(languages);
-    let (tx, rx) = crossbeam_channel::unbounded();
+    let threads = config.thread_count();
+    let _ = rayon::ThreadPoolBuilder::new()
+        .num_threads(threads.max(1))
+        .thread_name(|i| format!("tokei-{i}"))
+        .build_global();
 
+    let stream_lock = parking_lot::Mutex::new(());
+    let walker = build_walker(paths, ignored_directories, config, threads);
+
+    if threads <= 1 {
+        count_sequential(walker, languages, config, &stream_lock);
+    } else {
+        count_parallel(walker, languages, config, &stream_lock, threads);
+    }
+}
+
+fn build_walker<A: AsRef<Path>>(
+    paths: &[A],
+    ignored_directories: &[&str],
+    config: &Config,
+    threads: usize,
+) -> WalkBuilder {
     let mut paths = paths.iter();
     let mut walker = WalkBuilder::new(paths.next().unwrap());
 
@@ -53,66 +74,155 @@ pub fn get_all_files<A: AsRef<Path>>(
         .git_ignore(ignore_vcs)
         .hidden(config.hidden.map(|b| !b).unwrap_or(true))
         .ignore(ignore_dot)
-        .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true));
+        .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true))
+        .threads(threads.max(1));
 
-    walker.build_parallel().run(move || {
-        let tx = tx.clone();
-        Box::new(move |entry| {
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(error) => {
-                    use ignore::Error;
-                    if let Error::WithDepth { err: ref error, .. } = error {
-                        if let Error::WithPath {
-                            ref path,
-                            err: ref error,
-                        } = **error
-                        {
-                            error!("{} reading {}", error, path.display());
-                            return Continue;
-                        }
+    walker
+}
+
+fn count_sequential(
+    walker: WalkBuilder,
+    languages: &mut BTreeMap<LanguageType, Language>,
+    config: &Config,
+    stream_lock: &parking_lot::Mutex<()>,
+) {
+    for entry in walker.build() {
+        let Some(entry) = file_entry(entry) else {
+            continue;
+        };
+        process_file(entry, languages, config, stream_lock);
+    }
+}
+
+fn count_parallel(
+    walker: WalkBuilder,
+    languages: &mut BTreeMap<LanguageType, Language>,
+    config: &Config,
+    stream_lock: &parking_lot::Mutex<()>,
+    threads: usize,
+) {
+    let queue_size = threads
+        .saturating_mul(FILES_PER_WORKER)
+        .max(FILES_PER_WORKER);
+    let (tx, rx) = crossbeam_channel::bounded::<DirEntry>(queue_size);
+
+    std::thread::scope(|scope| {
+        let workers: Vec<_> = (0..threads)
+            .map(|_| {
+                let rx = rx.clone();
+                scope.spawn(move || {
+                    let mut local = BTreeMap::new();
+                    while let Ok(entry) = rx.recv() {
+                        process_file(entry, &mut local, config, stream_lock);
                     }
-                    error!("{}", error);
-                    return Continue;
-                }
-            };
+                    local
+                })
+            })
+            .collect();
 
-            if entry.file_type().map_or(false, |ft| ft.is_file()) {
-                tx.send(entry).unwrap();
-            }
+        drop(rx);
 
-            Continue
-        })
-    });
-
-    let rx_iter = rx
-        .into_iter()
-        .par_bridge()
-        .filter_map(|e| LanguageType::from_path(e.path(), config).map(|l| (e, l)));
-
-    let process = |(entry, language): (DirEntry, LanguageType)| {
-        let result = language.parse(entry.into_path(), config);
-        let mut lock = languages.lock();
-        let entry = lock.entry(language).or_insert_with(Language::new);
-        match result {
-            Ok(stats) => {
-                let func = config.for_each_fn;
-                if let Some(f) = func {
-                    f(language, stats.clone())
+        walker.build_parallel().run(move || {
+            let tx = tx.clone();
+            Box::new(move |entry| {
+                let Some(entry) = file_entry(entry) else {
+                    return WalkState::Continue;
                 };
-                entry.add_report(stats)
-            }
-            Err((error, path)) => {
-                entry.mark_inaccurate();
-                error!("Error reading {}:\n{}", path.display(), error);
-            }
+
+                if tx.send(entry).is_err() {
+                    WalkState::Quit
+                } else {
+                    WalkState::Continue
+                }
+            })
+        });
+
+        for worker in workers {
+            merge_languages(languages, worker.join().expect("tokei worker panicked"));
+        }
+    });
+}
+
+fn file_entry(entry: Result<DirEntry, ignore::Error>) -> Option<DirEntry> {
+    let entry = match entry {
+        Ok(entry) => entry,
+        Err(error) => {
+            log_walk_error(error);
+            return None;
         }
     };
 
-    if let Some(types) = config.types.as_deref() {
-        rx_iter.filter(|(_, l)| types.contains(l)).for_each(process)
+    if entry.file_type().map_or(false, |ft| ft.is_file()) {
+        Some(entry)
     } else {
-        rx_iter.for_each(process)
+        None
+    }
+}
+
+fn log_walk_error(error: ignore::Error) {
+    use ignore::Error;
+
+    if let Error::WithDepth { err: ref error, .. } = error {
+        if let Error::WithPath {
+            ref path,
+            err: ref error,
+        } = **error
+        {
+            error!("{} reading {}", error, path.display());
+            return;
+        }
+    }
+    error!("{}", error);
+}
+
+fn process_file(
+    entry: DirEntry,
+    languages: &mut BTreeMap<LanguageType, Language>,
+    config: &Config,
+    stream_lock: &parking_lot::Mutex<()>,
+) {
+    let Some(language) = LanguageType::from_path(entry.path(), config) else {
+        return;
+    };
+
+    if let Some(types) = config.types.as_deref() {
+        if !types.contains(&language) {
+            return;
+        }
+    }
+
+    match language.parse(entry.into_path(), config) {
+        Ok(stats) => {
+            if let Some(callback) = config.for_each_fn {
+                let _guard = stream_lock.lock();
+                callback(language, stats.clone());
+            }
+            languages
+                .entry(language)
+                .or_insert_with(Language::new)
+                .add_report(stats);
+        }
+        Err((error, path)) => {
+            languages
+                .entry(language)
+                .or_insert_with(Language::new)
+                .mark_inaccurate();
+            error!("Error reading {}:\n{}", path.display(), error);
+        }
+    }
+}
+
+fn merge_languages(
+    dest: &mut BTreeMap<LanguageType, Language>,
+    src: BTreeMap<LanguageType, Language>,
+) {
+    for (language, stats) in src {
+        match dest.entry(language) {
+            Entry::Occupied(mut entry) => *entry.get_mut() += stats,
+            Entry::Vacant(entry) => {
+                entry.insert(stats);
+            }
+        }
     }
 }
 
@@ -482,5 +592,41 @@ mod tests {
         );
 
         assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn parallel_matches_sequential_counts() {
+        let paths = &["tests/data"];
+        let mut sequential = Languages::new();
+        sequential.get_statistics(
+            paths,
+            &[],
+            &Config {
+                threads: Some(1),
+                ..Config::default()
+            },
+        );
+
+        let mut parallel = Languages::new();
+        parallel.get_statistics(
+            paths,
+            &[],
+            &Config {
+                threads: Some(8),
+                ..Config::default()
+            },
+        );
+
+        assert_eq!(sequential.len(), parallel.len());
+        for (language, seq) in &sequential {
+            let par = parallel
+                .get(language)
+                .expect("missing language in parallel count");
+            assert_eq!(seq.blanks, par.blanks, "{language:?} blanks");
+            assert_eq!(seq.code, par.code, "{language:?} code");
+            assert_eq!(seq.comments, par.comments, "{language:?} comments");
+            assert_eq!(seq.reports.len(), par.reports.len(), "{language:?} files");
+            assert_eq!(seq.inaccurate, par.inaccurate, "{language:?} inaccurate");
+        }
     }
 }

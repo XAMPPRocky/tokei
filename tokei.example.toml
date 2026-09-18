@@ -6,3 +6,6 @@ sort = "lines"
 types = ["Python"]
 # Any doc strings (e.g. `"""hello"""` in python) will be counted as comments.
 treat_doc_strings_as_comments = true
+# Number of threads used to walk directories and count files.
+# Defaults to the number of logical CPUs. Use 1 to force single-threaded counting.
+# threads = 8

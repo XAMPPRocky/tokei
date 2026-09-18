@@ -49,6 +49,9 @@ pub struct Config {
     pub types: Option<Vec<LanguageType>>,
     // /// A map of individual language configuration.
     // pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
+    /// Number of worker threads used to walk directories and parse files.
+    /// `None` or `Some(0)` uses the number of logical CPUs. *Default:* `None`.
+    pub threads: Option<usize>,
     /// Whether to output only the paths for downstream batch processing
     /// *Default:* false
     #[serde(skip)]
@@ -135,7 +138,50 @@ impl Config {
             no_ignore_vcs: current_dir
                 .no_ignore_vcs
                 .or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
+            threads: current_dir
+                .threads
+                .or(home_dir.threads.or(conf_dir.threads)),
         }
+    }
+
+    /// Number of worker threads used to walk directories and count files.
+    ///
+    /// `None` or `Some(0)` selects the number of logical CPUs reported by the
+    /// operating system, falling back to a single thread if that is unavailable.
+    #[must_use]
+    pub fn thread_count(&self) -> usize {
+        match self.threads {
+            Some(0) | None => std::thread::available_parallelism()
+                .map(std::num::NonZeroUsize::get)
+                .unwrap_or(1),
+            Some(n) => n,
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Config;
+
+    #[test]
+    fn thread_count_treats_zero_as_auto() {
+        let auto = Config::default().thread_count();
+        let zero = Config {
+            threads: Some(0),
+            ..Config::default()
+        }
+        .thread_count();
+
+        assert_eq!(auto, zero);
+        assert!(auto >= 1);
+        assert_eq!(
+            Config {
+                threads: Some(4),
+                ..Config::default()
+            }
+            .thread_count(),
+            4
+        );
     }
 }
 

@@ -99,33 +99,29 @@ impl LanguageType {
                 "Using Simple Parse on {:?}",
                 String::from_utf8_lossy(skippable_text)
             );
-            let parse_lines = move || self.parse_lines(config, rest, CodeStats::new(), syntax);
-            let simple_parse = move || {
-                LineIter::new(b'\n', skippable_text)
-                    .par_bridge()
-                    .map(|line| {
-                        // FORTRAN has a rule where it only counts as a comment if it's the
-                        // first character in the column, so removing starting whitespace
-                        // could cause a miscount.
-                        let line = if is_fortran { line } else { line.trim() };
-                        if line.trim().is_empty() {
-                            (1, 0, 0)
-                        } else if is_literate
-                            || comments.iter().any(|c| line.starts_with(c.as_bytes()))
-                        {
-                            (0, 0, 1)
-                        } else {
-                            (0, 1, 0)
-                        }
-                    })
-                    .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
-            };
+            // File-level workers already saturate the CPU, so count this
+            // skippable prefix sequentially instead of nested rayon tasks.
+            let mut blanks = 0;
+            let mut code = 0;
+            let mut comments_count = 0;
+            for line in LineIter::new(b'\n', skippable_text) {
+                // FORTRAN has a rule where it only counts as a comment if it's the
+                // first character in the column, so removing starting whitespace
+                // could cause a miscount.
+                let line = if is_fortran { line } else { line.trim() };
+                if line.trim().is_empty() {
+                    blanks += 1;
+                } else if is_literate || comments.iter().any(|c| line.starts_with(c.as_bytes())) {
+                    comments_count += 1;
+                } else {
+                    code += 1;
+                }
+            }
 
-            let (mut stats, (blanks, code, comments)) = rayon::join(parse_lines, simple_parse);
-
+            let mut stats = self.parse_lines(config, rest, CodeStats::new(), syntax);
             stats.blanks += blanks;
             stats.code += code;
-            stats.comments += comments;
+            stats.comments += comments_count;
             stats
         } else {
             self.parse_lines(config, text, CodeStats::new(), syntax)
