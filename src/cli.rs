@@ -52,6 +52,7 @@ pub struct Cli {
     pub types: Option<Vec<LanguageType>>,
     pub compact: bool,
     pub number_format: num_format::CustomFormat,
+    pub threads: Option<usize>,
 }
 
 impl Cli {
@@ -223,6 +224,18 @@ impl Cli {
                     ),
             )
             .arg(
+                Arg::new("threads")
+                    .long("threads")
+                    .short('j')
+                    .alias("jobs")
+                    .value_parser(value_parser!(usize))
+                    .help(
+                        "Number of threads used to walk directories and count files. \
+                        Defaults to the number of logical CPUs. Use 1 to disable \
+                        multithreading.",
+                    ),
+            )
+            .arg(
                 Arg::new("verbose")
                     .long("verbose")
                     .short('v')
@@ -246,6 +259,7 @@ impl Cli {
         let print_languages = matches.get_flag("languages");
         let verbose = matches.get_count("verbose") as u64;
         let compact = matches.get_flag("compact");
+        let threads = matches.get_one::<usize>("threads").cloned();
         let types = matches.get_many("types").map(|e| {
             e.flat_map(|x: &String| {
                 x.split(',')
@@ -299,6 +313,7 @@ impl Cli {
             types,
             compact,
             number_format,
+            threads,
         };
 
         debug!("CLI Config: {:#?}", cli);
@@ -396,6 +411,7 @@ impl Cli {
     /// * `no_ignore_dot`
     /// * `no_ignore_vcs`
     /// * `types`
+    /// * `threads`
     pub fn override_config(&mut self, mut config: Config) -> Config {
         config.hidden = if self.hidden {
             Some(true)
@@ -446,6 +462,10 @@ impl Cli {
         };
 
         config.types = self.types.take().or(config.types);
+
+        if let Some(threads) = self.threads {
+            config.threads = Some(threads);
+        }
 
         config
     }

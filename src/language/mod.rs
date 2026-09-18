@@ -169,8 +169,10 @@ impl AddAssign for Language {
         self.comments += rhs.comments;
         self.blanks += rhs.blanks;
         self.code += rhs.code;
-        self.reports.extend(mem::take(&mut rhs.reports));
-        self.children.extend(mem::take(&mut rhs.children));
+        self.reports.append(&mut rhs.reports);
+        for (lang, mut reports) in mem::take(&mut rhs.children) {
+            self.children.entry(lang).or_default().append(&mut reports);
+        }
         self.inaccurate |= rhs.inaccurate;
     }
 }

@@ -26,6 +26,7 @@ pub fn parse_from_slice(input: FuzzInput, check_total: bool) {
         sort: None,
         types: None,
         for_each_fn: None,
+        threads: None,
     };
 
     // check that parsing doesn't panic

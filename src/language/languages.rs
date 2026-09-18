@@ -68,6 +68,10 @@ impl Languages {
     /// these strings use the `.gitignore` syntax, such as `target`
     /// or `**/*.bk`.
     ///
+    /// Directory walking and file parsing run in parallel. The worker count
+    /// comes from [`Config::threads`], or the number of logical CPUs when that
+    /// is unset. Use `threads: Some(1)` for single-threaded counting.
+    ///
     /// ```no_run
     /// use tokei::{Config, Languages};
     ///
