@@ -1815,6 +1815,20 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["tcl"]
     },
+    "Teal": {
+      "line_comment": ["--"],
+      "multi_line_comments": [
+        ["--[[", "]]"]
+      ],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["'", "'"]
+      ],
+      "verbatim_quotes": [
+        ["[[", "]]"]
+      ],
+      "extensions": ["tl"]
+    },
     "Tera": {
       "multi_line_comments": [["<!--", "-->"], ["{#", "#}"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
