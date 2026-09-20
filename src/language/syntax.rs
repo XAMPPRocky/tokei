@@ -1,3 +1,4 @@
+use std::io::BufRead;
 use std::sync::Arc;
 
 use aho_corasick::AhoCorasick;
@@ -6,10 +7,7 @@ use grep_searcher::LineStep;
 use log::Level::Trace;
 use once_cell::sync::Lazy;
 
-use super::embedding::{
-    RegexCache, RegexFamily, ENDING_LF_BLOCK_REGEX, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE,
-    END_TEMPLATE,
-};
+use super::embedding::{RegexCache, RegexFamily, ENDING_BRUNO_REGEX, ENDING_LF_BLOCK_REGEX, ENDING_MARKDOWN_REGEX, END_SCRIPT, END_STYLE, END_TEMPLATE};
 use crate::LanguageType::LinguaFranca;
 use crate::{stats::CodeStats, utils::ext::SliceExt, Config, LanguageType};
 
@@ -62,6 +60,7 @@ pub(crate) enum LanguageContext {
         language: LanguageType,
     },
     Rust,
+    Bruno
 }
 
 #[derive(Clone, Debug)]
@@ -462,6 +461,32 @@ impl SyntaxCounter {
 
                 Some(FileContext::new(
                     LanguageContext::LinguaFranca,
+                    end_of_code,
+                    stats,
+                ))
+            }
+            RegexFamily::Bruno(bru) => {
+                let opening_tag = bru.starts_in_range(start, end)?;
+                let start_of_code = opening_tag.end();
+                let closing_tag = ENDING_BRUNO_REGEX.find(&lines[start_of_code..]);
+                let mut end_of_code = closing_tag
+                  .map_or_else(|| lines.len(), |tag| start_of_code + tag.start());
+                if end_of_code < lines.len() {
+                    // count the newline after the closing squiggle bracket as part of the code block
+                    // otherwise, tokei adds a blank line to the count for every code block!
+                    end_of_code += 1;
+                }
+
+                let block_contents = &lines[start_of_code..end_of_code];
+                trace!("JavaScript in Bruno: {:?}", String::from_utf8_lossy(block_contents));
+                let stats = LanguageType::JavaScript.parse_from_slice(
+                    block_contents.trim(),
+                    config,
+                );
+                trace!("-> stats: {:?}", stats);
+
+                Some(FileContext::new(
+                    LanguageContext::Bruno,
                     end_of_code,
                     stats,
                 ))
