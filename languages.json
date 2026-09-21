@@ -1335,7 +1335,7 @@
       "line_comment": ["#"],
       "multi_line_comments": [["=pod", "=cut"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["pl", "pm"]
+      "extensions": ["pl", "pm", "t"]
     },
     "Pest": {
       "line_comment": ["//"],
