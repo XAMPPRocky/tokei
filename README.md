@@ -335,7 +335,6 @@ CoffeeScript
 Cogent
 ColdFusion
 ColdFusionScript
-Coq
 Cpp
 CppHeader
 Crystal
@@ -486,6 +485,7 @@ Rakefile
 Razor
 Renpy
 ReStructuredText
+Rocq
 RON
 RPMSpecfile
 Ruby
