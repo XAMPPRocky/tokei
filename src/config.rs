@@ -35,8 +35,8 @@ pub struct Config {
     /// Don't respect .ignore and .tokeignore files, including those in parent directories.
     /// *Default:* `false`.
     pub no_ignore_dot: Option<bool>,
-    /// Don't respect VCS ignore files (.gitignore, .hgignore, etc.), including those in
-    /// parent directories. *Default:* `false`.
+    /// Don't respect VCS ignore files (.gitignore, .hgignore, svn:ignore, etc.),
+    /// including those in parent directories. *Default:* `false`.
     pub no_ignore_vcs: Option<bool>,
     /// Whether to treat doc strings in languages as comments.  *Default:*
     /// `false`.

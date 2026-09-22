@@ -151,8 +151,8 @@ impl Cli {
                 .action(ArgAction::SetTrue)
                 .help(
                     "\
-                        Don't respect VCS ignore files (.gitignore, .hgignore, etc.) including \
-                        those in parent directories.\
+                        Don't respect VCS ignore files (.gitignore, .hgignore, svn:ignore, etc.) \
+                        including those in parent directories.\
                     ",
                 ))
             .arg(
