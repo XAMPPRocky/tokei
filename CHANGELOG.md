@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Respect files ignored by Subversion (`svn:ignore`, `svn:global-ignores`, and `global-ignores` runtime configuration). Disabled with `--no-ignore-vcs`.
+
 ## [15.0.0](https://github.com/XAMPPRocky/tokei/compare/v14.0.0...v15.0.0) - 2026-09-06
 
 ### Added

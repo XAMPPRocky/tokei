@@ -1,4 +1,9 @@
-use std::{collections::BTreeMap, path::Path};
+use std::{
+    collections::{BTreeMap, HashSet},
+    fs,
+    path::{Component, Path, PathBuf},
+    process::Command,
+};
 
 use ignore::{overrides::OverrideBuilder, DirEntry, WalkBuilder, WalkState::Continue};
 
@@ -20,10 +25,9 @@ pub fn get_all_files<A: AsRef<Path>>(
     let languages = parking_lot::Mutex::new(languages);
     let (tx, rx) = crossbeam_channel::unbounded();
 
-    let mut paths = paths.iter();
-    let mut walker = WalkBuilder::new(paths.next().unwrap());
+    let mut walker = WalkBuilder::new(&paths[0]);
 
-    for path in paths {
+    for path in &paths[1..] {
         walker.add(path);
     }
 
@@ -47,10 +51,21 @@ pub fn get_all_files<A: AsRef<Path>>(
         walker.add_custom_ignore_filename(IGNORE_FILE);
     }
 
+    let svn_ignored = if ignore_vcs {
+        svn_ignored(paths)
+    } else {
+        HashSet::new()
+    };
+
     walker
         .git_exclude(ignore_vcs)
         .git_global(ignore_vcs)
         .git_ignore(ignore_vcs)
+        .filter_entry(move |e| {
+            !normalize_path(e.path())
+                .ancestors()
+                .any(|p| svn_ignored.contains(p))
+        })
         .hidden(config.hidden.map(|b| !b).unwrap_or(true))
         .ignore(ignore_dot)
         .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true));
@@ -116,6 +131,45 @@ pub fn get_all_files<A: AsRef<Path>>(
     }
 }
 
+/// Paths `svn status --no-ignore` marks `I` under each given working copy path.
+fn svn_ignored<A: AsRef<Path>>(paths: &[A]) -> HashSet<PathBuf> {
+    paths
+        .iter()
+        .filter(|p| {
+            fs::canonicalize(p.as_ref())
+                .is_ok_and(|p| p.ancestors().any(|a| a.join(".svn").is_dir()))
+        })
+        .filter_map(|p| {
+            Command::new("svn")
+                .args(["status", "--no-ignore"])
+                .arg(p.as_ref())
+                .output()
+                .ok()
+        })
+        .filter(|o| o.status.success())
+        .flat_map(|o| parse_svn_status(&String::from_utf8_lossy(&o.stdout)).collect::<Vec<_>>())
+        .collect()
+}
+
+/// Ignored paths from `svn status` output; the path starts at column 9 and may contain spaces.
+fn parse_svn_status(status: &str) -> impl Iterator<Item = PathBuf> + '_ {
+    status
+        .lines()
+        .filter(|l| l.starts_with('I'))
+        .filter_map(|l| l.get(8..))
+        .filter(|p| !p.is_empty())
+        .map(|p| normalize_path(Path::new(p)))
+}
+
+/// Removes `.` components so paths can be compared with the ones produced by
+/// the walker, regardless of whether the input path was written as `.` or
+/// `./`.
+fn normalize_path(path: &Path) -> PathBuf {
+    path.components()
+        .filter(|c| !matches!(c, Component::CurDir))
+        .collect()
+}
+
 pub(crate) fn get_extension(path: &Path) -> Option<String> {
     path.extension().map(|e| e.to_string_lossy().to_lowercase())
 }
@@ -126,7 +180,11 @@ pub(crate) fn get_filename(path: &Path) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::{
+        fs,
+        path::{Path, PathBuf},
+        process::Command,
+    };
 
     use tempfile::TempDir;
 
@@ -480,6 +538,71 @@ mod tests {
             &mut languages,
             &config,
         );
+
+        assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn svn_status_parsing() {
+        let output = "\
+ M      modified.rs
+?       unversioned.rs
+I       ignored.rs
+I       ignored dir/file.rs
+A  +    added.rs
+";
+
+        let mut ignored = super::parse_svn_status(output);
+        assert_eq!(Some(PathBuf::from("ignored.rs")), ignored.next());
+        assert_eq!(
+            Some(PathBuf::from("ignored dir").join("file.rs")),
+            ignored.next()
+        );
+        assert!(ignored.next().is_none());
+    }
+
+    #[test]
+    fn no_ignore_vcs_svn() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let repo = dir.path().join("repo");
+        let wc = dir.path().join("wc");
+
+        let run = |cmd: &str, args: &[&str], dir: &Path| {
+            Command::new(cmd)
+                .args(args)
+                .current_dir(dir)
+                .output()
+                .map(|o| o.status.success())
+                .unwrap_or(false)
+        };
+        let url = format!(
+            "file:///{}",
+            repo.display()
+                .to_string()
+                .replace('\\', "/")
+                .trim_start_matches('/')
+        );
+
+        // Skip if Subversion isn't installed.
+        if !run("svnadmin", &["create", repo.to_str().unwrap()], dir.path())
+            || !run("svn", &["checkout", &url, wc.to_str().unwrap()], dir.path())
+            || !run("svn", &["propset", "svn:ignore", IGNORE_PATTERN, "."], &wc)
+        {
+            return;
+        }
+
+        fs::write(wc.join(FILE_NAME), FILE_CONTENTS).unwrap();
+
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        super::get_all_files(&[wc.to_str().unwrap()], &[], &mut languages, &config);
+
+        assert!(languages.get(LANGUAGE).is_none());
+
+        config.no_ignore_vcs = Some(true);
+
+        super::get_all_files(&[wc.to_str().unwrap()], &[], &mut languages, &config);
 
         assert!(languages.get(LANGUAGE).is_some());
     }

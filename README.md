@@ -168,7 +168,8 @@ $ tokei ./foo ./bar ./baz
 ```
 
 #### Excluding folders
-Tokei will respect all `.gitignore` and `.ignore` files, and you can use
+Tokei will respect all `.gitignore` and `.ignore` files, as well as files
+ignored by Subversion (`svn:ignore`, `svn:global-ignores`), and you can use
 the `--exclude` option to exclude any additional files. The `--exclude` flag has
 the same semantics as `.gitignore`.
 
@@ -249,7 +250,7 @@ FLAGS:
                               --no-ignore-dot, and --no-ignore-vcs.
         --no-ignore-dot       Don't respect .ignore and .tokeignore files, including those in parent directories.
         --no-ignore-parent    Don't respect ignore files (.gitignore, .ignore, etc.) in parent directories.
-        --no-ignore-vcs       Don't respect VCS ignore files (.gitignore, .hgignore, etc.), including those in parent
+        --no-ignore-vcs       Don't respect VCS ignore files (.gitignore, .hgignore, svn:ignore, etc.), including those in parent
                               directories.
     -V, --version             Prints version information
     -v, --verbose             Set log output level:
