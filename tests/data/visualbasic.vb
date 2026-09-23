@@ -1,4 +1,4 @@
-' 7 lines 4 code 2 comments 1 blanks
+' language: "visual basic" 7 lines 4 code 2 comments 1 blanks
 Public Class C
     Public Sub M()
     ' This is a comment

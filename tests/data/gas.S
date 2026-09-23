@@ -1,4 +1,4 @@
-// 67 lines 46 code 10 comments 11 blanks
+// language: "gnu style assembly" 67 lines 46 code 10 comments 11 blanks
 #include "config.h"
 
 /* BIG FAT WARNING GOES HERE */

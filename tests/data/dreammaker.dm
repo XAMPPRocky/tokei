@@ -1,4 +1,4 @@
-// 17 lines 7 code 6 comments 4 blanks
+// language: "dream maker" 17 lines 7 code 6 comments 4 blanks
 /*
  * /* Hello! */
  */

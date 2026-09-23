@@ -1,4 +1,4 @@
-/* 16 lines 8 code 5 comments 3 blanks */
+/* language: "swig" 16 lines 8 code 5 comments 3 blanks */
 %module mymodule
 
 /*

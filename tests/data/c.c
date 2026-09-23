@@ -1,4 +1,4 @@
-// 50 lines 33 code 8 comments 9 blanks
+// language: "c" 50 lines 33 code 8 comments 9 blanks
 
 /* /* we can't nest block comments in c, but we can start one */
 int main(void) {

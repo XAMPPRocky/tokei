@@ -1,4 +1,4 @@
-// 20 lines 11 code 5 comments 4 blanks
+// language: "qml" 20 lines 11 code 5 comments 4 blanks
 
 import QtQuick 2.7
 import QtQuick.Controls 2.0

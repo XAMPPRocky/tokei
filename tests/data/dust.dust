@@ -1,4 +1,4 @@
-{! 10 lines 2 code 5 comments 3 blanks !}
+{! language: "dust.js" 10 lines 2 code 5 comments 3 blanks !}
 
 {! All Dust comments are multiline comments.  And there's no quoting
    comment openers and closers.  Instead there are escape sequences

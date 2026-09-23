@@ -1,4 +1,4 @@
-# 22 lines 11 code 7 comments 4 blanks
+# language: "hcl" 22 lines 11 code 7 comments 4 blanks
 variable "foo" "bar" {
   default = "yes"
 }

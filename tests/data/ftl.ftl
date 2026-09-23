@@ -1,4 +1,4 @@
-<#-- 10 lines 5 code 3 comments 2 blanks -->
+<#-- language: "freemarker" 10 lines 5 code 3 comments 2 blanks -->
 <#ftl output_format="plainText"/>
 
 <#-- Define the print macro -->

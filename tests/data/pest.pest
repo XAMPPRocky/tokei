@@ -1,4 +1,4 @@
-// 9 lines 4 code 3 comments 2 blanks
+// language: "pest" 9 lines 4 code 3 comments 2 blanks
 alpha = { 'a'..'z' | 'A'..'Z' }
 digit = { '0'..'9' }
 

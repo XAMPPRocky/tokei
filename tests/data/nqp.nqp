@@ -1,4 +1,4 @@
-# 24 lines 14 code 8 comments 2 blanks
+# language: "not quite perl" 24 lines 14 code 8 comments 2 blanks
 =begin
 Regex methods and functions
 =end

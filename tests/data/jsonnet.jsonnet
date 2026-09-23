@@ -1,4 +1,4 @@
-// 13 lines 7 code 4 comments 2 blanks
+// language: "jsonnet" 13 lines 7 code 4 comments 2 blanks
 
 /* /**/ */
 local func(a, b) = {

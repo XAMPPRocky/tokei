@@ -1,4 +1,4 @@
-// 13 lines 10 code 2 comments 1 blanks
+// language: "webgpu shader language" 13 lines 10 code 2 comments 1 blanks
 // comment
 [[stage(vertex)]]
 fn vs_main([[builtin(vertex_index)]] in_vertex_index: u32) -> [[builtin(position)]] vec4<f32> {

@@ -1,4 +1,4 @@
-## 11 lines 4 code 5 comments 2 blanks
+## language: "apache velocity" 11 lines 4 code 5 comments 2 blanks
 
 This text is visible. #* This text, as part of a multi-line
 comment, is not visible. This text is not visible; it is also

@@ -1,4 +1,4 @@
-; 21 lines 17 code 1 comments 3 blanks
+; language: "llvm" 21 lines 17 code 1 comments 3 blanks
 define i32 @add1(i32 %a, i32 %b) {
 entry:
   %tmp1 = add i32 %a, %b

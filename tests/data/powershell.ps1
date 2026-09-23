@@ -1,4 +1,4 @@
-# 17 lines 9 code 4 comments 4 blanks
+# language: "powershell" 17 lines 9 code 4 comments 4 blanks
 
 <#
 Test

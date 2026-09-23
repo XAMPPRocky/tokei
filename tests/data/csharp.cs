@@ -1,4 +1,4 @@
-// 26 lines 14 code 9 comments 3 blanks
+// language: "c#" 26 lines 14 code 9 comments 3 blanks
 namespace Ns
 {
     /*

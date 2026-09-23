@@ -1,4 +1,4 @@
-//// 34 lines 24 code 4 comments 6 blanks
+//// language: "gleam" 34 lines 24 code 4 comments 6 blanks
 
 import gleam/option.{Option, None}
 import gleam/io

@@ -1,4 +1,4 @@
-# 11 lines 3 code 5 comments 3 blanks
+# language: "jq" 11 lines 3 code 5 comments 3 blanks
 
 # A function to perform arithmetic
 def add_mul(adder; multiplier):

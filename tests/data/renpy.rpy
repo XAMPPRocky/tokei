@@ -1,4 +1,4 @@
-# 32 lines 8 code 9 comments 15 blanks
+# language: "Ren'Py" 32 lines 8 code 9 comments 15 blanks
 
 # Declare characters used by this game. The color argument colorizes the
 # name of the character.

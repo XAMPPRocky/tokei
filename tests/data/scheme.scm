@@ -1,4 +1,4 @@
-;;; 26 lines 14 code 4 comments 8 blanks
+;;; language: "scheme" 26 lines 14 code 4 comments 8 blanks
 
 (import (srfi srfi-1)) ; for reduce
 
