@@ -1581,6 +1581,23 @@
       "blank": true,
       "extensions": ["rst"]
     },
+    "Revo": {
+      "shebangs": ["#!/usr/bin/revo"],
+      "name": "Revo",
+      "line_comment": ["#"],
+      "quotes": [
+        ["\\\"", "\\\""],
+        ["'", "'"],
+        ["\\\"\\\"\\\"", "\\\"\\\"\\\""],
+        ["'''", "'''"],
+        ["`", "`"]
+      ],
+      "doc_quotes": [
+        ["#*", "*#"],
+        ["#!", "!#"]
+      ],
+      "extensions": ["rv", "revo"]
+    },
     "Roc": {
       "line_comment": ["#"],
       "quotes": [
