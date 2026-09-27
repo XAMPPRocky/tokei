@@ -91,7 +91,7 @@
     "Assembly": {
       "line_comment": [";"],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["asm"]
+      "extensions": ["asm", "nasm"]
     },
     "AssemblyGAS": {
       "name": "GNU Style Assembly",
