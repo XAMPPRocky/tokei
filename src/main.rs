@@ -6,7 +6,11 @@ mod cli_utils;
 mod consts;
 mod input;
 
-use std::{error::Error, io, process};
+use std::{
+    error::Error,
+    io::{self, Write},
+    process,
+};
 
 use tokei::{Config, Languages, Sort};
 
@@ -81,7 +85,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     if let Some(format) = cli.output {
-        print!("{}", format.print(&languages).unwrap());
+        let mut stdout = io::stdout().lock();
+        stdout.write_all(format.print(&languages)?.as_bytes())?;
+        stdout.flush()?;
         process::exit(0);
     }
 
