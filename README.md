@@ -521,6 +521,7 @@ Thrift
 Toml
 Tsx
 Twig
+TypeLanguage
 TypeScript
 UMPL
 UnrealDeveloperMarkdown
