@@ -1,0 +1,29 @@
+// 29 lines 19 code 4 comments 6 blanks
+#! /usr/bin/env ellec --run
+use std/prelude;
+
+fn `rhs`(char name, bool state, string operator) {
+    io::printf(
+        "{} is {} in a logical {} so the rhs branch was taken",
+        name, state, operator
+    );
+}
+
+fn main() {
+    a := true;
+    b := false;
+
+    a && rhs('a', a, "AND");
+    b || rhs('b', b, "OR");
+
+    a = !a;
+    b = !b;
+
+    // Wouldn't run due to short-circuiting
+    // `a` is false in &&, `b` is true in ||
+    a && `rhs`('a', a, "AND");
+    b || `rhs`('b', b, "OR");
+
+    io::println("This is a
+multiline string :3");
+}
