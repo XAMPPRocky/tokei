@@ -49,6 +49,7 @@ extern crate serde;
 
 #[macro_use]
 mod utils;
+mod column;
 mod config;
 mod consts;
 mod language;
@@ -56,6 +57,7 @@ mod sort;
 mod stats;
 
 pub use self::{
+    column::Column,
     config::Config,
     consts::*,
     language::{Language, LanguageType, Languages},

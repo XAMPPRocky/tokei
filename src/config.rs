@@ -2,6 +2,7 @@ use std::{env, fs, path::PathBuf};
 
 use etcetera::BaseStrategy;
 
+use crate::column::Column;
 use crate::language::LanguageType;
 use crate::sort::Sort;
 use crate::stats::Report;
@@ -47,6 +48,8 @@ pub struct Config {
     /// containing `C`, `Cpp`, and `Rust` with a `Config.types` of `[Cpp, Rust]`
     /// will count only `Cpp` and `Rust`. *Default:* `None`.
     pub types: Option<Vec<LanguageType>>,
+    /// Filter and order what columns should be contained in the output.
+    pub output_columns: Option<Vec<Column>>,
     // /// A map of individual language configuration.
     // pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
     /// Whether to output only the paths for downstream batch processing
@@ -135,6 +138,16 @@ impl Config {
             no_ignore_vcs: current_dir
                 .no_ignore_vcs
                 .or(home_dir.no_ignore_vcs.or(conf_dir.no_ignore_vcs)),
+            output_columns: current_dir
+                .output_columns
+                .or(home_dir.output_columns.or(conf_dir.output_columns))
+                .or(Some(vec![
+                    Column::Files,
+                    Column::Lines,
+                    Column::Code,
+                    Column::Comments,
+                    Column::Blanks,
+                ])),
         }
     }
 }
