@@ -398,6 +398,7 @@ Hex0
 Hex1
 Hex2
 HiCAD
+HIP
 hledger
 Hlsl
 HolyC

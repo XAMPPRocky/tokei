@@ -798,6 +798,14 @@
       "line_comment": ["REM", "rem"],
       "extensions": ["MAC", "mac"]
     },
+    "Hip": {
+      "name": "HIP",
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"", "\\\""], ["'", "'"]],
+      "verbatim_quotes": [["R\\\"(", ")\\\""]],
+      "extensions": ["hip"]
+    },
     "Hlsl": {
       "name": "HLSL",
       "line_comment": ["//"],
