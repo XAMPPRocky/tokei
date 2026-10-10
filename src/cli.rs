@@ -208,7 +208,7 @@ impl Cli {
                     .long("compact")
                     .short('C')
                     .action(ArgAction::SetTrue)
-                    .help("Do not print statistics about embedded languages."),
+                    .help("Print one row per language, hiding test and embedded-language breakdowns."),
             )
             .arg(
                 Arg::new("num_format_style")

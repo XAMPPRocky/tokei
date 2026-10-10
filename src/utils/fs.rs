@@ -96,10 +96,11 @@ pub fn get_all_files<A: AsRef<Path>>(
         let entry = lock.entry(language).or_insert_with(Language::new);
         match result {
             Ok(stats) => {
-                let func = config.for_each_fn;
-                if let Some(f) = func {
-                    f(language, stats.clone())
-                };
+                if language != LanguageType::Rust {
+                    if let Some(callback) = config.for_each_fn {
+                        callback(language, stats.clone());
+                    }
+                }
                 entry.add_report(stats)
             }
             Err((error, path)) => {

@@ -1,6 +1,7 @@
 mod embedding;
 pub mod language_type;
 pub mod languages;
+mod rust_tests;
 mod syntax;
 
 use std::{collections::BTreeMap, mem, ops::AddAssign};
@@ -56,6 +57,62 @@ impl Language {
         }
 
         self.reports.push(report);
+    }
+
+    /// Returns statistics for recognized test code, including its file reports.
+    ///
+    /// These counts are a subset of the existing totals, not additional lines.
+    /// Older saved reports without test classification are not reclassified when loaded.
+    /// Embedded languages retain the same representation as in this language;
+    /// use [`Language::summarise`] to include them in the returned counts.
+    ///
+    /// ```no_run
+    /// use tokei::{Config, LanguageType, Languages};
+    /// let mut languages = Languages::new();
+    /// languages.get_statistics(&["."], &[], &Config::default());
+    /// if let Some(go) = languages.get(&LanguageType::Go) {
+    ///     let tests = go.test_statistics();
+    ///     println!("{} test files, {} code lines", tests.reports.len(), tests.code);
+    /// }
+    /// ```
+    #[must_use]
+    pub fn test_statistics(&self) -> Self {
+        self.statistics_for_tests(true)
+    }
+
+    /// Returns statistics outside recognized test code.
+    ///
+    /// Together with [`Language::test_statistics`], this partitions counted lines.
+    /// A file containing inline tests can appear in both subsets. Other lines
+    /// are not guaranteed to be production code. Embedded languages retain
+    /// their usual representation; use [`Language::summarise`] to include them.
+    #[must_use]
+    pub fn non_test_statistics(&self) -> Self {
+        self.statistics_for_tests(false)
+    }
+
+    fn statistics_for_tests(&self, is_test: bool) -> Self {
+        let mut subset = Self::new();
+        for report in &self.reports {
+            let stats = match (is_test, report.is_test, &report.test_stats) {
+                (true, true, _) | (false, false, None) => Some(report.stats.clone()),
+                (true, false, Some(tests)) => Some(tests.clone()),
+                (false, false, Some(tests)) => Some(report.stats.without(tests)),
+                _ => None,
+            };
+            if let Some(stats) = stats {
+                if stats.summarise().lines() > 0 {
+                    let mut part = report.clone();
+                    part.stats = stats;
+                    part.is_test = is_test;
+                    part.test_stats = None;
+                    subset.add_report(part);
+                }
+            }
+        }
+        subset.total();
+        subset.inaccurate = self.inaccurate;
+        subset
     }
 
     /// Marks this language as possibly not reflecting correct stats.
@@ -172,5 +229,75 @@ impl AddAssign for Language {
         self.reports.extend(mem::take(&mut rhs.reports));
         self.children.extend(mem::take(&mut rhs.children));
         self.inaccurate |= rhs.inaccurate;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_statistics_partition_reports_without_changing_totals() {
+        let mut test = Report::new("main_test.go".into());
+        test.is_test = true;
+        test.stats.code = 3;
+        test.stats.comments = 2;
+        test.stats.blanks = 1;
+        let mut other = Report::new("main.go".into());
+        other.stats.code = 7;
+        let mut language = Language::new();
+        language.add_report(test.clone());
+        language.add_report(other.clone());
+        language.total();
+        let original = language.clone();
+
+        let tests = language.test_statistics();
+        assert_eq!(tests.reports, vec![test]);
+        assert_eq!(tests.code, 3);
+        assert_eq!(tests.comments, 2);
+        assert_eq!(tests.blanks, 1);
+        let non_tests = language.non_test_statistics();
+        assert_eq!(non_tests.reports, vec![other]);
+        assert_eq!(non_tests.code, 7);
+        assert_eq!(non_tests.comments, 0);
+        assert_eq!(non_tests.blanks, 0);
+        assert_eq!(tests.lines() + non_tests.lines(), language.lines());
+        assert_eq!(language, original);
+    }
+    #[test]
+    fn embedded_counts_are_included_once() {
+        let mut report = Report::new("test.html".into());
+        report.is_test = true;
+        report.stats.code = 3;
+        let mut embedded = crate::CodeStats::new();
+        embedded.code = 5;
+        report
+            .stats
+            .blobs
+            .insert(LanguageType::JavaScript, embedded);
+        let mut language = Language::new();
+        language.add_report(report);
+        language.total();
+        let tests = language.test_statistics();
+        assert_eq!(tests.code, 3);
+        assert_eq!(tests.summarise().code, 8);
+        assert_eq!(tests.reports.len(), 1);
+        assert_eq!(language.summarise().code, 8);
+    }
+    #[test]
+    fn partitions_handle_all_test_and_no_test_files() {
+        for is_test in [false, true] {
+            let mut report = Report::new("example.go".into());
+            report.is_test = is_test;
+            report.stats.code = 7;
+            let mut language = Language::new();
+            language.add_report(report);
+            language.total();
+            let tests = language.test_statistics();
+            let non_tests = language.non_test_statistics();
+            assert_eq!(tests.code, if is_test { 7 } else { 0 });
+            assert_eq!(non_tests.code, if is_test { 0 } else { 7 });
+            assert_eq!(tests.reports.len() + non_tests.reports.len(), 1);
+        }
     }
 }

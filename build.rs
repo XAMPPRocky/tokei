@@ -11,6 +11,7 @@ use ignore::Walk;
 use serde_json::Value;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
+    println!("cargo:rustc-env=TOKEI_TEST_TARGET={}", env::var("TARGET")?);
     let out_dir = env::var_os("OUT_DIR").expect("No OUT_DIR variable.");
     generate_languages(&out_dir)?;
     generate_tests(&out_dir)?;

@@ -197,6 +197,30 @@ flag tokei can also output individual file statistics.
 $ tokei ./foo --files
 ```
 
+#### Test statistics
+
+Languages with recognized tests show lines outside tests on the language row, followed by a
+`Tests` subrow and an inclusive `(Total)` row. If all lines belong to tests, the language row has
+no counts. Embedded languages retain their own subrows. Languages without recognized tests keep
+their usual layout.
+
+Use `--compact` for one inclusive row per language, hiding test and embedded-language breakdowns.
+The breakdown also works with `--files` and sorting. Overall totals include both subsets.
+
+Detection recognizes Go filenames ending in `_test.go` and Rust `#[cfg(test)]` items and
+`#[test]` functions. Go test files count in full, including helpers, benchmarks, and examples.
+Rust files reached through a test-only `mod` declaration count in full, including their helper
+modules. Rust files under a Cargo package's `tests/` directory also count in full, including
+nested support files. Other Rust files may contain both test and other lines, so their file counts
+can appear on both the language row and the `Tests` subrow. The language row is not necessarily
+production code; it shows code not recognized as tests.
+
+JSON and streaming JSON reports include `is_test` for whole test files and `test_stats` for
+inline test code. Library users can call
+`Language::test_statistics()` and `Language::non_test_statistics()` to obtain the subsets. Older
+saved reports without `is_test` remain readable and default to unclassified; loading them does not
+rerun detection.
+
 #### Outputting into different formats
 Tokei normally outputs into a nice human readable format designed for terminals.
 There is also using the `--output` option various other formats that are more

@@ -31,6 +31,23 @@ impl CodeStats {
         self.blanks + self.code + self.comments
     }
 
+    /// Returns the counts outside an included subset of this file.
+    #[must_use]
+    pub(crate) fn without(&self, subset: &Self) -> Self {
+        let mut other = Self::new();
+        other.blanks = self.blanks - subset.blanks;
+        other.code = self.code - subset.code;
+        other.comments = self.comments - subset.comments;
+        for (language, stats) in &self.blobs {
+            if let Some(part) = subset.blobs.get(language) {
+                other.blobs.insert(*language, stats.without(part));
+            } else {
+                other.blobs.insert(*language, stats.clone());
+            }
+        }
+        other
+    }
+
     /// Creates a new `CodeStats` from an existing one with all of the child
     /// blobs merged.
     #[must_use]
@@ -75,6 +92,19 @@ pub struct Report {
     pub stats: CodeStats,
     /// File name.
     pub name: PathBuf,
+    /// Whether this file is recognized as test-associated code.
+    ///
+    /// Applies to the entire file, including helpers, benchmarks, and examples.
+    /// False means not recognized, not necessarily production code. Older
+    /// serialized reports default to false.
+    #[serde(default)]
+    pub is_test: bool,
+    /// Statistics for test code within a file that also contains other code.
+    ///
+    /// This is a subset of `stats`. When absent, `is_test` classifies the
+    /// entire file. Older serialized reports default to no inline test data.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub test_stats: Option<CodeStats>,
 }
 
 impl Report {
@@ -139,5 +169,29 @@ impl fmt::Display for Report {
             formatted.push_str(&name[from..]);
             display_stats!(f, self, formatted, max_len)
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn report_round_trip_preserves_test_classification() {
+        let mut report = Report::new("main_test.go".into());
+        report.is_test = true;
+        report.stats.code = 3;
+        let json = serde_json::to_string(&report).unwrap();
+        let restored: Report = serde_json::from_str(&json).unwrap();
+        assert_eq!(restored, report);
+    }
+
+    #[test]
+    fn old_report_defaults_to_unclassified() {
+        let json =
+            r#"{"name":"main_test.go","stats":{"code":3,"comments":0,"blanks":0,"blobs":{}}}"#;
+        let report: Report = serde_json::from_str(json).unwrap();
+        assert!(!report.is_test);
+        assert_eq!(report.stats.code, 3);
     }
 }

@@ -119,6 +119,36 @@ impl NumberFormatStyle {
     }
 }
 
+#[derive(Clone, Copy)]
+enum LanguageDisplay {
+    Compact,
+    Plain,
+    Embedded,
+    Tests,
+}
+
+impl LanguageDisplay {
+    fn for_language(language: &Language, compact: bool) -> Self {
+        if compact {
+            Self::Compact
+        } else if language
+            .reports
+            .iter()
+            .any(|report| report.is_test || report.test_stats.is_some())
+        {
+            Self::Tests
+        } else if !language.children.is_empty() {
+            Self::Embedded
+        } else {
+            Self::Plain
+        }
+    }
+
+    fn has_breakdown(self) -> bool {
+        matches!(self, Self::Embedded | Self::Tests)
+    }
+}
+
 pub struct Printer<W> {
     writer: W,
     columns: usize,
@@ -179,7 +209,16 @@ impl<W: Write> Printer<W> {
     where
         W: Write,
     {
-        self.print_language_name(language.inaccurate, name, None)?;
+        self.print_language_row(language, name, None)
+    }
+
+    fn print_language_row(
+        &mut self,
+        language: &Language,
+        name: &str,
+        prefix: Option<&str>,
+    ) -> io::Result<()> {
+        self.print_language_name(language.inaccurate, name, prefix)?;
         write!(self.writer, " ")?;
         writeln!(
             self.writer,
@@ -304,6 +343,10 @@ impl<W: Write> Printer<W> {
                     .collect::<Vec<_>>(),
             )?;
         }
+        self.print_language_subtotal(parent)
+    }
+
+    fn print_language_subtotal(&mut self, parent: &Language) -> io::Result<()> {
         let mut subtotal = tokei::Report::new("(Total)".into());
         let summary = parent.summarise();
         subtotal.stats.code += summary.code;
@@ -323,76 +366,114 @@ impl<W: Write> Printer<W> {
     where
         I: Iterator<Item = (&'a LanguageType, &'a Language)>,
     {
-        let (a, b): (Vec<_>, Vec<_>) = languages
-            .filter(|(_, v)| !v.is_empty())
-            .partition(|(_, l)| compact || l.children.is_empty());
-        let mut first = true;
+        let mut plain = Vec::new();
+        let mut expanded = Vec::new();
+        for (name, language) in languages {
+            if language.is_empty() {
+                continue;
+            }
+            let display = LanguageDisplay::for_language(language, compact);
+            let entry = (name, language, display);
+            if display.has_breakdown() {
+                expanded.push(entry);
+            } else {
+                plain.push(entry);
+            }
+        }
 
-        for languages in &[&a, &b] {
-            for &(name, language) in *languages {
-                let has_children = !(compact || language.children.is_empty());
-                if first {
-                    first = false;
-                } else if has_children || self.list_files {
-                    self.print_subrow()?;
-                }
+        for (index, (name, language, display)) in plain.into_iter().chain(expanded).enumerate() {
+            if index > 0 && (display.has_breakdown() || self.list_files) {
+                self.print_subrow()?;
+            }
+            self.print_language_summary(language, name.name(), display)?;
+            if self.list_files {
+                self.print_files(language, *name, compact, is_sorted)?;
+            }
+        }
+        Ok(())
+    }
 
-                self.print_language(language, name.name())?;
-                if has_children {
-                    self.print_language_total(language)?;
-                }
+    fn print_language_summary(
+        &mut self,
+        language: &Language,
+        name: &str,
+        display: LanguageDisplay,
+    ) -> io::Result<()> {
+        match display {
+            LanguageDisplay::Compact => self.print_language(&language.summarise(), name),
+            LanguageDisplay::Plain => self.print_language(language, name),
+            LanguageDisplay::Embedded => self.print_language_with_children(language, name),
+            LanguageDisplay::Tests => self.print_test_breakdown(language, name),
+        }
+    }
 
-                if self.list_files {
-                    self.print_subrow()?;
-                    let mut reports: Vec<&Report> = language.reports.iter().collect();
-                    if !is_sorted {
-                        reports.sort_by(|&a, &b| a.name.cmp(&b.name));
-                    }
-                    if compact {
-                        for &report in &reports {
-                            writeln!(self.writer, "{:1$}", report, self.path_length)?;
-                        }
+    fn print_test_breakdown(&mut self, language: &Language, name: &str) -> io::Result<()> {
+        let other = language.non_test_statistics();
+        if !other.reports.is_empty() {
+            self.print_language(&other, name)?;
+        } else {
+            self.print_language_name(language.inaccurate, name, None)?;
+            writeln!(self.writer)?;
+        }
+        let tests = language.test_statistics();
+        self.print_language_row(&tests, "Tests", Some(" |-"))?;
+        self.print_language_total(language)
+    }
+
+    fn print_language_with_children(&mut self, language: &Language, name: &str) -> io::Result<()> {
+        self.print_language(language, name)?;
+        if !language.children.is_empty() {
+            self.print_language_total(language)?;
+        }
+        Ok(())
+    }
+
+    fn print_files(
+        &mut self,
+        language: &Language,
+        name: LanguageType,
+        compact: bool,
+        is_sorted: bool,
+    ) -> io::Result<()> {
+        self.print_subrow()?;
+        let mut reports: Vec<&Report> = language.reports.iter().collect();
+        if !is_sorted {
+            reports.sort_by(|&a, &b| a.name.cmp(&b.name));
+        }
+        if compact {
+            for &report in &reports {
+                writeln!(self.writer, "{:1$}", report, self.path_length)?;
+            }
+        } else {
+            let (a, b): (Vec<&Report>, Vec<&Report>) =
+                reports.iter().partition(|&r| r.stats.blobs.is_empty());
+            for reports in &[&a, &b] {
+                let mut first = true;
+                for report in reports.iter() {
+                    if report.stats.blobs.is_empty() {
+                        writeln!(self.writer, "{:1$}", report, self.path_length)?;
                     } else {
-                        let (a, b): (Vec<&Report>, Vec<&Report>) =
-                            reports.iter().partition(|&r| r.stats.blobs.is_empty());
-                        for reports in &[&a, &b] {
-                            let mut first = true;
-                            for report in reports.iter() {
-                                if report.stats.blobs.is_empty() {
-                                    writeln!(self.writer, "{:1$}", report, self.path_length)?;
-                                } else {
-                                    if first && a.is_empty() {
-                                        writeln!(self.writer, " {}", report.name.display())?;
-                                        first = false;
-                                    } else {
-                                        writeln!(
-                                            self.writer,
-                                            "-- {} {}",
-                                            report.name.display(),
-                                            "-".repeat(
-                                                self.columns
-                                                    - 4
-                                                    - report.name.display().to_string().len()
-                                            )
-                                        )?;
-                                    }
-                                    let mut new_report = (*report).clone();
-                                    new_report.name = name.to_string().into();
-                                    writeln!(
-                                        self.writer,
-                                        " |-{:1$}",
-                                        new_report,
-                                        self.path_length - 3
-                                    )?;
-                                    self.print_report_total(report, language.inaccurate)?;
-                                }
-                            }
+                        if first && a.is_empty() {
+                            writeln!(self.writer, " {}", report.name.display())?;
+                            first = false;
+                        } else {
+                            writeln!(
+                                self.writer,
+                                "-- {} {}",
+                                report.name.display(),
+                                "-".repeat(
+                                    self.columns - 4 - report.name.display().to_string().len()
+                                )
+                            )?;
                         }
+                        let mut new_report = (*report).clone();
+                        new_report.name = name.to_string().into();
+                        writeln!(self.writer, " |-{:1$}", new_report, self.path_length - 3)?;
+                        self.print_report_total(report, language.inaccurate)?;
                     }
                 }
             }
         }
-
         Ok(())
     }
 

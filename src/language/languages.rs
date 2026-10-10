@@ -82,7 +82,19 @@ impl Languages {
         ignored: &[&str],
         config: &Config,
     ) {
+        let previous_rust_reports = self
+            .inner
+            .get(&LanguageType::Rust)
+            .map_or(0, |rust| rust.reports.len());
         utils::fs::get_all_files(paths, ignored, &mut self.inner, config);
+        if let Some(rust) = self.inner.get_mut(&LanguageType::Rust) {
+            super::rust_tests::classify_external_modules(rust);
+            if let Some(callback) = config.for_each_fn {
+                for report in rust.reports.iter().skip(previous_rust_reports) {
+                    callback(LanguageType::Rust, report.clone());
+                }
+            }
+        }
         self.inner.par_iter_mut().for_each(|(_, l)| l.total());
     }
 
