@@ -88,6 +88,26 @@ in the context of Tokei is a string literal that can have unescaped `"`s. For ex
 const string BasePath = @"C:\";
 ```
 
+The `character_literals` property is for languages that have a single-quoted
+character literal syntax, such as C's `'"'` or Rust's `'\''`. Unlike `quotes`,
+these literals cannot span lines: a missing closing delimiter ends the literal
+at the end of the line it started on. That keeps constructs which merely
+contain an apostrophe — a Rust lifetime such as `&'a str`, or a C++14 digit
+separator such as `1'000` — from opening a string that swallows the rest of
+the file.
+
+```json
+"C": {
+  "character_literals": [
+    [
+      "'",
+      "'"
+    ]
+  ],
+  //...
+},
+```
+
 Some languages have a single, standard filename with no extension
 like `Makefile` or `Dockerfile`. These can be defined with the
 `filenames` property:

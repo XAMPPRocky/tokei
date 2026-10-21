@@ -79,6 +79,7 @@ pub(crate) struct SharedMatchers {
     pub multi_line_comments: &'static [(&'static str, &'static str)],
     pub nested_comments: &'static [(&'static str, &'static str)],
     pub string_literals: &'static [(&'static str, &'static str)],
+    pub character_literals: &'static [(&'static str, &'static str)],
     pub verbatim_string_literals: &'static [(&'static str, &'static str)],
 }
 
@@ -117,6 +118,7 @@ impl SharedMatchers {
             any_multi_line_comments: language.any_multi_line_comments(),
             nested_comments: language.nested_comments(),
             string_literals: language.quotes(),
+            character_literals: language.character_literals(),
             verbatim_string_literals: language.verbatim_quotes(),
         }
     }
@@ -255,6 +257,15 @@ impl SyntaxCounter {
                 skip!(skip_amount);
                 continue;
             } else if self.quote.is_some() {
+                continue;
+            }
+
+            // Character literals are consumed the moment they are found. They
+            // are confined to a single line, so they must never set `quote`:
+            // doing so would leave the state machine in string mode for every
+            // following line that has no matching delimiter.
+            if let Some(skip_amount) = self.parse_character_literal(&lines[i..end]) {
+                skip!(skip_amount);
                 continue;
             }
 
@@ -598,6 +609,44 @@ impl SyntaxCounter {
         }
 
         None
+    }
+
+    /// Consumes a character literal, e.g. `'a'`, `'"'`, or `'\''`.
+    ///
+    /// Character literals are single line constructs: if the closing delimiter
+    /// is missing - as it is for a Rust lifetime such as `&'a str`, or for a
+    /// stray apostrophe - only the remainder of the current line is consumed
+    /// and no state is carried over to the next line. This is why they can be
+    /// skipped outright instead of opening a string.
+    ///
+    /// The returned value is the number of bytes the literal occupies, so that
+    /// the caller can skip exactly that many bytes.
+    #[inline]
+    pub(crate) fn parse_character_literal(&self, window: &[u8]) -> Option<usize> {
+        if !self.is_plain_mode() {
+            return None;
+        }
+
+        let (start, end) = self
+            .shared
+            .character_literals
+            .iter()
+            .find(|(s, _)| window.starts_with(s.as_bytes()))?;
+
+        let mut index = start.len();
+        while index < window.len() {
+            if window[index] == b'\\' {
+                // Skip the escape and the byte it escapes, e.g. `\'` or `\\`.
+                index += 2;
+            } else if window[index..].starts_with(end.as_bytes()) {
+                return Some(index + end.len());
+            } else {
+                index += 1;
+            }
+        }
+
+        // Unterminated: the rest of the line cannot be part of the literal.
+        Some(window.len())
     }
 
     #[inline]

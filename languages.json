@@ -44,6 +44,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["ino"]
     },
     "ArkTS": {
@@ -212,12 +213,14 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["c", "ec", "pgc"]
     },
     "C3": {
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["c3"]
     },
     "Cabal": {
@@ -266,6 +269,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["h"]
     },
     "Cil": {
@@ -343,6 +347,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "verbatim_quotes": [["R\\\"(", ")\\\""]],
       "extensions": ["cc", "cpp", "cxx", "c++", "pcc", "tpp"]
     },
@@ -351,6 +356,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["hh", "hpp", "hxx", "inl", "ipp"]
     },
     "CppModule": {
@@ -358,6 +364,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "verbatim_quotes": [["R\\\"(", ")\\\""]],
       "extensions": ["cppm", "ixx", "ccm", "mpp", "mxx", "cxxm", "hppm", "hxxm"]
     },
@@ -396,6 +403,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["cu"]
     },
     "Cue": {
@@ -1253,6 +1261,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["m"]
     },
     "ObjectiveCpp": {
@@ -1260,6 +1269,7 @@
       "line_comment": ["//"],
       "multi_line_comments": [["/*", "*/"]],
       "quotes": [["\\\"", "\\\""]],
+      "character_literals": [["'", "'"]],
       "extensions": ["mm"]
     },
     "OCaml": {
@@ -1624,6 +1634,7 @@
       "important_syntax": ["///", "//!"],
       "extensions": ["rs"],
       "quotes": [["\\\"", "\\\""], ["#\\\"", "\\\"#"]],
+      "character_literals": [["'", "'"]],
       "verbatim_quotes": [["r##\\\"", "\\\"##"], ["r#\\\"", "\\\"#"]]
     },
     "Sass": {

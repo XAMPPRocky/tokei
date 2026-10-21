@@ -170,6 +170,29 @@ impl LanguageType {
         }
     }
 
+    /// Returns the character literals of a language.
+    ///
+    /// Unlike [`quotes`](Self::quotes), character literals are confined to a
+    /// single line: a missing closing delimiter is treated as the end of the
+    /// literal at the end of that line, so it can never open a string that
+    /// swallows the rest of the file.
+    /// ```
+    /// use tokei::LanguageType;
+    /// let lang = LanguageType::C;
+    /// assert_eq!(lang.character_literals(), &[("'", "'")]);
+    /// ```
+    pub fn character_literals(self) -> &'static [(&'static str, &'static str)] {
+        match self {
+            {% for key, value in languages -%}
+                {{key}} => &[
+                    {%- for items in value.character_literals | default(value=[]) -%}
+                        ({% for item in items %}"{{item}}",{% endfor %}),
+                    {%- endfor -%}
+                ],
+            {% endfor %}
+        }
+    }
+
     /// Returns the doc quotes of a language.
     /// ```
     /// use tokei::LanguageType;
