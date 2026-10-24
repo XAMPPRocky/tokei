@@ -1573,7 +1573,7 @@
       "line_comment": [";"],
       "multi_line_comments": [["#|", "|#"]],
       "nested": true,
-      "extensions": ["sch", "scm", "sld", "ss"]
+      "extensions": ["sch", "scm", "sld", "sls", "ss"]
     },
     "Scons": {
       "line_comment": ["#"],
