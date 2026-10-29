@@ -1,0 +1,21 @@
+// 21 lines 12 code 6 comments 3 blanks
+
+import std.io
+// An ordinary line comment.
+let name = "Topaz"
+let escaped = "\"// is text\""
+let marker = "/* not a comment */"
+let path = p"notes/{name}.txt"
+let query = sql"SELECT name WHERE name = {name}"
+
+/* A non-nested block comment.
+   // This line is still a comment.
+*/
+let text = """
+    // This is string content.
+    /* This is also string content. */
+    """
+let value = /* inline comment */ 42 // trailing comment
+io.writeLine("{name}: {value}")
+
+// /* does not begin a block inside a line comment.

@@ -1056,6 +1056,13 @@
       "quotes": [["\\\"", "\\\""]],
       "extensions": ["ld", "lds"]
     },
+    "Lispex": {
+      "line_comment": [";"],
+      "multi_line_comments": [["#|", "|#"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["lspx"]
+    },
     "Lisp": {
       "name": "Common Lisp",
       "line_comment": [";"],
@@ -1855,6 +1862,12 @@
         ["'''", "'''"]
       ],
       "extensions": ["toml"]
+    },
+    "Topaz": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "quotes": [["\\\"\\\"\\\"", "\\\"\\\"\\\""], ["\\\"", "\\\""]],
+      "extensions": ["tpz"]
     },
     "Tsx": {
       "name": "TSX",
