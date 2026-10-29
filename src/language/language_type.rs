@@ -352,4 +352,26 @@ mod tests {
         let rust_stats = stats.blobs.get(&Rust).expect("should have a Rust entry");
         assert_stats(rust_stats, 2, 5, 1);
     }
+
+    #[test]
+    fn shebang_env_skips_flags_and_assignments() {
+        let dir = tempfile::tempdir().unwrap();
+        let cases = [
+            ("#!/usr/bin/env python3\n", Some(Python)),
+            ("#!/usr/bin/env -S python3 -u\n", Some(Python)),
+            ("#!/usr/bin/env -i FOO=bar python3\n", Some(Python)),
+            ("#!/usr/bin/env -S\n", None),
+        ];
+
+        for (i, (contents, expected)) in cases.iter().enumerate() {
+            let path = dir.path().join(format!("script{}", i));
+            fs::write(&path, contents).unwrap();
+            assert_eq!(
+                LanguageType::from_shebang(&path),
+                *expected,
+                "shebang: {:?}",
+                contents
+            );
+        }
+    }
 }

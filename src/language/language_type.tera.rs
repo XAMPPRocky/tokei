@@ -418,7 +418,8 @@ impl LanguageType {
             {%- endfor %}
 
             Some("#!/usr/bin/env") => {
-                if let Some(word) = words.next() {
+                // Skip `env` options (`-S`, `-i`) and `NAME=value` assignments.
+                if let Some(word) = words.find(|w| !w.starts_with('-') && !w.contains('=')) {
                     match word {
                         {% for key, value in languages -%}
                             {%- if value.env -%}
