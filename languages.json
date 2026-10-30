@@ -1128,6 +1128,13 @@
     "Max": {
       "extensions": ["maxpat"]
     },
+    "Maylang": {
+      "line_comment": ["//"],
+      "multi_line_comments": [["/*", "*/"]],
+      "nested": true,
+      "quotes": [["\\\"", "\\\""]],
+      "extensions": ["may"]
+    },
     "Mdx": {
       "name": "MDX",
       "literate": true,

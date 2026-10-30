@@ -1,0 +1,25 @@
+// 25 lines 15 code 6 comments 4 blanks
+
+/// Doubles a value.
+fun double(value: Int) -> Int {
+    return value * 2; // trailing comment
+}
+
+/* A block comment
+   /* nested */
+   still a comment */
+let url: Str = "https://example.com/* not a comment */"; // comment
+let quote: Str = "a \"quoted\" // string";
+let multi: Str = "first line
+// still inside the string
+last line";
+
+/* single line block */
+fun greet(name: Str) -> Nil {
+    print("hello, ${name}"); /* trailing block */
+    return nil;
+}
+
+greet("May");
+print(double(21));
+print(url + quote + multi);

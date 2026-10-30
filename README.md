@@ -436,6 +436,7 @@ Madlang
 Max
 Makefile
 Markdown
+Maylang
 Mdx
 Meson
 Mint
