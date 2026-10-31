@@ -63,8 +63,8 @@ Tokei is a program that displays statistics about your code. Tokei will show the
   nested comments, and not counting comments that are in strings. Providing an
   accurate code statistics.
 
-- Tokei has huge range of languages, supporting over **150** languages, and
-  their various extensions.
+- Tokei has huge range of languages, supporting over **300** languages, and
+  their various extensions (such as Ardunio C++).
 
 - Tokei can output in multiple formats (**CBOR**, **JSON**, **YAML**)
   allowing Tokei's output to be easily stored, and reused. These can also be
