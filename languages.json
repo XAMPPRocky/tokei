@@ -335,6 +335,7 @@
     },
     "Coq": {
       "quotes": [["\\\"", "\\\""]],
+      "verbatim_quotes": [["\\\"", "\\\""]],
       "multi_line_comments": [["(*", "*)"]],
       "extensions": ["v"]
     },
