@@ -50,7 +50,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         .columns
         .or(config.columns)
         .or_else(|| {
-            if cli.files {
+            if cli.files || cli.top.is_some() {
                 term_size::dimensions().map(|(w, _)| w)
             } else {
                 None
@@ -85,11 +85,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         process::exit(0);
     }
 
+    let total_code = languages.total().code;
     let mut printer = Printer::new(
         columns,
         cli.files,
         io::BufWriter::new(io::stdout()),
         cli.number_format,
+        total_code,
     );
 
     if languages.iter().any(|(_, lang)| lang.inaccurate) {
@@ -99,7 +101,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     printer.print_header()?;
 
     let mut is_sorted = false;
-    if let Some(sort_category) = cli.sort.or(config.sort) {
+    let sort_category = cli.sort.or(config.sort);
+    if let Some(sort_category) = sort_category {
         for (_, ref mut language) in &mut languages {
             language.sort_by(sort_category);
         }
@@ -123,6 +126,15 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     printer.print_total(&languages)?;
+
+    if let Some(top_n) = cli.top {
+        printer.print_top(
+            &languages,
+            top_n,
+            sort_category.unwrap_or(Sort::Code),
+            cli.sort_reverse,
+        )?;
+    }
 
     Ok(())
 }

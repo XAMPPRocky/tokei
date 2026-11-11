@@ -1,8 +1,10 @@
 use std::{collections::BTreeMap, path::Path};
 
-use ignore::{overrides::OverrideBuilder, DirEntry, WalkBuilder, WalkState::Continue};
-
-use rayon::prelude::*;
+use ignore::{
+    overrides::OverrideBuilder, DirEntry, ParallelVisitor, ParallelVisitorBuilder, WalkBuilder,
+    WalkState::{self, Continue},
+};
+use parking_lot::Mutex;
 
 use crate::{
     config::Config,
@@ -17,9 +19,6 @@ pub fn get_all_files<A: AsRef<Path>>(
     languages: &mut BTreeMap<LanguageType, Language>,
     config: &Config,
 ) {
-    let languages = parking_lot::Mutex::new(languages);
-    let (tx, rx) = crossbeam_channel::unbounded();
-
     let mut paths = paths.iter();
     let mut walker = WalkBuilder::new(paths.next().unwrap());
 
@@ -47,7 +46,12 @@ pub fn get_all_files<A: AsRef<Path>>(
         walker.add_custom_ignore_filename(IGNORE_FILE);
     }
 
+    // `ignore` only uses 2 threads by default; since files are parsed on the
+    // walker's threads, use all available cores.
+    let threads = std::thread::available_parallelism().map_or(1, |n| n.get());
+
     walker
+        .threads(threads)
         .git_exclude(ignore_vcs)
         .git_global(ignore_vcs)
         .git_ignore(ignore_vcs)
@@ -55,49 +59,76 @@ pub fn get_all_files<A: AsRef<Path>>(
         .ignore(ignore_dot)
         .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true));
 
-    walker.build_parallel().run(move || {
-        let tx = tx.clone();
-        Box::new(move |entry| {
-            let entry = match entry {
-                Ok(entry) => entry,
-                Err(error) => {
-                    use ignore::Error;
-                    if let Error::WithDepth { err: ref error, .. } = error {
-                        if let Error::WithPath {
-                            ref path,
-                            err: ref error,
-                        } = **error
-                        {
-                            error!("{} reading {}", error, path.display());
-                            return Continue;
-                        }
-                    }
-                    error!("{}", error);
-                    return Continue;
-                }
-            };
-
-            if entry.file_type().map_or(false, |ft| ft.is_file()) {
-                tx.send(entry).unwrap();
-            }
-
-            Continue
-        })
+    // Files are parsed directly on the walker's worker threads, so that
+    // directory traversal and parsing overlap. Each thread accumulates its
+    // results locally and merges them into `languages` once, when it's done.
+    let languages = Mutex::new(languages);
+    walker.build_parallel().visit(&mut FileVisitorBuilder {
+        config,
+        languages: &languages,
     });
+}
 
-    let rx_iter = rx
-        .into_iter()
-        .par_bridge()
-        .filter_map(|e| LanguageType::from_path(e.path(), config).map(|l| (e, l)));
+struct FileVisitorBuilder<'a, 'b> {
+    config: &'a Config,
+    languages: &'a Mutex<&'b mut BTreeMap<LanguageType, Language>>,
+}
 
-    let process = |(entry, language): (DirEntry, LanguageType)| {
+impl<'s, 'a: 's, 'b: 's> ParallelVisitorBuilder<'s> for FileVisitorBuilder<'a, 'b> {
+    fn build(&mut self) -> Box<dyn ParallelVisitor + 's> {
+        Box::new(FileVisitor {
+            config: self.config,
+            languages: self.languages,
+            local: BTreeMap::new(),
+        })
+    }
+}
+
+struct FileVisitor<'a, 'b> {
+    config: &'a Config,
+    languages: &'a Mutex<&'b mut BTreeMap<LanguageType, Language>>,
+    local: BTreeMap<LanguageType, Language>,
+}
+
+impl ParallelVisitor for FileVisitor<'_, '_> {
+    fn visit(&mut self, entry: Result<DirEntry, ignore::Error>) -> WalkState {
+        let entry = match entry {
+            Ok(entry) => entry,
+            Err(error) => {
+                use ignore::Error;
+                if let Error::WithDepth { err: ref error, .. } = error {
+                    if let Error::WithPath {
+                        ref path,
+                        err: ref error,
+                    } = **error
+                    {
+                        error!("{} reading {}", error, path.display());
+                        return Continue;
+                    }
+                }
+                error!("{}", error);
+                return Continue;
+            }
+        };
+
+        if !entry.file_type().map_or(false, |ft| ft.is_file()) {
+            return Continue;
+        }
+
+        let config = self.config;
+        let Some(language) = LanguageType::from_path(entry.path(), config) else {
+            return Continue;
+        };
+
+        if config.types.as_deref().map_or(false, |t| !t.contains(&language)) {
+            return Continue;
+        }
+
         let result = language.parse(entry.into_path(), config);
-        let mut lock = languages.lock();
-        let entry = lock.entry(language).or_insert_with(Language::new);
+        let entry = self.local.entry(language).or_default();
         match result {
             Ok(stats) => {
-                let func = config.for_each_fn;
-                if let Some(f) = func {
+                if let Some(f) = config.for_each_fn {
                     f(language, stats.clone())
                 };
                 entry.add_report(stats)
@@ -107,12 +138,21 @@ pub fn get_all_files<A: AsRef<Path>>(
                 error!("Error reading {}:\n{}", path.display(), error);
             }
         }
-    };
 
-    if let Some(types) = config.types.as_deref() {
-        rx_iter.filter(|(_, l)| types.contains(l)).for_each(process)
-    } else {
-        rx_iter.for_each(process)
+        Continue
+    }
+}
+
+impl Drop for FileVisitor<'_, '_> {
+    fn drop(&mut self) {
+        if self.local.is_empty() {
+            return;
+        }
+
+        let mut languages = self.languages.lock();
+        for (language_type, language) in std::mem::take(&mut self.local) {
+            *languages.entry(language_type).or_default() += language;
+        }
     }
 }
 

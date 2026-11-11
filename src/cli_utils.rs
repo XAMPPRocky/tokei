@@ -15,12 +15,12 @@ use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
 
 use crate::consts::{
     BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
-    LINES_COLUMN_WIDTH,
+    LINES_COLUMN_WIDTH, PERCENT_COLUMN_WIDTH,
 };
 
-const NO_LANG_HEADER_ROW_LEN: usize = 69;
-const NO_LANG_ROW_LEN: usize = 63;
-const NO_LANG_ROW_LEN_NO_SPACES: usize = 56;
+const NO_LANG_HEADER_ROW_LEN: usize = 77;
+const NO_LANG_ROW_LEN: usize = 71;
+const NO_LANG_ROW_LEN_NO_SPACES: usize = 64;
 const IDENT_INACCURATE: &str = "(!)";
 
 pub fn crate_version() -> String {
@@ -127,6 +127,7 @@ pub struct Printer<W> {
     subrow: String,
     list_files: bool,
     number_format: num_format::CustomFormat,
+    total_code: usize,
 }
 
 impl<W> Printer<W> {
@@ -135,6 +136,7 @@ impl<W> Printer<W> {
         list_files: bool,
         writer: W,
         number_format: num_format::CustomFormat,
+        total_code: usize,
     ) -> Self {
         Self {
             columns,
@@ -144,7 +146,17 @@ impl<W> Printer<W> {
             row: "━".repeat(columns),
             subrow: "─".repeat(columns),
             number_format,
+            total_code,
         }
+    }
+
+    fn format_pct(&self, code: usize) -> String {
+        let pct = if self.total_code == 0 {
+            0.0
+        } else {
+            (code as f64 / self.total_code as f64) * 100.0
+        };
+        format!("{:>width$.1}%", pct, width = PERCENT_COLUMN_WIDTH - 1)
     }
 }
 
@@ -155,13 +167,14 @@ impl<W: Write> Printer<W> {
         let files_column_width: usize = FILES_COLUMN_WIDTH + 6;
         writeln!(
             self.writer,
-            " {:<6$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {:<7$} {:>files_column_width$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {:>PERCENT_COLUMN_WIDTH$}",
             "Language".bold().blue(),
             "Files".bold().blue(),
             "Lines".bold().blue(),
             "Code".bold().blue(),
             "Comments".bold().blue(),
             "Blanks".bold().blue(),
+            "%".bold().blue(),
             self.columns - NO_LANG_HEADER_ROW_LEN
         )?;
         self.print_row()
@@ -181,9 +194,10 @@ impl<W: Write> Printer<W> {
     {
         self.print_language_name(language.inaccurate, name, None)?;
         write!(self.writer, " ")?;
+        let pct = self.format_pct(language.code);
         writeln!(
             self.writer,
-            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {}",
             language
                 .reports
                 .len()
@@ -192,6 +206,7 @@ impl<W: Write> Printer<W> {
             language.code.to_formatted_string(&self.number_format),
             language.comments.to_formatted_string(&self.number_format),
             language.blanks.to_formatted_string(&self.number_format),
+            pct,
         )
     }
 
@@ -201,9 +216,10 @@ impl<W: Write> Printer<W> {
     {
         self.print_language_name(language.inaccurate, "Total", None)?;
         write!(self.writer, " ")?;
+        let pct = self.format_pct(language.code);
         writeln!(
             self.writer,
-            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            "{:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {}",
             language
                 .children
                 .values()
@@ -227,6 +243,7 @@ impl<W: Write> Printer<W> {
                 .blanks
                 .to_formatted_string(&self.number_format)
                 .blue(),
+            pct.blue(),
         )
     }
 
@@ -282,14 +299,16 @@ impl<W: Write> Printer<W> {
         if stats.is_empty() {
             Ok(())
         } else {
+            let pct = self.format_pct(code);
             writeln!(
                 self.writer,
-                " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+                " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {}",
                 stats.len().to_formatted_string(&self.number_format),
                 (code + comments + blanks).to_formatted_string(&self.number_format),
                 code.to_formatted_string(&self.number_format),
                 comments.to_formatted_string(&self.number_format),
                 blanks.to_formatted_string(&self.number_format),
+                pct,
             )
         }
     }
@@ -350,7 +369,8 @@ impl<W: Write> Printer<W> {
                     }
                     if compact {
                         for &report in &reports {
-                            writeln!(self.writer, "{:1$}", report, self.path_length)?;
+                            let pct = self.format_pct(report.stats.code);
+                            writeln!(self.writer, "{:1$} {2}", report, self.path_length, pct)?;
                         }
                     } else {
                         let (a, b): (Vec<&Report>, Vec<&Report>) =
@@ -359,7 +379,8 @@ impl<W: Write> Printer<W> {
                             let mut first = true;
                             for report in reports.iter() {
                                 if report.stats.blobs.is_empty() {
-                                    writeln!(self.writer, "{:1$}", report, self.path_length)?;
+                                    let pct = self.format_pct(report.stats.code);
+                                    writeln!(self.writer, "{:1$} {2}", report, self.path_length, pct)?;
                                 } else {
                                     if first && a.is_empty() {
                                         writeln!(self.writer, " {}", report.name.display())?;
@@ -371,18 +392,19 @@ impl<W: Write> Printer<W> {
                                             report.name.display(),
                                             "-".repeat(
                                                 self.columns
-                                                    - 4
-                                                    - report.name.display().to_string().len()
+                                                    .saturating_sub(4 + report.name.display().to_string().len())
                                             )
                                         )?;
                                     }
                                     let mut new_report = (*report).clone();
                                     new_report.name = name.to_string().into();
+                                    let pct = self.format_pct(new_report.stats.code);
                                     writeln!(
                                         self.writer,
-                                        " |-{:1$}",
+                                        " |-{:1$} {2}",
                                         new_report,
-                                        self.path_length - 3
+                                        self.path_length - 3,
+                                        pct
                                     )?;
                                     self.print_report_total(report, language.inaccurate)?;
                                 }
@@ -411,15 +433,17 @@ impl<W: Write> Printer<W> {
         inaccurate: bool,
     ) -> io::Result<()> {
         self.print_language_name(inaccurate, &language_type.to_string(), Some(" |-"))?;
+        let pct = self.format_pct(stats.code);
 
         writeln!(
             self.writer,
-            " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {:>FILES_COLUMN_WIDTH$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {}",
             " ",
             stats.lines().to_formatted_string(&self.number_format),
             stats.code.to_formatted_string(&self.number_format),
             stats.comments.to_formatted_string(&self.number_format),
             stats.blanks.to_formatted_string(&self.number_format),
+            pct,
         )
     }
 
@@ -447,12 +471,15 @@ impl<W: Write> Printer<W> {
         let name = report.name.to_string_lossy();
         let name_length = name.len();
 
-        if name_length > self.path_length {
+        let name = if name_length > self.path_length {
             let mut formatted = String::from("|");
             // Add 1 to the index to account for the '|' we add to the output string
             let from = find_char_boundary(&name, name_length + 1 - self.path_length);
             formatted.push_str(&name[from..]);
-        }
+            Cow::Owned(formatted)
+        } else {
+            name
+        };
         self.print_report_total_formatted(name, self.path_length, report)?;
 
         Ok(())
@@ -465,9 +492,10 @@ impl<W: Write> Printer<W> {
         report: &Report,
     ) -> io::Result<()> {
         let lines_column_width: usize = FILES_COLUMN_WIDTH + 6;
+        let pct = self.format_pct(report.stats.code);
         writeln!(
             self.writer,
-            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$}",
+            " {: <max$} {:>lines_column_width$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {}",
             name,
             report
                 .stats
@@ -479,6 +507,7 @@ impl<W: Write> Printer<W> {
                 .comments
                 .to_formatted_string(&self.number_format),
             report.stats.blanks.to_formatted_string(&self.number_format),
+            pct,
             max = max_len
         )
     }
@@ -487,6 +516,77 @@ impl<W: Write> Printer<W> {
         let total = languages.total();
         self.print_row()?;
         self.print_language_in_print_total(&total)?;
+        self.print_row()
+    }
+
+    pub fn print_top(
+        &mut self,
+        languages: &tokei::Languages,
+        n: usize,
+        sort_category: tokei::Sort,
+        reverse: bool,
+    ) -> io::Result<()> {
+        use tokei::Sort;
+        let mut all_reports: Vec<(&LanguageType, &Report)> = languages
+            .iter()
+            .flat_map(|(lang_type, lang)| lang.reports.iter().map(move |r| (lang_type, r)))
+            .collect();
+
+        match sort_category {
+            Sort::Blanks => all_reports.sort_by(|a, b| b.1.stats.blanks.cmp(&a.1.stats.blanks)),
+            Sort::Comments => {
+                all_reports.sort_by(|a, b| b.1.stats.comments.cmp(&a.1.stats.comments))
+            }
+            Sort::Code => all_reports.sort_by(|a, b| b.1.stats.code.cmp(&a.1.stats.code)),
+            Sort::Files => all_reports.sort_by(|a, b| a.1.name.cmp(&b.1.name)),
+            Sort::Lines => {
+                all_reports.sort_by(|a, b| b.1.stats.lines().cmp(&a.1.stats.lines()))
+            }
+        }
+
+        if reverse {
+            all_reports.reverse();
+        }
+
+        let top_reports: Vec<_> = all_reports.into_iter().take(n).collect();
+        self.print_subrow()?;
+        writeln!(
+            self.writer,
+            " {}",
+            format!("Top {} files", top_reports.len()).bold().blue()
+        )?;
+        self.print_subrow()?;
+
+        let max_len = self.path_length + 2;
+        for (lang_type, report) in top_reports {
+            let label = format!("{} ({})", report.name.to_string_lossy(), lang_type.name());
+            let formatted_name: Cow<'_, str> = if label.len() <= max_len {
+                Cow::Borrowed(&label)
+            } else {
+                let mut s = String::from("|");
+                let from = find_char_boundary(&label, label.len() + 1 - max_len);
+                s.push_str(&label[from..]);
+                Cow::Owned(s)
+            };
+            let pct = self.format_pct(report.stats.code);
+            writeln!(
+                self.writer,
+                " {: <max$} {:>LINES_COLUMN_WIDTH$} {:>CODE_COLUMN_WIDTH$} {:>COMMENTS_COLUMN_WIDTH$} {:>BLANKS_COLUMN_WIDTH$} {}",
+                formatted_name,
+                report
+                    .stats
+                    .lines()
+                    .to_formatted_string(&self.number_format),
+                report.stats.code.to_formatted_string(&self.number_format),
+                report
+                    .stats
+                    .comments
+                    .to_formatted_string(&self.number_format),
+                report.stats.blanks.to_formatted_string(&self.number_format),
+                pct,
+                max = max_len
+            )?;
+        }
         self.print_row()
     }
 }

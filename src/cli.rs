@@ -39,6 +39,7 @@ pub struct Cli {
     matches: ArgMatches,
     pub columns: Option<usize>,
     pub files: bool,
+    pub top: Option<usize>,
     pub hidden: bool,
     pub no_ignore: bool,
     pub no_ignore_parent: bool,
@@ -89,6 +90,12 @@ impl Cli {
                     .short('f')
                     .action(ArgAction::SetTrue)
                     .help("Will print out statistics on individual files."),
+            )
+            .arg(
+                Arg::new("top")
+                    .long("top")
+                    .value_parser(value_parser!(usize))
+                    .help("Print the top N largest files."),
             )
             .arg(
                 Arg::new("file_input")
@@ -238,6 +245,7 @@ impl Cli {
 
         let columns = matches.get_one::<usize>("columns").cloned();
         let files = matches.get_flag("files");
+        let top = matches.get_one::<usize>("top").cloned();
         let hidden = matches.get_flag("hidden");
         let no_ignore = matches.get_flag("no_ignore");
         let no_ignore_parent = matches.get_flag("no_ignore_parent");
@@ -286,6 +294,7 @@ impl Cli {
             matches,
             columns,
             files,
+            top,
             hidden,
             no_ignore,
             no_ignore_parent,

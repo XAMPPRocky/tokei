@@ -37,18 +37,26 @@ impl LanguageType {
     /// Parses a given [`Path`] using the [`LanguageType`]. Returning [`Report`]
     /// on success and giving back ownership of [`PathBuf`] on error.
     pub fn parse(self, path: PathBuf, config: &Config) -> Result<Report, (io::Error, PathBuf)> {
-        let text = {
-            let f = match File::open(&path) {
-                Ok(f) => f,
-                Err(e) => return Err((e, path)),
-            };
-            let mut s = Vec::new();
-            let mut reader = DecodeReaderBytesBuilder::new().build(f);
+        let text = match std::fs::read(&path) {
+            Ok(bytes) => bytes,
+            Err(e) => return Err((e, path)),
+        };
 
+        // Only files starting with a byte order mark need transcoding; any
+        // other input is passed through unchanged by the decoder anyway, so
+        // skip it (and its extra copy) in the common case.
+        let has_bom = text.starts_with(b"\xEF\xBB\xBF")
+            || text.starts_with(b"\xFF\xFE")
+            || text.starts_with(b"\xFE\xFF");
+        let text = if has_bom {
+            let mut s = Vec::with_capacity(text.len());
+            let mut reader = DecodeReaderBytesBuilder::new().build(text.as_slice());
             if let Err(e) = reader.read_to_end(&mut s) {
                 return Err((e, path));
             }
             s
+        } else {
+            text
         };
 
         let mut stats = Report::new(path);
@@ -99,33 +107,25 @@ impl LanguageType {
                 "Using Simple Parse on {:?}",
                 String::from_utf8_lossy(skippable_text)
             );
-            let parse_lines = move || self.parse_lines(config, rest, CodeStats::new(), syntax);
-            let simple_parse = move || {
-                LineIter::new(b'\n', skippable_text)
-                    .par_bridge()
-                    .map(|line| {
-                        // FORTRAN has a rule where it only counts as a comment if it's the
-                        // first character in the column, so removing starting whitespace
-                        // could cause a miscount.
-                        let line = if is_fortran { line } else { line.trim() };
-                        if line.trim().is_empty() {
-                            (1, 0, 0)
-                        } else if is_literate
-                            || comments.iter().any(|c| line.starts_with(c.as_bytes()))
-                        {
-                            (0, 0, 1)
-                        } else {
-                            (0, 1, 0)
-                        }
-                    })
-                    .reduce(|| (0, 0, 0), |a, b| (a.0 + b.0, a.1 + b.1, a.2 + b.2))
-            };
+            let mut stats = self.parse_lines(config, rest, CodeStats::new(), syntax);
 
-            let (mut stats, (blanks, code, comments)) = rayon::join(parse_lines, simple_parse);
+            // The lines before the first piece of important syntax can be
+            // classified one by one. This work is trivial per line, so it's
+            // done sequentially: parallelising it costs more than it saves.
+            for line in LineIter::new(b'\n', skippable_text) {
+                // FORTRAN has a rule where it only counts as a comment if it's the
+                // first character in the column, so removing starting whitespace
+                // could cause a miscount.
+                let line = if is_fortran { line } else { line.trim() };
+                if line.trim().is_empty() {
+                    stats.blanks += 1;
+                } else if is_literate || comments.iter().any(|c| line.starts_with(c.as_bytes())) {
+                    stats.comments += 1;
+                } else {
+                    stats.code += 1;
+                }
+            }
 
-            stats.blanks += blanks;
-            stats.code += code;
-            stats.comments += comments;
             stats
         } else {
             self.parse_lines(config, text, CodeStats::new(), syntax)
