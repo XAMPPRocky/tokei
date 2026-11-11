@@ -2082,7 +2082,6 @@
     "Yaml": {
       "name": "YAML",
       "line_comment": ["#"],
-      "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["yaml", "yml"]
     },
     "ZenCode": {
