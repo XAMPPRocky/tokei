@@ -17,7 +17,7 @@
 //! use std::fs::File;
 //! use std::io::Read;
 //!
-//! use tokei::{Config, Languages, LanguageType};
+//! use kodestats::{Config, Languages, LanguageType};
 //!
 //! // The paths to search. Accepts absolute, relative, and glob paths.
 //! let paths = &["src", "tests"];
@@ -56,7 +56,7 @@ mod sort;
 mod stats;
 
 pub use self::{
-    config::Config,
+    config::{Config, LanguageConfig},
     consts::*,
     language::{Language, LanguageType, Languages},
     sort::Sort,

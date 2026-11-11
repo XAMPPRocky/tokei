@@ -19,26 +19,37 @@ pub fn get_all_files<A: AsRef<Path>>(
     languages: &mut BTreeMap<LanguageType, Language>,
     config: &Config,
 ) {
-    let mut paths = paths.iter();
-    let mut walker = WalkBuilder::new(paths.next().unwrap());
+    let mut paths_iter = paths.iter();
+    let mut walker = WalkBuilder::new(paths_iter.next().unwrap());
 
-    for path in paths {
+    for path in paths_iter {
         walker.add(path);
     }
 
-    if !ignored_directories.is_empty() {
+    let ignore = config.no_ignore.map(|b| !b).unwrap_or(true);
+    let ignore_dot = ignore && config.no_ignore_dot.map(|b| !b).unwrap_or(true);
+    let ignore_vcs = ignore && config.no_ignore_vcs.map(|b| !b).unwrap_or(true);
+    let ignore_parents = ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true);
+
+    let gitattributes_excludes = if ignore_vcs {
+        collect_gitattributes_excludes(paths, ignore_parents)
+    } else {
+        Vec::new()
+    };
+
+    if !ignored_directories.is_empty() || !gitattributes_excludes.is_empty() {
         let mut overrides = OverrideBuilder::new(".");
 
         for ignored in ignored_directories {
             rs_error!(overrides.add(&format!("!{}", ignored)));
         }
 
+        for pattern in &gitattributes_excludes {
+            rs_error!(overrides.add(&format!("!{}", pattern)));
+        }
+
         walker.overrides(overrides.build().expect("Excludes provided were invalid"));
     }
-
-    let ignore = config.no_ignore.map(|b| !b).unwrap_or(true);
-    let ignore_dot = ignore && config.no_ignore_dot.map(|b| !b).unwrap_or(true);
-    let ignore_vcs = ignore && config.no_ignore_vcs.map(|b| !b).unwrap_or(true);
 
     // Custom ignore files always work even if the `ignore` option is false,
     // so we only add if that option is not present.
@@ -57,7 +68,7 @@ pub fn get_all_files<A: AsRef<Path>>(
         .git_ignore(ignore_vcs)
         .hidden(config.hidden.map(|b| !b).unwrap_or(true))
         .ignore(ignore_dot)
-        .parents(ignore && config.no_ignore_parent.map(|b| !b).unwrap_or(true));
+        .parents(ignore_parents);
 
     // Files are parsed directly on the walker's worker threads, so that
     // directory traversal and parsing overlap. Each thread accumulates its
@@ -67,6 +78,76 @@ pub fn get_all_files<A: AsRef<Path>>(
         config,
         languages: &languages,
     });
+}
+
+fn collect_gitattributes_excludes<A: AsRef<Path>>(paths: &[A], check_parents: bool) -> Vec<String> {
+    let mut patterns = Vec::new();
+    let mut visited = std::collections::HashSet::new();
+
+    for path in paths {
+        let path = path.as_ref();
+        let start_dir = if path.is_dir() {
+            Some(path)
+        } else {
+            path.parent()
+        };
+        let Some(mut curr) = start_dir else {
+            continue;
+        };
+
+        loop {
+            let attr_path = curr.join(".gitattributes");
+            if visited.insert(attr_path.clone()) {
+                if let Ok(contents) = std::fs::read_to_string(&attr_path) {
+                    parse_gitattributes(&contents, &mut patterns);
+                }
+            }
+            if !check_parents || curr.join(".git").exists() {
+                break;
+            }
+            match curr.parent() {
+                Some(p) if p != curr => curr = p,
+                _ => break,
+            }
+        }
+    }
+
+    patterns
+}
+
+fn parse_gitattributes(contents: &str, patterns: &mut Vec<String>) {
+    for line in contents.lines() {
+        let line = line.trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let mut parts = line.split_whitespace();
+        let Some(pattern) = parts.next() else {
+            continue;
+        };
+        let mut should_ignore = false;
+        for attr in parts {
+            let (name, val) = match attr.split_once('=') {
+                Some((k, v)) => (k, Some(v)),
+                None => (attr, None),
+            };
+            let (negated, key) = if let Some(rest) = name.strip_prefix('-') {
+                (true, rest)
+            } else {
+                (false, name)
+            };
+            if matches!(
+                key,
+                "linguist-generated" | "linguist-vendored" | "linguist-documentation"
+            ) {
+                let enabled = !negated && !matches!(val, Some("false" | "0"));
+                should_ignore = enabled;
+            }
+        }
+        if should_ignore {
+            patterns.push(pattern.to_string());
+        }
+    }
 }
 
 struct FileVisitorBuilder<'a, 'b> {
@@ -125,16 +206,22 @@ impl ParallelVisitor for FileVisitor<'_, '_> {
         }
 
         let result = language.parse(entry.into_path(), config);
-        let entry = self.local.entry(language).or_default();
         match result {
             Ok(stats) => {
+                let lines = stats.stats.lines();
+                if config.min_lines.map_or(false, |min| lines < min) {
+                    return Continue;
+                }
+                if config.max_lines.map_or(false, |max| lines > max) {
+                    return Continue;
+                }
                 if let Some(f) = config.for_each_fn {
                     f(language, stats.clone())
                 };
-                entry.add_report(stats)
+                self.local.entry(language).or_default().add_report(stats);
             }
             Err((error, path)) => {
-                entry.mark_inaccurate();
+                self.local.entry(language).or_default().mark_inaccurate();
                 error!("Error reading {}:\n{}", path.display(), error);
             }
         }
@@ -522,5 +609,76 @@ mod tests {
         );
 
         assert!(languages.get(LANGUAGE).is_some());
+    }
+
+    #[test]
+    fn gitattributes_linguist_generated() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        let mut config = Config::default();
+        let mut languages = Languages::new();
+
+        fs::write(
+            dir.path().join(".gitattributes"),
+            "generated.rs linguist-generated\nkept.rs linguist-generated=false\n",
+        )
+        .unwrap();
+        fs::write(dir.path().join("generated.rs"), FILE_CONTENTS).unwrap();
+        fs::write(dir.path().join("kept.rs"), FILE_CONTENTS).unwrap();
+
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        let rust = languages.get(LANGUAGE).expect("Expected Rust language");
+        assert_eq!(rust.reports.len(), 1);
+        assert!(rust.reports[0].name.ends_with("kept.rs"));
+
+        config.no_ignore_vcs = Some(true);
+        let mut languages = Languages::new();
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        let rust = languages.get(LANGUAGE).expect("Expected Rust language");
+        assert_eq!(rust.reports.len(), 2);
+    }
+
+    #[test]
+    fn min_and_max_lines_filter() {
+        let dir = TempDir::new().expect("Couldn't create temp dir.");
+        fs::write(dir.path().join("short.rs"), "fn a() {}\n").unwrap();
+        fs::write(
+            dir.path().join("medium.rs"),
+            "fn a() {}\nfn b() {}\nfn c() {}\n",
+        )
+        .unwrap();
+        fs::write(
+            dir.path().join("long.rs"),
+            "fn a() {}\nfn b() {}\nfn c() {}\nfn d() {}\nfn e() {}\n",
+        )
+        .unwrap();
+
+        let config = Config {
+            min_lines: Some(2),
+            max_lines: Some(4),
+            ..Config::default()
+        };
+        let mut languages = Languages::new();
+        super::get_all_files(
+            &[dir.path().to_str().unwrap()],
+            &[],
+            &mut languages,
+            &config,
+        );
+
+        let rust = languages.get(LANGUAGE).expect("Expected Rust language");
+        assert_eq!(rust.reports.len(), 1);
+        assert!(rust.reports[0].name.ends_with("medium.rs"));
     }
 }

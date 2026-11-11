@@ -1,12 +1,12 @@
 extern crate ignore;
+extern crate kodestats;
 extern crate regex;
-extern crate tokei;
 
 use std::fs;
 
+use kodestats::{Config, Languages};
 use once_cell::sync::Lazy;
 use regex::Regex;
-use tokei::{Config, Languages};
 
 static LINES: Lazy<Regex> = Lazy::new(|| Regex::new(r"\d+ lines").unwrap());
 static CODE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\d+ code").unwrap());
@@ -27,9 +27,8 @@ macro_rules! get_digit {
 }
 
 mod config {
-    use tokei::*;
+    use kodestats::*;
 
-    /*
     #[test]
     fn extension_change() {
         use std::collections::HashMap;
@@ -57,7 +56,6 @@ mod config {
 
         assert_eq!(LanguageType::C, name);
     }
-    */
 
     #[test]
     fn treating_comments_as_code() {

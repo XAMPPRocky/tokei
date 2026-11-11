@@ -11,7 +11,7 @@ use colored::Colorize;
 use num_format::ToFormattedString;
 
 use crate::input::Format;
-use tokei::{find_char_boundary, CodeStats, Language, LanguageType, Report};
+use kodestats::{find_char_boundary, CodeStats, Language, LanguageType, Languages, Report, Sort};
 
 use crate::consts::{
     BLANKS_COLUMN_WIDTH, CODE_COLUMN_WIDTH, COMMENTS_COLUMN_WIDTH, FILES_COLUMN_WIDTH,
@@ -290,7 +290,7 @@ impl<W: Write> Printer<W> {
         let mut comments = 0;
         let mut blanks = 0;
 
-        for stats in stats.iter().map(tokei::CodeStats::summarise) {
+        for stats in stats.iter().map(CodeStats::summarise) {
             code += stats.code;
             comments += stats.comments;
             blanks += stats.blanks;
@@ -323,7 +323,7 @@ impl<W: Write> Printer<W> {
                     .collect::<Vec<_>>(),
             )?;
         }
-        let mut subtotal = tokei::Report::new("(Total)".into());
+        let mut subtotal = Report::new("(Total)".into());
         let summary = parent.summarise();
         subtotal.stats.code += summary.code;
         subtotal.stats.comments += summary.comments;
@@ -452,7 +452,7 @@ impl<W: Write> Printer<W> {
             return Ok(());
         }
 
-        let mut subtotal = tokei::Report::new("|- (Total)".into());
+        let mut subtotal = Report::new("|- (Total)".into());
         subtotal.stats.code += report.stats.code;
         subtotal.stats.comments += report.stats.comments;
         subtotal.stats.blanks += report.stats.blanks;
@@ -512,7 +512,7 @@ impl<W: Write> Printer<W> {
         )
     }
 
-    pub fn print_total(&mut self, languages: &tokei::Languages) -> io::Result<()> {
+    pub fn print_total(&mut self, languages: &Languages) -> io::Result<()> {
         let total = languages.total();
         self.print_row()?;
         self.print_language_in_print_total(&total)?;
@@ -521,12 +521,11 @@ impl<W: Write> Printer<W> {
 
     pub fn print_top(
         &mut self,
-        languages: &tokei::Languages,
+        languages: &Languages,
         n: usize,
-        sort_category: tokei::Sort,
+        sort_category: Sort,
         reverse: bool,
     ) -> io::Result<()> {
-        use tokei::Sort;
         let mut all_reports: Vec<(&LanguageType, &Report)> = languages
             .iter()
             .flat_map(|(lang_type, lang)| lang.reports.iter().map(move |r| (lang_type, r)))

@@ -8,7 +8,7 @@ mod input;
 
 use std::{error::Error, io, process};
 
-use tokei::{Config, Languages, Sort};
+use kodestats::{Config, Languages, Sort};
 
 use crate::{
     cli::Cli,

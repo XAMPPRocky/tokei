@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, error::Error, str::FromStr};
 
-use tokei::{Language, LanguageType, Languages};
+use kodestats::{Language, LanguageType, Languages};
 
 type LanguageMap = BTreeMap<LanguageType, Language>;
 
@@ -312,7 +312,7 @@ mod tests {
     use super::*;
 
     use strum::IntoEnumIterator;
-    use tokei::Config;
+    use kodestats::Config;
 
     use std::path::Path;
 

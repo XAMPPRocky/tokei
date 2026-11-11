@@ -1,9 +1,9 @@
 [package]
-authors = ["Erin Power <xampprocky@gmail.com>"]
+authors = ["AinsiParlaitZarathoustra", "Erin Power <xampprocky@gmail.com>"]
 build = "build.rs"
 categories = ["command-line-utilities", "development-tools", "visualization"]
-description = "Count your code, quickly."
-homepage = "https://tokei.rs"
+description = "Fast code statistics library and CLI powering Codestats in Bricks."
+homepage = "https://github.com/AinsiParlaitZarathoustra/tokei"
 include = [
   "Cargo.lock",
   "Cargo.toml",
@@ -15,10 +15,10 @@ include = [
 ]
 keywords = ["utility", "cli", "cloc", "lines", "statistics"]
 license = "MIT OR Apache-2.0"
-name = "tokei"
+name = "kodestats"
 readme = "README.md"
-repository = "https://github.com/XAMPPRocky/tokei.git"
-version = "15.0.0"
+repository = "https://github.com/AinsiParlaitZarathoustra/tokei.git"
+version = "0.1.0"
 rust-version = "1.71"
 edition = "2021"
 
@@ -34,7 +34,8 @@ lto = "thin"
 panic = "abort"
 
 [[bin]]
-name = "tokei"
+name = "kodestats"
+path = "src/main.rs"
 required-features = ["cli"]
 
 [build-dependencies]

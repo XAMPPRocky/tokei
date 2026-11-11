@@ -1,4 +1,4 @@
-use std::{env, fs, path::PathBuf};
+use std::{collections::HashMap, env, fs, path::PathBuf};
 
 use etcetera::BaseStrategy;
 
@@ -10,7 +10,7 @@ use crate::stats::Report;
 /// counts languages.
 ///
 /// ```
-/// use tokei::Config;
+/// use kodestats::Config;
 ///
 /// let config = Config {
 ///     treat_doc_strings_as_comments: Some(true),
@@ -47,8 +47,12 @@ pub struct Config {
     /// containing `C`, `Cpp`, and `Rust` with a `Config.types` of `[Cpp, Rust]`
     /// will count only `Cpp` and `Rust`. *Default:* `None`.
     pub types: Option<Vec<LanguageType>>,
-    // /// A map of individual language configuration.
-    // pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
+    /// A map of individual language configuration.
+    pub languages: Option<HashMap<LanguageType, LanguageConfig>>,
+    /// Minimum number of lines a file must have to be counted. *Default:* `None`.
+    pub min_lines: Option<usize>,
+    /// Maximum number of lines a file can have to be counted. *Default:* `None`.
+    pub max_lines: Option<usize>,
     /// Whether to output only the paths for downstream batch processing
     /// *Default:* false
     #[serde(skip)]
@@ -114,7 +118,26 @@ impl Config {
                 .columns
                 .or(home_dir.columns.or(conf_dir.columns)),
             hidden: current_dir.hidden.or(home_dir.hidden.or(conf_dir.hidden)),
-            //languages: current_dir.languages.or(conf_dir.languages),
+            languages: {
+                let mut merged = conf_dir.languages.unwrap_or_default();
+                if let Some(home_langs) = home_dir.languages {
+                    merged.extend(home_langs);
+                }
+                if let Some(curr_langs) = current_dir.languages {
+                    merged.extend(curr_langs);
+                }
+                if merged.is_empty() {
+                    None
+                } else {
+                    Some(merged)
+                }
+            },
+            min_lines: current_dir
+                .min_lines
+                .or(home_dir.min_lines.or(conf_dir.min_lines)),
+            max_lines: current_dir
+                .max_lines
+                .or(home_dir.max_lines.or(conf_dir.max_lines)),
             treat_doc_strings_as_comments: current_dir.treat_doc_strings_as_comments.or(home_dir
                 .treat_doc_strings_as_comments
                 .or(conf_dir.treat_doc_strings_as_comments)),
@@ -139,12 +162,11 @@ impl Config {
     }
 }
 
-/*
 /// Configuration for an individual [`LanguageType`].
 ///
 /// ```
 /// use std::collections::HashMap;
-/// use tokei::{Config, LanguageConfig, LanguageType};
+/// use kodestats::{Config, LanguageConfig, LanguageType};
 ///
 /// let config = Config {
 ///     languages: {
@@ -174,6 +196,7 @@ pub struct LanguageConfig {
 impl LanguageConfig {
     /// Creates a new empty configuration. By default this will not change
     /// anything from the default.
+    #[must_use]
     pub fn new() -> Self {
         Self::default()
     }
@@ -185,4 +208,3 @@ impl LanguageConfig {
         self.extensions = extensions;
     }
 }
-*/
