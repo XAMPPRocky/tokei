@@ -1,0 +1,12 @@
+# 12 lines 7 code 3 comments 2 blanks
+# Apostrophes and quote marks in plain scalars do not open strings
+
+summary: Get the provider's details
+description: Returns a 12" display
+
+# a quoted scalar keeps its hash
+title: "release #42"
+notes: 'it''s here'
+label: 'don''t' # trailing comment
+list:
+  - the user's name
