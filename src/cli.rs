@@ -2,7 +2,7 @@ use std::{process, str::FromStr};
 
 use clap::{crate_description, value_parser, Arg, ArgAction, ArgMatches};
 use colored::Colorize;
-use tokei::{Config, LanguageType, Sort};
+use kodestats::{Config, LanguageType, Sort};
 
 use crate::{
     cli_utils::{crate_version, parse_or_exit, NumberFormatStyle},
@@ -39,6 +39,9 @@ pub struct Cli {
     matches: ArgMatches,
     pub columns: Option<usize>,
     pub files: bool,
+    pub top: Option<usize>,
+    pub min_lines: Option<usize>,
+    pub max_lines: Option<usize>,
     pub hidden: bool,
     pub no_ignore: bool,
     pub no_ignore_parent: bool,
@@ -56,15 +59,11 @@ pub struct Cli {
 
 impl Cli {
     pub fn from_args() -> Self {
-        let matches = clap::Command::new("tokei")
+        let matches = clap::Command::new("kodestats")
             .version(crate_version())
-            .author("Erin P. <xampprocky@gmail.com> + Contributors")
+            .author("AinsiParlaitZarathoustra, Erin P. <xampprocky@gmail.com> + Contributors")
             .styles(clap_cargo::style::CLAP_STYLING)
-            .about(concat!(
-                crate_description!(),
-                "\n",
-                "Support this project on GitHub Sponsors: https://github.com/sponsors/XAMPPRocky"
-            ))
+            .about(crate_description!())
             .arg(
                 Arg::new("columns")
                     .long("columns")
@@ -89,6 +88,24 @@ impl Cli {
                     .short('f')
                     .action(ArgAction::SetTrue)
                     .help("Will print out statistics on individual files."),
+            )
+            .arg(
+                Arg::new("top")
+                    .long("top")
+                    .value_parser(value_parser!(usize))
+                    .help("Print the top N largest files."),
+            )
+            .arg(
+                Arg::new("min_lines")
+                    .long("min-lines")
+                    .value_parser(value_parser!(usize))
+                    .help("Ignore files with fewer than <min_lines> lines."),
+            )
+            .arg(
+                Arg::new("max_lines")
+                    .long("max-lines")
+                    .value_parser(value_parser!(usize))
+                    .help("Ignore files with more than <max_lines> lines."),
             )
             .arg(
                 Arg::new("file_input")
@@ -238,6 +255,9 @@ impl Cli {
 
         let columns = matches.get_one::<usize>("columns").cloned();
         let files = matches.get_flag("files");
+        let top = matches.get_one::<usize>("top").cloned();
+        let min_lines = matches.get_one::<usize>("min_lines").cloned();
+        let max_lines = matches.get_one::<usize>("max_lines").cloned();
         let hidden = matches.get_flag("hidden");
         let no_ignore = matches.get_flag("no_ignore");
         let no_ignore_parent = matches.get_flag("no_ignore_parent");
@@ -286,6 +306,9 @@ impl Cli {
             matches,
             columns,
             files,
+            top,
+            min_lines,
+            max_lines,
             hidden,
             no_ignore,
             no_ignore_parent,
@@ -446,6 +469,8 @@ impl Cli {
         };
 
         config.types = self.types.take().or(config.types);
+        config.min_lines = self.min_lines.or(config.min_lines);
+        config.max_lines = self.max_lines.or(config.max_lines);
 
         config
     }

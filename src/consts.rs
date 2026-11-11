@@ -1,7 +1,7 @@
 // Set of common pub consts.
 
 /// Fallback row length
-pub const FALLBACK_ROW_LEN: usize = 81;
+pub const FALLBACK_ROW_LEN: usize = 89;
 
 // Column widths used for console printing.
 
@@ -14,7 +14,7 @@ pub const PATH_COLUMN_WIDTH: usize = 80;
 /// Files column width
 pub const FILES_COLUMN_WIDTH: usize = 8;
 
-/// Lines column width
+///Lines column width
 pub const LINES_COLUMN_WIDTH: usize = 12;
 
 /// Code column width
@@ -25,3 +25,6 @@ pub const COMMENTS_COLUMN_WIDTH: usize = 12;
 
 /// Blanks column width
 pub const BLANKS_COLUMN_WIDTH: usize = 12;
+
+/// Percentage column width
+pub const PERCENT_COLUMN_WIDTH: usize = 7;

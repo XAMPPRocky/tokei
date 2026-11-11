@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, error::Error, str::FromStr};
 
-use tokei::{Language, LanguageType, Languages};
+use kodestats::{Language, LanguageType, Languages};
 
 type LanguageMap = BTreeMap<LanguageType, Language>;
 
@@ -32,6 +32,8 @@ macro_rules! supported_formats {
         #[derive(Debug, Clone)]
         pub enum Format {
             Json,
+            Csv,
+            Markdown,
             $(
                 #[cfg(feature = $feature)] $variant
             ),+
@@ -42,6 +44,8 @@ macro_rules! supported_formats {
             pub fn supported() -> &'static [&'static str] {
                 &[
                     "json",
+                    "csv",
+                    "markdown",
                     $(
                         #[cfg(feature = $feature)] stringify!($name)
                     ),+
@@ -94,6 +98,12 @@ macro_rules! supported_formats {
             }
 
             pub fn print(&self, languages: &Languages) -> Result<String, Box<dyn Error>> {
+                match *self {
+                    Format::Csv => return Ok(print_csv(languages)),
+                    Format::Markdown => return Ok(print_markdown(languages)),
+                    _ => {}
+                }
+
                 let output = Output {
                     languages: (*languages).to_owned(),
                     totals: languages.total()
@@ -101,6 +111,7 @@ macro_rules! supported_formats {
 
                 match *self {
                     Format::Json => Ok(serde_json::to_string(&output)?),
+                    Format::Csv | Format::Markdown => unreachable!(),
                     $(
                         #[cfg(feature = $feature)] Format::$variant => {
                             let print= &{ $print_kode };
@@ -117,6 +128,8 @@ macro_rules! supported_formats {
             fn from_str(format: &str) -> Result<Self, Self::Err> {
                 match format {
                     "json" => Ok(Format::Json),
+                    "csv" => Ok(Format::Csv),
+                    "markdown" | "md" => Ok(Format::Markdown),
                     $(
                         stringify!($name) => {
                             #[cfg(feature = $feature)]
@@ -204,12 +217,102 @@ fn convert_input(contents: &str) -> Option<LanguageMap> {
     self::Format::parse(contents)
 }
 
+fn print_csv(languages: &Languages) -> String {
+    use std::fmt::Write;
+    let total = languages.total();
+    let total_code = total.code;
+    let total_files: usize = total.children.values().map(Vec::len).sum();
+    let pct = |code: usize| {
+        if total_code == 0 {
+            0.0
+        } else {
+            (code as f64 / total_code as f64) * 100.0
+        }
+    };
+
+    let mut out = String::from("language,files,lines,code,comments,blanks,percentage\n");
+    for (lang_type, lang) in languages.iter().filter(|(_, l)| !l.is_empty()) {
+        let summary = lang.summarise();
+        let name = lang_type.name();
+        if name.contains(',') || name.contains('"') {
+            let _ = write!(out, "\"{}\",", name.replace('"', "\"\""));
+        } else {
+            let _ = write!(out, "{},", name);
+        }
+        let _ = writeln!(
+            out,
+            "{},{},{},{},{},{:.1}",
+            lang.reports.len(),
+            summary.lines(),
+            summary.code,
+            summary.comments,
+            summary.blanks,
+            pct(summary.code),
+        );
+    }
+    let _ = writeln!(
+        out,
+        "Total,{},{},{},{},{},{:.1}",
+        total_files,
+        total.lines(),
+        total.code,
+        total.comments,
+        total.blanks,
+        if total_code == 0 { 0.0 } else { 100.0 },
+    );
+    out
+}
+
+fn print_markdown(languages: &Languages) -> String {
+    use std::fmt::Write;
+    let total = languages.total();
+    let total_code = total.code;
+    let total_files: usize = total.children.values().map(Vec::len).sum();
+    let pct = |code: usize| {
+        if total_code == 0 {
+            0.0
+        } else {
+            (code as f64 / total_code as f64) * 100.0
+        }
+    };
+
+    let mut out = String::from(
+        "| Language | Files | Lines | Code | Comments | Blanks | % |\n\
+         | :--- | ---: | ---: | ---: | ---: | ---: | ---: |\n",
+    );
+    for (lang_type, lang) in languages.iter().filter(|(_, l)| !l.is_empty()) {
+        let summary = lang.summarise();
+        let _ = writeln!(
+            out,
+            "| {} | {} | {} | {} | {} | {} | {:.1}% |",
+            lang_type.name(),
+            lang.reports.len(),
+            summary.lines(),
+            summary.code,
+            summary.comments,
+            summary.blanks,
+            pct(summary.code),
+        );
+    }
+    let _ = writeln!(
+        out,
+        "| **Total** | **{}** | **{}** | **{}** | **{}** | **{}** | **{:.1}%** |",
+        total_files,
+        total.lines(),
+        total.code,
+        total.comments,
+        total.blanks,
+        if total_code == 0 { 0.0 } else { 100.0 },
+    );
+    out
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     use strum::IntoEnumIterator;
-    use tokei::Config;
+    use kodestats::Config;
 
     use std::path::Path;
 
@@ -222,6 +325,13 @@ mod tests {
 
         // Check that the value matches after serializing and deserializing
         for variant in Format::iter() {
+            if matches!(variant, Format::Csv | Format::Markdown) {
+                let serialized = variant
+                    .print(&langs)
+                    .unwrap_or_else(|_| panic!("Failed serializing variant: {:?}", variant));
+                assert!(!serialized.is_empty());
+                continue;
+            }
             let serialized = variant
                 .print(&langs)
                 .unwrap_or_else(|_| panic!("Failed serializing variant: {:?}", variant));

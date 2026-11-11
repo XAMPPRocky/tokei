@@ -69,7 +69,7 @@ impl Languages {
     /// or `**/*.bk`.
     ///
     /// ```no_run
-    /// use tokei::{Config, Languages};
+    /// use kodestats::{Config, Languages};
     ///
     /// let mut languages = Languages::new();
     /// languages.get_statistics(&["."], &[".git", "target"], &Config::default());
@@ -90,7 +90,7 @@ impl Languages {
     /// not allocate.
     ///
     /// ```rust
-    /// # use tokei::*;
+    /// # use kodestats::*;
     /// let languages = Languages::new();
     /// ```
     #[must_use]

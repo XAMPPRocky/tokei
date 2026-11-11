@@ -282,15 +282,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "crossbeam-channel"
-version = "0.5.13"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33480d6946193aa8033910124896ca395333cae7e2d1113d1fef6c3272217df2"
-dependencies = [
- "crossbeam-utils",
-]
-
-[[package]]
 name = "crossbeam-deque"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -705,6 +696,44 @@ dependencies = [
  "pest",
  "pest_derive",
  "serde",
+]
+
+[[package]]
+name = "kodestats"
+version = "0.1.0"
+dependencies = [
+ "aho-corasick",
+ "arbitrary",
+ "clap",
+ "clap-cargo",
+ "colored",
+ "dashmap",
+ "encoding_rs_io",
+ "env_logger",
+ "etcetera",
+ "git2",
+ "grep-searcher",
+ "hex",
+ "ignore",
+ "json5",
+ "log",
+ "num-format",
+ "once_cell",
+ "parking_lot",
+ "proptest",
+ "rayon",
+ "regex",
+ "serde",
+ "serde_cbor",
+ "serde_json",
+ "serde_yaml",
+ "strum",
+ "strum_macros",
+ "table_formatter",
+ "tempfile",
+ "tera",
+ "term_size",
+ "toml",
 ]
 
 [[package]]
@@ -1383,45 +1412,6 @@ name = "tinyvec_macros"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
-
-[[package]]
-name = "tokei"
-version = "15.0.0"
-dependencies = [
- "aho-corasick",
- "arbitrary",
- "clap",
- "clap-cargo",
- "colored",
- "crossbeam-channel",
- "dashmap",
- "encoding_rs_io",
- "env_logger",
- "etcetera",
- "git2",
- "grep-searcher",
- "hex",
- "ignore",
- "json5",
- "log",
- "num-format",
- "once_cell",
- "parking_lot",
- "proptest",
- "rayon",
- "regex",
- "serde",
- "serde_cbor",
- "serde_json",
- "serde_yaml",
- "strum",
- "strum_macros",
- "table_formatter",
- "tempfile",
- "tera",
- "term_size",
- "toml",
-]
 
 [[package]]
 name = "toml"

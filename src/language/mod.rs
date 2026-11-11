@@ -30,7 +30,7 @@ impl Language {
     /// Constructs a new empty Language with the comments provided.
     ///
     /// ```
-    /// # use tokei::*;
+    /// # use kodestats::*;
     /// let mut rust = Language::new();
     /// ```
     #[must_use]
@@ -88,7 +88,7 @@ impl Language {
     ///
     /// ```no_run
     /// use std::{collections::BTreeMap, path::PathBuf};
-    /// use tokei::Language;
+    /// use kodestats::Language;
     ///
     /// let mut language = Language::new();
     ///
@@ -120,7 +120,7 @@ impl Language {
     /// statistics.
     ///
     /// ```
-    /// # use tokei::*;
+    /// # use kodestats::*;
     /// let rust = Language::new();
     ///
     /// assert!(rust.is_empty());
@@ -135,7 +135,7 @@ impl Language {
     ///
     /// ```no_run
     /// use std::{collections::BTreeMap, path::PathBuf};
-    /// use tokei::{Language, Sort};
+    /// use kodestats::{Language, Sort};
     ///
     /// let mut language = Language::new();
     ///
@@ -170,7 +170,9 @@ impl AddAssign for Language {
         self.blanks += rhs.blanks;
         self.code += rhs.code;
         self.reports.extend(mem::take(&mut rhs.reports));
-        self.children.extend(mem::take(&mut rhs.children));
+        for (language, reports) in mem::take(&mut rhs.children) {
+            self.children.entry(language).or_default().extend(reports);
+        }
         self.inaccurate |= rhs.inaccurate;
     }
 }
