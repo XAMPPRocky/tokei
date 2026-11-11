@@ -2065,7 +2065,7 @@
       "name": "XML",
       "multi_line_comments": [["<!--", "-->"]],
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
-      "extensions": ["xml"]
+      "extensions": ["xml", "xsd"]
     },
     "XSL": {
       "name": "XSL",

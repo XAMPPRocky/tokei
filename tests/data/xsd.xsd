@@ -1,0 +1,15 @@
+<!-- 15 lines 11 code 3 comments 1 blanks -->
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <!-- a single-line comment -->
+  <xs:element name="order">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="id" type="xs:string"/>
+        <!-- an attribute with an apostrophe: it's quoted -->
+        <xs:element name="note" type="xs:string" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>
