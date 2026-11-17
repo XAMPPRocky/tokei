@@ -2061,6 +2061,12 @@
       "quotes": [["\\\"", "\\\""], ["'", "'"]],
       "extensions": ["xcconfig"]
     },
+    "Xlang": {
+      "name": "xlang",
+      "line_comment": ["//"],
+      "quotes": [["\\\"", "\\\""], ["b'", "'"]],
+      "extensions": ["xl"]
+    },
     "Xml": {
       "name": "XML",
       "multi_line_comments": [["<!--", "-->"]],

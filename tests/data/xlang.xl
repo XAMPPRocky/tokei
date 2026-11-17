@@ -1,0 +1,17 @@
+// 17 lines 10 code 4 comments 3 blanks
+
+/// Documentation comment
+import "std/io"
+
+fn main() -> i32 {
+    // Line comment
+    local msg = "// not a comment"
+    local q = "escaped \" quote // still a string"
+    local slash = b'/'
+
+    for i in 0..3 {
+        io.println(msg) // trailing comment
+    }
+    // Final comment
+    return 0
+}
