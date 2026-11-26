@@ -11,7 +11,10 @@ use crate::{
     config::Config,
     language::syntax::{FileContext, LanguageContext, SyntaxCounter},
     stats::{CodeStats, Report},
-    utils::{ext::SliceExt, fs as fsutils},
+    utils::{
+        ext::{AsciiExt, SliceExt},
+        fs as fsutils,
+    },
 };
 
 use encoding_rs_io::DecodeReaderBytesBuilder;
@@ -141,6 +144,10 @@ impl LanguageType {
         mut syntax: SyntaxCounter,
     ) -> CodeStats {
         let mut stepper = LineStep::new(b'\n', 0, lines.len());
+        let file_non_ws_end = lines
+            .iter()
+            .rposition(|c| !c.is_whitespace())
+            .map_or(0, |p| p + 1);
 
         while let Some((start, end)) = stepper.next(lines) {
             let line = &lines[start..end];
@@ -162,41 +169,46 @@ impl LanguageType {
                 || (config.treat_doc_strings_as_comments == Some(true)
                     && syntax.quote.is_some()
                     && syntax.quote_is_doc_quote);
-            let ended_with_comments =
-                match syntax.perform_multi_line_analysis(lines, start, end, config) {
-                    crate::language::syntax::AnalysisReport::Normal(end) => end,
-                    crate::language::syntax::AnalysisReport::ChildLanguage(FileContext {
-                        language,
-                        end,
-                        stats: blob,
-                    }) => {
-                        match language {
-                            LanguageContext::Markdown { balanced, language } => {
-                                // Add the lines for the code fences.
-                                stats.comments += if balanced { 2 } else { 1 };
-                                // Add the code inside the fence to the stats.
-                                *stats.blobs.entry(language).or_default() += blob;
-                            }
-                            LanguageContext::Rust => {
-                                // Add all the markdown blobs.
-                                *stats.blobs.entry(LanguageType::Markdown).or_default() += blob;
-                            }
-                            LanguageContext::LinguaFranca => {
-                                let child_lang = syntax.get_lf_target_language();
-                                *stats.blobs.entry(child_lang).or_default() += blob;
-                            }
-                            LanguageContext::Html { language } => {
-                                stats.code += 1;
-                                // Add all the markdown blobs.
-                                *stats.blobs.entry(language).or_default() += blob;
-                            }
+            let ended_with_comments = match syntax.perform_multi_line_analysis(
+                lines,
+                start,
+                end,
+                file_non_ws_end,
+                config,
+            ) {
+                crate::language::syntax::AnalysisReport::Normal(end) => end,
+                crate::language::syntax::AnalysisReport::ChildLanguage(FileContext {
+                    language,
+                    end,
+                    stats: blob,
+                }) => {
+                    match language {
+                        LanguageContext::Markdown { balanced, language } => {
+                            // Add the lines for the code fences.
+                            stats.comments += if balanced { 2 } else { 1 };
+                            // Add the code inside the fence to the stats.
+                            *stats.blobs.entry(language).or_default() += blob;
                         }
-
-                        // Advance to after the language code and the delimiter..
-                        stepper = LineStep::new(b'\n', end, lines.len());
-                        continue;
+                        LanguageContext::Rust => {
+                            // Add all the markdown blobs.
+                            *stats.blobs.entry(LanguageType::Markdown).or_default() += blob;
+                        }
+                        LanguageContext::LinguaFranca => {
+                            let child_lang = syntax.get_lf_target_language();
+                            *stats.blobs.entry(child_lang).or_default() += blob;
+                        }
+                        LanguageContext::Html { language } => {
+                            stats.code += 1;
+                            // Add all the markdown blobs.
+                            *stats.blobs.entry(language).or_default() += blob;
+                        }
                     }
-                };
+
+                    // Advance to after the language code and the delimiter..
+                    stepper = LineStep::new(b'\n', end, lines.len());
+                    continue;
+                }
+            };
             trace!("{}", String::from_utf8_lossy(line));
 
             if syntax.shared.is_literate
