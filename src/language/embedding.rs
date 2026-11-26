@@ -178,19 +178,23 @@ impl<'a> RegexCache<'a> {
             | LanguageType::Vue
             | LanguageType::GlimmerJs
             | LanguageType::GlimmerTs => {
-                let html = HtmlLike {
-                    start_script: save_captures(&START_SCRIPT, lines, start, end),
-                    start_style: save_captures(&START_STYLE, lines, start, end),
-                    start_template: save_captures(&START_TEMPLATE, lines, start, end),
-                };
-
-                if html.start_script.is_some()
-                    || html.start_style.is_some()
-                    || html.start_template.is_some()
-                {
-                    Some(RegexFamily::HtmlLike(html))
-                } else {
+                if !lines[start..end].contains(&b'<') {
                     None
+                } else {
+                    let html = HtmlLike {
+                        start_script: save_captures(&START_SCRIPT, lines, start, end),
+                        start_style: save_captures(&START_STYLE, lines, start, end),
+                        start_template: save_captures(&START_TEMPLATE, lines, start, end),
+                    };
+
+                    if html.start_script.is_some()
+                        || html.start_style.is_some()
+                        || html.start_template.is_some()
+                    {
+                        Some(RegexFamily::HtmlLike(html))
+                    } else {
+                        None
+                    }
                 }
             }
             _ => None,

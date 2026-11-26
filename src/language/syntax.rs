@@ -80,6 +80,8 @@ pub(crate) struct SharedMatchers {
     pub nested_comments: &'static [(&'static str, &'static str)],
     pub string_literals: &'static [(&'static str, &'static str)],
     pub verbatim_string_literals: &'static [(&'static str, &'static str)],
+    pub plain_triggers: [bool; 256],
+    pub comment_triggers: [bool; 256],
 }
 
 impl SharedMatchers {
@@ -104,20 +106,75 @@ impl SharedMatchers {
                 .unwrap()
         }
 
+        let doc_quotes = language.doc_quotes();
+        let line_comments = language.line_comments();
+        let multi_line_comments = language.multi_line_comments();
+        let any_multi_line_comments = language.any_multi_line_comments();
+        let nested_comments = language.nested_comments();
+        let string_literals = language.quotes();
+        let verbatim_string_literals = language.verbatim_quotes();
+
+        let mut plain_triggers = [false; 256];
+        let mut comment_triggers = [false; 256];
+
+        for &(s, _) in doc_quotes
+            .iter()
+            .chain(verbatim_string_literals)
+            .chain(string_literals)
+        {
+            if let Some(&b) = s.as_bytes().first() {
+                plain_triggers[b as usize] = true;
+            }
+        }
+        for &c in line_comments {
+            if let Some(&b) = c.as_bytes().first() {
+                plain_triggers[b as usize] = true;
+            }
+        }
+        for &(s, e) in multi_line_comments.iter().chain(nested_comments) {
+            if let Some(&b) = s.as_bytes().first() {
+                plain_triggers[b as usize] = true;
+                comment_triggers[b as usize] = true;
+            }
+            if let Some(&b) = e.as_bytes().first() {
+                comment_triggers[b as usize] = true;
+            }
+        }
+        // `parse_end_of_quote` handles `\\` and `\<quote>` escapes whenever `!quote_is_verbatim`.
+        plain_triggers[b'\\' as usize] = true;
+        comment_triggers[b'\\' as usize] = true;
+
+        match language {
+            LanguageType::Rust => plain_triggers[b'/' as usize] = true,
+            LanguageType::Markdown | LanguageType::UnrealDeveloperMarkdown => {
+                plain_triggers[b'`' as usize] = true
+            }
+            LanguageType::LinguaFranca => plain_triggers[b'{' as usize] = true,
+            LanguageType::Html
+            | LanguageType::RubyHtml
+            | LanguageType::Svelte
+            | LanguageType::Vue
+            | LanguageType::GlimmerJs
+            | LanguageType::GlimmerTs => plain_triggers[b'<' as usize] = true,
+            _ => {}
+        }
+
         Self {
             language,
             allows_nested: language.allows_nested(),
-            doc_quotes: language.doc_quotes(),
+            doc_quotes,
             is_fortran: language.is_fortran(),
             is_literate: language.is_literate(),
             important_syntax: init_corasick(language.important_syntax()),
             any_comments: language.any_comments(),
-            line_comments: language.line_comments(),
-            multi_line_comments: language.multi_line_comments(),
-            any_multi_line_comments: language.any_multi_line_comments(),
-            nested_comments: language.nested_comments(),
-            string_literals: language.quotes(),
-            verbatim_string_literals: language.verbatim_quotes(),
+            line_comments,
+            multi_line_comments,
+            any_multi_line_comments,
+            nested_comments,
+            string_literals,
+            verbatim_string_literals,
+            plain_triggers,
+            comment_triggers,
         }
     }
 }
@@ -221,29 +278,72 @@ impl SyntaxCounter {
         lines: &[u8],
         start: usize,
         end: usize,
+        file_non_ws_end: usize,
         config: &Config,
     ) -> AnalysisReport {
         let mut ended_with_comments = false;
-        let mut skip = 0;
-        macro_rules! skip {
-            ($skip:expr) => {{
-                skip = $skip - 1;
-            }};
-        }
-
+        let effective_end = end.min(file_non_ws_end);
         let regex_cache = RegexCache::build(self.shared.language, lines, start, end);
+        let rust_next_line_doc = matches!(regex_cache.family(), Some(RegexFamily::Rust)) && {
+            let after = lines[end..].trim_start();
+            after.starts_with(b"///") || after.starts_with(b"//!")
+        };
 
-        for i in start..end {
-            if skip != 0 {
-                skip -= 1;
-                continue;
+        let mut i = start;
+        while i < effective_end {
+            if let Some(q) = self.quote {
+                if let Some(&qb) = q.as_bytes().first() {
+                    let next = if self.quote_is_verbatim {
+                        lines[i..effective_end].iter().position(|&b| b == qb)
+                    } else {
+                        lines[i..effective_end]
+                            .iter()
+                            .position(|&b| b == qb || b == b'\\')
+                    };
+                    match next {
+                        Some(0) => {}
+                        Some(off) => {
+                            i += off;
+                        }
+                        None => {
+                            ended_with_comments = false;
+                            break;
+                        }
+                    }
+                }
+            } else if !self.stack.is_empty() {
+                let triggers = &self.shared.comment_triggers;
+                match lines[i..effective_end]
+                    .iter()
+                    .position(|&b| triggers[b as usize])
+                {
+                    Some(0) => {}
+                    Some(off) => {
+                        i += off;
+                    }
+                    None => {
+                        ended_with_comments = false;
+                        break;
+                    }
+                }
+            } else if !rust_next_line_doc {
+                let triggers = &self.shared.plain_triggers;
+                match lines[i..effective_end]
+                    .iter()
+                    .position(|&b| triggers[b as usize])
+                {
+                    Some(0) => {}
+                    Some(off) => {
+                        i += off;
+                    }
+                    None => {
+                        ended_with_comments = false;
+                        break;
+                    }
+                }
             }
 
             let window = &lines[i..];
-
-            if window.trim().is_empty() {
-                break;
-            }
 
             ended_with_comments = false;
             let is_end_of_quote_or_multi_line = self
@@ -252,9 +352,10 @@ impl SyntaxCounter {
 
             if let Some(skip_amount) = is_end_of_quote_or_multi_line {
                 ended_with_comments = true;
-                skip!(skip_amount);
+                i += skip_amount;
                 continue;
             } else if self.quote.is_some() {
+                i += 1;
                 continue;
             }
 
@@ -267,7 +368,7 @@ impl SyntaxCounter {
                 .or_else(|| self.parse_multi_line_comment(window));
 
             if let Some(skip_amount) = is_quote_or_multi_line {
-                skip!(skip_amount);
+                i += skip_amount;
                 continue;
             }
 
@@ -275,6 +376,8 @@ impl SyntaxCounter {
                 ended_with_comments = true;
                 break;
             }
+
+            i += 1;
         }
 
         AnalysisReport::Normal(ended_with_comments)
@@ -410,10 +513,10 @@ impl SyntaxCounter {
                 ))
             }
             RegexFamily::Rust => {
-                let rest = &lines[start..];
-                let comment_syntax = if rest.trim_start().starts_with(b"///") {
+                let rest = lines[start..].trim_start();
+                let comment_syntax = if rest.starts_with(b"///") {
                     b"///"
-                } else if rest.trim_start().starts_with(b"//!") {
+                } else if rest.starts_with(b"//!") {
                     b"//!"
                 } else {
                     return None;
@@ -424,7 +527,7 @@ impl SyntaxCounter {
                 let mut end_of_block = lines.len();
 
                 while let Some((start, end)) = stepper.next(lines) {
-                    if lines[start..].trim().starts_with(comment_syntax) {
+                    if lines[start..].trim_start().starts_with(comment_syntax) {
                         trace!("{}", String::from_utf8_lossy(&lines[start..end]));
                         let line = lines[start..end].trim_start();
                         let stripped_line = &line[3.min(line.len())..];
